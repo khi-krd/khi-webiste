@@ -1,14 +1,17 @@
-import { setRequestLocale } from "next-intl/server";
-import { use } from "react";
-import type { Locale } from "@/i18n/routing";
+import { getTranslations, setRequestLocale } from "next-intl/server";
 
-export default function HomePage({
+export default async function Home({
 	params,
 }: {
-	params: Promise<{ locale: Locale }>;
+	params: Promise<{ locale: string }>;
 }) {
-	const { locale } = use(params);
+	const { locale } = await params;
 	setRequestLocale(locale);
 
-	return null;
+	if (locale === "ckb") {
+		const t = await getTranslations("Home");
+		return <div>{t("placeholder")}</div>;
+	}
+
+	return <div>Home</div>;
 }

@@ -1,11 +1,13 @@
 import createMiddleware from "next-intl/middleware";
-import { routing } from "@/i18n/routing";
+import type { NextRequest } from "next/server";
+import { routing } from "./i18n/routing";
 
-// Next.js 16: middleware is now `proxy.ts`. The next-intl handler is unchanged.
-export default createMiddleware(routing);
+const handleI18nRouting = createMiddleware(routing);
+
+export function proxy(request: NextRequest) {
+	return handleI18nRouting(request);
+}
 
 export const config = {
-	// Match all pathnames except API routes, Next internals, and files with an
-	// extension (static assets). next-intl handles locale prefixing on the rest.
-	matcher: "/((?!api|_next|_vercel|.*\\..*).*)",
+	matcher: "/((?!api|trpc|_next|_vercel|.*\\..*).*)",
 };

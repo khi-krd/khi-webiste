@@ -1,5 +1,7 @@
 this is a new projects lets handle this project carefully because we have smooth things to do, lets start with:
 
+The website name is Kurdish Heritage institute (ئینستیوتی کەلەپووری کودی )
+
 Set environment variables. Add the backend REST API base URL and any media/S3 host to .env.local (and an .env.example to commit). Everything downstream depends on knowing where data comes from.
 
 Wire up i18n. Create the routing config (ckb + ku), the request config, the navigation helpers, and the proxy.ts (not middleware.ts — the Next 16 rename). This is the bedrock since every route lives under [locale]. → Blocked on a decision: default/fallback locale, ckb or ku? I asked last time; I still need this to set the routing config correctly.
