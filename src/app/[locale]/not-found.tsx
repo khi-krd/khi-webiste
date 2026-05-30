@@ -1,3 +1,3 @@
 export default function Error() {
-    return null;
+	return null;
 }

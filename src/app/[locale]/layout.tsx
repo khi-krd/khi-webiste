@@ -1,9 +1,8 @@
-import { NextIntlClientProvider } from "next-intl";
-import { hasLocale } from "next-intl";
-import { getMessages, setRequestLocale } from "next-intl/server";
 import { notFound } from "next/navigation";
-import { vazirmatn } from "@/lib/fonts";
+import { hasLocale, NextIntlClientProvider } from "next-intl";
+import { getMessages, setRequestLocale } from "next-intl/server";
 import { routing } from "@/i18n/routing";
+import { vazirmatn } from "@/lib/fonts";
 import "../globals.css";
 
 type Props = {

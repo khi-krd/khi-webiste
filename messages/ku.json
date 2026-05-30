@@ -1,1 +1,131 @@
-{}
+{
+	"Ui": {
+		"title": "Komponentên UI",
+		"eyebrow": "Pêşxistin",
+		"description": "Referansa dîtbarî ya ji bo hêmanên sîstema sêwiranê. Ji bo lêgerînê nehatiye indekskirin.",
+		"backHome": "Vegere malperê",
+		"direction": "Çep ber bi rastê (LTR)",
+		"locales": {
+			"ckb": "Soranî",
+			"ku": "Kurmancî"
+		},
+		"sections": {
+			"typography": {
+				"title": "Tipografî",
+				"description": "Pîvana cureyê nivîsê û karaktera .label."
+			},
+			"button": {
+				"title": "Bişkok",
+				"description": "Cure, mezinahî, îkon, neçalak."
+			},
+			"colors": {
+				"title": "Nîşanên rengê",
+				"description": "Paleta semantîk ji globals.css."
+			},
+			"input": {
+				"title": "Têketin & Nivîsar",
+				"description": "Kontrolên xwezayî."
+			},
+			"link": {
+				"title": "Girêdan",
+				"description": "Girêdanên navîgasyona ziman."
+			},
+			"field": {
+				"title": "Qada formê",
+				"description": "Etîket, rave, çewtî, û ARIA."
+			},
+			"container": {
+				"title": "Konteyner",
+				"description": "default (max-w-5xl) li dijî prose (max-w-2xl)."
+			},
+			"drawnBorder": {
+				"title": "Sînorê xêzkirî & goşeyên çargoşe",
+				"description": "Li ser hover sînorek yekgirtî tê xêzkirin; hemû goşe çargoşe ne."
+			}
+		},
+		"typography": {
+			"display": "Nîşandan",
+			"displaySample": "Nîşandan",
+			"h1": "Sernav 1",
+			"h1Sample": "Sernavê yekem",
+			"h2": "Sernav 2",
+			"h2Sample": "Sernavê duyem",
+			"h3": "Sernav 3",
+			"h3Sample": "Sernavê sêyem",
+			"body": "Laş",
+			"bodySample": "Laşê edîtorî — 17px bi bilindahiya rêzê li gorî nivîsê.",
+			"small": "Biçûk",
+			"smallSample": "Biçûk — sernivîs û nivîsa duyem.",
+			"label": "Etîket",
+			"labelSample": "Etîket / sernivîs"
+		},
+		"colors": {
+			"background": "background",
+			"surface": "surface",
+			"sunken": "sunken",
+			"foreground": "foreground",
+			"muted": "muted",
+			"border": "border",
+			"primary": "primary"
+		},
+		"buttons": {
+			"primary": "Sereke",
+			"secondary": "Duyem",
+			"ghost": "Şeffaf",
+			"small": "Biçûk",
+			"medium": "Navîn",
+			"large": "Mezin",
+			"leadingIcon": "Îkona destpêkê",
+			"trailingIcon": "Îkona dawiyê",
+			"disabled": "Neçalak"
+		},
+		"inputs": {
+			"default": "Default",
+			"defaultPlaceholder": "Têketina default",
+			"withValue": "Bi nirx",
+			"withValueSample": "Bi nirxek",
+			"disabled": "Neçalak",
+			"disabledPlaceholder": "Neçalak",
+			"invalid": "Çewt",
+			"invalidSample": "Nederbasdar",
+			"textarea": "Nivîsar",
+			"textareaPlaceholder": "Tiştek binivîse…",
+			"textareaDisabled": "Nivîsar — neçalak",
+			"textareaDisabledPlaceholder": "Nivîsara neçalak"
+		},
+		"links": {
+			"text": "Nivîs",
+			"textSample": "Girêdana nivîsê",
+			"withArrow": "Bi tîr",
+			"withArrowSample": "Girêdan bi tîr",
+			"nav": "Nav",
+			"navSample": "Girêdana navîgasyonê",
+			"navActive": "Nav — çalak",
+			"navActiveSample": "Girêdana navîgasyonê (çalak)"
+		},
+		"container": {
+			"default": "Default — max-w-5xl",
+			"defaultDescription": "Ev rûpel konteynera default bi kar tîne. Naverok bi firehiya edîtorî ya tevahî bi paddinga hevgirtî.",
+			"prose": "prose — max-w-2xl",
+			"proseDescription": "Firehiya xwendinê ya teng ji bo naveroka dirêj. Ev nimûneyek e ji bo pîvana nivîsa edîtorî ya bi rêzên kurt."
+		},
+		"form": {
+			"emailLabel": "E-posta",
+			"emailDescription": "Em navnîşana we parve nakin.",
+			"emailPlaceholder": "you@example.com",
+			"messageLabel": "Peyam",
+			"messagePlaceholder": "Tiştek binivîse…",
+			"usernameLabel": "Navê bikarhêner",
+			"usernameDescription": "Tenê tîp û hejmar.",
+			"usernameDefault": "khi_archive",
+			"usernameError": "Ev nav berê hatiye girtin.",
+			"showError": "Çewtiyê nîşan bide",
+			"clearError": "Çewtiyê paqij bike"
+		},
+		"drawn": {
+			"hint": "Bizivirîne da sînor were xêzkirin",
+			"squareHint": "Hemû goşe çargoşe — bê tîrêj",
+			"reducedMotion": "Bi reduced-motion: sînor tavilê xuya dibe (bê anîmasyon)."
+		}
+	}
+}

@@ -1,5 +1,134 @@
 {
 	"Home": {
 		"placeholder": "کتێبخانەی دیجیتاڵی کەلتوور، میرات و ڕەسەنایەتی کوردی."
+	},
+	"Ui": {
+		"title": "پێکهاتەکانی ڕووکار",
+		"eyebrow": "گەشەپێدان",
+		"description": "سەرچاوەی بینراو بۆ توخمە بنەڕەتییەکانی سیستەمی دیزاین. بۆ گەڕان نەناسراوە.",
+		"backHome": "گەڕانەوە بۆ سەرەکی",
+		"direction": "ڕاست بۆ چەپ (RTL)",
+		"locales": {
+			"ckb": "سۆرانی",
+			"ku": "کورمانجی"
+		},
+		"sections": {
+			"typography": {
+				"title": "تایپۆگرافی",
+				"description": "پێوەری قەبارە و کاراکتەری .label."
+			},
+			"button": {
+				"title": "دوگمە",
+				"description": "جۆرەکان، قەبارەکان، ئایکۆنەکان، ناچالاک."
+			},
+			"colors": {
+				"title": "توکنەکانی ڕەنگ",
+				"description": "پاڵێتی سیمانتیک لە globals.css."
+			},
+			"input": {
+				"title": "خانە و دەق",
+				"description": "کنترۆڵە سروشتییەکان."
+			},
+			"link": {
+				"title": "بەستەر",
+				"description": "بەستەرەکانی گەڕان بە زمان."
+			},
+			"field": {
+				"title": "خانە",
+				"description": "ناونیشان، وەسف، هەڵە، و ARIA."
+			},
+			"container": {
+				"title": "کۆنتێنەر",
+				"description": "default (max-w-5xl) بەرامبەر prose (max-w-2xl)."
+			},
+			"drawnBorder": {
+				"title": "سنووری کێشراو و گۆشە چوارگۆشەکان",
+				"description": "لەکاتی هۆڤەر سنوورێکی یەکگرتوو دەکێشرێت؛ هەموو گۆشەکان چوارگۆشەن."
+			}
+		},
+		"typography": {
+			"display": "پیشاندان",
+			"displaySample": "پیشاندان",
+			"h1": "سەرپەڕی ١",
+			"h1Sample": "سەرپەڕی یەکەم",
+			"h2": "سەرپەڕی ٢",
+			"h2Sample": "سەرپەڕی دووەم",
+			"h3": "سەرپەڕی ٣",
+			"h3Sample": "سەرپەڕی سێیەم",
+			"body": "دەق",
+			"bodySample": "دەقی سەرەکی — پێوەری ١٧px لەگەڵ بەرزی هێڵ بەپێی ڕەقەم.",
+			"small": "بچووک",
+			"smallSample": "بچووک — سەرنووس و دەقی لاوەکی.",
+			"label": "ناونیشان",
+			"labelSample": "ناونیشان / سەرنووس"
+		},
+		"colors": {
+			"background": "background",
+			"surface": "surface",
+			"sunken": "sunken",
+			"foreground": "foreground",
+			"muted": "muted",
+			"border": "border",
+			"primary": "primary"
+		},
+		"buttons": {
+			"primary": "سەرەکی",
+			"secondary": "لاوەکی",
+			"ghost": "شەفاف",
+			"small": "بچووک",
+			"medium": "ناوەند",
+			"large": "گەورە",
+			"leadingIcon": "ئایکۆنی سەرەتا",
+			"trailingIcon": "ئایکۆنی کۆتایی",
+			"disabled": "ناچالاک"
+		},
+		"inputs": {
+			"default": "بنەڕەت",
+			"defaultPlaceholder": "خانەی بنەڕەت",
+			"withValue": "بە نرخ",
+			"withValueSample": "نرخێک هەیە",
+			"disabled": "ناچالاک",
+			"disabledPlaceholder": "ناچالاک",
+			"invalid": "هەڵە",
+			"invalidSample": "نادروست",
+			"textarea": "دەقی فرە هێڵ",
+			"textareaPlaceholder": "دەق بنووسە…",
+			"textareaDisabled": "دەق — ناچالاک",
+			"textareaDisabledPlaceholder": "دەقی ناچالاک"
+		},
+		"links": {
+			"text": "دەق",
+			"textSample": "بەستەری دەقی",
+			"withArrow": "لەگەڵ تیر",
+			"withArrowSample": "بەستەر لەگەڵ تیر",
+			"nav": "گەڕان",
+			"navSample": "بەستەری گەڕان",
+			"navActive": "گەڕان — چالاک",
+			"navActiveSample": "بەستەری گەڕان (چالاک)"
+		},
+		"container": {
+			"default": "بنەڕەت — max-w-5xl",
+			"defaultDescription": "ئەم پەڕەیە کۆنتێنەری بنەڕەتی بەکاردەهێنێت. ناوەڕۆک بە پانی تەواو لەگەڵ بۆشایی هێڵی هاوتا.",
+			"prose": "prose — max-w-2xl",
+			"proseDescription": "پانی خوێندنەوە بۆ ناوەڕۆکی درێژ. ئەمە نموونەیەکە بۆ پێوانەی دەقی ڕۆژنامەوانی کە هێڵەکان کورتتر دەبن."
+		},
+		"form": {
+			"emailLabel": "ئیمەیڵ",
+			"emailDescription": "ناونیشانەکەت بە کەس نادەین.",
+			"emailPlaceholder": "you@example.com",
+			"messageLabel": "پەیام",
+			"messagePlaceholder": "شتێک بنووسە…",
+			"usernameLabel": "ناوی بەکارهێنەر",
+			"usernameDescription": "تەنها پیت و ژمارە.",
+			"usernameDefault": "khi_archive",
+			"usernameError": "ئەم ناوە پێشتر گیراوە.",
+			"showError": "پیشاندانی هەڵە",
+			"clearError": "سڕینەوەی هەڵە"
+		},
+		"drawn": {
+			"hint": "ماوس بهێنە سەر بۆ کێشانی سنوور",
+			"squareHint": "هەموو گۆشەکان چوارگۆشە — بێ خڕی",
+			"reducedMotion": "لەگەڵ reduced-motion: سنوور دەستبەجێ دەردەکەوێت (بێ ئەنیمەیشن)."
+		}
 	}
 }

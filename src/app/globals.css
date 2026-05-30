@@ -19,6 +19,7 @@
 	--warm-100: oklch(0.969 0.008 83); /* ≈ #F7F4EC  paper / page background  */
 	--warm-200: oklch(0.929 0.011 82); /* ≈ #EBE6DB  sunken / subtle fill     */
 	--warm-300: oklch(0.892 0.013 82); /* ≈ #E2DDD0  hairline border          */
+	--warm-400: oklch(0.600 0.018 78); /* ≈ #877F73  strong/interactive border */
 	--warm-500: oklch(0.500 0.014 75); /* ≈ #696158  muted — 5.5:1 on paper (WCAG AA ✓ at 12px) */
 	--warm-900: oklch(0.220 0.012 67); /* ≈ #1A1813  near-black ink           */
 }
@@ -42,6 +43,8 @@
 	--color-foreground: var(--warm-900); /* primary ink                     */
 	--color-muted: var(--warm-500); /* secondary text + small labels   */
 	--color-border: var(--warm-300); /* hairline rules (a real element) */
+	--color-border-strong: var(--warm-400); /* interactive borders: inputs,
+		secondary button, drawn-stroke. ~3.5:1 on background — reads actionable. */
 
 	/* Primary = ink today (monochrome). Kept separate so an interactive
 	   surface has a stable hook independent of body text. */
@@ -72,10 +75,13 @@
 	--text-small: 0.875rem; /* 14px — captions, meta                 */
 	--text-label: 0.75rem; /* 12px — quiet labels / eyebrows        */
 
-	/* Radius — minimal & editorial (boxes, not pills). */
-	--radius-sm: 0.125rem;
-	--radius-md: 0.25rem;
-	--radius-lg: 0.5rem;
+	/* Radius — SQUARE editorial/archive identity. Everything hard-cornered:
+	   buttons, inputs, cards, badges, media — no exceptions. --radius-lg is kept
+	   DEFINED BUT UNUSED, reserved as a single future soft exception if ever
+	   wanted; do not apply it. */
+	--radius-sm: 0; /* hard corners */
+	--radius-md: 0; /* hard corners */
+	--radius-lg: 0.5rem; /* reserved — intentionally unused */
 }
 
 /* ----------------------------------------------------------------------------
@@ -101,27 +107,66 @@
    Everything uses logical properties so it mirrors automatically in RTL.
    -------------------------------------------------------------------------- */
 
-/* Make the `border` utility default to the hairline token instead of
-   currentColor — borders are a primary design element here. */
-*,
-::before,
-::after {
-	border-color: var(--color-border);
-	border-style: solid;
-	border-width: 0;
-}
+@layer base {
+	/* Default every element's border to the hairline token + solid style at 0
+	   width. MUST live in @layer base: an unlayered universal rule outranks
+	   Tailwind's `@layer utilities`, which would silently disable ALL border
+	   utilities (.border, .border-border-strong, aria-[invalid]:border-foreground).
+	   In base, utilities correctly override width/color while this supplies the
+	   default color when only `.border` (width) is applied. */
+	*,
+	::before,
+	::after {
+		border-color: var(--color-border);
+		border-style: solid;
+		border-width: 0;
+	}
 
-html {
-	font-family: var(--font-sans);
-	color: var(--color-foreground);
-	background-color: var(--color-background);
-	text-rendering: optimizeLegibility;
-	-webkit-font-smoothing: antialiased;
-	scroll-behavior: smooth;
+	html {
+		font-family: var(--font-sans);
+		color: var(--color-foreground);
+		background-color: var(--color-background);
+		text-rendering: optimizeLegibility;
+		-webkit-font-smoothing: antialiased;
+		scroll-behavior: smooth;
+	}
+
+	body {
+		font-size: var(--text-body);
+	}
+
+	/* --- Body leading per script (lang is set on <html> per locale).
+	       One family (Vazirmatn) serves both scripts by design. If Sorani and
+	       Kurmanji ever need DIFFERENT families, bind `font-family` here per lang —
+	       this is the hook; line-height already lives in these blocks. --- */
+	:lang(ku) {
+		line-height: var(--leading-body-latin);
+	}
+	:lang(ckb) {
+		line-height: var(--leading-body-arabic);
+	}
+
+	/* --- Heading leading per script. NOTE: no letter-spacing here — tracking on
+	       headings would break Arabic's connected letterforms. Latin display
+	       tracking, if ever wanted, must be added in a :lang(ku)-scoped rule and
+	       reviewed separately for ckb. --- */
+	:lang(ku) :is(h1, h2, h3, h4) {
+		line-height: var(--leading-heading-latin);
+	}
+	:lang(ckb) :is(h1, h2, h3, h4) {
+		line-height: var(--leading-heading-arabic);
+	}
+
+	/* --- Focus visibility — consistent, accessible ring on the cream canvas. --- */
+	:focus-visible {
+		outline: 2px solid var(--color-ring);
+		outline-offset: 2px;
+	}
 }
 
 /* Accessibility: respect users who reduce motion (Motion is in the stack).
-   Neutralizes animation, transition, and smooth-scroll globally. */
+   Unlayered + !important so it always wins, neutralizing animation, transition,
+   and smooth-scroll globally. */
 @media (prefers-reduced-motion: reduce) {
 	html {
 		scroll-behavior: auto;
@@ -138,47 +183,74 @@ html {
 	}
 }
 
-body {
-	font-size: var(--text-body);
+@layer components {
+	/* --- Quiet label treatment -------------------------------------------------
+	   ckb: readable secondary text at 12px — muted passes AA (5.5:1 on paper).
+	   ku:  tracked + uppercased "eyebrow" labels — decorative/meta only; the
+	        tracking/casing treatment is Latin-only and must never apply to ckb.
+	   In @layer components so utilities (text-*, color) can still override. --- */
+	.label {
+		font-size: var(--text-label);
+		color: var(--color-muted);
+	}
+	:lang(ku) .label {
+		letter-spacing: var(--tracking-label);
+		text-transform: uppercase;
+	}
 }
 
-/* --- Body leading per script (lang is set on <html> per locale).
-       One family (Vazirmatn) serves both scripts by design. If Sorani and
-       Kurmanji ever need DIFFERENT families, bind `font-family` here per lang —
-       this is the hook; line-height already lives in these blocks. --- */
-:lang(ku) {
-	line-height: var(--leading-body-latin);
-}
-:lang(ckb) {
-	line-height: var(--leading-body-arabic);
-}
+/* --- Drawn-border button hover -------------------------------------------
+   A single continuous stroke traces the whole button perimeter on hover/focus,
+   then un-draws on leave. Pure SVG + CSS (no JS) — a <rect> with
+   stroke-dasharray/dashoffset, normalized via pathLength="100" so the dash math
+   is identical regardless of the button's variable width/height.
 
-/* --- Heading leading per script. NOTE: no letter-spacing here — tracking on
-       headings would break Arabic's connected letterforms. Latin display
-       tracking, if ever wanted, must be added in a :lang(ku)-scoped rule and
-       reviewed separately for ckb. --- */
-:lang(ku) :is(h1, h2, h3, h4) {
-	line-height: var(--leading-heading-latin);
+   • Overlay only: position:absolute + pointer-events:none means geometry never
+     changes — NO layout shift at rest or on hover.
+   • Direction is VISUAL, not logical, so it can't mirror automatically. The rect
+     natively starts at the top-leading corner and traces clockwise (ku/LTR). In
+     RTL we mirror the SVG (scaleX(-1)) so it starts top-RIGHT and traces
+     counter-clockwise (ckb) — driven off the document dir on <html>.
+   • Reduced motion: the global prefers-reduced-motion handler above strips the
+     transition, so on hover the stroke snaps fully on instantly — a static
+     strong border, no animation — which is exactly the opt-out behavior. */
+:root {
+	--draw-border-gap: 3px; /* breathing room between stroke and button edge */
+	--draw-border-stroke: 1.5px;
 }
-:lang(ckb) :is(h1, h2, h3, h4) {
-	line-height: var(--leading-heading-arabic);
+.draw-border {
+	position: absolute;
+	inset: 0;
+	width: 100%;
+	height: 100%;
+	/* Above the button fill, below label/icons (DOM order + z-0). z:-1 painted
+	   under the host background and clipped at the edges — the broken corner fit. */
+	z-index: 0;
+	overflow: visible;
+	pointer-events: none;
+	color: var(--color-border-strong); /* stroke reads currentColor */
 }
-
-/* --- Quiet label treatment -----------------------------------------------
-   ckb: readable secondary text at 12px — muted passes AA (5.5:1 on paper).
-   ku:  tracked + uppercased "eyebrow" labels — decorative/meta only; the
-        tracking/casing treatment is Latin-only and must never apply to ckb. --- */
-.label {
-	font-size: var(--text-label);
-	color: var(--color-muted);
+.draw-border-host.bg-primary .draw-border {
+	color: var(--color-sunken); /* light stroke on ink fill — border-strong vanishes */
 }
-:lang(ku) .label {
-	letter-spacing: var(--tracking-label);
-	text-transform: uppercase;
+:where([dir="rtl"]) .draw-border {
+	transform: scaleX(-1); /* origin → top-RIGHT, trace counter-clockwise (ckb) */
 }
-
-/* --- Focus visibility — consistent, accessible ring on the cream canvas. --- */
-:focus-visible {
-	outline: 2px solid var(--color-ring);
-	outline-offset: 2px;
+.draw-border__rect {
+	/* Gap + half stroke keeps the full stroke inside the button box. */
+	x: calc(var(--draw-border-gap) + var(--draw-border-stroke) / 2);
+	y: calc(var(--draw-border-gap) + var(--draw-border-stroke) / 2);
+	width: calc(100% - 2 * var(--draw-border-gap) - var(--draw-border-stroke));
+	height: calc(100% - 2 * var(--draw-border-gap) - var(--draw-border-stroke));
+	fill: none;
+	stroke: currentColor;
+	stroke-width: var(--draw-border-stroke);
+	vector-effect: non-scaling-stroke;
+	stroke-dasharray: 100; /* full normalized perimeter */
+	stroke-dashoffset: 100; /* hidden at rest */
+	transition: stroke-dashoffset 0.5s cubic-bezier(0.65, 0, 0.35, 1);
+}
+.draw-border-host:hover .draw-border__rect,
+.draw-border-host:focus-visible .draw-border__rect {
+	stroke-dashoffset: 0; /* fully enclosed */
 }
