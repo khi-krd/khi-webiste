@@ -1,0 +1,13 @@
+{
+	"Metadata": {
+		"siteName": "Kurdistan Heritage",
+		"defaultTitle": "Kurdistan Heritage",
+		"titleTemplate": "%s — Kurdistan Heritage",
+		"defaultDescription": "Pirtûkxaneya dîjîtal a çand, mîras û resenahiya kurdî."
+	},
+	"NotFound": {
+		"title": "Rûpel nehat dîtin",
+		"description": "Rûpela ku tu lê digerî tune ye.",
+		"backHome": "Vegere destpêkê"
+	}
+}
