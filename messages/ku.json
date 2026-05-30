@@ -7,7 +7,8 @@
 		"direction": "Çep ber bi rastê (LTR)",
 		"locales": {
 			"ckb": "Soranî",
-			"ku": "Kurmancî"
+			"ku": "Kurmancî",
+			"en": "Îngilîzî"
 		},
 		"sections": {
 			"typography": {
@@ -41,6 +42,22 @@
 			"drawnBorder": {
 				"title": "Sînorê xêzkirî & goşeyên çargoşe",
 				"description": "Li ser hover sînorek yekgirtî tê xêzkirin; hemû goşe çargoşe ne."
+			},
+			"headings": {
+				"title": "Sernav",
+				"description": "Astên semantîk (h1–h4) bi mezinahiya dabeşbar."
+			},
+			"directionalIcon": {
+				"title": "Îkonên alîdar",
+				"description": "Tîr/çevron di RTL de berevajî dibin; yên ne-alîdar nabin."
+			},
+			"prose": {
+				"title": "Nivîsa dirêj",
+				"description": "Rîtma naveroka edîtorî: sernav, lîste, gotin, girêdan."
+			},
+			"image": {
+				"title": "Wêne",
+				"description": "Rêjeyên aliyan, object-cover, çarçoveya hûrik."
 			}
 		},
 		"typography": {
@@ -126,6 +143,55 @@
 			"hint": "Bizivirîne da sînor were xêzkirin",
 			"squareHint": "Hemû goşe çargoşe — bê tîrêj",
 			"reducedMotion": "Bi reduced-motion: sînor tavilê xuya dibe (bê anîmasyon)."
+		},
+		"groups": {
+			"foundations": "Bingeh",
+			"primitives": "Primîtîv",
+			"forms": "Form",
+			"content": "Naverok & Medya"
+		},
+		"toc": "Li ser vê rûpelê",
+		"headings": {
+			"displaySize": "Mezinahiya Display",
+			"level1": "Ast 1 (h1)",
+			"level2": "Ast 2 (h2)",
+			"level3": "Ast 3 (h3)",
+			"level4": "Ast 4 (h4)",
+			"decoupled": "h2 bi mezinahiya display (dabeşbar)",
+			"sample": "Mîrata çanda kurdî"
+		},
+		"directionalIcon": {
+			"directional": "Alîdar (tîr)",
+			"directionalHint": "di RTL de berevajî dibe",
+			"nonDirectional": "Ne-alîdar (lê zêde bike)",
+			"nonDirectionalHint": "qet berevajî nabe",
+			"note": "Heman nîşan, du alî — li dirêjahiya hilbijartî temaşe bike."
+		},
+		"image": {
+			"landscape": "Asoyî 16/9",
+			"square": "Çargoşe 1/1",
+			"portrait": "Stûnî 3/4",
+			"ratio43": "4/3",
+			"framed": "Bi çarçove",
+			"unframed": "Bê çarçove",
+			"contain": "object-contain",
+			"caption": "Arşîva dîjîtal — wêneya nimûne"
+		},
+		"prose": {
+			"h2": "Derbarê arşîvê",
+			"intro": "Enstîtuya Mîrata Kurdî naverokên çandî — pirtûk, stran, deng û wêne — kom dike û diparêze.",
+			"body": "Ev nivîs mînakek e ji bo rîtma xwendinê. Kesayetî ji tîpografî û cihê vala tê, ne ji rengan.",
+			"listIntro": "Berhevok ev tê de hene:",
+			"li1": "Pirtûk û destnivîs",
+			"li2": "Tomarên deng û muzîk",
+			"li3": "Wêne û galerî",
+			"quote": "Ziman koka nasnameyê ye.",
+			"h3": "Çawa tê bikaranîn",
+			"linkBody": "Ji bo zêdetir, ",
+			"linkText": "rêbera me bixwîne",
+			"code": "khi",
+			"outro": "Hemû naverok bi her du zaravayan tê pêşkêşkirin.",
+			"emphasis": "Nivîs dikare <b>giranbûyî</b> an <i>tewandî</i> be."
 		}
 	}
 }

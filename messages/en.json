@@ -1,0 +1,200 @@
+{
+	"Home": {
+		"placeholder": "Digital library of Kurdish culture, heritage and authenticity."
+	},
+	"Ui": {
+		"title": "UI Components",
+		"eyebrow": "Development",
+		"description": "Visual reference for the design-system primitives. Not indexed for search.",
+		"backHome": "Back to site",
+		"direction": "Left to right (LTR)",
+		"locales": {
+			"ckb": "Sorani",
+			"ku": "Kurmanji",
+			"en": "English"
+		},
+		"sections": {
+			"typography": {
+				"title": "Typography",
+				"description": "Type scale and the .label treatment."
+			},
+			"button": {
+				"title": "Button",
+				"description": "Variants, sizes, icons, disabled."
+			},
+			"colors": {
+				"title": "Color tokens",
+				"description": "Semantic palette from globals.css."
+			},
+			"input": {
+				"title": "Input & Textarea",
+				"description": "Native form controls."
+			},
+			"link": {
+				"title": "Link",
+				"description": "Locale-aware navigation links."
+			},
+			"field": {
+				"title": "Form field",
+				"description": "Label, description, error, and ARIA."
+			},
+			"container": {
+				"title": "Container",
+				"description": "default (max-w-5xl) vs prose (max-w-2xl)."
+			},
+			"drawnBorder": {
+				"title": "Drawn border & square corners",
+				"description": "On hover a single continuous border is drawn; all corners are square."
+			},
+			"headings": {
+				"title": "Heading",
+				"description": "Semantic levels (h1–h4) with decoupled size."
+			},
+			"directionalIcon": {
+				"title": "Directional icons",
+				"description": "Arrows/chevrons flip in RTL; non-directional ones don't."
+			},
+			"prose": {
+				"title": "Long-form",
+				"description": "Editorial content rhythm: headings, lists, quote, link."
+			},
+			"image": {
+				"title": "Image",
+				"description": "Aspect ratios, object-cover, hairline frame."
+			}
+		},
+		"typography": {
+			"display": "Display",
+			"displaySample": "Display",
+			"h1": "Heading 1",
+			"h1Sample": "First heading",
+			"h2": "Heading 2",
+			"h2Sample": "Second heading",
+			"h3": "Heading 3",
+			"h3Sample": "Third heading",
+			"body": "Body",
+			"bodySample": "Editorial body — 17px with line-height tuned per script.",
+			"small": "Small",
+			"smallSample": "Small — captions and secondary text.",
+			"label": "Label",
+			"labelSample": "Label / eyebrow"
+		},
+		"colors": {
+			"background": "background",
+			"surface": "surface",
+			"sunken": "sunken",
+			"foreground": "foreground",
+			"muted": "muted",
+			"border": "border",
+			"primary": "primary"
+		},
+		"buttons": {
+			"primary": "Primary",
+			"secondary": "Secondary",
+			"ghost": "Ghost",
+			"small": "Small",
+			"medium": "Medium",
+			"large": "Large",
+			"leadingIcon": "Leading icon",
+			"trailingIcon": "Trailing icon",
+			"disabled": "Disabled"
+		},
+		"inputs": {
+			"default": "Default",
+			"defaultPlaceholder": "Default input",
+			"withValue": "With value",
+			"withValueSample": "Has a value",
+			"disabled": "Disabled",
+			"disabledPlaceholder": "Disabled",
+			"invalid": "Invalid",
+			"invalidSample": "Not valid",
+			"textarea": "Textarea",
+			"textareaPlaceholder": "Write something…",
+			"textareaDisabled": "Textarea — disabled",
+			"textareaDisabledPlaceholder": "Disabled textarea"
+		},
+		"links": {
+			"text": "Text",
+			"textSample": "Text link",
+			"withArrow": "With arrow",
+			"withArrowSample": "Link with arrow",
+			"nav": "Nav",
+			"navSample": "Navigation link",
+			"navActive": "Nav — active",
+			"navActiveSample": "Navigation link (active)"
+		},
+		"container": {
+			"default": "Default — max-w-5xl",
+			"defaultDescription": "This page uses the default container — content at full editorial width with consistent padding.",
+			"prose": "prose — max-w-2xl",
+			"proseDescription": "A narrow reading measure for long-form content. This is a sample of the editorial text measure with short lines."
+		},
+		"form": {
+			"emailLabel": "Email",
+			"emailDescription": "We don't share your address.",
+			"emailPlaceholder": "you@example.com",
+			"messageLabel": "Message",
+			"messagePlaceholder": "Write something…",
+			"usernameLabel": "Username",
+			"usernameDescription": "Letters and numbers only.",
+			"usernameDefault": "khi_archive",
+			"usernameError": "That name is already taken.",
+			"showError": "Show error",
+			"clearError": "Clear error"
+		},
+		"drawn": {
+			"hint": "Hover to draw the border",
+			"squareHint": "All corners square — no radius",
+			"reducedMotion": "With reduced-motion: the border appears instantly (no animation)."
+		},
+		"groups": {
+			"foundations": "Foundations",
+			"primitives": "Primitives",
+			"forms": "Forms",
+			"content": "Content & Media"
+		},
+		"toc": "On this page",
+		"headings": {
+			"displaySize": "Display size",
+			"level1": "Level 1 (h1)",
+			"level2": "Level 2 (h2)",
+			"level3": "Level 3 (h3)",
+			"level4": "Level 4 (h4)",
+			"decoupled": "h2 at display size (decoupled)",
+			"sample": "Kurdish cultural heritage"
+		},
+		"directionalIcon": {
+			"directional": "Directional (arrow)",
+			"directionalHint": "flips in RTL",
+			"nonDirectional": "Non-directional (plus)",
+			"nonDirectionalHint": "never flips",
+			"note": "Same icon, two directions — watch it in the selected direction."
+		},
+		"image": {
+			"landscape": "Landscape 16/9",
+			"square": "Square 1/1",
+			"portrait": "Portrait 3/4",
+			"ratio43": "4/3",
+			"framed": "Framed",
+			"unframed": "Unframed",
+			"contain": "object-contain",
+			"caption": "Digital archive — sample image"
+		},
+		"prose": {
+			"h2": "About the archive",
+			"intro": "The Kurdish Heritage Institute collects and preserves cultural content — books, songs, audio and images.",
+			"body": "This text is a sample of the reading rhythm. Personality comes from typography and negative space, not color.",
+			"listIntro": "The collection includes:",
+			"li1": "Books and manuscripts",
+			"li2": "Audio and music recordings",
+			"li3": "Photographs and galleries",
+			"quote": "Language is the root of identity.",
+			"h3": "How it's used",
+			"linkBody": "For more, ",
+			"linkText": "read our guide",
+			"code": "khi",
+			"outro": "All content is offered in both Kurdish dialects.",
+			"emphasis": "Text can be <b>bold</b> or <i>italic</i>."
+		}
+	}
+}

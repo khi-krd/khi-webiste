@@ -136,10 +136,11 @@
 	}
 
 	/* --- Body leading per script (lang is set on <html> per locale).
-	       One family (Vazirmatn) serves both scripts by design. If Sorani and
-	       Kurmanji ever need DIFFERENT families, bind `font-family` here per lang —
-	       this is the hook; line-height already lives in these blocks. --- */
-	:lang(ku) {
+	       Latin locales (ku, en) read tighter; Arabic (ckb) needs more leading.
+	       One family (Vazirmatn) serves all locales by design. If a locale ever
+	       needs a DIFFERENT family, bind `font-family` here per lang — this is
+	       the hook; line-height already lives in these blocks. --- */
+	:is(:lang(ku), :lang(en)) {
 		line-height: var(--leading-body-latin);
 	}
 	:lang(ckb) {
@@ -148,9 +149,9 @@
 
 	/* --- Heading leading per script. NOTE: no letter-spacing here — tracking on
 	       headings would break Arabic's connected letterforms. Latin display
-	       tracking, if ever wanted, must be added in a :lang(ku)-scoped rule and
+	       tracking, if ever wanted, must be added in a Latin-scoped rule and
 	       reviewed separately for ckb. --- */
-	:lang(ku) :is(h1, h2, h3, h4) {
+	:is(:lang(ku), :lang(en)) :is(h1, h2, h3, h4) {
 		line-height: var(--leading-heading-latin);
 	}
 	:lang(ckb) :is(h1, h2, h3, h4) {
@@ -186,14 +187,14 @@
 @layer components {
 	/* --- Quiet label treatment -------------------------------------------------
 	   ckb: readable secondary text at 12px — muted passes AA (5.5:1 on paper).
-	   ku:  tracked + uppercased "eyebrow" labels — decorative/meta only; the
-	        tracking/casing treatment is Latin-only and must never apply to ckb.
-	   In @layer components so utilities (text-*, color) can still override. --- */
+	   Latin (ku, en): tracked + uppercased "eyebrow" labels — decorative/meta
+	        only; the tracking/casing treatment is Latin-only and must never apply
+	        to ckb. In @layer components so utilities (text-*, color) can override. */
 	.label {
 		font-size: var(--text-label);
 		color: var(--color-muted);
 	}
-	:lang(ku) .label {
+	:is(:lang(ku), :lang(en)) .label {
 		letter-spacing: var(--tracking-label);
 		text-transform: uppercase;
 	}
@@ -253,4 +254,117 @@
 .draw-border-host:hover .draw-border__rect,
 .draw-border-host:focus-visible .draw-border__rect {
 	stroke-dashoffset: 0; /* fully enclosed */
+}
+
+/* --- Prose: long-form rich-text rhythm -----------------------------------
+   Editorial body styling for article/about content. LOGICAL properties only
+   (padding-inline-start, border-inline-start, margin-block) so lists,
+   blockquotes and indentation mirror automatically in RTL. Line-height is
+   inherited from the per-script :lang() base (1.65 ku / 1.9 ckb), so Arabic
+   gets its taller rhythm for free.
+   In @layer components so page utilities can still override per instance. */
+@layer components {
+	.prose {
+		max-inline-size: 68ch; /* own measure; Container prose width still wins */
+		color: var(--color-foreground);
+		font-size: var(--text-body);
+	}
+
+	/* Vertical rhythm between flow blocks. */
+	.prose > * + * {
+		margin-block-start: 1.1em;
+	}
+	.prose > :first-child {
+		margin-block-start: 0;
+	}
+
+	.prose :is(h2, h3, h4) {
+		font-weight: 600;
+		margin-block-start: 1.9em;
+	}
+	.prose h2 {
+		font-size: var(--text-h2);
+	}
+	.prose h3 {
+		font-size: var(--text-h3);
+	}
+	.prose h4 {
+		font-size: var(--text-body);
+	}
+
+	.prose a {
+		color: var(--color-foreground);
+		text-decoration: underline;
+		text-decoration-color: var(--color-border);
+		text-underline-offset: 4px;
+	}
+	.prose a:hover {
+		text-decoration-color: currentColor;
+	}
+
+	/* Lists: padding on the inline-START so bullets/numbers sit on the reading
+	   side in both directions. */
+	.prose :is(ul, ol) {
+		padding-inline-start: 1.5em;
+	}
+	.prose ul {
+		list-style: disc;
+	}
+	.prose ol {
+		list-style: decimal;
+	}
+	.prose li {
+		margin-block-start: 0.4em;
+	}
+	.prose li::marker {
+		color: var(--color-muted);
+	}
+	/* Eastern-Arabic numerals for ordered lists in Sorani. */
+	:lang(ckb) .prose ol {
+		list-style-type: arabic-indic;
+	}
+
+	/* Blockquote: hairline rule on the inline-START edge (flips in RTL). */
+	.prose blockquote {
+		border-inline-start: 2px solid var(--color-border);
+		padding-inline-start: 1em;
+		color: var(--color-muted);
+	}
+
+	.prose hr {
+		border: 0;
+		border-block-start: 1px solid var(--color-border);
+		margin-block: 2.4em;
+	}
+
+	.prose figure figcaption {
+		margin-block-start: 0.6em;
+		font-size: var(--text-small);
+		color: var(--color-muted);
+	}
+
+	.prose code {
+		font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+		font-size: 0.9em;
+		background-color: var(--color-sunken);
+		padding-block: 0.1em;
+		padding-inline: 0.35em;
+		/* Keep Latin code LTR even inside RTL prose. */
+		direction: ltr;
+		unicode-bidi: isolate;
+	}
+
+	.prose strong {
+		font-weight: 700;
+	}
+	/* Emphasis: true italic is a LATIN device. Arabic has no italics — browsers
+	   synthesize an oblique slant that distorts the cursive script — so scope
+	   italic to Latin locales (ku, en) and keep ckb upright. ⚠ ckb emphasis then
+	   relies on context; review whether <em> needs a non-italic treatment. */
+	:is(:lang(ku), :lang(en)) .prose :is(em, blockquote) {
+		font-style: italic;
+	}
+	:lang(ckb) .prose :is(em, blockquote) {
+		font-style: normal;
+	}
 }

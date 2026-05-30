@@ -1,7 +1,8 @@
 import { defineRouting } from "next-intl/routing";
 
 export const routing = defineRouting({
-	locales: ["ckb", "ku"],
+	// ckb = Sorani (Arabic, RTL), ku = Kurmanji (Latin, LTR), en = English (LTR).
+	locales: ["ckb", "ku", "en"],
 	defaultLocale: "ckb",
 });
 

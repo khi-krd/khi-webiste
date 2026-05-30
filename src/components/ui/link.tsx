@@ -2,6 +2,7 @@ import { ArrowRightIcon } from "@heroicons/react/24/outline";
 import type { ComponentProps } from "react";
 import { Link as IntlLink } from "@/i18n/navigation";
 import { cn } from "@/lib/utils";
+import { DirectionalIcon } from "./directional-icon";
 
 type Variant = "text" | "nav";
 
@@ -23,7 +24,7 @@ const variants: Record<Variant, string> = {
  * Locale-aware link. Wraps the next-intl <Link> (NOT raw next/link) so the
  * active locale prefix is added automatically. Server component.
  *
- * The optional arrow uses `rtl:-scale-x-100` so it points toward the reading
+ * The optional arrow uses <DirectionalIcon> so it points toward the reading
  * direction in both scripts (right in ku/LTR, left in ckb/RTL).
  */
 export function Link({
@@ -46,10 +47,7 @@ export function Link({
 		>
 			{children}
 			{withArrow && (
-				<ArrowRightIcon
-					className="size-4 shrink-0 rtl:-scale-x-100"
-					aria-hidden
-				/>
+				<DirectionalIcon icon={ArrowRightIcon} className="size-4 shrink-0" />
 			)}
 		</IntlLink>
 	);

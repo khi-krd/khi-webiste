@@ -1,7 +1,11 @@
 export { Button } from "./button";
 export { Container } from "./container";
+export { DirectionalIcon } from "./directional-icon";
 export { Field, type FieldControlProps } from "./field";
+export { Heading } from "./heading";
+export { Image } from "./image";
 export { Input } from "./input";
 export { Link } from "./link";
+export { Prose } from "./prose";
 export { Section } from "./section";
 export { Textarea } from "./textarea";
