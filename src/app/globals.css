@@ -1,5 +1,184 @@
 @import "tailwindcss";
 
-@theme inline {
-	--font-sans: var(--font-sans);
+/* ============================================================================
+   KHI — Visual design foundation (token layer only; no components here).
+   Aesthetic: "warm editorial monochrome" — aged archive paper, near-black ink,
+   hairline rules. The shell stays neutral so CONTENT (covers, art, photography)
+   supplies all the color. Personality comes from type + negative space.
+   ========================================================================== */
+
+/* ----------------------------------------------------------------------------
+   LAYER 1 — Base ramp: warm neutrals only.
+   Authored in oklch so lightness (L) and chroma (C) stay tunable. Hue ~80–85
+   keeps everything gently warm (paper, not screen-white). Components must NOT
+   reference these raw steps — only the semantic tokens below.
+   sRGB approximations are noted for the contrast math in the deliverable.
+   -------------------------------------------------------------------------- */
+:root {
+	--warm-50: oklch(0.992 0.004 83); /* ≈ #FCFBF7  raised surface (lightest) */
+	--warm-100: oklch(0.969 0.008 83); /* ≈ #F7F4EC  paper / page background  */
+	--warm-200: oklch(0.929 0.011 82); /* ≈ #EBE6DB  sunken / subtle fill     */
+	--warm-300: oklch(0.892 0.013 82); /* ≈ #E2DDD0  hairline border          */
+	--warm-500: oklch(0.500 0.014 75); /* ≈ #696158  muted — 5.5:1 on paper (WCAG AA ✓ at 12px) */
+	--warm-900: oklch(0.220 0.012 67); /* ≈ #1A1813  near-black ink           */
+}
+
+/* ----------------------------------------------------------------------------
+   LAYER 2 — Semantic tokens (the ONLY colors components may use).
+   Exposed to Tailwind as utilities via @theme: bg-background, text-foreground,
+   border-border, text-muted, bg-primary, text-primary-foreground, etc.
+
+   Use plain `@theme`, NOT `@theme inline`. Inline resolves each token to its
+   underlying var(--warm-*) at build time in utilities (e.g. bg-accent becomes
+   var(--warm-900)), bypassing --color-accent and breaking the one-line accent
+   swap. Plain @theme keeps utilities on var(--color-*) so runtime indirection
+   is preserved end-to-end.
+   -------------------------------------------------------------------------- */
+@theme {
+	/* Color — semantic */
+	--color-background: var(--warm-100); /* page canvas (warm off-white)    */
+	--color-surface: var(--warm-50); /* raised cards / panels           */
+	--color-sunken: var(--warm-200); /* recessed fills, table stripes   */
+	--color-foreground: var(--warm-900); /* primary ink                     */
+	--color-muted: var(--warm-500); /* secondary text + small labels   */
+	--color-border: var(--warm-300); /* hairline rules (a real element) */
+
+	/* Primary = ink today (monochrome). Kept separate so an interactive
+	   surface has a stable hook independent of body text. */
+	--color-primary: var(--warm-900);
+	--color-primary-foreground: var(--warm-50); /* ink/text ON primary */
+
+	/* ▼▼ FUTURE KURDISH-IDENTITY HOOK ▼▼
+	   Monochrome for now (accent = ink). To introduce the single Kurdish accent
+	   color later, change THIS ONE LINE — no component edits required. */
+	--color-accent: var(--warm-900);
+
+	/* Focus ring — ink for a strong, accessible outline on the cream canvas. */
+	--color-ring: var(--warm-900);
+
+	/* Typography — family + size scale.
+	   --font-vazirmatn is injected on <html> by next/font (see fonts.ts). We
+	   consume it here under a DIFFERENT name to avoid a self-referential cycle.
+	   Sizes only: line-height is set per-script in the base layer below, because
+	   Arabic needs more leading than Latin at the same size. */
+	--font-sans: var(--font-vazirmatn), ui-sans-serif, system-ui, "Segoe UI",
+		sans-serif;
+
+	--text-display: 3rem; /* 48px — hero / section openers        */
+	--text-h1: 2.25rem; /* 36px                                  */
+	--text-h2: 1.75rem; /* 28px                                  */
+	--text-h3: 1.375rem; /* 22px                                  */
+	--text-body: 1.0625rem; /* 17px — editorial body, a touch large  */
+	--text-small: 0.875rem; /* 14px — captions, meta                 */
+	--text-label: 0.75rem; /* 12px — quiet labels / eyebrows        */
+
+	/* Radius — minimal & editorial (boxes, not pills). */
+	--radius-sm: 0.125rem;
+	--radius-md: 0.25rem;
+	--radius-lg: 0.5rem;
+}
+
+/* ----------------------------------------------------------------------------
+   Per-script typographic metrics + tracking. Not exposed as utilities — these
+   tune the base reading experience and must differ by script/direction.
+   -------------------------------------------------------------------------- */
+:root {
+	/* Line-height: Arabic (ckb) is cursive and taller — needs more leading. */
+	--leading-body-latin: 1.65;
+	--leading-body-arabic: 1.9;
+	--leading-heading-latin: 1.18;
+	--leading-heading-arabic: 1.4;
+
+	/* Tracking is a LATIN-ONLY treatment (see base layer). Never apply to ckb. */
+	--tracking-label: 0.08em;
+
+	/* Hairline border width — borders carry the design, so default to 1px. */
+	--border-hairline: 1px;
+}
+
+/* ----------------------------------------------------------------------------
+   BASE LAYER — global element defaults (still foundation, not components).
+   Everything uses logical properties so it mirrors automatically in RTL.
+   -------------------------------------------------------------------------- */
+
+/* Make the `border` utility default to the hairline token instead of
+   currentColor — borders are a primary design element here. */
+*,
+::before,
+::after {
+	border-color: var(--color-border);
+	border-style: solid;
+	border-width: 0;
+}
+
+html {
+	font-family: var(--font-sans);
+	color: var(--color-foreground);
+	background-color: var(--color-background);
+	text-rendering: optimizeLegibility;
+	-webkit-font-smoothing: antialiased;
+	scroll-behavior: smooth;
+}
+
+/* Accessibility: respect users who reduce motion (Motion is in the stack).
+   Neutralizes animation, transition, and smooth-scroll globally. */
+@media (prefers-reduced-motion: reduce) {
+	html {
+		scroll-behavior: auto;
+	}
+	*,
+	::before,
+	::after {
+		animation: none !important;
+		animation-duration: 0.01ms !important;
+		animation-iteration-count: 1 !important;
+		transition: none !important;
+		transition-duration: 0.01ms !important;
+		scroll-behavior: auto !important;
+	}
+}
+
+body {
+	font-size: var(--text-body);
+}
+
+/* --- Body leading per script (lang is set on <html> per locale).
+       One family (Vazirmatn) serves both scripts by design. If Sorani and
+       Kurmanji ever need DIFFERENT families, bind `font-family` here per lang —
+       this is the hook; line-height already lives in these blocks. --- */
+:lang(ku) {
+	line-height: var(--leading-body-latin);
+}
+:lang(ckb) {
+	line-height: var(--leading-body-arabic);
+}
+
+/* --- Heading leading per script. NOTE: no letter-spacing here — tracking on
+       headings would break Arabic's connected letterforms. Latin display
+       tracking, if ever wanted, must be added in a :lang(ku)-scoped rule and
+       reviewed separately for ckb. --- */
+:lang(ku) :is(h1, h2, h3, h4) {
+	line-height: var(--leading-heading-latin);
+}
+:lang(ckb) :is(h1, h2, h3, h4) {
+	line-height: var(--leading-heading-arabic);
+}
+
+/* --- Quiet label treatment -----------------------------------------------
+   ckb: readable secondary text at 12px — muted passes AA (5.5:1 on paper).
+   ku:  tracked + uppercased "eyebrow" labels — decorative/meta only; the
+        tracking/casing treatment is Latin-only and must never apply to ckb. --- */
+.label {
+	font-size: var(--text-label);
+	color: var(--color-muted);
+}
+:lang(ku) .label {
+	letter-spacing: var(--tracking-label);
+	text-transform: uppercase;
+}
+
+/* --- Focus visibility — consistent, accessible ring on the cream canvas. --- */
+:focus-visible {
+	outline: 2px solid var(--color-ring);
+	outline-offset: 2px;
 }
