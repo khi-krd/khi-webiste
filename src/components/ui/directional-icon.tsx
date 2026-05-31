@@ -9,14 +9,16 @@ type DirectionalIconProps = {
 /**
  * Wraps a DIRECTIONAL icon (arrow, chevron, back/next) and flips it
  * horizontally when the document direction is RTL — so a "forward" arrow points
- * toward the reading direction in both scripts (right in ku/LTR, left in
+ * toward the reading direction in both scripts (right in ku·en/LTR, left in
  * ckb/RTL).
  *
- * Drive off the real document `dir` via the `rtl:` variant (which keys off
- * `[dir="rtl"]` on <html>) — no JS, no hardcoded locale, so this stays a Server
- * Component. Authoring an icon with THIS component is the explicit signal that
- * it's directional; non-directional icons (plus, search, download, play) must
- * render plainly and never use this.
+ * Flip is driven by the `.directional-flip` class (globals.css), which keys off
+ * the document `dir` attribute — NOT Tailwind's `rtl:` variant. Tailwind's
+ * `rtl:` matches a hardcoded RTL-language list that includes :lang(ku), but
+ * Kurmanji is Latin/LTR; `dir` is the source of truth. No JS, so this stays a
+ * Server Component. Authoring an icon with THIS component is the explicit signal
+ * that it's directional; non-directional icons (plus, search, download, play)
+ * must render plainly and never use this.
  */
 export function DirectionalIcon({
 	icon: Icon,
@@ -26,7 +28,7 @@ export function DirectionalIcon({
 	return (
 		<Icon
 			aria-hidden="true"
-			className={cn("rtl:-scale-x-100", className)}
+			className={cn("directional-flip", className)}
 			{...props}
 		/>
 	);

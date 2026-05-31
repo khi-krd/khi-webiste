@@ -46,8 +46,8 @@ const sizes: Record<Size, string> = {
  * icon renders at the start in both LTR and RTL — no physical left/right.
  *
  * NOTE: icons here are treated as decorative (gap-spaced, aria-hidden). A
- * *directional* glyph (chevron/arrow) should flip with dir — pass it already
- * wrapped with `rtl:-scale-x-100`, or use <Link withArrow> which handles it.
+ * *directional* glyph (chevron/arrow) should flip with dir — wrap it in
+ * <DirectionalIcon>, or use <Link withArrow> which handles it.
  *
  * Hover: ALL variants (primary, secondary, ghost) get the <DrawnBorder> overlay
  * — a single stroke that traces the perimeter on hover/focus and reverses on

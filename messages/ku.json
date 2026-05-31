@@ -11,6 +11,9 @@
 			"en": "Îngilîzî"
 		},
 		"sections": {
+			"introduction": {
+				"title": "Destpêk"
+			},
 			"typography": {
 				"title": "Tipografî",
 				"description": "Pîvana cureyê nivîsê û karaktera .label."
@@ -74,6 +77,26 @@
 			"skeleton": {
 				"title": "Îskelet",
 				"description": "Şeklên cîgir: nivîs, wêne, xelek."
+			},
+			"visuallyHidden": {
+				"title": "VisuallyHidden",
+				"description": "Naverok tenê ji bo xwendevanên ekranê; bi fokusê xuya dibe."
+			},
+			"divider": {
+				"title": "Cudaker",
+				"description": "Veqetandekên hûrik, asoyî/stûnî, bi etîketa bijarte."
+			},
+			"badge": {
+				"title": "Badge",
+				"description": "Hêmana etîketê ya çargoşe — solid, outline, subtle."
+			},
+			"breadcrumb": {
+				"title": "Şopa rê",
+				"description": "Şop bi veqetandekên çevronê yên alîdar."
+			},
+			"pagination": {
+				"title": "Rûpelkirin",
+				"description": "Rûpelker bi pêş/paş ên alîdar û birrîn."
 			}
 		},
 		"typography": {
@@ -165,7 +188,8 @@
 			"primitives": "Primîtîv",
 			"forms": "Form",
 			"content": "Naverok & Medya",
-			"states": "Rewş"
+			"states": "Rewş",
+			"utilities": "Amûr"
 		},
 		"toc": "Li ser vê rûpelê",
 		"headings": {
@@ -232,6 +256,37 @@
 			"image": "Wêne (16/9)",
 			"circle": "Xelek",
 			"card": "Kart"
+		},
+		"visuallyHidden": {
+			"skipLink": "Biçe naverokê",
+			"hint": "Tab bike da girêdana derbasbûnê xuya bibe."
+		},
+		"divider": {
+			"horizontal": "Asoyî",
+			"vertical": "Stûnî",
+			"withLabel": "Bi etîket",
+			"or": "an"
+		},
+		"badge": {
+			"solid": "Solid",
+			"outline": "Outline",
+			"subtle": "Subtle",
+			"sm": "Biçûk",
+			"md": "Navîn",
+			"sample": "Etîket",
+			"withIcon": "Bi îkon"
+		},
+		"breadcrumb": {
+			"label": "Şopa rê",
+			"home": "Destpêk",
+			"library": "Pirtûkxane",
+			"books": "Pirtûk",
+			"current": "Antolojî"
+		},
+		"pagination": {
+			"label": "Rûpelkirin",
+			"previous": "Paş",
+			"next": "Pêş"
 		}
 	},
 	"Common": {

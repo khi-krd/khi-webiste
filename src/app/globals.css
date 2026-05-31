@@ -433,3 +433,45 @@
 		background-image: none;
 	}
 }
+
+/* --- Visually hidden (sr-only) -------------------------------------------
+   Standard clip/position technique — content stays in the accessibility tree
+   (NOT display:none). The `-focusable` variant reverts to normal flow when it
+   (or a child) receives focus, for skip links. */
+@layer components {
+	.visually-hidden {
+		position: absolute;
+		width: 1px;
+		height: 1px;
+		padding: 0;
+		margin: -1px;
+		overflow: hidden;
+		clip: rect(0, 0, 0, 0);
+		clip-path: inset(50%);
+		white-space: nowrap;
+		border-width: 0;
+	}
+	.visually-hidden-focusable:focus,
+	.visually-hidden-focusable:focus-within {
+		position: static;
+		width: auto;
+		height: auto;
+		margin: 0;
+		overflow: visible;
+		clip: auto;
+		clip-path: none;
+		white-space: normal;
+	}
+}
+
+/* --- Directional-icon flip ------------------------------------------------
+   Mirror directional icons (arrows/chevrons) based on the document DIRECTION.
+   We deliberately do NOT use Tailwind's `rtl:` variant: it matches a hardcoded
+   RTL-LANGUAGE list that includes :lang(ku) — but Kurmanji is Latin/LTR
+   (`dir="ltr"`), so `rtl:` would flip icons in ku incorrectly. `dir` is the
+   single source of truth. */
+@layer components {
+	:where([dir="rtl"]) .directional-flip {
+		scale: -1 1;
+	}
+}

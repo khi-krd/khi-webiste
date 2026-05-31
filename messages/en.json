@@ -14,6 +14,9 @@
 			"en": "English"
 		},
 		"sections": {
+			"introduction": {
+				"title": "Introduction"
+			},
 			"typography": {
 				"title": "Typography",
 				"description": "Type scale and the .label treatment."
@@ -77,6 +80,26 @@
 			"skeleton": {
 				"title": "Skeleton",
 				"description": "Placeholder shapes: text, image, circle."
+			},
+			"visuallyHidden": {
+				"title": "VisuallyHidden",
+				"description": "Screen-reader-only content; reveals on focus for skip links."
+			},
+			"divider": {
+				"title": "Divider",
+				"description": "Hairline separators, horizontal/vertical, with optional label."
+			},
+			"badge": {
+				"title": "Badge",
+				"description": "Squared label primitive — solid, outline, subtle."
+			},
+			"breadcrumb": {
+				"title": "Breadcrumb",
+				"description": "Trail with directional chevron separators."
+			},
+			"pagination": {
+				"title": "Pagination",
+				"description": "Pager with directional prev/next and truncation."
 			}
 		},
 		"typography": {
@@ -168,7 +191,8 @@
 			"primitives": "Primitives",
 			"forms": "Forms",
 			"content": "Content & Media",
-			"states": "States"
+			"states": "States",
+			"utilities": "Utilities"
 		},
 		"toc": "On this page",
 		"headings": {
@@ -235,6 +259,37 @@
 			"image": "Image (16/9)",
 			"circle": "Circle",
 			"card": "Card"
+		},
+		"visuallyHidden": {
+			"skipLink": "Skip to content",
+			"hint": "Press Tab to reveal the skip link below."
+		},
+		"divider": {
+			"horizontal": "Horizontal",
+			"vertical": "Vertical",
+			"withLabel": "With label",
+			"or": "or"
+		},
+		"badge": {
+			"solid": "Solid",
+			"outline": "Outline",
+			"subtle": "Subtle",
+			"sm": "Small",
+			"md": "Medium",
+			"sample": "Label",
+			"withIcon": "With icon"
+		},
+		"breadcrumb": {
+			"label": "Breadcrumb",
+			"home": "Home",
+			"library": "Library",
+			"books": "Books",
+			"current": "The Anthology"
+		},
+		"pagination": {
+			"label": "Pagination",
+			"previous": "Previous",
+			"next": "Next"
 		}
 	},
 	"Common": {

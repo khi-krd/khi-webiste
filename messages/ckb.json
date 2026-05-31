@@ -14,6 +14,9 @@
 			"en": "ئینگلیزی"
 		},
 		"sections": {
+			"introduction": {
+				"title": "پێشەکی"
+			},
 			"typography": {
 				"title": "تایپۆگرافی",
 				"description": "پێوەری قەبارە و کاراکتەری .label."
@@ -77,6 +80,26 @@
 			"skeleton": {
 				"title": "ئێسک",
 				"description": "شێوە جێگرەوەکان: دەق، وێنە، بازنە."
+			},
+			"visuallyHidden": {
+				"title": "VisuallyHidden",
+				"description": "ناوەڕۆکی تەنها بۆ خوێنەری شاشە؛ بە فۆکەس دەردەکەوێت."
+			},
+			"divider": {
+				"title": "جیاکەرەوە",
+				"description": "جیاکەرەوەی باریک، ئاسۆیی/ستوونی، لەگەڵ ناونیشانی ئیختیاری."
+			},
+			"badge": {
+				"title": "Badge",
+				"description": "توخمی ناونیشانی چوارگۆشە — solid، outline، subtle."
+			},
+			"breadcrumb": {
+				"title": "ڕێڕەو",
+				"description": "ڕێڕەو لەگەڵ جیاکەرەوەی چێڤرۆنی ئاراستەیی."
+			},
+			"pagination": {
+				"title": "پەڕەبەندی",
+				"description": "پەڕەکەر لەگەڵ پێش/دواوەی ئاراستەیی و کورتکردنەوە."
 			}
 		},
 		"typography": {
@@ -168,7 +191,8 @@
 			"primitives": "پێکهاتە بنەڕەتییەکان",
 			"forms": "فۆرمەکان",
 			"content": "ناوەڕۆک و میدیا",
-			"states": "دۆخەکان"
+			"states": "دۆخەکان",
+			"utilities": "ئامرازەکان"
 		},
 		"toc": "لەسەر ئەم پەڕەیە",
 		"headings": {
@@ -235,6 +259,37 @@
 			"image": "وێنە (١٦/٩)",
 			"circle": "بازنە",
 			"card": "کارت"
+		},
+		"visuallyHidden": {
+			"skipLink": "بڕۆ بۆ ناوەڕۆک",
+			"hint": "Tab بکە بۆ دەرکەوتنی بەستەری تێپەڕاندن."
+		},
+		"divider": {
+			"horizontal": "ئاسۆیی",
+			"vertical": "ستوونی",
+			"withLabel": "بە ناونیشان",
+			"or": "یان"
+		},
+		"badge": {
+			"solid": "Solid",
+			"outline": "Outline",
+			"subtle": "Subtle",
+			"sm": "بچووک",
+			"md": "ناوەند",
+			"sample": "ناونیشان",
+			"withIcon": "بە ئایکۆن"
+		},
+		"breadcrumb": {
+			"label": "ڕێڕەو",
+			"home": "سەرەکی",
+			"library": "کتێبخانە",
+			"books": "کتێبەکان",
+			"current": "ئانتۆلۆجیا"
+		},
+		"pagination": {
+			"label": "پەڕەبەندی",
+			"previous": "پێشوو",
+			"next": "دواتر"
 		}
 	},
 	"Common": {
