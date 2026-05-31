@@ -1,6 +1,7 @@
 import {
 	ArrowRightIcon,
 	ChevronRightIcon,
+	MagnifyingGlassIcon,
 	PlusIcon,
 } from "@heroicons/react/24/outline";
 import type { Metadata } from "next";
@@ -10,12 +11,16 @@ import { FormShowcase } from "@/components/dev/form-showcase";
 import { Button } from "@/components/ui/button";
 import { Container } from "@/components/ui/container";
 import { DirectionalIcon } from "@/components/ui/directional-icon";
+import { EmptyState } from "@/components/ui/empty-state";
+import { ErrorState } from "@/components/ui/error-state";
 import { Heading } from "@/components/ui/heading";
 import { Image } from "@/components/ui/image";
 import { Input } from "@/components/ui/input";
 import { Link } from "@/components/ui/link";
 import { Prose } from "@/components/ui/prose";
 import { Section } from "@/components/ui/section";
+import { Skeleton, SkeletonText } from "@/components/ui/skeleton";
+import { Spinner } from "@/components/ui/spinner";
 import { Textarea } from "@/components/ui/textarea";
 import { type Locale, routing } from "@/i18n/routing";
 
@@ -31,6 +36,10 @@ const GROUPS = [
 	},
 	{ key: "forms", sections: ["input", "field"] },
 	{ key: "content", sections: ["prose", "image", "container"] },
+	{
+		key: "states",
+		sections: ["spinner", "emptyState", "errorState", "skeleton"],
+	},
 ] as const;
 
 const LANDSCAPE = "/sample/archive-landscape.png";
@@ -551,6 +560,110 @@ export default async function UiPlaygroundPage({
 										<p className="text-small text-muted">
 											{t("container.proseDescription")}
 										</p>
+									</div>
+								</Sample>
+							</div>
+						</Section>
+
+						{/* ===== STATES ===== */}
+						<GroupHeading>{t("groups.states")}</GroupHeading>
+
+						<Section
+							id="spinner"
+							titleAs="h3"
+							title={t("sections.spinner.title")}
+							description={t("sections.spinner.description")}
+							className={sectionClass}
+						>
+							<div className="flex flex-wrap items-end gap-10">
+								<Sample label={t("spinner.sm")}>
+									<Spinner size="sm" label={t("sections.spinner.title")} />
+								</Sample>
+								<Sample label={t("spinner.md")}>
+									<Spinner size="md" label={t("sections.spinner.title")} />
+								</Sample>
+								<Sample label={t("spinner.lg")}>
+									<Spinner size="lg" label={t("sections.spinner.title")} />
+								</Sample>
+							</div>
+						</Section>
+
+						<Section
+							id="emptyState"
+							titleAs="h3"
+							title={t("sections.emptyState.title")}
+							description={t("sections.emptyState.description")}
+							className={sectionClass}
+						>
+							<div className="grid gap-8 sm:grid-cols-2">
+								<div className="border border-border">
+									<p className="border-b border-border px-4 py-2 text-small text-muted">
+										{t("emptyState.withoutAction")}
+									</p>
+									<EmptyState
+										icon={<MagnifyingGlassIcon />}
+										title={t("emptyState.title")}
+										description={t("emptyState.description")}
+									/>
+								</div>
+								<div className="border border-border">
+									<p className="border-b border-border px-4 py-2 text-small text-muted">
+										{t("emptyState.withAction")}
+									</p>
+									<EmptyState
+										icon={<MagnifyingGlassIcon />}
+										title={t("emptyState.title")}
+										description={t("emptyState.description")}
+									>
+										<Button variant="secondary">
+											{t("emptyState.clearFilters")}
+										</Button>
+									</EmptyState>
+								</div>
+							</div>
+						</Section>
+
+						<Section
+							id="errorState"
+							titleAs="h3"
+							title={t("sections.errorState.title")}
+							description={t("sections.errorState.description")}
+							className={sectionClass}
+						>
+							<ErrorState
+								title={t("errorState.title")}
+								description={t("errorState.description")}
+								framed
+								action={
+									<Button variant="secondary">{t("errorState.retry")}</Button>
+								}
+							/>
+						</Section>
+
+						<Section
+							id="skeleton"
+							titleAs="h3"
+							title={t("sections.skeleton.title")}
+							description={t("sections.skeleton.description")}
+							className={sectionClass}
+						>
+							<div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
+								<Sample label={t("skeleton.text")}>
+									<SkeletonText lines={4} />
+								</Sample>
+								<Sample label={t("skeleton.image")}>
+									<Skeleton aspectRatio="16/9" className="w-full" />
+								</Sample>
+								<Sample label={t("skeleton.circle")}>
+									<Skeleton circle className="size-16" />
+								</Sample>
+								<Sample
+									label={t("skeleton.card")}
+									className="sm:col-span-2 lg:col-span-3"
+								>
+									<div className="flex max-w-sm flex-col gap-3">
+										<Skeleton aspectRatio="4/3" className="w-full" />
+										<SkeletonText lines={2} />
 									</div>
 								</Sample>
 							</div>

@@ -58,6 +58,22 @@
 			"image": {
 				"title": "Wêne",
 				"description": "Rêjeyên aliyan, object-cover, çarçoveya hûrik."
+			},
+			"spinner": {
+				"title": "Spinner",
+				"description": "Nîşana barkirinê di sê mezinahiyan de."
+			},
+			"emptyState": {
+				"title": "Rewşa vala",
+				"description": "Encam tune / berhevoka vala, bi çalakiya bijarte."
+			},
+			"errorState": {
+				"title": "Rewşa çewtiyê",
+				"description": "Bloka çewtiyê ya aram û monokrom bi ceribandina dîsa."
+			},
+			"skeleton": {
+				"title": "Îskelet",
+				"description": "Şeklên cîgir: nivîs, wêne, xelek."
 			}
 		},
 		"typography": {
@@ -148,7 +164,8 @@
 			"foundations": "Bingeh",
 			"primitives": "Primîtîv",
 			"forms": "Form",
-			"content": "Naverok & Medya"
+			"content": "Naverok & Medya",
+			"states": "Rewş"
 		},
 		"toc": "Li ser vê rûpelê",
 		"headings": {
@@ -192,6 +209,37 @@
 			"code": "khi",
 			"outro": "Hemû naverok bi her du zaravayan tê pêşkêşkirin.",
 			"emphasis": "Nivîs dikare <b>giranbûyî</b> an <i>tewandî</i> be."
+		},
+		"spinner": {
+			"sm": "Biçûk",
+			"md": "Navîn",
+			"lg": "Mezin"
+		},
+		"emptyState": {
+			"title": "Encam tune",
+			"description": "Tiştek bi parzûnên niha re li hev nayê.",
+			"withAction": "Bi çalakî",
+			"withoutAction": "Bê çalakî",
+			"clearFilters": "Parzûnan paqij bike"
+		},
+		"errorState": {
+			"title": "Ev beş bar nebû",
+			"description": "Dema barkirinê çewtiyek nediyar çêbû.",
+			"retry": "Dîsa biceribîne"
+		},
+		"skeleton": {
+			"text": "Rêzên nivîsê",
+			"image": "Wêne (16/9)",
+			"circle": "Xelek",
+			"card": "Kart"
 		}
+	},
+	"Common": {
+		"loading": "Tê barkirin…"
+	},
+	"ErrorBoundary": {
+		"title": "Tiştek çewt çû",
+		"description": "Me nekarî vê rûpelê bar bike. Ji kerema xwe dîsa biceribîne.",
+		"retry": "Dîsa biceribîne"
 	}
 }

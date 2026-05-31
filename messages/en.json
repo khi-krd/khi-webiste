@@ -61,6 +61,22 @@
 			"image": {
 				"title": "Image",
 				"description": "Aspect ratios, object-cover, hairline frame."
+			},
+			"spinner": {
+				"title": "Spinner",
+				"description": "Loading glyph in three sizes."
+			},
+			"emptyState": {
+				"title": "Empty state",
+				"description": "No results / empty collection, with optional action."
+			},
+			"errorState": {
+				"title": "Error state",
+				"description": "Calm, monochrome error block with optional retry."
+			},
+			"skeleton": {
+				"title": "Skeleton",
+				"description": "Placeholder shapes: text, image, circle."
 			}
 		},
 		"typography": {
@@ -151,7 +167,8 @@
 			"foundations": "Foundations",
 			"primitives": "Primitives",
 			"forms": "Forms",
-			"content": "Content & Media"
+			"content": "Content & Media",
+			"states": "States"
 		},
 		"toc": "On this page",
 		"headings": {
@@ -195,6 +212,37 @@
 			"code": "khi",
 			"outro": "All content is offered in both Kurdish dialects.",
 			"emphasis": "Text can be <b>bold</b> or <i>italic</i>."
+		},
+		"spinner": {
+			"sm": "Small",
+			"md": "Medium",
+			"lg": "Large"
+		},
+		"emptyState": {
+			"title": "No results",
+			"description": "Nothing matches the current filters.",
+			"withAction": "With action",
+			"withoutAction": "Without action",
+			"clearFilters": "Clear filters"
+		},
+		"errorState": {
+			"title": "Couldn't load this section",
+			"description": "An unexpected error occurred while loading.",
+			"retry": "Try again"
+		},
+		"skeleton": {
+			"text": "Text lines",
+			"image": "Image (16/9)",
+			"circle": "Circle",
+			"card": "Card"
 		}
+	},
+	"Common": {
+		"loading": "Loading…"
+	},
+	"ErrorBoundary": {
+		"title": "Something went wrong",
+		"description": "We couldn't load this page. Please try again.",
+		"retry": "Try again"
 	}
 }

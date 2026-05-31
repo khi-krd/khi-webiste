@@ -368,3 +368,68 @@
 		font-style: normal;
 	}
 }
+
+/* --- State components: spinner + skeleton --------------------------------
+   Self-contained keyframes (not Tailwind's, so they exist regardless of which
+   utilities are used). The global prefers-reduced-motion handler above already
+   sets `animation: none !important`, so both stop spinning/shimmering when the
+   user opts out — the media query below just swaps in a calm STATIC visual so
+   nothing looks frozen mid-motion. */
+@keyframes khi-spin {
+	to {
+		transform: rotate(360deg);
+	}
+}
+@keyframes khi-shimmer {
+	from {
+		background-position: 200% 0;
+	}
+	to {
+		background-position: -200% 0;
+	}
+}
+
+@layer components {
+	/* Spinner: a thin ring (hairline) with one border-strong arc that rotates.
+	   Width comes from a Tailwind border-* utility per size; color/animation here.
+	   Circular is acceptable for a loading glyph even in a square design language. */
+	.spinner {
+		border-radius: 9999px;
+		border-style: solid;
+		border-color: var(--color-border);
+		border-top-color: var(--color-border-strong);
+		animation: khi-spin 0.7s linear infinite;
+	}
+
+	/* Skeleton: flat sunken block with a lighter (surface) highlight sweeping
+	   across. Square corners by default (match the squared elements they stand
+	   in for); callers add rounded-full for circles. */
+	.skeleton {
+		background-color: var(--color-sunken);
+		background-image: linear-gradient(
+			90deg,
+			transparent,
+			var(--color-surface),
+			transparent
+		);
+		background-size: 200% 100%;
+		background-repeat: no-repeat;
+		animation: khi-shimmer 1.5s ease-in-out infinite;
+	}
+	/* Sweep follows the reading direction. */
+	:where([dir="rtl"]) .skeleton {
+		animation-direction: reverse;
+	}
+}
+
+/* Reduced-motion: calm static fallbacks (animation already disabled globally). */
+@media (prefers-reduced-motion: reduce) {
+	.spinner {
+		/* Uniform ring — no moving-arc implication when it can't spin. */
+		border-color: var(--color-border-strong);
+	}
+	.skeleton {
+		/* Flat sunken placeholder — drop the highlight band. */
+		background-image: none;
+	}
+}
