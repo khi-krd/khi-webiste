@@ -1,8 +1,10 @@
 import { notFound } from "next/navigation";
 import { hasLocale, NextIntlClientProvider } from "next-intl";
 import { getMessages, setRequestLocale } from "next-intl/server";
+import { Header } from "@/components/layout/header";
 import { routing } from "@/i18n/routing";
-import { vazirmatn } from "@/lib/fonts";
+import { archivo, clashDisplay, vazirmatn } from "@/lib/fonts";
+import { cn } from "@/lib/utils";
 import "../globals.css";
 
 type Props = {
@@ -28,11 +30,27 @@ export default async function LocaleLayout({ children, params }: Props) {
 	setRequestLocale(locale);
 
 	const messages = await getMessages();
+	const isLatin = locale === "ku" || locale === "en";
 
 	return (
-		<html lang={locale} dir={getDir(locale)} className={vazirmatn.variable}>
-			<body className="font-sans antialiased">
+		<html
+			lang={locale}
+			dir={getDir(locale)}
+			data-script={isLatin ? "latin" : "arabic"}
+			className={
+				isLatin
+					? `${archivo.variable} ${clashDisplay.variable}`
+					: vazirmatn.variable
+			}
+		>
+			<body
+				className={cn(
+					isLatin ? archivo.className : vazirmatn.className,
+					"antialiased",
+				)}
+			>
 				<NextIntlClientProvider messages={messages}>
+					<Header />
 					{children}
 				</NextIntlClientProvider>
 			</body>

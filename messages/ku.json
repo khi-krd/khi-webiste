@@ -1,9 +1,30 @@
 {
+	"Nav": {
+		"brandAlt": "Enstîtuya Mîrateya Kurdî",
+		"menuOpen": "Menûyê veke",
+		"menuClose": "Menûyê bigire",
+		"menuTitle": "Menûya malperê",
+		"primary": "Sereke",
+		"services": "Xizmet",
+		"donate": "Bexşîn",
+		"books": "Pirtûk",
+		"songs": "Stran",
+		"audio": "Deng",
+		"video": "Vîdyo",
+		"articles": "Gotar",
+		"gallery": "Galerî",
+		"archive": "Arşîv",
+		"about": "Derbarê"
+	},
+	"LanguageSwitcher": {
+		"label": "Ziman"
+	},
 	"Ui": {
 		"title": "Komponentên UI",
 		"eyebrow": "Pêşxistin",
 		"description": "Referansa dîtbarî ya ji bo hêmanên sîstema sêwiranê. Ji bo lêgerînê nehatiye indekskirin.",
 		"backHome": "Vegere malperê",
+		"languages": "Ziman",
 		"direction": "Çep ber bi rastê (LTR)",
 		"locales": {
 			"ckb": "Soranî",

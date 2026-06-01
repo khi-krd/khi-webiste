@@ -62,7 +62,7 @@ export default async function UiPlaygroundPage({
 	const t = await getTranslations("Ui");
 
 	return (
-		<UiPlaygroundSidebar>
+		<UiPlaygroundSidebar locale={locale as Locale}>
 			<UiPlaygroundMain>
 				<UiPlaygroundIntroduction locale={locale as Locale} />
 				{/* ===== FOUNDATIONS ===== */}

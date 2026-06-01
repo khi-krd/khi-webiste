@@ -1,19 +1,77 @@
 import { Vazirmatn } from "next/font/google";
+import localFont from "next/font/local";
 
 /**
- * App font. Vazirmatn covers both scripts the site needs:
- * Arabic (Kurdish Sorani / ckb) and Latin (Kurdish Kurmanji / ku),
- * so a single family serves both locales and both text directions.
- *
- * Exposed as the `--font-vazirmatn` CSS variable (deliberately NOT `--font-sans`,
- * to avoid a cycle with Tailwind's `--font-sans` theme token, which consumes
- * this one). Apply `vazirmatn.variable` on <html>; globals.css maps
- * `--font-sans → var(--font-vazirmatn), <fallbacks>`.
+ * ckb (Sorani / Arabic script) primary family.
  */
 export const vazirmatn = Vazirmatn({
 	subsets: ["arabic", "latin"],
 	variable: "--font-vazirmatn",
 	display: "swap",
-	// Weights actually used across the UI; trims the downloaded font files.
 	weight: ["400", "500", "600", "700"],
+});
+
+/**
+ * ku/en (Latin) body family.
+ */
+export const archivo = localFont({
+	src: [
+		{
+			path: "../../public/fonts/Archivo/Archivo-Regular.woff2",
+			weight: "400",
+			style: "normal",
+		},
+		{
+			path: "../../public/fonts/Archivo/Archivo-Medium.woff2",
+			weight: "500",
+			style: "normal",
+		},
+		{
+			path: "../../public/fonts/Archivo/Archivo-SemiBold.woff2",
+			weight: "600",
+			style: "normal",
+		},
+		{
+			path: "../../public/fonts/Archivo/Archivo-Bold.woff2",
+			weight: "700",
+			style: "normal",
+		},
+		{
+			path: "../../public/fonts/Archivo/Archivo-Italic.woff2",
+			weight: "400",
+			style: "italic",
+		},
+	],
+	variable: "--font-archivo",
+	display: "swap",
+});
+
+/**
+ * ku/en (Latin) heading family.
+ */
+export const clashDisplay = localFont({
+	src: [
+		{
+			path: "../../public/fonts/Clash Display/ClashDisplay-Regular.woff2",
+			weight: "400",
+			style: "normal",
+		},
+		{
+			path: "../../public/fonts/Clash Display/ClashDisplay-Medium.woff2",
+			weight: "500",
+			style: "normal",
+		},
+		{
+			path: "../../public/fonts/Clash Display/ClashDisplay-Semibold.woff2",
+			weight: "600",
+			style: "normal",
+		},
+		{
+			path: "../../public/fonts/Clash Display/ClashDisplay-Bold.woff2",
+			weight: "700",
+			style: "normal",
+		},
+	],
+	variable: "--font-clash-display",
+	display: "swap",
 });

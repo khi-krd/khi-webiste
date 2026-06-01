@@ -4,12 +4,16 @@ import {
 	UI_PLAYGROUND_GROUPS,
 	UI_PLAYGROUND_INTRODUCTION_ID,
 } from "@/components/dev/ui-playground-groups";
+import { Link } from "@/components/ui/link";
+import { type Locale, routing } from "@/i18n/routing";
 
 type UiPlaygroundSidebarProps = {
+	locale: Locale;
 	children: ReactNode;
 };
 
 export async function UiPlaygroundSidebar({
+	locale,
 	children,
 }: UiPlaygroundSidebarProps) {
 	const t = await getTranslations("Ui");
@@ -50,6 +54,26 @@ export async function UiPlaygroundSidebar({
 									</ul>
 								</div>
 							))}
+							<div className="flex flex-col gap-1.5 border-t border-border pt-5">
+								<p className="text-small font-medium text-foreground">
+									{t("languages")}
+								</p>
+								<ul className="flex flex-col gap-1">
+									{routing.locales.map((loc) => (
+										<li key={loc}>
+											<Link
+												href="/ui"
+												locale={loc}
+												variant="nav"
+												active={locale === loc}
+												className="text-small"
+											>
+												{t(`locales.${loc}`)}
+											</Link>
+										</li>
+									))}
+								</ul>
+							</div>
 						</div>
 					</nav>
 					{children}

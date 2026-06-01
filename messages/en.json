@@ -1,4 +1,24 @@
 {
+	"Nav": {
+		"brandAlt": "Kurdish Heritage Institute",
+		"menuOpen": "Open menu",
+		"menuClose": "Close menu",
+		"menuTitle": "Site menu",
+		"primary": "Primary",
+		"services": "Services",
+		"donate": "Donate",
+		"books": "Books",
+		"songs": "Songs",
+		"audio": "Audio",
+		"video": "Video",
+		"articles": "Articles",
+		"gallery": "Gallery",
+		"archive": "Archive",
+		"about": "About"
+	},
+	"LanguageSwitcher": {
+		"label": "Language"
+	},
 	"Home": {
 		"placeholder": "Digital library of Kurdish culture, heritage and authenticity."
 	},
@@ -7,6 +27,7 @@
 		"eyebrow": "Development",
 		"description": "Visual reference for the design-system primitives. Not indexed for search.",
 		"backHome": "Back to site",
+		"languages": "Languages",
 		"direction": "Left to right (LTR)",
 		"locales": {
 			"ckb": "Sorani",

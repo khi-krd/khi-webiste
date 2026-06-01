@@ -60,12 +60,12 @@
 	--color-ring: var(--warm-900);
 
 	/* Typography — family + size scale.
-	   --font-vazirmatn is injected on <html> by next/font (see fonts.ts). We
-	   consume it here under a DIFFERENT name to avoid a self-referential cycle.
-	   Sizes only: line-height is set per-script in the base layer below, because
-	   Arabic needs more leading than Latin at the same size. */
-	--font-sans: var(--font-vazirmatn), ui-sans-serif, system-ui, "Segoe UI",
+	   The script-aware family switch happens in base via --font-app-* variables:
+	   - ckb: Vazirmatn for body + headings
+	   - ku/en: Archivo body + Clash Display headings */
+	--font-sans: var(--font-app-body), ui-sans-serif, system-ui, "Segoe UI",
 		sans-serif;
+	--font-heading: var(--font-app-heading), var(--font-sans);
 
 	--text-display: 3rem; /* 48px — hero / section openers        */
 	--text-h1: 2.25rem; /* 36px                                  */
@@ -123,38 +123,39 @@
 	}
 
 	html {
-		font-family: var(--font-sans);
 		color: var(--color-foreground);
 		background-color: var(--color-background);
 		text-rendering: optimizeLegibility;
 		-webkit-font-smoothing: antialiased;
 		scroll-behavior: smooth;
+
+		/* Font tokens — live in @layer base so locale overrides can win. */
+		--font-app-body: var(--font-vazirmatn);
+		--font-app-heading: var(--font-vazirmatn);
 	}
 
 	body {
 		font-size: var(--text-body);
 	}
 
-	/* --- Body leading per script (lang is set on <html> per locale).
-	       Latin locales (ku, en) read tighter; Arabic (ckb) needs more leading.
-	       One family (Vazirmatn) serves all locales by design. If a locale ever
-	       needs a DIFFERENT family, bind `font-family` here per lang — this is
-	       the hook; line-height already lives in these blocks. --- */
-	:is(:lang(ku), :lang(en)) {
+	/* ku/en: Archivo body (via layout className) + Clash Display headings. */
+	html[data-script="latin"] {
+		--font-app-body: var(--font-archivo);
+		--font-app-heading: var(--font-clash-display);
 		line-height: var(--leading-body-latin);
 	}
-	:lang(ckb) {
+
+	html[data-script="arabic"] {
 		line-height: var(--leading-body-arabic);
 	}
 
-	/* --- Heading leading per script. NOTE: no letter-spacing here — tracking on
-	       headings would break Arabic's connected letterforms. Latin display
-	       tracking, if ever wanted, must be added in a Latin-scoped rule and
-	       reviewed separately for ckb. --- */
-	:is(:lang(ku), :lang(en)) :is(h1, h2, h3, h4) {
+	html[data-script="latin"] :is(h1, h2, h3, h4) {
+		font-family: var(--font-clash-display), var(--font-archivo), sans-serif;
 		line-height: var(--leading-heading-latin);
 	}
-	:lang(ckb) :is(h1, h2, h3, h4) {
+
+	html[data-script="arabic"] :is(h1, h2, h3, h4) {
+		font-family: var(--font-vazirmatn), sans-serif;
 		line-height: var(--leading-heading-arabic);
 	}
 
