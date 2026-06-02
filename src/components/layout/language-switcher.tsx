@@ -1,9 +1,10 @@
 "use client";
 
 import { useLocale, useTranslations } from "next-intl";
+import { useTransition } from "react";
 import { Link as UiLink } from "@/components/ui/link";
 import { LOCALE_LABELS, LOCALE_SHORT_LABELS } from "@/config/site";
-import { Link, usePathname } from "@/i18n/navigation";
+import { usePathname, useRouter } from "@/i18n/navigation";
 import { routing } from "@/i18n/routing";
 import { cn } from "@/lib/utils";
 
@@ -13,6 +14,8 @@ type LanguageSwitcherProps = {
 	/** Dark overlay footer — light-on-ink token overrides for the grouped toggle. */
 	overlay?: boolean;
 };
+
+const REOPEN_NAV_DRAWER_STORAGE_KEY = "khi:reopen-nav-drawer";
 
 /**
  * Locale switcher. Preserves the current pathname when switching language.
@@ -27,6 +30,16 @@ export function LanguageSwitcher({
 	const t = useTranslations("LanguageSwitcher");
 	const activeLocale = useLocale();
 	const pathname = usePathname();
+	const router = useRouter();
+	const [isPending, startTransition] = useTransition();
+
+	function switchLocale(locale: (typeof routing.locales)[number]) {
+		if (locale === activeLocale) return;
+		sessionStorage.setItem(REOPEN_NAV_DRAWER_STORAGE_KEY, "1");
+		startTransition(() => {
+			router.replace(pathname, { locale });
+		});
+	}
 
 	if (variant === "group") {
 		return (
@@ -44,14 +57,17 @@ export function LanguageSwitcher({
 					const isActive = locale === activeLocale;
 
 					return (
-						<Link
+						<button
 							key={locale}
-							href={pathname}
-							locale={locale}
+							type="button"
 							lang={locale}
 							aria-current={isActive ? "page" : undefined}
+							aria-label={t("label")}
+							disabled={isPending || isActive}
+							onClick={() => switchLocale(locale)}
 							className={cn(
 								"inline-flex h-11 min-w-11 items-center justify-center px-3 font-sans text-small font-medium transition-colors",
+								(isPending || isActive) && "cursor-default",
 								index > 0 &&
 									(overlay
 										? "border-s border-primary-foreground/25"
@@ -66,7 +82,7 @@ export function LanguageSwitcher({
 							)}
 						>
 							{LOCALE_SHORT_LABELS[locale]}
-						</Link>
+						</button>
 					);
 				})}
 			</div>

@@ -98,7 +98,7 @@ export async function Footer() {
 						</form>
 					</section>
 
-					<section className="mt-12 border border-border/70 bg-background/95 text-foreground shadow-[0_14px_60px_-30px_rgba(0,0,0,0.65)] backdrop-blur-[2px]">
+					<section className="mt-12 border border-border/70 bg-background/80 text-foreground shadow-[0_14px_60px_-30px_rgba(0,0,0,0.65)] backdrop-blur-[2px]">
 						<div className="grid gap-10 p-8 sm:p-10 lg:grid-cols-[1.15fr_3fr] lg:gap-12">
 							<div className="space-y-5 border-border lg:border-e lg:pe-9">
 								<Logo />

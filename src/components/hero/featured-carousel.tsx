@@ -148,7 +148,7 @@ export function FeaturedCarousel({
 				</ul>
 			</div>
 
-			<div className="absolute inset-e-3 bottom-8 right-8 z-20 flex items-center gap-2">
+			<div className="absolute inset-e-8 bottom-8 z-20 flex items-center gap-2">
 				<button
 					type="button"
 					onClick={scrollPrevious}

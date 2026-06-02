@@ -27,7 +27,7 @@ export async function Header() {
 	const t = await getTranslations("Nav");
 
 	return (
-		<header className="fixed inset-x-0 top-0 z-50 p-5">
+		<header className="absolute inset-x-0 top-0 z-50 p-5">
 			<div
 				aria-hidden="true"
 				className="absolute inset-x-5 top-5 h-16 bg-background/50 backdrop-blur-[48px] sm:h-20"

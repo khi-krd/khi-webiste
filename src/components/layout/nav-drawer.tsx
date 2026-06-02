@@ -44,6 +44,16 @@ const BG_DURATION = 0.35;
 const CONTENT_DURATION = 0.2;
 const PANEL_ENTER_DURATION = 0.2;
 const PANEL_EXIT_DURATION = 0.15;
+const REOPEN_NAV_DRAWER_STORAGE_KEY = "khi:reopen-nav-drawer";
+
+function shouldRestoreNavDrawerOpen() {
+	if (typeof window === "undefined") return false;
+	try {
+		return sessionStorage.getItem(REOPEN_NAV_DRAWER_STORAGE_KEY) === "1";
+	} catch {
+		return false;
+	}
+}
 
 function getFocusable(container: HTMLElement | null): HTMLElement[] {
 	if (!container) return [];
@@ -82,17 +92,26 @@ type NavBackgroundProps = {
 	src: string;
 	reduceMotion: boolean | null;
 	priority?: boolean;
+	instant?: boolean;
 };
 
 /** Full-bleed decorative background with a gentle scale-in on crossfade. */
-function NavBackground({ src, reduceMotion, priority }: NavBackgroundProps) {
+function NavBackground({
+	src,
+	reduceMotion,
+	priority,
+	instant = false,
+}: NavBackgroundProps) {
 	return (
 		<motion.div
 			className="absolute inset-0"
-			initial={reduceMotion ? false : { opacity: 0, scale: 1.06 }}
+			initial={reduceMotion || instant ? false : { opacity: 0, scale: 1.06 }}
 			animate={{ opacity: 1, scale: 1 }}
 			exit={{ opacity: 0 }}
-			transition={{ duration: reduceMotion ? 0 : BG_DURATION, ease: "easeOut" }}
+			transition={{
+				duration: reduceMotion || instant ? 0 : BG_DURATION,
+				ease: "easeOut",
+			}}
 		>
 			<Image
 				src={src}
@@ -180,7 +199,8 @@ export function NavDrawer() {
 	const reduceMotion = useReducedMotion();
 	const isLg = useIsLg();
 
-	const [open, setOpen] = useState(false);
+	const restoredOpen = shouldRestoreNavDrawerOpen();
+	const [open, setOpen] = useState(restoredOpen);
 	const [view, setView] = useState<"nav" | "search">("nav");
 	const [hoveredKey, setHoveredKey] = useState<string | null>(null);
 	const [activeKey, setActiveKey] = useState<string | null>(null);
@@ -205,7 +225,13 @@ export function NavDrawer() {
 		setView("nav");
 		setActiveKey(null);
 		setHoveredKey(null);
+		sessionStorage.removeItem(REOPEN_NAV_DRAWER_STORAGE_KEY);
 	}, []);
+
+	useEffect(() => {
+		if (!restoredOpen) return;
+		sessionStorage.removeItem(REOPEN_NAV_DRAWER_STORAGE_KEY);
+	}, [restoredOpen]);
 
 	useEffect(() => {
 		if (!open) return;
@@ -301,7 +327,7 @@ export function NavDrawer() {
 				exit: { opacity: 0 },
 			}
 		: {
-				initial: { opacity: 0, y: -16 },
+				initial: restoredOpen ? false : { opacity: 0, y: -16 },
 				animate: { opacity: 1, y: 0 },
 				exit: { opacity: 0, y: -16 },
 			};
@@ -315,6 +341,8 @@ export function NavDrawer() {
 		animate: { opacity: 1 },
 		exit: { opacity: 0 },
 	};
+
+	const skipInitialBackgroundAnimation = restoredOpen;
 
 	return (
 		<>
@@ -355,6 +383,7 @@ export function NavDrawer() {
 									src={bgSrc}
 									reduceMotion={reduceMotion}
 									priority
+									instant={skipInitialBackgroundAnimation}
 								/>
 							</AnimatePresence>
 							{/* Legibility scrim — stronger where text sits, photos still show through elsewhere. */}
