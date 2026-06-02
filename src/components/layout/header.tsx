@@ -27,30 +27,34 @@ export async function Header() {
 	const t = await getTranslations("Nav");
 
 	return (
-		<header className="sticky top-0 z-40 bg-background">
-			<Container className="flex h-16 max-w-none items-center justify-between gap-4 px-8 sm:h-20 sm:px-10">
+		<header className="fixed inset-x-0 top-0 z-50 p-5">
+			<div
+				aria-hidden="true"
+				className="absolute inset-x-5 top-5 h-16 bg-background/50 backdrop-blur-[48px] sm:h-20"
+			/>
+			<Container className="relative flex h-16 max-w-none items-center justify-between gap-4 px-8 sm:h-20 sm:px-10">
 				<Logo />
 
 				<div className="flex items-center gap-3">
 					<div className="flex items-center">
-					{/* Services — secondary CTA: LIGHT fill (sunken), equal size to Donate.
+						{/* Services — secondary CTA: LIGHT fill (sunken), equal size to Donate.
 					    Hidden on the smallest screens to keep the mobile bar to CTA + menu.
 					    TODO(services): placeholder label + route. */}
-					<Link
-						href={SERVICES_HREF}
-						className={`${ctaBase} hidden bg-sunken text-foreground hover:bg-border sm:inline-flex`}
-					>
-						{t("services")}
-					</Link>
+						<Link
+							href={SERVICES_HREF}
+							className={`${ctaBase} hidden bg-sunken text-foreground hover:bg-border sm:inline-flex`}
+						>
+							{t("services")}
+						</Link>
 
-					{/* Donate — primary CTA: solid ink fill. GiftIcon = giving, deliberately
+						{/* Donate — primary CTA: solid ink fill. GiftIcon = giving, deliberately
 					    NOT a heart. TODO(donate): wire to the donation flow when it exists. */}
-					<Link
-						href={DONATE_HREF}
-						className={`${ctaBase} bg-primary text-primary-foreground hover:opacity-90`}
-					>
-						{t("donate")}
-					</Link>
+						<Link
+							href={DONATE_HREF}
+							className={`${ctaBase} bg-primary text-primary-foreground hover:opacity-90`}
+						>
+							{t("donate")}
+						</Link>
 					</div>
 
 					<NavDrawer />

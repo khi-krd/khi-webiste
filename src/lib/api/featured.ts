@@ -1,0 +1,149 @@
+import "server-only";
+import { type FeaturedItem, FeaturedItemsSchema } from "@/types/content";
+
+const FEATURED_ENDPOINT = "/featured";
+const FEATURED_TAG = "featured";
+const FEATURED_REVALIDATE_SECONDS = 600;
+
+type UnknownRecord = Record<string, unknown>;
+
+function asRecord(value: unknown): UnknownRecord | null {
+	if (!value || typeof value !== "object") {
+		return null;
+	}
+
+	return value as UnknownRecord;
+}
+
+function getString(value: unknown): string | undefined {
+	return typeof value === "string" && value.length > 0 ? value : undefined;
+}
+
+function getNumber(value: unknown): number | undefined {
+	return typeof value === "number" && Number.isFinite(value)
+		? value
+		: undefined;
+}
+
+function pickImage(item: UnknownRecord): UnknownRecord | null {
+	const image = asRecord(item.image);
+	if (image) {
+		return image;
+	}
+
+	const media = asRecord(item.media);
+	if (media) {
+		return media;
+	}
+
+	const coverImage = asRecord(item.coverImage);
+	if (coverImage) {
+		return coverImage;
+	}
+
+	const thumbnail = asRecord(item.thumbnail);
+	return thumbnail;
+}
+
+function remapFeaturedItem(rawItem: unknown): unknown {
+	const item = asRecord(rawItem);
+	if (!item) {
+		return rawItem;
+	}
+
+	const image = pickImage(item);
+	const localized = asRecord(item.localized);
+
+	return {
+		id: getString(item.id) ?? getString(item._id),
+		type:
+			getString(item.type) ??
+			getString(item.contentType) ??
+			getString(item.content_type),
+		slug: getString(item.slug) ?? getString(item.path),
+		title:
+			getString(item.title) ??
+			getString(item.name) ??
+			getString(localized?.title),
+		description:
+			getString(item.description) ??
+			getString(item.excerpt) ??
+			getString(item.summary) ??
+			getString(localized?.description),
+		image: {
+			url:
+				getString(image?.url) ??
+				getString(image?.src) ??
+				getString(image?.path) ??
+				"",
+			alt:
+				getString(image?.alt) ??
+				getString(image?.altText) ??
+				getString(item.title),
+			width: getNumber(image?.width),
+			height: getNumber(image?.height),
+			blurDataURL:
+				getString(image?.blurDataURL) ?? getString(image?.blur_data_url),
+		},
+	};
+}
+
+function normalizeItems(payload: unknown): unknown[] {
+	if (Array.isArray(payload)) {
+		return payload;
+	}
+
+	const record = asRecord(payload);
+	if (!record) {
+		return [];
+	}
+
+	if (Array.isArray(record.data)) {
+		return record.data;
+	}
+
+	if (Array.isArray(record.items)) {
+		return record.items;
+	}
+
+	if (Array.isArray(record.results)) {
+		return record.results;
+	}
+
+	return [];
+}
+
+export async function getFeaturedItems(
+	locale: string,
+): Promise<FeaturedItem[]> {
+	const apiBaseUrl = process.env.API_BASE_URL;
+	if (!apiBaseUrl) {
+		return [];
+	}
+
+	try {
+		const endpoint = new URL(FEATURED_ENDPOINT, apiBaseUrl);
+		endpoint.searchParams.set("locale", locale);
+
+		const response = await fetch(endpoint, {
+			next: { revalidate: FEATURED_REVALIDATE_SECONDS, tags: [FEATURED_TAG] },
+		});
+
+		if (!response.ok) {
+			return [];
+		}
+
+		const payload: unknown = await response.json();
+		const rawItems = normalizeItems(payload);
+		const remappedItems = rawItems.map((item) => remapFeaturedItem(item));
+		const parsed = FeaturedItemsSchema.safeParse(remappedItems);
+
+		if (!parsed.success) {
+			return [];
+		}
+
+		return parsed.data;
+	} catch {
+		return [];
+	}
+}

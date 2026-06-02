@@ -1,4 +1,6 @@
 import { getTranslations, setRequestLocale } from "next-intl/server";
+import { FeaturedHero } from "@/components/hero/featured-hero";
+import { VisuallyHidden } from "@/components/ui/visually-hidden";
 
 export default async function Home({
 	params,
@@ -7,11 +9,12 @@ export default async function Home({
 }) {
 	const { locale } = await params;
 	setRequestLocale(locale);
+	const t = await getTranslations("Hero");
 
-	if (locale === "ckb") {
-		const t = await getTranslations("Home");
-		return <div>{t("placeholder")}</div>;
-	}
-
-	return <div>Home</div>;
+	return (
+		<main>
+			<VisuallyHidden as="h1">{t("regionLabel")}</VisuallyHidden>
+			<FeaturedHero />
+		</main>
+	);
 }

@@ -65,6 +65,34 @@
 	"LanguageSwitcher": {
 		"label": "Ziman"
 	},
+	"Hero": {
+		"regionLabel": "Naveroka Hilbijartî",
+		"emptyTitle": "Beşa naveroka hilbijartî dê zû were",
+		"emptyDescription": "Niha tu madeya hilbijartî nehatîye dîtin. Ji kerema xwe paşê dîsa serdan bike.",
+		"previous": "Slide-a berê",
+		"next": "Slide-a paş",
+		"play": "Xebitandina guhartina bixweber",
+		"pause": "Rawestandina guhartina bixweber",
+		"slideLabel": "{current} ji {total}",
+		"types": {
+			"book": "Pirtûk",
+			"song": "Stran",
+			"audio": "Deng",
+			"video": "Vîdyo",
+			"article": "Gotar",
+			"gallery": "Galerî",
+			"archive": "Arşîv"
+		},
+		"actions": {
+			"book": "Bixwîne",
+			"song": "Bihîse",
+			"audio": "Bihîse",
+			"video": "Temaşe bike",
+			"article": "Bixwîne",
+			"gallery": "Bibîne",
+			"archive": "Lêgerîn bike"
+		}
+	},
 	"Ui": {
 		"title": "Komponentên UI",
 		"eyebrow": "Pêşxistin",

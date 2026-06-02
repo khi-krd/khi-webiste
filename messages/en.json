@@ -68,6 +68,34 @@
 	"Home": {
 		"placeholder": "Digital library of Kurdish culture, heritage and authenticity."
 	},
+	"Hero": {
+		"regionLabel": "Featured Content",
+		"emptyTitle": "Explore Kurdish Heritage Collections",
+		"emptyDescription": "Discover curated books, songs, visual archives, and historical records from the digital library.",
+		"previous": "Previous slide",
+		"next": "Next slide",
+		"play": "Start automatic slide rotation",
+		"pause": "Pause automatic slide rotation",
+		"slideLabel": "{current} of {total}",
+		"types": {
+			"book": "Book",
+			"song": "Song",
+			"audio": "Audio",
+			"video": "Video",
+			"article": "Article",
+			"gallery": "Gallery",
+			"archive": "Archive"
+		},
+		"actions": {
+			"book": "Read",
+			"song": "Listen",
+			"audio": "Listen",
+			"video": "Watch",
+			"article": "Read",
+			"gallery": "View",
+			"archive": "Explore"
+		}
+	},
 	"Ui": {
 		"title": "UI Components",
 		"eyebrow": "Development",
