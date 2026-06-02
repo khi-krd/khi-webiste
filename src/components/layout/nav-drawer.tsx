@@ -20,13 +20,21 @@ import {
 } from "react";
 import { LanguageSwitcher } from "@/components/layout/language-switcher";
 import { MenuSearch } from "@/components/layout/menu-search";
-import { Button } from "@/components/ui/button";
 import { Container } from "@/components/ui/container";
 import { DirectionalIcon } from "@/components/ui/directional-icon";
 import { Link } from "@/components/ui/link";
 import { NAV_DEFAULT_IMAGE, NAV_ITEMS, type NavItem } from "@/config/site";
-import { useRouter } from "@/i18n/navigation";
 import { cn } from "@/lib/utils";
+
+const ARCHIVE_HREF =
+	NAV_ITEMS.find((item) => item.key === "archive")?.href ?? "/archive";
+
+/** Footer controls on the dark overlay bar — square corners, 44px min touch target. */
+const overlayFooterIconButtonClass =
+	"inline-flex min-h-11 min-w-11 items-center justify-center border border-primary-foreground/25 bg-primary-foreground/5 transition-colors hover:border-primary-foreground/30 hover:bg-primary-foreground/10 focus-visible:border-primary-foreground/40";
+
+const overlayArchiveLinkClass =
+	"inline-flex min-h-11 items-center gap-2 border border-primary-foreground/25 bg-primary-foreground/5 px-4 font-sans text-small font-medium text-primary-foreground/80 no-underline transition-colors hover:border-primary-foreground/30 hover:bg-primary-foreground/10 hover:text-primary-foreground focus-visible:border-primary-foreground/40";
 
 const FOCUSABLE =
 	'a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])';
@@ -58,7 +66,13 @@ function useIsLg() {
 
 /** Harvard-style underline — block-end rule on active/hover only, not a full-width box. */
 const primaryItemClass =
-	"inline-flex w-full items-center justify-between gap-4 py-1.5 text-start font-heading text-[clamp(2.75rem,4.5vw+0.75rem,4.5rem)] font-bold leading-[1.05] underline decoration-transparent decoration-2 underline-offset-[0.18em] transition-[opacity,text-decoration-color] duration-200 [text-shadow:0_1px_3px_color-mix(in_oklch,var(--color-foreground)_80%,transparent),0_0_2.5rem_color-mix(in_oklch,var(--color-foreground)_50%,transparent)]";
+	"group w-full py-1.5 text-start font-heading text-[clamp(2.75rem,4.5vw+0.75rem,4.5rem)] font-bold leading-[1.05] underline decoration-transparent decoration-2 underline-offset-[0.18em] transition-[opacity,text-decoration-color] duration-200 [text-shadow:0_1px_3px_color-mix(in_oklch,var(--color-foreground)_80%,transparent),0_0_2.5rem_color-mix(in_oklch,var(--color-foreground)_50%,transparent)]";
+
+/** Sits inline-end of the label — not stretched across the column (DirectionalIcon flips in RTL). */
+const primaryLabelRowClass = "inline-flex max-w-full items-center gap-3";
+
+const primaryItemArrowClass =
+	"size-6 shrink-0 opacity-0 transition-opacity group-hover:opacity-100 group-focus-visible:opacity-100";
 
 /** Keeps overlay copy readable when background photos run bright. */
 const overlayTextShadow =
@@ -105,7 +119,6 @@ function NavSecondaryPanel({ item, onNavigate }: NavSecondaryPanelProps) {
 			<Link
 				href={item.href}
 				variant="nav"
-				withArrow
 				onClick={onNavigate}
 				className={cn(
 					"mb-5 inline-flex items-center gap-2 font-heading text-h2 font-bold text-primary-foreground hover:text-primary-foreground",
@@ -125,11 +138,12 @@ function NavSecondaryPanel({ item, onNavigate }: NavSecondaryPanelProps) {
 				{t(item.descriptionKey)}
 			</p>
 
-			<h3 className="mb-3 text-small text-primary-foreground/55">
-				{t("secondaryLinkPrefix")}
-			</h3>
+			<div className="border-t border-primary-foreground/30 pt-6">
+				<h3 className="mb-3 text-small font-medium text-primary-foreground/80">
+					{t("secondaryLinkPrefix")}
+				</h3>
 
-			<ul className="flex flex-col">
+				<ul className="flex flex-col">
 				{item.children.map((child) => (
 					<li
 						key={child.key}
@@ -148,7 +162,8 @@ function NavSecondaryPanel({ item, onNavigate }: NavSecondaryPanelProps) {
 						</Link>
 					</li>
 				))}
-			</ul>
+				</ul>
+			</div>
 		</div>
 	);
 }
@@ -164,7 +179,6 @@ export function NavDrawer() {
 	const dir = locale === "ckb" ? "rtl" : "ltr";
 	const reduceMotion = useReducedMotion();
 	const isLg = useIsLg();
-	const router = useRouter();
 
 	const [open, setOpen] = useState(false);
 	const [view, setView] = useState<"nav" | "search">("nav");
@@ -360,7 +374,7 @@ export function NavDrawer() {
 										type="button"
 										onClick={close}
 										aria-label={t("menuClose")}
-										className="inline-flex size-11 items-center justify-center border border-primary-foreground/25 bg-foreground/40 transition-colors hover:bg-foreground/60"
+										className="inline-flex min-h-11 min-w-11 items-center justify-center border border-transparent bg-foreground/40 p-2 transition-colors hover:border-primary-foreground/30 hover:bg-foreground/60 focus-visible:border-primary-foreground/40 focus-visible:bg-foreground/60"
 									>
 										<XMarkIcon className="size-6 shrink-0" aria-hidden="true" />
 									</button>
@@ -435,6 +449,7 @@ export function NavDrawer() {
 																								] = el;
 																							}}
 																							type="button"
+																							aria-expanded={isActive}
 																							onClick={() =>
 																								activateItem(item.key)
 																							}
@@ -465,11 +480,17 @@ export function NavDrawer() {
 																									: "opacity-45 hover:decoration-current hover:opacity-100 focus-visible:decoration-current focus-visible:opacity-100",
 																							)}
 																						>
-																							<span>{t(item.key)}</span>
-																							<DirectionalIcon
-																								icon={ArrowRightIcon}
-																								className="size-6 shrink-0 opacity-0 transition-opacity group-hover:opacity-100 group-focus-visible:opacity-100"
-																							/>
+																							<span className={primaryLabelRowClass}>
+																								<span>{t(item.key)}</span>
+																								{!isActive && (
+																									<DirectionalIcon
+																										icon={ArrowRightIcon}
+																										className={
+																											primaryItemArrowClass
+																										}
+																									/>
+																								)}
+																							</span>
 																						</button>
 																					</li>
 																				);
@@ -551,11 +572,15 @@ export function NavDrawer() {
 																							: "opacity-45 hover:decoration-current hover:opacity-100 focus-visible:decoration-current focus-visible:opacity-100",
 																					)}
 																				>
-																					<span>{t(item.key)}</span>
-																					<DirectionalIcon
-																						icon={ArrowRightIcon}
-																						className="size-6 shrink-0 opacity-0 transition-opacity group-hover:opacity-100 group-focus-visible:opacity-100"
-																					/>
+																					<span className={primaryLabelRowClass}>
+																						<span>{t(item.key)}</span>
+																						{!isActive && (
+																							<DirectionalIcon
+																								icon={ArrowRightIcon}
+																								className={primaryItemArrowClass}
+																							/>
+																						)}
+																					</span>
 																				</button>
 																			</li>
 																		);
@@ -596,22 +621,19 @@ export function NavDrawer() {
 										<div className="flex items-center justify-between gap-4">
 											<LanguageSwitcher variant="group" overlay />
 											<div className="flex items-center gap-3">
-												<Button
-													variant="ghost"
-													type="button"
-													className="font-sans h-11 px-5 text-body font-bold text-primary-foreground hover:bg-primary-foreground/10"
-													onClick={() => {
-														router.push("/archive");
-														close();
-													}}
+												<Link
+													href={ARCHIVE_HREF}
+													variant="nav"
+													onClick={close}
+													className={overlayArchiveLinkClass}
 												>
 													{t("archive")}
-												</Button>
+												</Link>
 												<button
 													type="button"
 													onClick={() => setView("search")}
 													aria-label={t("searchOpen")}
-													className="inline-flex size-11 items-center justify-center border border-primary-foreground/25 bg-primary-foreground/5 transition-colors hover:bg-primary-foreground/10"
+													className={overlayFooterIconButtonClass}
 												>
 													<MagnifyingGlassIcon
 														className="size-5 shrink-0"
