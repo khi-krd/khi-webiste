@@ -9,7 +9,7 @@ export { ErrorState } from "./error-state";
 export { Field, type FieldControlProps } from "./field";
 export { Heading } from "./heading";
 export { Image } from "./image";
-export { Input } from "./input";
+export { Input, type InputProps } from "./input";
 export { Link } from "./link";
 export { Pagination } from "./pagination";
 export { Prose } from "./prose";

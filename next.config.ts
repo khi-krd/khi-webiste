@@ -5,9 +5,8 @@ const mediaHost = process.env.NEXT_PUBLIC_MEDIA_HOST;
 
 const nextConfig: NextConfig = {
 	images: {
-		// Allow next/image to optimize media served from the S3 bucket / CDN.
 		remotePatterns: mediaHost
-			? [{ protocol: "https", hostname: mediaHost }]
+			? [{ protocol: "https" as const, hostname: mediaHost }]
 			: [],
 	},
 };

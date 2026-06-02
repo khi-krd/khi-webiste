@@ -6,6 +6,14 @@ import type { Locale } from "@/i18n/routing";
  * locale through the "Nav" namespace — never literal UI copy.
  */
 
+/** A secondary link shown in the overlay right panel. */
+export type NavSubLink = {
+	/** Key under the "Nav" message namespace (e.g. Nav.booksSubLiterature). */
+	key: string;
+	/** Locale-relative route — may 404 until pages exist. */
+	href: string;
+};
+
 /** A primary-navigation item. */
 export type NavItem = {
 	/** Key under the "Nav" message namespace (e.g. Nav.books). */
@@ -15,27 +23,125 @@ export type NavItem = {
 	 * so paths here are unprefixed.
 	 */
 	href: string;
+	/** Key for the section description (e.g. Nav.booksDescription). */
+	descriptionKey: string;
+	/** Full-bleed background from /public/menu. */
+	imageSrc: string;
+	children: NavSubLink[];
 };
 
-// TODO(nav): provisional catalog taxonomy. The labels + routes below are
-// placeholders pending the real content taxonomy; only the values should change
-// later — the flat-list structure must not need to.
+const MENU_IMAGE = (file: string) => `/menu/${file}`;
+
+export const NAV_DEFAULT_IMAGE = MENU_IMAGE("1.jpg");
+
+/** Provisional catalog taxonomy — labels via i18n; routes may 404 until pages ship. */
 export const NAV_ITEMS: NavItem[] = [
-	{ key: "books", href: "/books" },
-	{ key: "songs", href: "/songs" },
-	{ key: "audio", href: "/audio" },
-	{ key: "video", href: "/video" },
-	{ key: "articles", href: "/articles" },
-	{ key: "gallery", href: "/gallery" },
-	{ key: "archive", href: "/archive" },
-	{ key: "about", href: "/about" },
+	{
+		key: "books",
+		href: "/books",
+		descriptionKey: "booksDescription",
+		imageSrc: MENU_IMAGE("1.jpg"),
+		children: [
+			{ key: "booksSubLiterature", href: "/books/literature" },
+			{ key: "booksSubHistory", href: "/books/history" },
+			{ key: "booksSubPoetry", href: "/books/poetry" },
+			{ key: "booksSubManuscripts", href: "/books/manuscripts" },
+		],
+	},
+	{
+		key: "songs",
+		href: "/songs",
+		descriptionKey: "songsDescription",
+		imageSrc: MENU_IMAGE("2.jpg"),
+		children: [
+			{ key: "songsSubFolk", href: "/songs/folk" },
+			{ key: "songsSubWedding", href: "/songs/wedding" },
+			{ key: "songsSubLament", href: "/songs/lament" },
+			{ key: "songsSubModern", href: "/songs/modern" },
+		],
+	},
+	{
+		key: "audio",
+		href: "/audio",
+		descriptionKey: "audioDescription",
+		imageSrc: MENU_IMAGE("3.jpg"),
+		children: [
+			{ key: "audioSubOralHistory", href: "/audio/oral-history" },
+			{ key: "audioSubInterviews", href: "/audio/interviews" },
+			{ key: "audioSubRadio", href: "/audio/radio-archives" },
+		],
+	},
+	{
+		key: "video",
+		href: "/video",
+		descriptionKey: "videoDescription",
+		imageSrc: MENU_IMAGE("4.jpg"),
+		children: [
+			{ key: "videoSubDocumentaries", href: "/video/documentaries" },
+			{ key: "videoSubPerformances", href: "/video/performances" },
+			{ key: "videoSubLectures", href: "/video/lectures" },
+			{ key: "videoSubNewsreels", href: "/video/newsreels" },
+		],
+	},
+	{
+		key: "articles",
+		href: "/articles",
+		descriptionKey: "articlesDescription",
+		imageSrc: MENU_IMAGE("5.jpg"),
+		children: [
+			{ key: "articlesSubCulture", href: "/articles/culture" },
+			{ key: "articlesSubHistory", href: "/articles/history" },
+			{ key: "articlesSubLanguage", href: "/articles/language" },
+			{ key: "articlesSubSociety", href: "/articles/society" },
+			{ key: "articlesSubHeritage", href: "/articles/heritage" },
+		],
+	},
+	{
+		key: "gallery",
+		href: "/gallery",
+		descriptionKey: "galleryDescription",
+		imageSrc: MENU_IMAGE("6.jpg"),
+		children: [
+			{ key: "gallerySubPhotography", href: "/gallery/photography" },
+			{ key: "gallerySubDress", href: "/gallery/traditional-dress" },
+			{ key: "gallerySubCrafts", href: "/gallery/crafts" },
+		],
+	},
+	{
+		key: "archive",
+		href: "/archive",
+		descriptionKey: "archiveDescription",
+		imageSrc: MENU_IMAGE("7.jpg"),
+		children: [
+			{ key: "archiveSubManuscripts", href: "/archive/manuscripts" },
+			{ key: "archiveSubMaps", href: "/archive/maps" },
+			{ key: "archiveSubPhotographs", href: "/archive/photographs" },
+			{ key: "archiveSubRecords", href: "/archive/records" },
+		],
+	},
+	{
+		key: "about",
+		href: "/about",
+		descriptionKey: "aboutDescription",
+		imageSrc: MENU_IMAGE("7.jpg"),
+		children: [
+			{ key: "aboutSubMission", href: "/about/mission" },
+			{ key: "aboutSubTeam", href: "/about/team" },
+			{ key: "aboutSubContact", href: "/about/contact" },
+		],
+	},
 ];
 
-// TODO(services): placeholder label (Nav.services) + route until the Services
-// section exists.
+export const SEARCH_SUGGESTION_KEYS = [
+	"books",
+	"songs",
+	"articles",
+	"archive",
+	"about",
+] as const;
+
 export const SERVICES_HREF = "/services";
 
-// TODO(donate): placeholder route until the donation flow exists.
 export const DONATE_HREF = "/donate";
 
 /**
@@ -48,4 +154,11 @@ export const LOCALE_LABELS: Record<Locale, string> = {
 	ckb: "کوردیی ناوەندی",
 	ku: "Kurmancî",
 	en: "English",
+};
+
+/** Compact locale codes for grouped toggle UI (CKB · KU · EN). */
+export const LOCALE_SHORT_LABELS: Record<Locale, string> = {
+	ckb: "CKB",
+	ku: "KU",
+	en: "EN",
 };

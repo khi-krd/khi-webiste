@@ -1,33 +1,84 @@
 "use client";
 
 import { useLocale, useTranslations } from "next-intl";
-import { Link } from "@/components/ui/link";
-import { LOCALE_LABELS } from "@/config/site";
-import { usePathname } from "@/i18n/navigation";
+import { Link as UiLink } from "@/components/ui/link";
+import { LOCALE_LABELS, LOCALE_SHORT_LABELS } from "@/config/site";
+import { Link, usePathname } from "@/i18n/navigation";
 import { routing } from "@/i18n/routing";
+import { cn } from "@/lib/utils";
+
+type LanguageSwitcherProps = {
+	/** "links" = autonym text links; "group" = segmented toggle with short codes. */
+	variant?: "links" | "group";
+	/** Dark overlay footer — light-on-ink token overrides for the grouped toggle. */
+	overlay?: boolean;
+};
 
 /**
- * Locale switcher. Client Component — it reads the CURRENT pathname (locale
- * stripped) via the next-intl navigation helper and re-links it under each
- * locale, so switching language preserves the route the user is on.
+ * Locale switcher. Preserves the current pathname when switching language.
  *
- * Each option is rendered in its OWN language (autonym) with a matching `lang`
- * so the browser shapes it with the correct script — e.g. the ckb option is
- * Arabic script even inside the Latin (ku/en) UI, and a reader who can't read
- * the current UI language can still find theirs. The active locale is marked
- * with aria-current. Layout mirrors automatically from the document dir.
+ * Group variant: CKB · KU · EN segmented control (body font, not display).
+ * Links variant: autonyms in each language's own script.
  */
-export function LanguageSwitcher() {
+export function LanguageSwitcher({
+	variant = "links",
+	overlay = false,
+}: LanguageSwitcherProps) {
 	const t = useTranslations("LanguageSwitcher");
 	const activeLocale = useLocale();
 	const pathname = usePathname();
+
+	if (variant === "group") {
+		return (
+			<div
+				role="group"
+				aria-label={t("label")}
+				className={cn(
+					"inline-flex",
+					overlay
+						? "border border-primary-foreground/25"
+						: "border border-border-strong",
+				)}
+			>
+				{routing.locales.map((locale, index) => {
+					const isActive = locale === activeLocale;
+
+					return (
+						<Link
+							key={locale}
+							href={pathname}
+							locale={locale}
+							lang={locale}
+							aria-current={isActive ? "page" : undefined}
+							className={cn(
+								"inline-flex h-11 min-w-11 items-center justify-center px-3 font-sans text-small font-medium transition-colors",
+								index > 0 &&
+									(overlay
+										? "border-s border-primary-foreground/25"
+										: "border-s border-border-strong"),
+								overlay
+									? isActive
+										? "bg-primary-foreground/10 text-primary-foreground"
+										: "text-primary-foreground/55 hover:bg-primary-foreground/5 hover:text-primary-foreground"
+									: isActive
+										? "bg-sunken text-foreground"
+										: "text-muted hover:bg-sunken hover:text-foreground",
+							)}
+						>
+							{LOCALE_SHORT_LABELS[locale]}
+						</Link>
+					);
+				})}
+			</div>
+		);
+	}
 
 	return (
 		<nav aria-label={t("label")}>
 			<ul className="flex flex-wrap items-center gap-x-5 gap-y-2">
 				{routing.locales.map((locale) => (
 					<li key={locale}>
-						<Link
+						<UiLink
 							href={pathname}
 							locale={locale}
 							lang={locale}
@@ -36,7 +87,7 @@ export function LanguageSwitcher() {
 							className="text-small"
 						>
 							{LOCALE_LABELS[locale]}
-						</Link>
+						</UiLink>
 					</li>
 				))}
 			</ul>

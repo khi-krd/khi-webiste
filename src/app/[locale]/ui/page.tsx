@@ -367,6 +367,33 @@ export default async function UiPlaygroundPage({
 							/>
 						</Sample>
 					</div>
+
+					<p className="mt-8 mb-4 text-small text-muted">
+						{t("inputs.overlayHint")}
+					</p>
+					<div className="grid gap-6 bg-foreground p-6 sm:grid-cols-2 [&_p.text-muted]:text-primary-foreground/55">
+						<Sample label={t("inputs.overlay")}>
+							<Input
+								variant="overlay"
+								placeholder={t("inputs.overlayPlaceholder")}
+							/>
+						</Sample>
+						<Sample label={t("inputs.overlayLarge")}>
+							<Input
+								variant="overlay"
+								fieldSize="lg"
+								placeholder={t("inputs.overlayPlaceholder")}
+							/>
+						</Sample>
+						<Sample label={t("inputs.overlayInvalid")}>
+							<Input
+								variant="overlay"
+								fieldSize="lg"
+								defaultValue={t("inputs.invalidSample")}
+								aria-invalid
+							/>
+						</Sample>
+					</div>
 				</Section>
 
 				<Section
