@@ -253,6 +253,32 @@ export function NavDrawer() {
 	const showMobilePanel = !isLg && activeKey !== null;
 	const showDesktopPanel = isLg && activeKey !== null;
 	const panelEnterX = dir === "rtl" ? -24 : 24;
+	const mobilePrimaryEnterX = dir === "rtl" ? 24 : -24;
+
+	const panelSlideInitial = reduceMotion
+		? { opacity: 0 }
+		: { opacity: 0, x: panelEnterX };
+	const panelSlideExit = reduceMotion
+		? { opacity: 0 }
+		: {
+				opacity: 0,
+				x: panelEnterX,
+				transition: { duration: PANEL_EXIT_DURATION },
+			};
+	const panelSlideTransition = {
+		duration: reduceMotion ? 0 : PANEL_ENTER_DURATION,
+	};
+
+	const mobilePrimaryExit = reduceMotion
+		? { opacity: 0 }
+		: {
+				opacity: 0,
+				x: mobilePrimaryEnterX,
+				transition: { duration: PANEL_EXIT_DURATION },
+			};
+	const mobilePrimaryEnter = reduceMotion
+		? { opacity: 0 }
+		: { opacity: 0, x: mobilePrimaryEnterX };
 
 	const overlayMotion = reduceMotion
 		? {
@@ -362,7 +388,7 @@ export function NavDrawer() {
 									) : (
 										<motion.div
 											key="nav"
-											className="flex min-h-0 flex-1 flex-col overflow-y-auto"
+											className="flex min-h-0 flex-1 flex-col overflow-x-hidden overflow-y-auto"
 											{...contentMotion}
 											transition={{
 												duration: reduceMotion ? 0 : CONTENT_DURATION,
@@ -372,19 +398,119 @@ export function NavDrawer() {
 												<div
 													className={cn(
 														"w-full",
-														isLg && "flex flex-1 gap-10 xl:gap-14",
-														!showDesktopPanel &&
-															!showMobilePanel &&
+														isLg &&
+															"flex flex-1 gap-10 xl:gap-14",
+														isLg &&
+															!showDesktopPanel &&
 															"flex flex-1 items-center",
-														showDesktopPanel && "items-start",
+														isLg && showDesktopPanel && "items-start",
+														!isLg && "relative flex min-h-0 flex-1 flex-col",
 													)}
 												>
-													{!showMobilePanel && (
+													{!isLg ? (
+														<AnimatePresence initial={false}>
+															{!showMobilePanel ? (
+																<motion.div
+																	key="mobile-primary"
+																	className="absolute inset-0 flex items-center"
+																	initial={mobilePrimaryEnter}
+																	animate={{ opacity: 1, x: 0 }}
+																	exit={mobilePrimaryExit}
+																	transition={panelSlideTransition}
+																>
+																	<nav
+																		aria-label={t("primary")}
+																		className="w-full"
+																	>
+																		<ul className="flex flex-col gap-0.5">
+																			{primaryNavItems.map((item) => {
+																				const isActive = activeKey === item.key;
+
+																				return (
+																					<li key={item.key} className="group">
+																						<button
+																							ref={(el) => {
+																								itemTriggerRefs.current[
+																									item.key
+																								] = el;
+																							}}
+																							type="button"
+																							onClick={() =>
+																								activateItem(item.key)
+																							}
+																							onMouseEnter={() =>
+																								setHoveredKey(item.key)
+																							}
+																							onMouseLeave={() =>
+																								setHoveredKey((current) =>
+																									current === item.key
+																										? null
+																										: current,
+																								)
+																							}
+																							onFocus={() =>
+																								setHoveredKey(item.key)
+																							}
+																							onBlur={() =>
+																								setHoveredKey((current) =>
+																									current === item.key
+																										? null
+																										: current,
+																								)
+																							}
+																							className={cn(
+																								primaryItemClass,
+																								isActive
+																									? "decoration-current opacity-100"
+																									: "opacity-45 hover:decoration-current hover:opacity-100 focus-visible:decoration-current focus-visible:opacity-100",
+																							)}
+																						>
+																							<span>{t(item.key)}</span>
+																							<DirectionalIcon
+																								icon={ArrowRightIcon}
+																								className="size-6 shrink-0 opacity-0 transition-opacity group-hover:opacity-100 group-focus-visible:opacity-100"
+																							/>
+																						</button>
+																					</li>
+																				);
+																			})}
+																		</ul>
+																	</nav>
+																</motion.div>
+															) : (
+																activeItem && (
+																	<motion.div
+																		key={`mobile-panel-${activeItem.key}`}
+																		className="absolute inset-0 flex flex-col overflow-y-auto"
+																		initial={panelSlideInitial}
+																		animate={{ opacity: 1, x: 0 }}
+																		exit={panelSlideExit}
+																		transition={panelSlideTransition}
+																	>
+																		<button
+																			type="button"
+																			onClick={goBackMobile}
+																			className="mb-6 inline-flex items-center gap-2 text-small text-primary-foreground/60 transition-colors hover:text-primary-foreground"
+																		>
+																			<DirectionalIcon
+																				icon={ArrowLeftIcon}
+																				className="size-4 shrink-0"
+																			/>
+																			{t("searchBack")}
+																		</button>
+																		<NavSecondaryPanel
+																			item={activeItem}
+																			onNavigate={close}
+																		/>
+																	</motion.div>
+																)
+															)}
+														</AnimatePresence>
+													) : (
 														<div
 															className={cn(
 																"shrink-0 lg:max-w-[min(100%,22rem)]",
-																(showDesktopPanel || !isLg) &&
-																	"flex flex-1 items-center self-stretch",
+																"flex flex-1 items-center self-stretch",
 															)}
 														>
 															<nav aria-label={t("primary")} className="w-full">
@@ -400,9 +526,7 @@ export function NavDrawer() {
 																							el;
 																					}}
 																					type="button"
-																					aria-expanded={
-																						isLg ? isActive : undefined
-																					}
+																					aria-expanded={isActive}
 																					onClick={() => activateItem(item.key)}
 																					onMouseEnter={() => setHoveredKey(item.key)}
 																					onMouseLeave={() =>
@@ -441,53 +565,15 @@ export function NavDrawer() {
 														</div>
 													)}
 
-													{showMobilePanel && activeItem && (
-														<div className="flex flex-col">
-															<button
-																type="button"
-																onClick={goBackMobile}
-																className="mb-6 inline-flex items-center gap-2 text-small text-primary-foreground/60 transition-colors hover:text-primary-foreground"
-															>
-																<DirectionalIcon
-																	icon={ArrowLeftIcon}
-																	className="size-4 shrink-0"
-																/>
-																{t("searchBack")}
-															</button>
-															<NavSecondaryPanel
-																item={activeItem}
-																onNavigate={close}
-															/>
-														</div>
-													)}
-
 													{showDesktopPanel && activeItem && (
 														<div className="hidden min-w-0 flex-1 self-start lg:block lg:max-w-md xl:max-w-lg">
 															<AnimatePresence mode="wait">
 																<motion.div
 																	key={activeItem.key}
-																	initial={
-																		reduceMotion
-																			? { opacity: 0 }
-																			: { opacity: 0, x: panelEnterX }
-																	}
+																	initial={panelSlideInitial}
 																	animate={{ opacity: 1, x: 0 }}
-																	exit={
-																		reduceMotion
-																			? { opacity: 0 }
-																			: {
-																					opacity: 0,
-																					x: panelEnterX,
-																					transition: {
-																						duration: PANEL_EXIT_DURATION,
-																					},
-																				}
-																	}
-																	transition={{
-																		duration: reduceMotion
-																			? 0
-																			: PANEL_ENTER_DURATION,
-																	}}
+																	exit={panelSlideExit}
+																	transition={panelSlideTransition}
 																>
 																	<NavSecondaryPanel
 																		item={activeItem}
