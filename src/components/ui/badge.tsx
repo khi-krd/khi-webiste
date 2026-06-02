@@ -16,7 +16,7 @@ type BadgeProps = {
 
 // Square corners (radius tokens are 0). Generic — assumes nothing about content.
 const base =
-	"inline-flex items-center gap-1 rounded-md font-medium [&_svg]:shrink-0";
+	"inline-flex items-center gap-1  font-medium [&_svg]:shrink-0";
 
 const variants: Record<Variant, string> = {
 	solid: "bg-primary text-primary-foreground",

@@ -12,7 +12,7 @@ export default async function Home({
 	const t = await getTranslations("Hero");
 
 	return (
-		<main>
+		<main className="-mt-26 sm:-mt-30">
 			<VisuallyHidden as="h1">{t("regionLabel")}</VisuallyHidden>
 			<FeaturedHero />
 		</main>

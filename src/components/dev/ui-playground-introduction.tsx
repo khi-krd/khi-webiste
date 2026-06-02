@@ -17,14 +17,14 @@ export async function UiPlaygroundIntroduction({
 	return (
 		<section
 			id={UI_PLAYGROUND_INTRODUCTION_ID}
-			className="scroll-mt-24 flex flex-col gap-3 pb-8 text-start sm:pb-10"
+			className="scroll-mt-28 flex flex-col gap-4 pb-10 text-start sm:pb-12"
 		>
 			<p className="label">{t("eyebrow")}</p>
-			<h1 className="text-h1 font-bold">{t("title")}</h1>
-			<p className="max-w-2xl text-body text-muted">{t("description")}</p>
+			<h1 className="text-h1 font-bold tracking-tight">{t("title")}</h1>
+			<p className="max-w-3xl text-body text-muted">{t("description")}</p>
 			<p className="text-small text-muted">{t("direction")}</p>
 			<nav
-				className="flex flex-wrap items-center gap-4"
+				className="flex flex-wrap items-center gap-3"
 				aria-label={t("title")}
 			>
 				{routing.locales.map((loc) => (

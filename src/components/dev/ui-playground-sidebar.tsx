@@ -20,32 +20,37 @@ export async function UiPlaygroundSidebar({
 
 	return (
 		<main className="min-h-dvh pb-16">
-			<div className="w-full px-100 pt-10 sm:px-20 lg:px-30">
-				<div className="grid gap-x-12 lg:grid-cols-[12rem_minmax(0,1fr)] lg:gap-x-16">
+			<div className="w-full px-6 pt-10 sm:px-12 lg:px-16 xl:px-24">
+				<div className="grid gap-x-12 lg:grid-cols-[16rem_minmax(0,1fr)] lg:gap-x-20">
 					<nav aria-label={t("toc")} className="hidden lg:block">
-						<div className="sticky top-8 flex max-h-[calc(100dvh-2rem)] flex-col gap-5 overflow-y-auto overscroll-y-contain text-start">
-							<p className="label">{t("toc")}</p>
-							<ul className="flex flex-col gap-1">
-								<li>
-									<a
-										href={`#${UI_PLAYGROUND_INTRODUCTION_ID}`}
-										className="text-small text-muted transition-colors hover:text-foreground"
-									>
-										{t(`sections.${UI_PLAYGROUND_INTRODUCTION_ID}.title`)}
-									</a>
-								</li>
-							</ul>
+						<div
+							data-lenis-prevent
+							className="sticky top-10 h-[calc(100svh-3rem)] overflow-y-auto overscroll-contain py-2 pe-6 text-start [touch-action:pan-y]"
+						>
+							<p className="label mb-5">{t("toc")}</p>
+
+							<a
+								href={`#${UI_PLAYGROUND_INTRODUCTION_ID}`}
+								aria-current="location"
+								className="mb-6 block ps-1 text-small text-muted transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-foreground/40 focus-visible:ring-offset-2"
+							>
+								{t(`sections.${UI_PLAYGROUND_INTRODUCTION_ID}.title`)}
+							</a>
+
 							{UI_PLAYGROUND_GROUPS.map((group) => (
-								<div key={group.key} className="flex flex-col gap-1.5">
-									<p className="text-small font-medium text-foreground">
+								<div
+									key={group.key}
+									className="mt-7 first:mt-0"
+								>
+									<p className="mb-3 text-small font-semibold tracking-wide text-foreground">
 										{t(`groups.${group.key}`)}
 									</p>
-									<ul className="flex flex-col gap-1">
+									<ul className="flex flex-col gap-2.5">
 										{group.sections.map((id) => (
 											<li key={id}>
 												<a
 													href={`#${id}`}
-													className="text-small text-muted transition-colors hover:text-foreground"
+													className="block ps-1 text-small text-muted transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-foreground/40 focus-visible:ring-offset-2"
 												>
 													{t(`sections.${id}.title`)}
 												</a>
@@ -54,11 +59,11 @@ export async function UiPlaygroundSidebar({
 									</ul>
 								</div>
 							))}
-							<div className="flex flex-col gap-1.5 border-t border-border pt-5">
-								<p className="text-small font-medium text-foreground">
+							<div className="mt-8">
+								<p className="mb-3 text-small font-semibold tracking-wide text-foreground">
 									{t("languages")}
 								</p>
-								<ul className="flex flex-col gap-1">
+								<ul className="flex flex-wrap gap-2">
 									{routing.locales.map((loc) => (
 										<li key={loc}>
 											<Link
@@ -66,7 +71,7 @@ export async function UiPlaygroundSidebar({
 												locale={loc}
 												variant="nav"
 												active={locale === loc}
-												className="text-small"
+												className="inline-flex min-h-9 items-center border border-border px-2 py-1 text-small focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-foreground/40 focus-visible:ring-offset-2"
 											>
 												{t(`locales.${loc}`)}
 											</Link>

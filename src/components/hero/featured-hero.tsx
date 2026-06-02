@@ -133,7 +133,11 @@ export async function FeaturedHero() {
 		);
 
 		return (
-			<section className="relative isolate" aria-label={t("regionLabel")}>
+			<section
+				className="relative isolate min-h-screen"
+				data-scroll-section
+				aria-label={t("regionLabel")}
+			>
 				<FeaturedCarousel
 					slides={fallbackSlides}
 					direction={direction}
@@ -178,7 +182,8 @@ export async function FeaturedHero() {
 			role="region"
 			aria-roledescription="carousel"
 			aria-label={t("regionLabel")}
-			className="relative isolate"
+			className="relative isolate min-h-screen"
+			data-scroll-section
 		>
 			<script type="application/ld+json">{JSON.stringify(jsonLd)}</script>
 			<FeaturedCarousel

@@ -19,10 +19,10 @@ type ButtonProps = {
 } & ComponentPropsWithoutRef<"button">;
 
 // `relative` + `draw-border-host` host the DrawnBorder overlay; `isolate` keeps
-// its stacking context local. rounded-md now resolves to 0 (square) via tokens.
+// its stacking context local.  now resolves to 0 (square) via tokens.
 const base =
 	"draw-border-host relative isolate inline-flex items-center justify-center " +
-	"gap-2 overflow-hidden rounded-md font-medium transition-colors " +
+	"gap-2 overflow-hidden  font-medium transition-colors " +
 	"disabled:pointer-events-none disabled:opacity-50 " +
 	"[&_svg]:shrink-0 [&>:not(svg)]:relative [&>:not(svg)]:z-1";
 

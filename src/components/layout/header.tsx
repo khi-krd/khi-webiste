@@ -30,7 +30,7 @@ export async function Header() {
 		<header className="absolute inset-x-0 top-0 z-50 p-5">
 			<div
 				aria-hidden="true"
-				className="absolute inset-x-5 top-5 h-16 bg-background/50 backdrop-blur-[48px] sm:h-20"
+				className="absolute inset-x-5 top-5 h-16 bg-background/70 backdrop-blur-[48px] sm:h-20"
 			/>
 			<Container className="relative flex h-16 max-w-none items-center justify-between gap-4 px-8 sm:h-20 sm:px-10">
 				<Logo />

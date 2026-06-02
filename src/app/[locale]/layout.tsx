@@ -3,6 +3,7 @@ import { hasLocale, NextIntlClientProvider } from "next-intl";
 import { getMessages, setRequestLocale } from "next-intl/server";
 import { Header } from "@/components/layout/header";
 import { Footer } from "@/components/layout/footer";
+import { LenisProvider } from "@/components/providers/lenis-provider";
 import { routing } from "@/i18n/routing";
 import { archivo, clashDisplay, vazirmatn } from "@/lib/fonts";
 import { cn } from "@/lib/utils";
@@ -51,9 +52,11 @@ export default async function LocaleLayout({ children, params }: Props) {
 				)}
 			>
 				<NextIntlClientProvider messages={messages}>
-					<Header />
-					{children}
-					<Footer />
+					<LenisProvider>
+						<Header />
+						<div className="pt-26 sm:pt-30">{children}</div>
+						<Footer />
+					</LenisProvider>
 				</NextIntlClientProvider>
 			</body>
 		</html>
