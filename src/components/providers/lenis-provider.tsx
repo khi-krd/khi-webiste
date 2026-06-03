@@ -2,6 +2,7 @@
 
 import Lenis from "lenis";
 import { useEffect } from "react";
+import { dispatchAppScroll } from "@/lib/scroll-events";
 
 type Props = {
 	children: React.ReactNode;
@@ -12,6 +13,9 @@ export function LenisProvider({ children }: Props) {
 		const lenis = new Lenis({
 			autoRaf: false,
 			smoothWheel: true,
+			// Softer follow — less “heavy” catch-up when scrolling into image-heavy sections.
+			lerp: 0.08,
+			wheelMultiplier: 0.9,
 		});
 
 		let isSnapping = false;
@@ -65,6 +69,13 @@ export function LenisProvider({ children }: Props) {
 				isSnapping = false;
 			}, 1050);
 		};
+
+		lenis.on("scroll", (event) => {
+			dispatchAppScroll({
+				scroll: event.scroll,
+				direction: event.direction,
+			});
+		});
 
 		let rafId = 0;
 

@@ -101,6 +101,26 @@
 	"Home": {
 		"placeholder": "Digital library of Kurdish culture, heritage and authenticity."
 	},
+	"LatestUpdates": {
+		"eyebrow": "News",
+		"title": "Latest Updates",
+		"description": "Research, essays, and stories on Kurdish culture, history, language, and heritage.",
+		"viewAll": "View all articles",
+		"byAuthor": "By {author}",
+		"categories": {
+			"culture": "Culture",
+			"history": "History",
+			"language": "Language",
+			"heritage": "Heritage",
+			"society": "Society"
+		}
+	},
+	"Projects": {
+		"eyebrow": "Our projects",
+		"title": "Archive initiatives and collaborative preservation work.",
+		"description": "Long-term programmes digitising manuscripts, oral history, music, dress, and photography from across Kurdish regions.",
+		"viewAll": "View all"
+	},
 	"Hero": {
 		"regionLabel": "Featured Content",
 		"emptyTitle": "Explore Kurdish Heritage Collections",

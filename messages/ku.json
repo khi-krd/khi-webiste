@@ -98,6 +98,26 @@
 	"LanguageSwitcher": {
 		"label": "Ziman"
 	},
+	"LatestUpdates": {
+		"eyebrow": "Nûçe",
+		"title": "Nûvekirina Dawî",
+		"description": "Gotar, lêkolîn û çîrok li ser çand, dîrok, ziman û mîrateya Kurdî.",
+		"viewAll": "Hemû gotaran bibîne",
+		"byAuthor": "Ji aliyê {author}",
+		"categories": {
+			"culture": "Çand",
+			"history": "Dîrok",
+			"language": "Ziman",
+			"heritage": "Mîrat",
+			"society": "Civak"
+		}
+	},
+	"Projects": {
+		"eyebrow": "Projeyên me",
+		"title": "Destpêkên arşîvê û xebata hevpar a parastinê.",
+		"description": "Bernameyên dirêjdem destnivîs, dîroka devkî, stran, cil û wêne ji herêmên Kurdî dîjîtal dikin.",
+		"viewAll": "Hemû bibîne"
+	},
 	"Hero": {
 		"regionLabel": "Naveroka Hilbijartî",
 		"emptyTitle": "Beşa naveroka hilbijartî dê zû were",

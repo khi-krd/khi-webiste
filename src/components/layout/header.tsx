@@ -1,4 +1,5 @@
 import { getTranslations } from "next-intl/server";
+import { HeaderShell } from "@/components/layout/header-shell";
 import { Logo } from "@/components/layout/logo";
 import { NavDrawer } from "@/components/layout/nav-drawer";
 import { Container } from "@/components/ui/container";
@@ -27,7 +28,7 @@ export async function Header() {
 	const t = await getTranslations("Nav");
 
 	return (
-		<header className="absolute inset-x-0 top-0 z-50 p-5">
+		<HeaderShell>
 			<div
 				aria-hidden="true"
 				className="absolute inset-x-5 top-5 h-16 bg-background/70 backdrop-blur-[48px] sm:h-20"
@@ -60,6 +61,6 @@ export async function Header() {
 					<NavDrawer />
 				</div>
 			</Container>
-		</header>
+		</HeaderShell>
 	);
 }
