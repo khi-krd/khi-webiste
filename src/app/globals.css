@@ -199,6 +199,65 @@
 		letter-spacing: var(--tracking-label);
 		text-transform: uppercase;
 	}
+
+	/* Featured carousel — hero text typography. */
+	.hero-slide-eyebrow {
+		font-size: var(--text-small);
+		line-height: 1.5;
+		color: color-mix(in oklch, white 72%, transparent);
+	}
+	:is(:lang(ku), :lang(en)) .hero-slide-eyebrow {
+		font-size: var(--text-label);
+		letter-spacing: var(--tracking-label);
+		text-transform: uppercase;
+		color: color-mix(in oklch, white 78%, transparent);
+	}
+
+	.hero-slide-title {
+		font-family: var(--font-heading);
+		font-size: clamp(2.25rem, 5vw + 1rem, 4.75rem);
+		font-weight: 700;
+		line-height: 0.95;
+		text-wrap: balance;
+		text-shadow:
+			0 1px 3px color-mix(in oklch, black 55%, transparent),
+			0 0 2.5rem color-mix(in oklch, black 35%, transparent);
+	}
+	:is(:lang(ku), :lang(en)) .hero-slide-title {
+		letter-spacing: 0.03em;
+		text-transform: uppercase;
+	}
+	:lang(ckb) .hero-slide-title {
+		line-height: var(--leading-heading-arabic);
+	}
+
+	.hero-slide-description {
+		font-size: var(--text-body);
+		line-height: 1.55;
+		color: color-mix(in oklch, white 88%, transparent);
+		display: -webkit-box;
+		-webkit-box-orient: vertical;
+		-webkit-line-clamp: 3;
+		overflow: hidden;
+	}
+
+	.hero-slide-cta {
+		font-size: var(--text-small);
+		font-weight: 600;
+		letter-spacing: 0.02em;
+		color: white;
+		border-block-end: 1px solid color-mix(in oklch, white 45%, transparent);
+		padding-block-end: 0.2em;
+		transition: border-color 0.2s ease, opacity 0.2s ease;
+	}
+	:is(:lang(ku), :lang(en)) .hero-slide-cta {
+		text-transform: uppercase;
+		letter-spacing: 0.06em;
+	}
+	.group:hover .hero-slide-cta,
+	.group:focus-visible .hero-slide-cta {
+		border-block-end-color: color-mix(in oklch, white 85%, transparent);
+	}
 }
 
 /* --- Drawn-border button hover -------------------------------------------

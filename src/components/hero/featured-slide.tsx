@@ -27,35 +27,58 @@ export function FeaturedSlide({
 				className,
 			)}
 		>
-			<Image
-				src={slide.image.url}
-				alt={imageAlt}
-				fill
-				sizes="100vw"
-				priority={isPriority}
-				placeholder={slide.image.blurDataURL ? "blur" : "empty"}
-				blurDataURL={slide.image.blurDataURL}
-				className="object-cover"
-			/>
+			<div className="absolute inset-0 isolate">
+				<div className="absolute inset-0 [&_img]:h-full [&_img]:w-full [&_img]:object-cover [&_img]:brightness-[0.72] [&_img]:contrast-[1.15] [&_img]:saturate-[0.55]">
+					<Image
+						src={slide.image.url}
+						alt={imageAlt}
+						fill
+						sizes="100vw"
+						priority={isPriority}
+						placeholder={slide.image.blurDataURL ? "blur" : "empty"}
+						blurDataURL={slide.image.blurDataURL}
+						className="object-cover"
+					/>
+				</div>
 
-			<div className="pointer-events-none absolute inset-0 bg-linear-to-t from-black/85 via-black/45 to-black/10" />
-			<div className="pointer-events-none absolute inset-x-0 top-0 h-36 bg-linear-to-b from-black/70 to-transparent" />
+				{/* Warm ink wash + legibility scrims (stacked; strongest at bottom + text side). */}
+				<div
+					className="pointer-events-none absolute inset-0 z-1 bg-foreground/45"
+					aria-hidden
+				/>
+				<div
+					className="pointer-events-none absolute inset-0 z-1 bg-linear-to-t from-foreground from-0% via-foreground/80 via-32% to-transparent to-72%"
+					aria-hidden
+				/>
+				<div
+					className="pointer-events-none absolute inset-x-0 top-0 z-1 h-44 bg-linear-to-b from-foreground/85 via-foreground/35 to-transparent sm:h-52"
+					aria-hidden
+				/>
+				<div
+					className="pointer-events-none absolute inset-0 z-1 bg-linear-to-r from-foreground/75 from-0% via-foreground/40 via-42% to-transparent to-80% rtl:bg-linear-to-l"
+					aria-hidden
+				/>
+				<div
+					className="pointer-events-none absolute inset-0 z-1 bg-[radial-gradient(ellipse_130%_90%_at_50%_115%,var(--color-foreground)_0%,transparent_62%)] opacity-70"
+					aria-hidden
+				/>
+			</div>
 
-			<div className="absolute inset-x-0 bottom-0 z-10 px-6 pb-12 sm:px-10 sm:pb-16">
-				<div className="max-w-3xl border border-white/20 bg-black/35 p-5 text-start text-white backdrop-blur-sm sm:p-6">
-					<p className="label text-white/85">{slide.typeLabel}</p>
+			<div className="absolute inset-x-0 bottom-0 z-10 px-6 pb-14 sm:px-10 sm:pb-16 lg:px-14 lg:pb-20">
+				<div className="max-w-4xl text-start text-white">
+					<p className="hero-slide-eyebrow">{slide.typeLabel}</p>
 
-					<h2 className="mt-3 text-display font-semibold">{slide.title}</h2>
+					<h2 className="hero-slide-title mt-3">{slide.title}</h2>
 
-					<p className="mt-4 max-w-2xl text-body text-white/90 [display:-webkit-box] [-webkit-box-orient:vertical] [-webkit-line-clamp:3] overflow-hidden">
+					<p className="hero-slide-description mt-5 max-w-xl">
 						{slide.description}
 					</p>
 
-					<p className="mt-6 inline-flex items-center gap-2 border-b border-white/40 pb-1 text-body font-semibold text-white">
+					<p className="hero-slide-cta mt-8 inline-flex items-center gap-2.5">
 						<span>{slide.actionLabel}</span>
 						<DirectionalIcon
 							icon={ChevronRightIcon}
-							className="size-5 shrink-0"
+							className="size-5 shrink-0 opacity-90"
 						/>
 					</p>
 				</div>
