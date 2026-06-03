@@ -1,5 +1,22 @@
 @import "tailwindcss";
 
+/* Hover-only utilities — avoid sticky :hover on touch (buttons look "active" after tap). */
+@custom-variant fine-hover {
+	@media (hover: hover) and (pointer: fine) {
+		&:hover {
+			@slot;
+		}
+	}
+}
+
+@custom-variant fine-group-hover {
+	@media (hover: hover) and (pointer: fine) {
+		:is(:where([class*="group"]):hover *) {
+			@slot;
+		}
+	}
+}
+
 /* ============================================================================
    KHI — Visual design foundation (token layer only; no components here).
    Aesthetic: "warm editorial monochrome" — aged archive paper, near-black ink,

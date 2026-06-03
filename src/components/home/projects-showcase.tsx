@@ -25,7 +25,7 @@ const slideClass =
 	"min-w-0 shrink-0 basis-[86%] pe-5 sm:basis-[58%] sm:pe-6 lg:basis-[46%] lg:pe-7 xl:basis-[42%] last:pe-6 sm:last:pe-8";
 
 const viewAllClass =
-	"group/viewall relative inline-flex h-10 w-fit shrink-0 items-center gap-2.5 overflow-hidden border border-foreground px-5 font-heading text-small font-semibold text-foreground no-underline transition-[color,gap,box-shadow] duration-300 ease-out before:absolute before:inset-0 before:z-0 before:origin-bottom before:scale-y-0 before:bg-foreground before:transition-transform before:duration-300 before:ease-[cubic-bezier(0.22,1,0.36,1)] hover:gap-3.5 hover:text-primary-foreground hover:shadow-[0_8px_24px_-12px_rgba(26,24,19,0.35)] hover:before:scale-y-100 motion-reduce:before:transition-none motion-reduce:hover:before:scale-y-100 motion-reduce:hover:gap-2.5";
+	"group/viewall relative inline-flex h-10 w-fit shrink-0 items-center gap-2.5 overflow-hidden border border-foreground px-5 font-heading text-small font-semibold text-foreground no-underline transition-[color,gap,box-shadow] duration-300 ease-out before:absolute before:inset-0 before:z-0 before:origin-bottom before:scale-y-0 before:bg-foreground before:transition-transform before:duration-300 before:ease-[cubic-bezier(0.22,1,0.36,1)] fine-hover:gap-3.5 fine-hover:text-primary-foreground fine-hover:shadow-[0_8px_24px_-12px_rgba(26,24,19,0.35)] fine-hover:before:scale-y-100 motion-reduce:before:transition-none motion-reduce:fine-hover:before:scale-y-100 motion-reduce:fine-hover:gap-2.5";
 
 export function ProjectsShowcase({
 	projects,

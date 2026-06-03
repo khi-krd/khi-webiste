@@ -148,7 +148,8 @@ export function FeaturedCarousel({
 				</ul>
 			</div>
 
-			<div className="absolute inset-e-8 bottom-8 z-20 flex items-center gap-2">
+			{/* Swipe on small screens; prev/next only from sm up. */}
+			<div className="absolute inset-e-8 bottom-8 z-20 hidden items-center gap-2 sm:flex">
 				<button
 					type="button"
 					onClick={scrollPrevious}

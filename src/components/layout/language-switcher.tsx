@@ -75,10 +75,10 @@ export function LanguageSwitcher({
 								overlay
 									? isActive
 										? "bg-primary-foreground/10 text-primary-foreground"
-										: "text-primary-foreground/55 hover:bg-primary-foreground/5 hover:text-primary-foreground"
+										: "text-primary-foreground/55 fine-hover:bg-primary-foreground/5 fine-hover:text-primary-foreground"
 									: isActive
 										? "bg-sunken text-foreground"
-										: "text-muted hover:bg-sunken hover:text-foreground",
+										: "text-muted fine-hover:bg-sunken fine-hover:text-foreground",
 							)}
 						>
 							{LOCALE_SHORT_LABELS[locale]}

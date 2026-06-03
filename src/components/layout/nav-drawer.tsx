@@ -83,7 +83,7 @@ const primaryItemClass =
 const primaryLabelRowClass = "inline-flex max-w-full items-center gap-3";
 
 const primaryItemArrowClass =
-	"size-6 shrink-0 opacity-0 transition-opacity group-hover:opacity-100 group-focus-visible:opacity-100";
+	"size-6 shrink-0 opacity-0 transition-opacity group-focus-visible:opacity-100 lg:group-hover:opacity-100";
 
 /** Keeps overlay copy readable when background photos run bright. */
 const overlayTextShadow =
@@ -490,16 +490,19 @@ export function NavDrawer() {
 																							onClick={() =>
 																								activateItem(item.key)
 																							}
-																							onMouseEnter={() =>
-																								setHoveredKey(item.key)
-																							}
-																							onMouseLeave={() =>
+																							onMouseEnter={() => {
+																								if (isLg) {
+																									setHoveredKey(item.key);
+																								}
+																							}}
+																							onMouseLeave={() => {
+																								if (!isLg) return;
 																								setHoveredKey((current) =>
 																									current === item.key
 																										? null
 																										: current,
-																								)
-																							}
+																								);
+																							}}
 																							onFocus={() =>
 																								setHoveredKey(item.key)
 																							}
@@ -514,7 +517,7 @@ export function NavDrawer() {
 																								primaryItemClass,
 																								isActive
 																									? "decoration-current opacity-100"
-																									: "opacity-45 hover:decoration-current hover:opacity-100 focus-visible:decoration-current focus-visible:opacity-100",
+																									: "opacity-45 focus-visible:decoration-current focus-visible:opacity-100 lg:hover:decoration-current lg:hover:opacity-100",
 																							)}
 																						>
 																							<span className={primaryLabelRowClass}>
@@ -586,14 +589,19 @@ export function NavDrawer() {
 																					type="button"
 																					aria-expanded={isActive}
 																					onClick={() => activateItem(item.key)}
-																					onMouseEnter={() => setHoveredKey(item.key)}
-																					onMouseLeave={() =>
+																					onMouseEnter={() => {
+																						if (isLg) {
+																							setHoveredKey(item.key);
+																						}
+																					}}
+																					onMouseLeave={() => {
+																						if (!isLg) return;
 																						setHoveredKey((current) =>
 																							current === item.key
 																								? null
 																								: current,
-																						)
-																					}
+																						);
+																					}}
 																					onFocus={() => setHoveredKey(item.key)}
 																					onBlur={() =>
 																						setHoveredKey((current) =>
@@ -606,7 +614,7 @@ export function NavDrawer() {
 																						primaryItemClass,
 																						isActive
 																							? "decoration-current opacity-100"
-																							: "opacity-45 hover:decoration-current hover:opacity-100 focus-visible:decoration-current focus-visible:opacity-100",
+																							: "opacity-45 focus-visible:decoration-current focus-visible:opacity-100 lg:hover:decoration-current lg:hover:opacity-100",
 																					)}
 																				>
 																					<span className={primaryLabelRowClass}>

@@ -35,7 +35,7 @@ export function ProjectCard({ item, className }: ProjectCardProps) {
 							"absolute -inset-[5%] origin-center",
 							"transition-transform duration-[1.35s]",
 							imageEase,
-							"group-hover:scale-[1.06] motion-reduce:transition-none motion-reduce:duration-0 motion-reduce:group-hover:scale-100",
+							"fine-group-hover:scale-[1.06] motion-reduce:transition-none motion-reduce:duration-0 motion-reduce:fine-group-hover:scale-100",
 						)}
 					>
 						<NextImage
@@ -47,7 +47,7 @@ export function ProjectCard({ item, className }: ProjectCardProps) {
 								"object-cover brightness-[0.82] contrast-[1.08] saturate-[0.7]",
 								"transition-[filter] duration-[1.35s]",
 								imageEase,
-								"group-hover:brightness-[0.92] group-hover:saturate-[0.82] motion-reduce:transition-none",
+								"fine-group-hover:brightness-[0.92] fine-group-hover:saturate-[0.82] motion-reduce:transition-none",
 							)}
 						/>
 					</div>
@@ -59,7 +59,7 @@ export function ProjectCard({ item, className }: ProjectCardProps) {
 						"px-4 pb-4 pt-4 sm:px-5 sm:pb-5 sm:pt-5",
 						"transition-[padding] duration-500",
 						liftEase,
-						"group-hover:pt-10 sm:group-hover:pt-12 motion-reduce:transition-none motion-reduce:group-hover:pt-4 motion-reduce:sm:group-hover:pt-5",
+						"fine-group-hover:pt-10 sm:fine-group-hover:pt-12 motion-reduce:transition-none motion-reduce:fine-group-hover:pt-4 motion-reduce:sm:fine-group-hover:pt-5",
 					)}
 				>
 					<div className="min-w-0 flex-1 text-start">
@@ -67,8 +67,8 @@ export function ProjectCard({ item, className }: ProjectCardProps) {
 							className={cn(
 								"font-heading text-h3 font-semibold leading-snug text-balance text-foreground",
 								"transition-[text-decoration-color] duration-300",
-								"group-hover:underline group-hover:decoration-border group-hover:underline-offset-4",
-								"motion-reduce:group-hover:no-underline",
+								"fine-group-hover:underline fine-group-hover:decoration-border fine-group-hover:underline-offset-4",
+								"motion-reduce:fine-group-hover:no-underline",
 							)}
 						>
 							{item.title}
@@ -76,7 +76,7 @@ export function ProjectCard({ item, className }: ProjectCardProps) {
 						<p
 							className={cn(
 								"mt-1.5 line-clamp-2 text-small leading-relaxed text-muted",
-								"transition-opacity duration-300 group-hover:text-foreground/80 motion-reduce:transition-none",
+								"transition-opacity duration-300 fine-group-hover:text-foreground/80 motion-reduce:transition-none",
 							)}
 						>
 							{item.subtitle}
@@ -84,7 +84,7 @@ export function ProjectCard({ item, className }: ProjectCardProps) {
 					</div>
 
 					<span
-						className="draw-border-host relative isolate inline-flex size-11 shrink-0 items-center justify-center overflow-hidden bg-primary text-primary-foreground transition-opacity duration-300 group-hover:opacity-90 motion-reduce:transition-none"
+						className="draw-border-host relative isolate inline-flex size-11 shrink-0 items-center justify-center overflow-hidden bg-primary text-primary-foreground transition-opacity duration-300 fine-group-hover:opacity-90 motion-reduce:transition-none"
 						aria-hidden
 					>
 						<DrawnBorder />
