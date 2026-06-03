@@ -18,6 +18,7 @@ import {
 	useRef,
 	useState,
 } from "react";
+import { createPortal } from "react-dom";
 import { LanguageSwitcher } from "@/components/layout/language-switcher";
 import { MenuSearch } from "@/components/layout/menu-search";
 import { Container } from "@/components/ui/container";
@@ -206,9 +207,14 @@ export function NavDrawer() {
 	const [activeKey, setActiveKey] = useState<string | null>(null);
 
 	const overlayId = useId();
+	const [overlayMounted, setOverlayMounted] = useState(false);
 	const triggerRef = useRef<HTMLButtonElement>(null);
 	const closeRef = useRef<HTMLButtonElement>(null);
 	const panelRef = useRef<HTMLDivElement>(null);
+
+	useEffect(() => {
+		setOverlayMounted(true);
+	}, []);
 	const itemTriggerRefs = useRef<Record<string, HTMLButtonElement | null>>({});
 	const wasOpen = useRef(false);
 
@@ -358,20 +364,22 @@ export function NavDrawer() {
 				<Bars3Icon className="size-5 stroke-2" aria-hidden="true" />
 			</button>
 
-			<AnimatePresence>
-				{open && (
-					<motion.div
-						key="overlay"
-						ref={panelRef}
-						id={overlayId}
-						role="dialog"
-						aria-modal="true"
-						aria-label={t("menuTitle")}
-						onKeyDown={onKeyDown}
-						className="fixed inset-0 z-50 flex flex-col text-primary-foreground"
-						{...overlayMotion}
-						transition={overlayTransition}
-					>
+			{overlayMounted &&
+				createPortal(
+					<AnimatePresence>
+						{open && (
+							<motion.div
+								key="overlay"
+								ref={panelRef}
+								id={overlayId}
+								role="dialog"
+								aria-modal="true"
+								aria-label={t("menuTitle")}
+								onKeyDown={onKeyDown}
+								className="fixed inset-0 z-[100] flex flex-col text-primary-foreground"
+								{...overlayMotion}
+								transition={overlayTransition}
+							>
 						{/* Decorative backgrounds — crossfade on hover / active item. */}
 						<div
 							className="pointer-events-none absolute inset-0 overflow-hidden bg-foreground"
@@ -678,9 +686,11 @@ export function NavDrawer() {
 								</footer>
 							)}
 						</div>
-					</motion.div>
+							</motion.div>
+						)}
+					</AnimatePresence>,
+					document.body,
 				)}
-			</AnimatePresence>
 		</>
 	);
 }

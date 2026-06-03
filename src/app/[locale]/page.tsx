@@ -2,6 +2,7 @@ import { getTranslations, setRequestLocale } from "next-intl/server";
 import { FeaturedHero } from "@/components/hero/featured-hero";
 import { LatestUpdates } from "@/components/home/latest-updates";
 import { ProjectsSection } from "@/components/home/projects-section";
+import { SoundSection } from "@/components/home/sound-section";
 import { VisuallyHidden } from "@/components/ui/visually-hidden";
 
 export default async function Home({
@@ -19,6 +20,7 @@ export default async function Home({
 			<FeaturedHero />
 			<LatestUpdates />
 			<ProjectsSection />
+			<SoundSection />
 		</main>
 	);
 }

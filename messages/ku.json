@@ -118,6 +118,12 @@
 		"description": "Bernameyên dirêjdem destnivîs, dîroka devkî, stran, cil û wêne ji herêmên Kurdî dîjîtal dikin.",
 		"viewAll": "Hemû bibîne"
 	},
+	"Sound": {
+		"eyebrow": "Deng & dîroka devkî",
+		"title": "Bihîse dengên ku ji bo nifşan hatine parastin.",
+		"description": "Tomarên dengî yên dîrokê devkî, hevpeyvîn û arşîva radyoyê ji Kurdistanê.",
+		"cta": "Arşîva dengê keşf bike"
+	},
 	"Hero": {
 		"regionLabel": "Naveroka Hilbijartî",
 		"emptyTitle": "Beşa naveroka hilbijartî dê zû were",

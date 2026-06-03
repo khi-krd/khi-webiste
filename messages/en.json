@@ -121,6 +121,12 @@
 		"description": "Long-term programmes digitising manuscripts, oral history, music, dress, and photography from across Kurdish regions.",
 		"viewAll": "View all"
 	},
+	"Sound": {
+		"eyebrow": "Sound & oral history",
+		"title": "Listen to voices preserved for generations.",
+		"description": "Oral history recordings, interviews, and radio archive audio from across Kurdistan.",
+		"cta": "Explore audio"
+	},
 	"Hero": {
 		"regionLabel": "Featured Content",
 		"emptyTitle": "Explore Kurdish Heritage Collections",
