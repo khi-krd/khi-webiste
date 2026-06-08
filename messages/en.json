@@ -63,8 +63,9 @@
 		"aboutSubContact": "Contact"
 	},
 	"Footer": {
-		"newsletterTitle": "Let Your Work Speak For Itself. We'll Handle The Words.",
-		"newsletterDescription": "We're here to help you navigate your digital journey. Get in touch with us today to discuss how we can take your business to the next level.",
+		"newsletterEyebrow": "Stay informed",
+		"newsletterTitle": "Updates from the Institute",
+		"newsletterDescription": "Occasional notes on new collections, publications, and events from the Kurdish Heritage Institute.",
 		"emailPlaceholder": "Enter your email",
 		"emailLabel": "Email address",
 		"signUp": "Sign Up",

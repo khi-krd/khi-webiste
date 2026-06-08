@@ -41,25 +41,25 @@ export function FeaturedSlide({
 					/>
 				</div>
 
-				{/* Warm ink wash + legibility scrims (stacked; strongest at bottom + text side). */}
+				{/* Ink wash + legibility scrims (stacked; strongest at bottom + text side). */}
 				<div
-					className="pointer-events-none absolute inset-0 z-1 bg-foreground/45"
+					className="pointer-events-none absolute inset-0 z-1 bg-black/25"
 					aria-hidden
 				/>
 				<div
-					className="pointer-events-none absolute inset-0 z-1 bg-linear-to-t from-foreground from-0% via-foreground/80 via-32% to-transparent to-72%"
+					className="pointer-events-none absolute inset-0 z-1 bg-linear-to-t from-black/75 from-0% via-black/45 via-32% to-transparent to-72%"
 					aria-hidden
 				/>
 				<div
-					className="pointer-events-none absolute inset-x-0 top-0 z-1 h-44 bg-linear-to-b from-foreground/85 via-foreground/35 to-transparent sm:h-52"
+					className="pointer-events-none absolute inset-x-0 top-0 z-1 h-44 bg-linear-to-b from-black/50 via-black/20 to-transparent sm:h-52"
 					aria-hidden
 				/>
 				<div
-					className="pointer-events-none absolute inset-0 z-1 bg-linear-to-r from-foreground/75 from-0% via-foreground/40 via-42% to-transparent to-80% rtl:bg-linear-to-l"
+					className="pointer-events-none absolute inset-0 z-1 bg-linear-to-r from-black/45 from-0% via-black/20 via-42% to-transparent to-80% rtl:bg-linear-to-l"
 					aria-hidden
 				/>
 				<div
-					className="pointer-events-none absolute inset-0 z-1 bg-[radial-gradient(ellipse_130%_90%_at_50%_115%,var(--color-foreground)_0%,transparent_62%)] opacity-70"
+					className="pointer-events-none absolute inset-0 z-1 bg-[radial-gradient(ellipse_130%_90%_at_50%_115%,#000_0%,transparent_62%)] opacity-40"
 					aria-hidden
 				/>
 			</div>

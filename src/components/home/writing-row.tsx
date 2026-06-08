@@ -8,6 +8,7 @@ type WritingRowProps = {
 	item: WritingItem;
 	categoryLabel: string;
 	readTimeLabel: string;
+	index: number;
 	className?: string;
 };
 
@@ -15,23 +16,32 @@ export function WritingRow({
 	item,
 	categoryLabel,
 	readTimeLabel,
+	index,
 	className,
 }: WritingRowProps) {
 	const href = `/articles/${item.slug}`;
+	const displayIndex = String(index + 1).padStart(2, "0");
 
 	return (
 		<article
 			className={cn(
-				"border-t border-border py-12 first:border-t-0 first:pt-0 sm:py-14 lg:py-16",
+				"border-t border-border py-16 first:border-t-0 first:pt-0 sm:py-[4.5rem] lg:py-20",
 				className,
 			)}
 		>
 			<Link
 				href={href}
 				variant="nav"
-				className="group flex items-start gap-8 no-underline sm:gap-10 lg:gap-12"
+				className="group flex items-start gap-10 no-underline sm:gap-12 lg:gap-14"
 				aria-label={item.title}
 			>
+				<span
+					className="hidden shrink-0 pt-1 font-heading text-label tabular-nums text-muted sm:block"
+					aria-hidden
+				>
+					{displayIndex}
+				</span>
+
 				<div className="min-w-0 flex-1 text-start">
 					<Badge variant="subtle" size="sm" className="mb-4 w-fit">
 						{categoryLabel}
@@ -46,7 +56,7 @@ export function WritingRow({
 					>
 						{item.title}
 					</h3>
-					<p className="mt-4 line-clamp-2 text-small leading-relaxed text-muted sm:mt-5 sm:text-body">
+					<p className="mt-4 line-clamp-2 text-lead leading-relaxed text-muted sm:mt-5">
 						{item.excerpt}
 					</p>
 					<p className="mt-5 text-small leading-relaxed text-muted sm:mt-6">
@@ -59,12 +69,12 @@ export function WritingRow({
 				</div>
 
 				{item.image ? (
-					<div className="relative hidden size-24 shrink-0 overflow-hidden border border-border sm:block lg:size-28">
+					<div className="relative hidden size-28 shrink-0 overflow-hidden border border-border sm:block lg:size-32">
 						<NextImage
 							src={item.image.url}
 							alt={item.image.alt ?? ""}
 							fill
-							sizes="(max-width: 1024px) 80px, 96px"
+							sizes="(max-width: 1024px) 112px, 128px"
 							className="object-cover brightness-[0.88] saturate-[0.75]"
 						/>
 					</div>

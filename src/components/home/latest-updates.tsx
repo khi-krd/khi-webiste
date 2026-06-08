@@ -20,8 +20,15 @@ export async function LatestUpdates() {
 	const t = await getTranslations("LatestUpdates");
 	const items = getLatestUpdates(locale);
 
-	const [tallLeft, squareLeft, tallCenter, smallTopA, smallTopB, mediumRight, wideBottom] =
-		items;
+	const [
+		hero,
+		railA,
+		railB,
+		railC,
+		railD,
+		overflowA,
+		overflowB,
+	] = items;
 
 	return (
 		<section
@@ -54,49 +61,51 @@ export async function LatestUpdates() {
 				</div>
 			</header>
 
-			<div className="grid grid-cols-1 gap-px bg-border sm:grid-cols-2 lg:grid-cols-12 lg:grid-rows-[minmax(16rem,1fr)_minmax(16rem,1fr)_minmax(14rem,auto)]">
-				<NewsCard
-					item={tallLeft}
-					variant="tall"
-					categoryLabel={getCategoryLabel(t, tallLeft.category)}
-					className="sm:col-span-1 lg:col-span-4 lg:row-span-2 lg:row-start-1"
-				/>
-				<NewsCard
-					item={tallCenter}
-					variant="tall"
-					categoryLabel={getCategoryLabel(t, tallCenter.category)}
-					className="sm:col-span-1 lg:col-span-4 lg:row-span-2 lg:col-start-5 lg:row-start-1"
-				/>
-				<NewsCard
-					item={smallTopA}
-					variant="small"
-					categoryLabel={getCategoryLabel(t, smallTopA.category)}
-					className="sm:col-span-1 lg:col-span-2 lg:col-start-9 lg:row-start-1"
-				/>
-				<NewsCard
-					item={smallTopB}
-					variant="small"
-					categoryLabel={getCategoryLabel(t, smallTopB.category)}
-					className="sm:col-span-1 lg:col-span-2 lg:col-start-11 lg:row-start-1"
-				/>
-				<NewsCard
-					item={mediumRight}
-					variant="medium"
-					categoryLabel={getCategoryLabel(t, mediumRight.category)}
-					className="sm:col-span-2 lg:col-span-4 lg:col-start-9 lg:row-start-2"
-				/>
-				<NewsCard
-					item={squareLeft}
-					variant="square"
-					categoryLabel={getCategoryLabel(t, squareLeft.category)}
-					className="sm:col-span-1 lg:col-span-4 lg:col-start-1 lg:row-start-3"
-				/>
-				<NewsCard
-					item={wideBottom}
-					variant="wide"
-					categoryLabel={getCategoryLabel(t, wideBottom.category)}
-					className="sm:col-span-2 lg:col-span-8 lg:col-start-5 lg:row-start-3"
-				/>
+			<div className="px-6 sm:px-8">
+				<div className="grid grid-cols-1 gap-3 sm:grid-cols-2 sm:gap-4 lg:grid-cols-12 lg:grid-rows-[minmax(18rem,1fr)_minmax(18rem,1fr)] lg:gap-4">
+					<NewsCard
+						item={hero}
+						variant="featured"
+						categoryLabel={getCategoryLabel(t, hero.category)}
+						className="sm:col-span-2 lg:col-span-7 lg:row-span-2"
+					/>
+
+					<div className="grid grid-cols-2 gap-3 sm:gap-4 lg:col-span-5 lg:row-span-2 lg:grid-rows-2">
+						<NewsCard
+							item={railA}
+							variant="small"
+							categoryLabel={getCategoryLabel(t, railA.category)}
+						/>
+						<NewsCard
+							item={railB}
+							variant="small"
+							categoryLabel={getCategoryLabel(t, railB.category)}
+						/>
+						<NewsCard
+							item={railC}
+							variant="small"
+							categoryLabel={getCategoryLabel(t, railC.category)}
+						/>
+						<NewsCard
+							item={railD}
+							variant="small"
+							categoryLabel={getCategoryLabel(t, railD.category)}
+						/>
+					</div>
+
+					<NewsCard
+						item={overflowA}
+						variant="medium"
+						categoryLabel={getCategoryLabel(t, overflowA.category)}
+						className="sm:col-span-1 lg:hidden"
+					/>
+					<NewsCard
+						item={overflowB}
+						variant="wide"
+						categoryLabel={getCategoryLabel(t, overflowB.category)}
+						className="sm:col-span-2 lg:hidden"
+					/>
+				</div>
 			</div>
 		</section>
 	);

@@ -20,7 +20,7 @@ export async function VideoSection() {
 
 	return (
 		<section
-			className="flex min-h-svh w-full flex-col overflow-hidden border-t border-border bg-background"
+			className="flex w-full flex-col overflow-hidden border-t border-border bg-background"
 			aria-labelledby="video-heading"
 		>
 			<header className="shrink-0 px-6 pt-12 pb-8 sm:px-8 sm:pt-16 sm:pb-10 lg:pt-20">
@@ -46,10 +46,10 @@ export async function VideoSection() {
 				</div>
 			</header>
 
-			<div className="flex min-h-0 flex-1 flex-col gap-px bg-border">
-				<div className="grid min-h-0 flex-[3] grid-cols-1 gap-px bg-border lg:grid-cols-[7fr_5fr] lg:items-stretch">
+			<div className="px-6 pb-12 sm:px-8 sm:pb-16 lg:pb-20">
+				<div className="grid grid-cols-1 gap-3 sm:grid-cols-2 sm:gap-4 lg:grid-cols-12 lg:grid-rows-[minmax(28rem,1fr)_minmax(16rem,0.55fr)] lg:gap-4 lg:min-h-[min(100svh,56rem)]">
 					{featured ? (
-						<div className="relative aspect-video min-h-0 lg:aspect-auto lg:h-full">
+						<div className="relative aspect-video min-h-0 sm:col-span-2 lg:col-span-7 lg:row-start-1 lg:aspect-auto lg:h-full">
 							<VideoCard
 								item={featured}
 								categoryLabel={categoryLabel(featured.category)}
@@ -59,9 +59,9 @@ export async function VideoSection() {
 						</div>
 					) : null}
 
-					<div className="flex min-h-0 flex-col gap-px bg-border lg:h-full">
+					<div className="grid grid-cols-1 gap-3 sm:col-span-2 sm:grid-cols-2 sm:gap-4 lg:col-span-5 lg:col-start-8 lg:row-start-1 lg:h-full lg:grid-cols-1 lg:grid-rows-2 lg:gap-4">
 						{second ? (
-							<div className="relative aspect-video min-h-0 lg:aspect-auto lg:h-full lg:flex-1">
+							<div className="relative aspect-video min-h-0 lg:aspect-auto lg:h-full">
 								<VideoCard
 									item={second}
 									categoryLabel={categoryLabel(second.category)}
@@ -70,7 +70,7 @@ export async function VideoSection() {
 							</div>
 						) : null}
 						{third ? (
-							<div className="relative aspect-video min-h-0 lg:aspect-auto lg:h-full lg:flex-1">
+							<div className="relative aspect-video min-h-0 lg:aspect-auto lg:h-full">
 								<VideoCard
 									item={third}
 									categoryLabel={categoryLabel(third.category)}
@@ -79,11 +79,9 @@ export async function VideoSection() {
 							</div>
 						) : null}
 					</div>
-				</div>
 
-				<div className="grid min-h-0 flex-1 grid-cols-1 gap-px bg-border sm:grid-cols-2">
 					{fourth ? (
-						<div className="relative aspect-video min-h-0 sm:aspect-auto sm:h-full">
+						<div className="relative aspect-video min-h-0 lg:col-span-6 lg:row-start-2 lg:aspect-auto lg:h-full">
 							<VideoCard
 								item={fourth}
 								categoryLabel={categoryLabel(fourth.category)}
@@ -91,8 +89,9 @@ export async function VideoSection() {
 							/>
 						</div>
 					) : null}
+
 					{fifth ? (
-						<div className="relative aspect-video min-h-0 sm:aspect-auto sm:h-full">
+						<div className="relative aspect-video min-h-0 lg:col-span-6 lg:col-start-7 lg:row-start-2 lg:aspect-auto lg:h-full">
 							<VideoCard
 								item={fifth}
 								categoryLabel={categoryLabel(fifth.category)}

@@ -63,8 +63,9 @@
 		"aboutSubContact": "Têkilî"
 	},
 	"Footer": {
-		"newsletterTitle": "Bila Karê Te Bi Xwe Biaxive. Em Peyvan Li Dest Bigirin.",
-		"newsletterDescription": "Em li vir in ku di rêwîtiya te ya dîjîtal de alîkarî bikin. Îro bi me re têkilî daynin da em bi hev re gavê pêş bixin.",
+		"newsletterEyebrow": "Agahdar bimîne",
+		"newsletterTitle": "Nûçeyên Enstîtuyê",
+		"newsletterDescription": "Nûçeyên demdemî li ser koleksiyon, weşan û bûyerên Enstîtuya Mîrateya Kurdî.",
 		"emailPlaceholder": "E-nameya xwe binivîse",
 		"emailLabel": "Navnîşana e-nameyê",
 		"signUp": "Tomar Bibe",

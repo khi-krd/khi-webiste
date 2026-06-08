@@ -4,7 +4,13 @@ import { Link } from "@/components/ui/link";
 import { cn } from "@/lib/utils";
 import type { LatestUpdateItem } from "@/lib/mock/latest-updates";
 
-export type NewsCardVariant = "tall" | "square" | "small" | "medium" | "wide";
+export type NewsCardVariant =
+	| "featured"
+	| "tall"
+	| "square"
+	| "small"
+	| "medium"
+	| "wide";
 
 type NewsCardProps = {
 	item: LatestUpdateItem;
@@ -14,17 +20,19 @@ type NewsCardProps = {
 };
 
 const variantClass: Record<NewsCardVariant, string> = {
+	featured: "min-h-80 sm:min-h-96 lg:min-h-0",
 	tall: "min-h-72 sm:min-h-80 lg:min-h-0",
 	square: "min-h-64 sm:min-h-72",
-	small: "min-h-52 sm:min-h-56",
+	small: "min-h-52 sm:min-h-56 lg:min-h-0",
 	medium: "min-h-56 sm:min-h-64",
 	wide: "min-h-56 sm:min-h-64",
 };
 
 const titleClass: Record<NewsCardVariant, string> = {
+	featured: "text-h2 lg:text-display",
 	tall: "text-h2",
 	square: "text-h3",
-	small: "text-small font-semibold sm:text-h3",
+	small: "text-small font-semibold sm:text-h3 line-clamp-2",
 	medium: "text-h3",
 	wide: "text-h2 sm:text-h3",
 };
@@ -36,14 +44,15 @@ export function NewsCard({
 	className,
 }: NewsCardProps) {
 	const href = `/articles/${item.slug}`;
-	const showExcerpt = variant === "tall" || variant === "medium" || variant === "wide";
+	const showExcerpt = variant === "featured" || variant === "tall" || variant === "wide";
+	const isFeatured = variant === "featured";
 
 	return (
 		<Link
 			href={href}
 			variant="nav"
 			className={cn(
-				"group relative block h-full w-full items-stretch overflow-hidden bg-surface no-underline",
+				"group relative block h-full w-full items-stretch overflow-hidden border border-border bg-surface no-underline",
 				variantClass[variant],
 				className,
 			)}
@@ -56,18 +65,32 @@ export function NewsCard({
 							src={item.image.url}
 							alt={item.image.alt ?? item.title}
 							fill
-							sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+							sizes={
+								isFeatured
+									? "(max-width: 1024px) 100vw, 58vw"
+									: "(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 20vw"
+							}
 							className="object-cover brightness-[0.78] contrast-[1.1] saturate-[0.65] transition-[filter] duration-[1.35s] ease-[cubic-bezier(0.25,0.46,0.45,0.94)] group-hover:brightness-[0.88] group-hover:saturate-[0.8] motion-reduce:transition-none"
 						/>
 					</div>
 				</div>
 
 				<div
-					className="pointer-events-none absolute inset-0 z-1 bg-foreground/30 transition-opacity duration-500 ease-out group-hover:bg-foreground/45 motion-reduce:transition-none"
+					className={cn(
+						"pointer-events-none absolute inset-0 z-1 transition-opacity duration-500 ease-out motion-reduce:transition-none",
+						isFeatured
+							? "bg-foreground/40 group-hover:bg-foreground/50"
+							: "bg-foreground/30 group-hover:bg-foreground/45",
+					)}
 					aria-hidden
 				/>
 				<div
-					className="pointer-events-none absolute inset-0 z-1 bg-linear-to-t from-foreground from-0% via-foreground/75 via-35% to-transparent to-70% transition-opacity duration-500 ease-out group-hover:via-foreground/85 motion-reduce:transition-none"
+					className={cn(
+						"pointer-events-none absolute inset-0 z-1 bg-linear-to-t from-foreground transition-opacity duration-500 ease-out motion-reduce:transition-none",
+						isFeatured
+							? "from-0% via-foreground/85 via-30% to-transparent to-65% group-hover:via-foreground/90"
+							: "from-0% via-foreground/75 via-35% to-transparent to-70% group-hover:via-foreground/85",
+					)}
 					aria-hidden
 				/>
 			</div>

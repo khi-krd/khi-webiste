@@ -24,7 +24,7 @@ export async function WritingsSection() {
 					<p className="label font-medium">{t("eyebrow")}</p>
 					<h2
 						id="writings-heading"
-						className="mt-3 font-heading text-h1 font-bold leading-[1.15] text-balance"
+						className="mt-3 font-heading text-h2 font-bold leading-[1.15] text-balance"
 					>
 						{t("title")}
 					</h2>
@@ -45,10 +45,11 @@ export async function WritingsSection() {
 				</header>
 
 				<div className="mt-12 lg:mt-0">
-					{writings.map((item) => (
+					{writings.map((item, index) => (
 						<WritingRow
 							key={item.id}
 							item={item}
+							index={index}
 							categoryLabel={t(`categories.${item.category}`)}
 							readTimeLabel={t("readTime", { minutes: item.readTime })}
 						/>
