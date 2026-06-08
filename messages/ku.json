@@ -859,5 +859,177 @@
 				"messageRequired": "Ji kerema xwe peyamek binivîsin (kêm kêm 10 tîp)."
 			}
 		}
+	},
+	"Donate": {
+		"pageTitle": "Hevkari û Bexşîn",
+		"metaDescription": "Piştgiriya Enstîtuya Kulturê ya Kurdî — şandina arşîvê, bexşîna darayî û parastina mîrateya kurdî.",
+		"hero": {
+			"eyebrow": "Hevkari û Bexşîn",
+			"title": "Hevkari û Bexşîn",
+			"intro": "Enstîtuya Kulturê ya Kurdî, wek erkek neteweyî, di berhevkirin û parastina mîrateya dewlemend a gelê kurd de ye — mîratek ku di dema dirêj de hewl hatiye jêbirin. Li vir em bangê tevgera neteweyî dikin.",
+			"ctaArchive": "Şandina arşîvê",
+			"ctaFinancial": "Piştgiriya darayî"
+		},
+		"nav": {
+			"label": "Beşên rûpelê",
+			"types": "Çi bide",
+			"participate": "Çawa beşdar bibe",
+			"forms": "Form",
+			"closing": "Piştgiri"
+		},
+		"types": {
+			"heading": "Ez çi dikarim bixebitînim?",
+			"description": "Her cure mîrate — ji wêne û destnivîsan heta piştgiriya darayî — ji bo parastina nasnameya neteweyî giring e.",
+			"items": {
+				"visualArchive": {
+					"title": "Arşîva dîtbarî",
+					"description": "Wêneyên kevn yên kesayetan, cil û cihên dîrokî."
+				},
+				"documents": {
+					"title": "Belge",
+					"description": "Pirtûkên nadiran, name, nexşe, pul û destnivîs."
+				},
+				"oralHeritage": {
+					"title": "Mîrateya zimanî",
+					"description": "Kaset, qefî, an her pelê dengî û vîdyoyê yê kevn."
+				},
+				"financial": {
+					"title": "Piştgiriya darayî",
+					"description": "Ji bo peydakirina mesrefa projeyên girîng û domdariya enstîtuyê."
+				},
+				"scientific": {
+					"title": "Hevkariya zanistî",
+					"description": "Alîkariya nasîna wêne û tiştên kevn."
+				}
+			}
+		},
+		"participate": {
+			"heading": "Ez çawa beşdar dibim?",
+			"paths": {
+				"archive": {
+					"label": "Şandina arşîvê",
+					"body": "Ji bo şandina kaset, destnivîs an wêneyên dîrokî, vê formê dagirin. Tîma me dê ji bo wergirtina tiştê bi we re têkilî daynin.",
+					"cta": "Biçe formê arşîvê"
+				},
+				"financial": {
+					"label": "Piştgiriya darayî",
+					"body": "Bi vê forma ewle, hûn dikarin bi lez û hêsan piştgiriya projeyên me bikin.",
+					"cta": "Biçe formê bexşînê"
+				}
+			},
+			"body": "Hemû tişt û agahiyên ku hûn pêşkêş dikin, bi navê we di arşîva enstîtuyê de tê tomar kirin. Wek rêz, navê hemû piştgir di lîsteya fermî ya \"Dostên Kulturê\" de tê nivîsandin.",
+			"closing": "Spas ji bo ku hûn beşek ji vê tevgera neteweyî dibin."
+		},
+		"forms": {
+			"sectionEyebrow": "Form",
+			"sectionHeading": "Agahiyên xwe bişîne",
+			"sectionDescription": "Yek ji du rêyan hilbijêre — şandina arşîvê an tomar kirina piştgiriya darayî.",
+			"archive": {
+				"heading": "Şandina arşîvê",
+				"description": "Ji bo şandina kaset, destnivîs an wêneyên dîrokî. Tîma me dê ji bo wergirtina tiştê bi we re têkilî dayne.",
+				"stepLabel": "Forma 01",
+				"fields": {
+					"userName": "Navê bikarhêner",
+					"registerName": "Tomar kirin bi navê",
+					"contactNumber": "Hejmara têkilîyê",
+					"materialType": "Cureya tiştê",
+					"fileUpload": "Barkirina pelê",
+					"note": "Not an dîroka kurt"
+				},
+				"placeholders": {
+					"userName": "Bikarhêner",
+					"registerName": "Nav binivîse…",
+					"contactNumber": "07XX XXX XXXX",
+					"materialType": "Kaset û deng",
+					"fileUpload": "Wêne an pelê nimûneyê hilbijêre",
+					"note": "Kurteyek li ser tiştê binivîse…"
+				},
+				"materialOptions": {
+					"cassetteAudio": "Kaset / deng",
+					"photograph": "Wêne",
+					"manuscript": "Destnivîs",
+					"document": "Belge",
+					"video": "Vîdyo",
+					"other": "Yên din"
+				},
+				"submit": "Agahiyan bişîne",
+				"success": {
+					"title": "Agahî hatin wergirtin",
+					"body": "Spas ji bo şandina we. Tîma me dê di demek zû de bi we re têkilî dayne."
+				},
+				"errors": {
+					"userNameRequired": "Ji kerema xwe navê xwe binivîsin.",
+					"contactRequired": "Ji kerema xwe hejmara têkilîyê binivîsin.",
+					"materialTypeRequired": "Ji kerema xwe cureya tiştê hilbijêrin.",
+					"fileTooLarge": "Pelê pir mezin e (herî zêde 10 MB).",
+					"fileInvalidType": "Cureya pelê ne qebûl e."
+				}
+			},
+			"financial": {
+				"heading": "Piştgiriya darayî",
+				"description": "Bi lez û hêsan piştgiriya projeyên me bike.",
+				"stepLabel": "Forma 02",
+				"fields": {
+					"amount": "Mîqdar û dirav",
+					"donorName": "Navê bexşker",
+					"suggestedAmounts": "Mîqdarên pêşniyar",
+					"paymentMethod": "Rêbaza dravdanê hilbijêre"
+				},
+				"placeholders": {
+					"amount": "Mîqdar",
+					"donorName": "Navê tevahî an navê kurt"
+				},
+				"currencies": {
+					"iqd": "IQD",
+					"usd": "USD"
+				},
+				"amountPresets": {
+					"large": "100,000",
+					"medium": "50,000",
+					"small": "25,000"
+				},
+				"paymentMethods": {
+					"fib": {
+						"label": "FIB",
+						"hint": "Hejmara hesabê"
+					},
+					"fastpay": {
+						"label": "FastPay",
+						"hint": "Hejmara mobîlê"
+					}
+				},
+				"notice": "Hemû bexşîn bi awayekî zelal ji bo pêşvebirina arşîvê û teknolojiya enstîtuyê têne bikaranîn.",
+				"submit": "Bexşînê tomar bike",
+				"success": {
+					"title": "Bexşîna we hate tomar kirin",
+					"body": "Spas ji bo piştgiriya we. Agahiyên dravdanê li jêr têne nîşandan."
+				},
+				"errors": {
+					"amountRequired": "Ji kerema xwe mîqdar binivîsin.",
+					"amountInvalid": "Ji kerema xwe mîqdarê derbasdar binivîsin.",
+					"donorNameRequired": "Ji kerema xwe navê bexşker binivîsin.",
+					"paymentMethodRequired": "Ji kerema xwe rêbaza dravdanê hilbijêrin."
+				}
+			}
+		},
+		"closing": {
+			"heading": "Bi hev re ji bo parastina nasnameya neteweyî",
+			"supporters": {
+				"eyebrow": "Dostên Kulturê",
+				"title": "Lîsteya Dostên Kulturê",
+				"description": "Navê te dê wek parêzerek dîrokê bimîne.",
+				"cta": "Beşdar bibe"
+			},
+			"fib": {
+				"label": "FIB ACCOUNT",
+				"copy": "Kopî bike",
+				"copied": "Hat kopîkirin"
+			},
+			"fastpay": {
+				"label": "FASTPAY NUMBER",
+				"copy": "Kopî bike",
+				"copied": "Hat kopîkirin"
+			}
+		}
 	}
 }

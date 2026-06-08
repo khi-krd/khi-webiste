@@ -862,5 +862,177 @@
 				"messageRequired": "Please enter a message (at least 10 characters)."
 			}
 		}
+	},
+	"Donate": {
+		"pageTitle": "Cooperation & Donation",
+		"metaDescription": "Support the Kurdish Heritage Institute — archive submissions, financial donations, and preserving Kurdish cultural heritage.",
+		"hero": {
+			"eyebrow": "Cooperation & Donation",
+			"title": "Cooperation & Donation",
+			"intro": "The Kurdish Heritage Institute, as a national mission, is dedicated to collecting and preserving the rich heritage of the Kurdish people — a legacy that history has long tried to erase. Here we call for a national movement.",
+			"ctaArchive": "Submit archive",
+			"ctaFinancial": "Financial support"
+		},
+		"nav": {
+			"label": "Page sections",
+			"types": "What to give",
+			"participate": "How to join",
+			"forms": "Forms",
+			"closing": "Support us"
+		},
+		"types": {
+			"heading": "What can I donate?",
+			"description": "Every kind of heritage — from photographs and manuscripts to financial support — helps preserve national identity.",
+			"items": {
+				"visualArchive": {
+					"title": "Visual archive",
+					"description": "Historic photographs of figures, clothing, and landmarks."
+				},
+				"documents": {
+					"title": "Documents",
+					"description": "Rare books, letters, maps, stamps, and manuscripts."
+				},
+				"oralHeritage": {
+					"title": "Oral heritage",
+					"description": "Cassettes, records, or any old audio and video files."
+				},
+				"financial": {
+					"title": "Financial support",
+					"description": "To fund important projects and the institute's continuity."
+				},
+				"scientific": {
+					"title": "Scientific collaboration",
+					"description": "Help identifying old photographs and artefacts."
+				}
+			}
+		},
+		"participate": {
+			"heading": "How do I participate?",
+			"paths": {
+				"archive": {
+					"label": "Archive submission",
+					"body": "To send cassettes, manuscripts, or historic photographs, fill in this form. Our team will contact you to receive the material.",
+					"cta": "Go to archive form"
+				},
+				"financial": {
+					"label": "Financial support",
+					"body": "Through this secure form, you can quickly and easily support our projects.",
+					"cta": "Go to donation form"
+				}
+			},
+			"body": "All materials and information you provide are registered in the institute's archive under your name. As a tribute, every supporter's name is recorded on the official \"Friends of Culture\" list.",
+			"closing": "Thank you for becoming part of this national movement."
+		},
+		"forms": {
+			"sectionEyebrow": "Forms",
+			"sectionHeading": "Send your information",
+			"sectionDescription": "Choose one of two paths — archive submission or registering a financial contribution.",
+			"archive": {
+				"heading": "Archive submission",
+				"description": "To send cassettes, manuscripts, or historic photographs. Our team will contact you to receive the material.",
+				"stepLabel": "Form 01",
+				"fields": {
+					"userName": "User name",
+					"registerName": "Register under name",
+					"contactNumber": "Contact number",
+					"materialType": "Material type",
+					"fileUpload": "File upload",
+					"note": "Note or brief history"
+				},
+				"placeholders": {
+					"userName": "Username",
+					"registerName": "Enter name…",
+					"contactNumber": "07XX XXX XXXX",
+					"materialType": "Cassette and audio",
+					"fileUpload": "Choose a sample image or file",
+					"note": "Write a brief note about the material…"
+				},
+				"materialOptions": {
+					"cassetteAudio": "Cassette / audio",
+					"photograph": "Photograph",
+					"manuscript": "Manuscript",
+					"document": "Document",
+					"video": "Video",
+					"other": "Other"
+				},
+				"submit": "Send information",
+				"success": {
+					"title": "Information received",
+					"body": "Thank you for your submission. Our team will contact you as soon as possible."
+				},
+				"errors": {
+					"userNameRequired": "Please enter your name.",
+					"contactRequired": "Please enter a contact number.",
+					"materialTypeRequired": "Please select a material type.",
+					"fileTooLarge": "File is too large (maximum 10 MB).",
+					"fileInvalidType": "File type not accepted."
+				}
+			},
+			"financial": {
+				"heading": "Financial support",
+				"description": "Support our projects quickly and easily.",
+				"stepLabel": "Form 02",
+				"fields": {
+					"amount": "Amount & currency",
+					"donorName": "Donor name",
+					"suggestedAmounts": "Suggested amounts",
+					"paymentMethod": "Choose payment method"
+				},
+				"placeholders": {
+					"amount": "Amount",
+					"donorName": "Full name or nickname"
+				},
+				"currencies": {
+					"iqd": "IQD",
+					"usd": "USD"
+				},
+				"amountPresets": {
+					"large": "100,000",
+					"medium": "50,000",
+					"small": "25,000"
+				},
+				"paymentMethods": {
+					"fib": {
+						"label": "FIB",
+						"hint": "Account number"
+					},
+					"fastpay": {
+						"label": "FastPay",
+						"hint": "Mobile number"
+					}
+				},
+				"notice": "All donations are used transparently for archive development and institute technology.",
+				"submit": "Register donation",
+				"success": {
+					"title": "Donation registered",
+					"body": "Thank you for your support. Payment details are shown below."
+				},
+				"errors": {
+					"amountRequired": "Please enter an amount.",
+					"amountInvalid": "Please enter a valid amount.",
+					"donorNameRequired": "Please enter the donor name.",
+					"paymentMethodRequired": "Please choose a payment method."
+				}
+			}
+		},
+		"closing": {
+			"heading": "Together to protect national identity",
+			"supporters": {
+				"eyebrow": "Friends of Culture",
+				"title": "Friends of Culture list",
+				"description": "Your name will endure as a guardian of history.",
+				"cta": "Take part"
+			},
+			"fib": {
+				"label": "FIB ACCOUNT",
+				"copy": "Copy",
+				"copied": "Copied"
+			},
+			"fastpay": {
+				"label": "FASTPAY NUMBER",
+				"copy": "Copy",
+				"copied": "Copied"
+			}
+		}
 	}
 }
