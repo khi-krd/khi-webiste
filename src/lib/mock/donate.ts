@@ -44,13 +44,13 @@ export type AmountPreset = {
 const MENU = (n: number) => `/menu/${n}.jpg`;
 
 const DONATE_IMAGES = {
-	hero: "/about/services-bg.jpg",
-	visualArchive: "/sample/archive-landscape.png",
-	documents: "/menu/2.jpg",
-	oralHeritage: "/menu/4.jpg",
-	financial: "/about/m2.jpg",
-	scientific: "/sample/archive-portrait.png",
-	supporters: "/about/475203467_1007002848126180_7383496220452921499_n.jpg",
+	hero: "/about/475203467_1007002848126180_7383496220452921499_n.jpg",
+	visualArchive: "/menu/7.jpg",
+	documents: "/menu/1.jpg",
+	oralHeritage: "/menu/5.jpg",
+	financial: "/menu/4.jpg",
+	scientific: "/menu/6.jpg",
+	supporters: "/menu/3.jpg",
 } as const;
 
 export const DONATE_TYPE_IDS: DonateTypeId[] = [
