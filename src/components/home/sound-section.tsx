@@ -8,13 +8,26 @@ import { cn } from "@/lib/utils";
 const soundCtaClass =
 	"group/sound-cta relative inline-flex h-10 w-fit shrink-0 items-center gap-2.5 overflow-hidden border border-white/70 bg-white/10 px-5 font-heading text-small font-semibold text-white no-underline backdrop-blur-[2px] transition-[color,gap,box-shadow,background-color,border-color] duration-300 ease-out before:absolute before:inset-0 before:z-0 before:origin-bottom before:scale-y-0 before:bg-white before:transition-transform before:duration-300 before:ease-[cubic-bezier(0.22,1,0.36,1)] fine-hover:gap-3.5 fine-hover:border-white fine-hover:text-foreground fine-hover:shadow-[0_8px_24px_-12px_rgba(0,0,0,0.45)] fine-hover:before:scale-y-100 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white motion-reduce:before:transition-none motion-reduce:fine-hover:before:scale-y-100 motion-reduce:fine-hover:gap-2.5";
 
-export async function SoundSection() {
+type SoundSectionProps = {
+	/** Constrained height for UI playground previews. */
+	compact?: boolean;
+	className?: string;
+};
+
+export async function SoundSection({
+	compact = false,
+	className,
+}: SoundSectionProps = {}) {
 	const t = await getTranslations("Sound");
 
 	return (
 		<section
 			aria-labelledby="sound-heading"
-			className="relative min-h-svh w-full overflow-hidden border-t border-border"
+			className={cn(
+				"relative w-full overflow-hidden border-t border-border",
+				compact ? "min-h-112 sm:min-h-144" : "min-h-svh",
+				className,
+			)}
 		>
 			<SoundSectionVideo />
 
@@ -40,7 +53,7 @@ export async function SoundSection() {
 				aria-hidden
 			/>
 
-			<div className="relative z-10 flex min-h-svh flex-col justify-end px-6 pb-14 sm:px-10 sm:pb-16 lg:px-14 lg:pb-20">
+			<div className="relative z-10 flex min-h-[inherit] flex-col justify-end px-6 pb-14 sm:px-10 sm:pb-16 lg:px-14 lg:pb-20">
 				<div className="max-w-4xl text-start text-white">
 					<p className="hero-slide-eyebrow">{t("eyebrow")}</p>
 

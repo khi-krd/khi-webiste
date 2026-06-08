@@ -101,11 +101,20 @@ function getMockCopy(locale: string): MockCopy[] {
 	];
 }
 
-export async function FeaturedHero() {
+type FeaturedHeroProps = {
+	/** Constrained height for UI playground previews. */
+	compact?: boolean;
+};
+
+export async function FeaturedHero({ compact = false }: FeaturedHeroProps = {}) {
 	const locale = await getLocale();
 	const t = await getTranslations("Hero");
 	const featuredItems = await getFeaturedItems(locale);
 	const direction = locale === "ckb" ? "rtl" : "ltr";
+	const slideHeight = compact ? "playground" : "viewport";
+	const sectionClass = compact
+		? "relative isolate"
+		: "relative isolate min-h-screen";
 
 	if (featuredItems.length === 0) {
 		const fallbackImageNames = ["5.jpg", "6.jpg", "7.jpg"] as const;
@@ -134,13 +143,14 @@ export async function FeaturedHero() {
 
 		return (
 			<section
-				className="relative isolate min-h-screen"
+				className={sectionClass}
 				data-scroll-section
 				aria-label={t("regionLabel")}
 			>
 				<FeaturedCarousel
 					slides={fallbackSlides}
 					direction={direction}
+					height={slideHeight}
 					labels={{
 						previous: t("previous"),
 						next: t("next"),
@@ -182,13 +192,16 @@ export async function FeaturedHero() {
 			role="region"
 			aria-roledescription="carousel"
 			aria-label={t("regionLabel")}
-			className="relative isolate min-h-screen"
+			className={sectionClass}
 			data-scroll-section
 		>
-			<script type="application/ld+json">{JSON.stringify(jsonLd)}</script>
+			{compact ? null : (
+				<script type="application/ld+json">{JSON.stringify(jsonLd)}</script>
+			)}
 			<FeaturedCarousel
 				slides={slides}
 				direction={direction}
+				height={slideHeight}
 				labels={{
 					previous: t("previous"),
 					next: t("next"),

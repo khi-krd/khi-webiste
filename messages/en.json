@@ -287,6 +287,90 @@
 			"pagination": {
 				"title": "Pagination",
 				"description": "Pager with directional prev/next and truncation."
+			},
+			"featuredSlide": {
+				"title": "Featured slide",
+				"description": "Single hero slide with ink scrims and CTA. From featured-slide.tsx."
+			},
+			"featuredCarousel": {
+				"title": "Featured carousel",
+				"description": "Autoplaying hero carousel with keyboard nav. From featured-carousel.tsx."
+			},
+			"newsCard": {
+				"title": "News card",
+				"description": "Editorial news tile — variants: featured, small, medium, wide. Used in LatestUpdates."
+			},
+			"projectCard": {
+				"title": "Project card",
+				"description": "Portrait project tile with drawn border hover. Used in ProjectsShowcase."
+			},
+			"writingRow": {
+				"title": "Writing row",
+				"description": "Numbered article row with category badge. Used in WritingsSection."
+			},
+			"videoCard": {
+				"title": "Video card",
+				"description": "Video tile with play affordance — featured and compact variants. Used in VideoSection."
+			},
+			"featuredHero": {
+				"title": "Featured hero",
+				"description": "Full-viewport hero carousel with autoplay and keyboard nav."
+			},
+			"latestUpdates": {
+				"title": "Latest updates",
+				"description": "Bento news grid composed from NewsCard variants."
+			},
+			"projectsSection": {
+				"title": "Projects section",
+				"description": "Horizontal Embla carousel of ProjectCard tiles."
+			},
+			"soundSection": {
+				"title": "Sound section",
+				"description": "Full-bleed video background with ink scrims and CTA."
+			},
+			"writingsSection": {
+				"title": "Writings section",
+				"description": "Sticky header with stacked WritingRow list."
+			},
+			"videoSection": {
+				"title": "Video section",
+				"description": "Bento video grid composed from VideoCard tiles."
+			},
+			"imageCollectionSection": {
+				"title": "Image collection",
+				"description": "Accordion-style gallery carousel with auto-advance."
+			},
+			"sectionRuleHeading": {
+				"title": "Section rule heading",
+				"description": "H2 with leading hairline rule. From section-rule-heading.tsx."
+			},
+			"aboutTeamPhoto": {
+				"title": "Team photo",
+				"description": "Square portrait with name and role caption. Used in AboutTeamShowcase."
+			},
+			"partnerCard": {
+				"title": "Partner card",
+				"description": "Image-backed CTA tile with eyebrow and overlay scrims. Used in AboutPartners."
+			},
+			"aboutHero": {
+				"title": "About hero",
+				"description": "Poster hero with play button and intro video modal. From about-hero.tsx."
+			},
+			"aboutMission": {
+				"title": "About mission",
+				"description": "Prose mission statement in the wide About shell."
+			},
+			"aboutFounder": {
+				"title": "About founder",
+				"description": "Portrait and biography block for the institute founder."
+			},
+			"aboutTeamShowcase": {
+				"title": "Team showcase",
+				"description": "Office carousel with tab indicators and team photo grid."
+			},
+			"aboutPartners": {
+				"title": "Partners section",
+				"description": "Two-column grid of PartnerCard tiles."
 			}
 		},
 		"typography": {
@@ -384,7 +468,9 @@
 			"forms": "Forms",
 			"content": "Content & Media",
 			"states": "States",
-			"utilities": "Utilities"
+			"utilities": "Utilities",
+			"homepage": "Homepage",
+			"about": "About"
 		},
 		"toc": "On this page",
 		"headings": {
@@ -491,5 +577,112 @@
 		"title": "Something went wrong",
 		"description": "We couldn't load this page. Please try again.",
 		"retry": "Try again"
+	},
+	"About": {
+		"pageTitle": "About Us",
+		"metaDescription": "The Kurdish Heritage Institute — preserving, researching, and sharing Kurdish cultural heritage.",
+		"heroTitle": "Who We Are",
+		"heroPlayLabel": "Play introduction video",
+		"videoCloseLabel": "Close video",
+		"mission": {
+			"p1": "The Kurdish Heritage Institute was founded in 2003 by the artist Mazhər Xalqî. From our main bases in Sulaymaniyah and Duhok, we work as a scientific centre to preserve the oral culture and national identity of all communities across Kurdistan. Our task is to collect and safeguard the rich heritage passed down from our ancestors, establishing it through scholarly research as a trusted source.",
+			"p2": "We firmly believe that culture is not merely a return to the past, but a foundation for building the future. That is why we do not stop at archiving alone — we use modern technology and publish scholarly work to revive national consciousness and carry it to coming generations.",
+			"p3": "The institute's work spans the library and audiovisual archive to production studios and the printing house. Each year we carry out our own projects in research, publishing, and artistic production. We also supervise and guide collaborative scholarly efforts with researchers and institutions working for Kurdish culture."
+		},
+		"founder": {
+			"name": "Mazhər Xalqî",
+			"role1": "Founder and Director of the Kurdish Heritage Institute",
+			"role2": "An artist who preserved a nation's culture and history within sound and archives.",
+			"imageAlt": "Portrait of Mazhər Xalqî"
+		},
+		"team": {
+			"offices": {
+				"sulaymaniyah": "Sulaymaniyah Office Team",
+				"duhok": "Duhok Office Team"
+			},
+			"members": {
+				"ahmed-ali": {
+					"name": "Ahmed Ali",
+					"role": "Researcher"
+				},
+				"sara-osman": {
+					"name": "Sara Osman",
+					"role": "Archive"
+				},
+				"karwan-hama": {
+					"name": "Karwan Hama",
+					"role": "Technical"
+				},
+				"niaz-jamal": {
+					"name": "Niaz Jamal",
+					"role": "Administration"
+				},
+				"halkawt-zahir": {
+					"name": "Halkawt Zahir",
+					"role": "Music Researcher"
+				},
+				"dilnia-rezazi": {
+					"name": "Dilnia Rezazi",
+					"role": "Communications"
+				},
+				"laila-fariqi": {
+					"name": "Laila Fariqi",
+					"role": "Sound Archive"
+				},
+				"adnan-karim": {
+					"name": "Adnan Karim",
+					"role": "Artistic Advisor"
+				},
+				"azad-barwari": {
+					"name": "Dr. Azad Barwari",
+					"role": "Duhok Branch Director"
+				},
+				"berivan-tahir": {
+					"name": "Berivan Tahir",
+					"role": "Folklore Researcher"
+				},
+				"heval-zebari": {
+					"name": "Heval Zebari",
+					"role": "Media Department"
+				},
+				"salman-kocher": {
+					"name": "Salman Kocher",
+					"role": "Video Technician"
+				},
+				"sherzad-sini": {
+					"name": "Sherzad Sini",
+					"role": "Archivist"
+				},
+				"newroz-doski": {
+					"name": "Newroz Doski",
+					"role": "Administration"
+				},
+				"wlat-mazuri": {
+					"name": "Wlat Mazuri",
+					"role": "Communications"
+				},
+				"kazhin-farhad": {
+					"name": "Kazhin Farhad",
+					"role": "Dialect Researcher"
+				}
+			}
+		},
+		"partners": {
+			"title": "Partners & Supporters",
+			"items": {
+				"services": {
+					"eyebrow": "Institute Services",
+					"title": "Our Services",
+					"description": "Institute hall, studio, research and printing, press house — together we work to preserve our identity.",
+					"cta": "See what we offer"
+				},
+				"donate": {
+					"eyebrow": "Donate to Heritage",
+					"title": "Become a partner in preserving history",
+					"description": "Your donation powers the restoration of Kurdish cassettes, manuscripts, and historic photographs.",
+					"cta": "Support now"
+				}
+			}
+		}
 	}
 }

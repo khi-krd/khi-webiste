@@ -5,15 +5,24 @@ import { DirectionalIcon } from "@/components/ui/directional-icon";
 import { cn } from "@/lib/utils";
 import type { HeroSlide } from "@/types/content";
 
+type FeaturedSlideHeight = "viewport" | "playground";
+
+const heightClass: Record<FeaturedSlideHeight, string> = {
+	viewport: "h-svh",
+	playground: "h-112 sm:h-144",
+};
+
 type FeaturedSlideProps = {
 	slide: HeroSlide;
 	isPriority?: boolean;
+	height?: FeaturedSlideHeight;
 	className?: string;
 };
 
 export function FeaturedSlide({
 	slide,
 	isPriority = false,
+	height = "viewport",
 	className,
 }: FeaturedSlideProps) {
 	const imageAlt = slide.image.alt ?? slide.title;
@@ -23,7 +32,8 @@ export function FeaturedSlide({
 			href={slide.href}
 			aria-label={`${slide.actionLabel}: ${slide.title}`}
 			className={cn(
-				"group relative block h-svh w-full overflow-hidden",
+				"group relative block w-full overflow-hidden",
+				heightClass[height],
 				className,
 			)}
 		>

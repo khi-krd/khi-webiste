@@ -9,6 +9,40 @@ import type { Metadata } from "next";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import type { ReactNode } from "react";
 import { FormShowcase } from "@/components/dev/form-showcase";
+import {
+	AboutHeroShowcase,
+	AboutTeamPhotoShowcase,
+	PartnerCardShowcase,
+	SectionRuleHeadingShowcase,
+} from "@/components/dev/about-showcases";
+import {
+	AboutFounderPreview,
+	AboutMissionPreview,
+	AboutPartnersPreview,
+	AboutTeamShowcasePreview,
+} from "@/components/dev/about-section-previews";
+import {
+	FeaturedCarouselShowcase,
+	FeaturedSlideShowcase,
+	NewsCardShowcase,
+	ProjectCardShowcase,
+	VideoCardShowcase,
+	WritingRowShowcase,
+} from "@/components/dev/homepage-showcases";
+import {
+	FeaturedHero,
+	ImageCollectionSection,
+	LatestUpdates,
+	ProjectsSection,
+	SoundSection,
+	VideoSection,
+	WritingsSection,
+} from "@/components/dev/homepage-section-previews";
+import {
+	GroupHeading,
+	PlaygroundBlock,
+	ShowcaseCard,
+} from "@/components/dev/playground-block";
 import { UiPlaygroundIntroduction } from "@/components/dev/ui-playground-introduction";
 import { UiPlaygroundMain } from "@/components/dev/ui-playground-main";
 import { UiPlaygroundSidebar } from "@/components/dev/ui-playground-sidebar";
@@ -514,6 +548,190 @@ export default async function UiPlaygroundPage({
 						</ShowcaseCard>
 					</div>
 				</Section>
+
+				<GroupHeading>{t("groups.homepage")}</GroupHeading>
+
+				<PlaygroundBlock
+					id="featuredSlide"
+					title={t("sections.featuredSlide.title")}
+					description={t("sections.featuredSlide.description")}
+				>
+					<FeaturedSlideShowcase />
+				</PlaygroundBlock>
+
+				<PlaygroundBlock
+					id="featuredCarousel"
+					title={t("sections.featuredCarousel.title")}
+					description={t("sections.featuredCarousel.description")}
+				>
+					<FeaturedCarouselShowcase />
+				</PlaygroundBlock>
+
+				<PlaygroundBlock
+					id="newsCard"
+					title={t("sections.newsCard.title")}
+					description={t("sections.newsCard.description")}
+				>
+					<NewsCardShowcase />
+				</PlaygroundBlock>
+
+				<PlaygroundBlock
+					id="projectCard"
+					title={t("sections.projectCard.title")}
+					description={t("sections.projectCard.description")}
+				>
+					<ProjectCardShowcase />
+				</PlaygroundBlock>
+
+				<PlaygroundBlock
+					id="writingRow"
+					title={t("sections.writingRow.title")}
+					description={t("sections.writingRow.description")}
+				>
+					<WritingRowShowcase />
+				</PlaygroundBlock>
+
+				<PlaygroundBlock
+					id="videoCard"
+					title={t("sections.videoCard.title")}
+					description={t("sections.videoCard.description")}
+				>
+					<VideoCardShowcase />
+				</PlaygroundBlock>
+
+				<PlaygroundBlock
+					id="featuredHero"
+					title={t("sections.featuredHero.title")}
+					description={t("sections.featuredHero.description")}
+					fullBleed
+				>
+					<FeaturedHero compact />
+				</PlaygroundBlock>
+
+				<PlaygroundBlock
+					id="latestUpdates"
+					title={t("sections.latestUpdates.title")}
+					description={t("sections.latestUpdates.description")}
+					fullBleed
+				>
+					<LatestUpdates />
+				</PlaygroundBlock>
+
+				<PlaygroundBlock
+					id="projectsSection"
+					title={t("sections.projectsSection.title")}
+					description={t("sections.projectsSection.description")}
+					fullBleed
+				>
+					<ProjectsSection />
+				</PlaygroundBlock>
+
+				<PlaygroundBlock
+					id="soundSection"
+					title={t("sections.soundSection.title")}
+					description={t("sections.soundSection.description")}
+					fullBleed
+				>
+					<SoundSection compact />
+				</PlaygroundBlock>
+
+				<PlaygroundBlock
+					id="writingsSection"
+					title={t("sections.writingsSection.title")}
+					description={t("sections.writingsSection.description")}
+					fullBleed
+				>
+					<WritingsSection />
+				</PlaygroundBlock>
+
+				<PlaygroundBlock
+					id="videoSection"
+					title={t("sections.videoSection.title")}
+					description={t("sections.videoSection.description")}
+					fullBleed
+				>
+					<VideoSection />
+				</PlaygroundBlock>
+
+				<PlaygroundBlock
+					id="imageCollectionSection"
+					title={t("sections.imageCollectionSection.title")}
+					description={t("sections.imageCollectionSection.description")}
+					fullBleed
+				>
+					<ImageCollectionSection />
+				</PlaygroundBlock>
+
+				<GroupHeading>{t("groups.about")}</GroupHeading>
+
+				<PlaygroundBlock
+					id="sectionRuleHeading"
+					title={t("sections.sectionRuleHeading.title")}
+					description={t("sections.sectionRuleHeading.description")}
+				>
+					<SectionRuleHeadingShowcase />
+				</PlaygroundBlock>
+
+				<PlaygroundBlock
+					id="aboutTeamPhoto"
+					title={t("sections.aboutTeamPhoto.title")}
+					description={t("sections.aboutTeamPhoto.description")}
+				>
+					<AboutTeamPhotoShowcase />
+				</PlaygroundBlock>
+
+				<PlaygroundBlock
+					id="partnerCard"
+					title={t("sections.partnerCard.title")}
+					description={t("sections.partnerCard.description")}
+				>
+					<PartnerCardShowcase />
+				</PlaygroundBlock>
+
+				<PlaygroundBlock
+					id="aboutHero"
+					title={t("sections.aboutHero.title")}
+					description={t("sections.aboutHero.description")}
+					fullBleed
+				>
+					<AboutHeroShowcase />
+				</PlaygroundBlock>
+
+				<PlaygroundBlock
+					id="aboutMission"
+					title={t("sections.aboutMission.title")}
+					description={t("sections.aboutMission.description")}
+					fullBleed
+				>
+					<AboutMissionPreview />
+				</PlaygroundBlock>
+
+				<PlaygroundBlock
+					id="aboutFounder"
+					title={t("sections.aboutFounder.title")}
+					description={t("sections.aboutFounder.description")}
+					fullBleed
+				>
+					<AboutFounderPreview />
+				</PlaygroundBlock>
+
+				<PlaygroundBlock
+					id="aboutTeamShowcase"
+					title={t("sections.aboutTeamShowcase.title")}
+					description={t("sections.aboutTeamShowcase.description")}
+					fullBleed
+				>
+					<AboutTeamShowcasePreview />
+				</PlaygroundBlock>
+
+				<PlaygroundBlock
+					id="aboutPartners"
+					title={t("sections.aboutPartners.title")}
+					description={t("sections.aboutPartners.description")}
+					fullBleed
+				>
+					<AboutPartnersPreview />
+				</PlaygroundBlock>
 			</UiPlaygroundMain>
 		</UiPlaygroundSidebar>
 	);
@@ -535,23 +753,6 @@ function HeroStrip({ t }: { t: Awaited<ReturnType<typeof getTranslations>> }) {
 				</div>
 			</div>
 		</section>
-	);
-}
-
-function GroupHeading({ children }: { children: ReactNode }) {
-	return (
-		<h2 className="label mt-16 mb-2 first:mt-0">
-			{children}
-		</h2>
-	);
-}
-
-function ShowcaseCard({ title, children }: { title: string; children: ReactNode }) {
-	return (
-		<div className="bg-surface p-5 sm:p-6">
-			<p className="mb-4 text-small font-semibold tracking-wide text-muted">{title}</p>
-			{children}
-		</div>
 	);
 }
 

@@ -15,10 +15,13 @@ type FeaturedCarouselLabels = {
 	next: string;
 };
 
+type FeaturedSlideHeight = "viewport" | "playground";
+
 type FeaturedCarouselProps = {
 	slides: HeroSlide[];
 	direction: "ltr" | "rtl";
 	labels: FeaturedCarouselLabels;
+	height?: FeaturedSlideHeight;
 };
 
 const controlBaseClass =
@@ -28,6 +31,7 @@ export function FeaturedCarousel({
 	slides,
 	direction,
 	labels,
+	height = "viewport",
 }: FeaturedCarouselProps) {
 	const hasMultipleSlides = slides.length > 1;
 	const autoplay = useMemo<AutoplayType | null>(() => {
@@ -142,7 +146,11 @@ export function FeaturedCarousel({
 							className="min-w-0 flex-[0_0_100%]"
 							inert={index !== selectedIndex ? true : undefined}
 						>
-							<FeaturedSlide slide={slide} isPriority={index === 0} />
+							<FeaturedSlide
+								slide={slide}
+								isPriority={index === 0}
+								height={height}
+							/>
 						</li>
 					))}
 				</ul>

@@ -284,6 +284,90 @@
 			"pagination": {
 				"title": "Rûpelkirin",
 				"description": "Rûpelker bi pêş/paş ên alîdar û birrîn."
+			},
+			"featuredSlide": {
+				"title": "Slayda taybet",
+				"description": "Slayda hero ya yekane bi scrimên çêrk û CTA. Ji featured-slide.tsx."
+			},
+			"featuredCarousel": {
+				"title": "Karusela taybet",
+				"description": "Karusela hero ya bixwe-lîstok bi navîgasyona klavyeyê. Ji featured-carousel.tsx."
+			},
+			"newsCard": {
+				"title": "Karta nûçeyan",
+				"description": "Karta nûçeyan a edîtorî — cure: featured, small, medium, wide. Di LatestUpdates de tê bikaranîn."
+			},
+			"projectCard": {
+				"title": "Karta projeyan",
+				"description": "Karta projeyan a portre bi hovera sînorê xêzkirî. Di ProjectsShowcase de tê bikaranîn."
+			},
+			"writingRow": {
+				"title": "Rêza nivîsê",
+				"description": "Rêza gotarê ya bi hejmar û badgeya kategoriyê. Di WritingsSection de tê bikaranîn."
+			},
+			"videoCard": {
+				"title": "Karta vîdyoyê",
+				"description": "Karta vîdyoyê bi îkona lîstinê — cureyên featured û compact. Di VideoSection de tê bikaranîn."
+			},
+			"featuredHero": {
+				"title": "Hero ya taybet",
+				"description": "Karusela hero ya tevahiya dîmenderê bi bixwe-lîstok û navîgasyona klavyeyê."
+			},
+			"latestUpdates": {
+				"title": "Nûvekirinên dawî",
+				"description": "Tora nûçeyan a bento ji cureyên NewsCard pêk tê."
+			},
+			"projectsSection": {
+				"title": "Beşa projeyan",
+				"description": "Karusela Embla ya horizontal a kartên ProjectCard."
+			},
+			"soundSection": {
+				"title": "Beşa dengê",
+				"description": "Paşxaneya vîdyoyê ya tevahî bi scrimên çêrk û CTA."
+			},
+			"writingsSection": {
+				"title": "Beşa nivîsê",
+				"description": "Sernavê stickî bi lîsteya WritingRow ya li hev."
+			},
+			"videoSection": {
+				"title": "Beşa vîdyoyê",
+				"description": "Tora vîdyoyê ya bento ji kartên VideoCard pêk tê."
+			},
+			"imageCollectionSection": {
+				"title": "Koleksiyona wêneyan",
+				"description": "Karusela galeriyê ya accordion bi pêşveçûna bixwe."
+			},
+			"sectionRuleHeading": {
+				"title": "Sernavê rêza beşê",
+				"description": "H2 bi rêza xeta ya pêş. Ji section-rule-heading.tsx."
+			},
+			"aboutTeamPhoto": {
+				"title": "Wêneya tîmê",
+				"description": "Portreya çargoşeyî bi nav û rol. Di AboutTeamShowcase de tê bikaranîn."
+			},
+			"partnerCard": {
+				"title": "Karta hevkarê",
+				"description": "Karta CTA bi wêne û scrimên overlay. Di AboutPartners de tê bikaranîn."
+			},
+			"aboutHero": {
+				"title": "Hero ya derbarê",
+				"description": "Hero ya poster bi bişkoka lîstinê û modalê vîdyoyê. Ji about-hero.tsx."
+			},
+			"aboutMission": {
+				"title": "Mîsyona derbarê",
+				"description": "Daxuyaniya mîsyonê di shella About ya fireh de."
+			},
+			"aboutFounder": {
+				"title": "Damezêner",
+				"description": "Bloka portre û jiyana damezênerê enstîtûyê."
+			},
+			"aboutTeamShowcase": {
+				"title": "Pêşandana tîmê",
+				"description": "Karusela ofîsan bi nîşanên tab û tora wêneyên tîmê."
+			},
+			"aboutPartners": {
+				"title": "Beşa hevkarên",
+				"description": "Tora du kolanan a kartên PartnerCard."
 			}
 		},
 		"typography": {
@@ -381,7 +465,9 @@
 			"forms": "Form",
 			"content": "Naverok & Medya",
 			"states": "Rewş",
-			"utilities": "Amûr"
+			"utilities": "Amûr",
+			"homepage": "Malpera sereke",
+			"about": "Derbar"
 		},
 		"toc": "Li ser vê rûpelê",
 		"headings": {
@@ -488,5 +574,112 @@
 		"title": "Tiştek çewt çû",
 		"description": "Me nekarî vê rûpelê bar bike. Ji kerema xwe dîsa biceribîne.",
 		"retry": "Dîsa biceribîne"
+	},
+	"About": {
+		"pageTitle": "Derbarê Me",
+		"metaDescription": "Enstîtuya Mîrateya Kurdî — parastin, lêkolîn û belavkirina mîrateya kurdî.",
+		"heroTitle": "Em Kî Ne",
+		"heroPlayLabel": "Vîdyoya nasandinê lê bide",
+		"videoCloseLabel": "Vîdyoyê bigire",
+		"mission": {
+			"p1": "Enstîtuya Mîrateya Kurdî di sala 2003'an de ji aliyê hunermend Mazhər Xalqî ve hate damezrandin. Em li navendên sereke yên Silêmanî û Dihokê, wek navendek zanistî, ji bo parastina çanda devkî û nasnameya neteweyî ya hemû pêkhateyên Kurdistanê kar dikin. Erka me berhevkirin û parastina wê mîrateya dewlemend e ku ji bav û kalên me maye, da ku bi lêkolîna zanistî wek çavkaniyek pêbawer were sazkirin.",
+			"p2": "Baweriya me ya tevahî ev e ku çand tenê vegerina ber bi dema borî nîne, lê bingehek e ji bo avakirina pêşerojê. Ji ber vê yekê em tenê bi arşîvkirinê namînin, lê bi karanîna teknolojiya nûjen û çapkirina berhemên zanistî, em ji bo zindîkirina şopnasiya neteweyî û gihandina wê neslên pêşerojê kar dikin.",
+			"p3": "Têkoşîna enstîtuyê ji pirtûkxane û arşîva deng û wêneyan heta stûdyoyên çêkirin û çapkhaneyê digire. Em her sal projeyên xwe yên lêkolîn, çap û çêkirina hunerî pêk tînin. Herwiha em serpêrştî û rêveberiya van hewldanên zanistî yên hevbeş bi lêkolîner û saziyan re dikin ku ji bo çanda kurdî têne kirin."
+		},
+		"founder": {
+			"name": "Mazhər Xalqî",
+			"role1": "Damezrand û serokê Enstîtuya Mîrateya Kurdî",
+			"role2": "Hunermendek ku çand û dîroka neteweyî di nav deng û arşîvan de parast.",
+			"imageAlt": "Wêneya Mazhər Xalqî"
+		},
+		"team": {
+			"offices": {
+				"sulaymaniyah": "Tîma Ofîsa Silêmaniyê",
+				"duhok": "Tîma Ofîsa Dihokê"
+			},
+			"members": {
+				"ahmed-ali": {
+					"name": "Ehmed Elî",
+					"role": "Lêkolîner"
+				},
+				"sara-osman": {
+					"name": "Sara Osman",
+					"role": "Arşîv"
+				},
+				"karwan-hama": {
+					"name": "Karwan Hema",
+					"role": "Teknîk"
+				},
+				"niaz-jamal": {
+					"name": "Niyaz Cemal",
+					"role": "Rêveberî"
+				},
+				"halkawt-zahir": {
+					"name": "Halkawt Zahir",
+					"role": "Lêkolînerê muzîkê"
+				},
+				"dilnia-rezazi": {
+					"name": "Dilniya Rezazî",
+					"role": "Têkilî"
+				},
+				"laila-fariqi": {
+					"name": "Leyla Ferîqî",
+					"role": "Arşîva dengî"
+				},
+				"adnan-karim": {
+					"name": "Ednan Kerîm",
+					"role": "Şêwirmendê hunerî"
+				},
+				"azad-barwari": {
+					"name": "Dr. Azad Berwarî",
+					"role": "Rêveberê şaxa Dihokê"
+				},
+				"berivan-tahir": {
+					"name": "Berîvan Tahir",
+					"role": "Lêkolînera folklorê"
+				},
+				"heval-zebari": {
+					"name": "Heval Zêbarî",
+					"role": "Beşa medyayê"
+				},
+				"salman-kocher": {
+					"name": "Salman Koçer",
+					"role": "Teknîsyenê vîdyoyê"
+				},
+				"sherzad-sini": {
+					"name": "Şêrzad Sînî",
+					"role": "Arşîvvan"
+				},
+				"newroz-doski": {
+					"name": "Newroz Doskî",
+					"role": "Rêveberî"
+				},
+				"wlat-mazuri": {
+					"name": "Wlat Mazurî",
+					"role": "Têkilî"
+				},
+				"kazhin-farhad": {
+					"name": "Kazhîn Ferhad",
+					"role": "Lêkolînera zaravayan"
+				}
+			}
+		},
+		"partners": {
+			"title": "Beşdar û Piştgir",
+			"items": {
+				"services": {
+					"eyebrow": "Xizmetên Enstîtuyê",
+					"title": "Xizmetên Me",
+					"description": "Salona enstîtuyê, stûdyo, lêkolîn û çap, çapkhanê... em bi hev re ji bo parastina şopnasiya me kar dikin.",
+					"cta": "Bibîne em çi pêşkêş dikin"
+				},
+				"donate": {
+					"eyebrow": "Bexşîn bo Mîrateyê",
+					"title": "Beşdarî parastina dîrokê bibe",
+					"description": "Bexşîna te dibê hêz ji bo nûjenkirina kaset, destnivîs û wêneyên kevnare yên kurdî.",
+					"cta": "Niha piştgirî bike"
+				}
+			}
+		}
 	}
 }
