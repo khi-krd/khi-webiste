@@ -700,5 +700,103 @@
 				}
 			}
 		}
+	},
+	"Contact": {
+		"pageTitle": "Têkilî",
+		"metaDescription": "Bi Enstîtuya Kevneşopiya Kurdî re têkilî daynin — ofîsên li Silêmanî û Dihokê.",
+		"hero": {
+			"label": "TÊKILÎ · CONTACT",
+			"titleLatin": "Contact",
+			"titleArabic": "پەپوەندی",
+			"tagline": "— KURDISH HERITAGE INSTITUTE —"
+		},
+		"offices": {
+			"eyebrow": "Ofîs",
+			"heading": "Enstîtuya Kevneşopiya Kurdî",
+			"description": "Du bingehên herêmî li Silêmanî û Dihokê. Ofîsek hilbijêrin da ku cihê wê li ser nexşeyê bibînin.",
+			"selectLabel": "Hilbijartî",
+			"badge": {
+				"hq": "Navend",
+				"regional": "Herêmî"
+			},
+			"fields": {
+				"address": "Navnîşan",
+				"phone": "Telefon",
+				"email": "E-posta"
+			},
+			"items": {
+				"sulaymaniyah": {
+					"name": "Silêmanî",
+					"nameLatin": "Sulaymaniyah · Kurdistan",
+					"subtitle": "Ofîsa Silêmanî — Herêma Raparin",
+					"address": "Herêma Raparin, Xanî 02, Kolana 34, Kolana Pîremam 11"
+				},
+				"duhok": {
+					"name": "Dihok",
+					"nameLatin": "Duhok · Kurdistan",
+					"subtitle": "Ofîsa Dihokê — Kolana KRO",
+					"address": "Kolana KRO, Kolana Shamamok, Xanî 8"
+				}
+			}
+		},
+		"map": {
+			"heading": "Li ser nexşeyê me bibînin",
+			"body": "Navenda me ya li Silêmanî xebata lêkolîn û arşîva enstîtuyê rêve dibe. Ofîsek hilbijêrin da ku cihê wê bibînin.",
+			"openInMaps": "Di Google Maps de veke",
+			"iframeTitle": "Nexşeya cihê ofîsê"
+		},
+		"social": {
+			"eyebrow": "Têkilî",
+			"heading": "Bi me re têkilî daynin",
+			"description": "Karên me, berhevok û weşanên me li ser platformên civakî bişopînin.",
+			"platforms": {
+				"facebook": {
+					"name": "Facebook",
+					"handle": "@KurdishHeritage"
+				},
+				"instagram": {
+					"name": "Instagram",
+					"handle": "@KurdishHeritage"
+				},
+				"youtube": {
+					"name": "YouTube",
+					"handle": "@KHI_Kurdistan"
+				},
+				"whatsapp": {
+					"name": "WhatsApp",
+					"handle": "+964 53 320 4232"
+				}
+			}
+		},
+		"form": {
+			"eyebrow": "Forma têkilîyê",
+			"heading": "Peyamek bişînin",
+			"description": "Ji bo pirsên lêkolînê, arşîvê, hevkariyê an serdana enstîtuyê ji me re binivîsin.",
+			"fields": {
+				"fullName": "Navê tevahî",
+				"email": "E-posta",
+				"phone": "Hejmara mobîl",
+				"subject": "Mijar",
+				"message": "Peyam"
+			},
+			"placeholders": {
+				"fullName": "Navê tevahî",
+				"email": "you@example.com",
+				"phone": "+964 …",
+				"subject": "Ev li ser çi ye?",
+				"message": "Peyama xwe li vir binivîsin…"
+			},
+			"submit": "Peyam bişîne",
+			"success": {
+				"title": "Peyam hate wergirtin",
+				"body": "Spas ji bo têkilîya we. Em dê di demek zû de bersiv bidin."
+			},
+			"errors": {
+				"fullNameRequired": "Ji kerema xwe navê tevahî binivîsin.",
+				"emailInvalid": "Ji kerema xwe navnîşanek e-postayê ya derbasdar binivîsin.",
+				"subjectRequired": "Ji kerema xwe mijarek binivîsin (kêm kêm 3 tîp).",
+				"messageRequired": "Ji kerema xwe peyamek binivîsin (kêm kêm 10 tîp)."
+			}
+		}
 	}
 }

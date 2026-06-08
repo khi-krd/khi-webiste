@@ -127,7 +127,7 @@ export const NAV_ITEMS: NavItem[] = [
 		children: [
 			{ key: "aboutSubMission", href: "/about/mission" },
 			{ key: "aboutSubTeam", href: "/about/team" },
-			{ key: "aboutSubContact", href: "/about/contact" },
+			{ key: "aboutSubContact", href: "/contact" },
 		],
 	},
 ];

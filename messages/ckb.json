@@ -69,7 +69,7 @@
 		"emailPlaceholder": "ئیمەیڵەکەت بنووسە",
 		"emailLabel": "ناونیشانی ئیمەیڵ",
 		"signUp": "خۆت تۆمار بکە",
-		"brandTagline": "ئەندازیارێکی گەشەی دیجیتاڵی هاوچەرخ.",
+		"brandTagline": "ئەرشیڤی نەتەوەیەک دەپارێزین",
 		"getInTouch": "پەیوەندی بکە",
 		"industries": "بوارەکان",
 		"insights": "تێڕوانین",
@@ -94,7 +94,7 @@
 		"privacyPolicy": "سیاسەتی تایبەتمەندی",
 		"termsOfUse": "مەرجەکانی بەکارهێنان",
 		"cookieConsent": "ڕەزامەندی Cookie",
-		"copyright": "© 2026 ئینستیتووتی کەلەپووری کوردی. هەموو مافەکان پارێزراون."
+		"copyright": "© 2026 Kurdish Heritage Institute · هەموو مافەکان پارێزراوە"
 	},
 	"LanguageSwitcher": {
 		"label": "زمان"
@@ -701,6 +701,104 @@
 					"description": "بەخشینی تۆ دەبێتە هێز بۆ نوژەنکردنەوەی کاسێت، دەستنووس و وێنە دێرینەکانی کورد.",
 					"cta": "ئێستا پاڵپشتی بکە"
 				}
+			}
+		}
+	},
+	"Contact": {
+		"pageTitle": "پەیوەندی",
+		"metaDescription": "پەیوەندی بە ئنستیتیوتی کەلەپووری کورد — ئۆفیسەکان لە سلێمانی و دهۆک.",
+		"hero": {
+			"label": "پەیوەندی · Contact · Têkilî",
+			"titleLatin": "Contact",
+			"titleArabic": "Contactپەیوەندی",
+			"tagline": "ئنستیتیوتی کەلەپووری کورد — Kurdish Heritage Institute"
+		},
+		"offices": {
+			"eyebrow": "ئۆفیسەکانمان",
+			"heading": "ئنستیتیوتی کەلەپووری کورد",
+			"description": "",
+			"selectLabel": "هەڵبژێردراو",
+			"badge": {
+				"hq": "سەرەکی",
+				"regional": "هەرێمی"
+			},
+			"fields": {
+				"address": "ناونیشان",
+				"phone": "تەلەفۆن",
+				"email": "ئیمەیڵ"
+			},
+			"items": {
+				"sulaymaniyah": {
+					"name": "سلێمانی",
+					"nameLatin": "Sulaymaniyah · Kurdistan",
+					"subtitle": "ئۆفیسی سلێمانی — گەڕەکی ڕاپەڕین",
+					"address": "گەڕەکی ڕاپەڕین، خانووی ٠٢، كۆڵانی ٣٤، شەقامی پیرەمەگرون ١١"
+				},
+				"duhok": {
+					"name": "دهۆک",
+					"nameLatin": "Duhok · Kurdistan",
+					"subtitle": "ئۆفیسی دهۆک — جادەی KRO",
+					"address": "جادەیا KRO، کۆڵانا شەمامۆک، خانییێ ٨"
+				}
+			}
+		},
+		"map": {
+			"heading": "نەخشە",
+			"body": "ئێمە لەسەر نەخشە. ئۆفیسی سەرەکیمان لە گەڕەکی ڕاپەڕین، سلێمانی. بەرپرسانمان ئامادەی وەڵامدانەوەتان.",
+			"openInMaps": "لە Google Maps بکەرەوە",
+			"iframeTitle": "نەخشەی شوێنی ئۆفیس"
+		},
+		"social": {
+			"eyebrow": "سۆشیاڵ میدیا",
+			"heading": "بە پێوەندی بمانەوە",
+			"description": "",
+			"platforms": {
+				"facebook": {
+					"name": "Facebook",
+					"handle": "@KurdishHeritage"
+				},
+				"instagram": {
+					"name": "Instagram",
+					"handle": "@KurdishHeritage"
+				},
+				"youtube": {
+					"name": "YouTube",
+					"handle": "@KHI_Kurdistan"
+				},
+				"whatsapp": {
+					"name": "WhatsApp",
+					"handle": "بنووسە بۆمان"
+				}
+			}
+		},
+		"form": {
+			"eyebrow": "فۆرمی پەیوەندی",
+			"heading": "پەیامێک بنێرە",
+			"description": "",
+			"fields": {
+				"fullName": "ناوی تەواو",
+				"email": "ئیمەیڵ",
+				"phone": "ژمارەی مۆبایل",
+				"subject": "بابەت",
+				"message": "پەیام"
+			},
+			"placeholders": {
+				"fullName": "ناوی تەواو",
+				"email": "you@example.com",
+				"phone": "+964 …",
+				"subject": "بابەت",
+				"message": "پەیامەکەت لێرە بنووسە…"
+			},
+			"submit": "ناردنی پەیام",
+			"success": {
+				"title": "پەیامەکە وەرگیرا",
+				"body": "سوپاس بۆ پەیوەندیکردنت. بە زووترین کات وەڵام دەدەینەوە."
+			},
+			"errors": {
+				"fullNameRequired": "تکایە ناوی تەواوت بنووسە.",
+				"emailInvalid": "تکایە ناونیشانی ئیمەیڵێکی دروست بنووسە.",
+				"subjectRequired": "تکایە بابەتێک بنووسە (لانیکەم ٣ پیت).",
+				"messageRequired": "تکایە پەیامێک بنووسە (لانیکەم ١٠ پیت)."
 			}
 		}
 	}

@@ -703,5 +703,103 @@
 				}
 			}
 		}
+	},
+	"Contact": {
+		"pageTitle": "Contact",
+		"metaDescription": "Reach the Kurdish Heritage Institute — offices in Sulaymaniyah and Duhok, Kurdistan.",
+		"hero": {
+			"label": "CONTACT · TÊKILÎ",
+			"titleLatin": "Contact",
+			"titleArabic": "پەپوەندی",
+			"tagline": "— KURDISH HERITAGE INSTITUTE —"
+		},
+		"offices": {
+			"eyebrow": "Offices",
+			"heading": "Kurdish Heritage Institute",
+			"description": "Two regional bases in Sulaymaniyah and Duhok. Select an office to view its location on the map.",
+			"selectLabel": "Selected",
+			"badge": {
+				"hq": "HQ",
+				"regional": "Regional"
+			},
+			"fields": {
+				"address": "Address",
+				"phone": "Phone",
+				"email": "Email"
+			},
+			"items": {
+				"sulaymaniyah": {
+					"name": "Sulaymaniyah",
+					"nameLatin": "Sulaymaniyah · Kurdistan",
+					"subtitle": "Sulaymaniyah office — Raparin district",
+					"address": "Raparin district, House 02, Alley 34, Pirmam Street 11"
+				},
+				"duhok": {
+					"name": "Duhok",
+					"nameLatin": "Duhok · Kurdistan",
+					"subtitle": "Duhok office — KRO Street",
+					"address": "KRO Street, Shamamok Alley, House 8"
+				}
+			}
+		},
+		"map": {
+			"heading": "Find us on the map",
+			"body": "Our headquarters in Sulaymaniyah anchors the institute's research and archive work. Select an office above to view its location.",
+			"openInMaps": "Open in Google Maps",
+			"iframeTitle": "Office location map"
+		},
+		"social": {
+			"eyebrow": "Connect",
+			"heading": "Stay connected",
+			"description": "Follow our work, collections, and publications across social platforms.",
+			"platforms": {
+				"facebook": {
+					"name": "Facebook",
+					"handle": "@KurdishHeritage"
+				},
+				"instagram": {
+					"name": "Instagram",
+					"handle": "@KurdishHeritage"
+				},
+				"youtube": {
+					"name": "YouTube",
+					"handle": "@KHI_Kurdistan"
+				},
+				"whatsapp": {
+					"name": "WhatsApp",
+					"handle": "+964 53 320 4232"
+				}
+			}
+		},
+		"form": {
+			"eyebrow": "Contact form",
+			"heading": "Send a message",
+			"description": "Write to us with questions about research, archives, partnerships, or visiting the institute.",
+			"fields": {
+				"fullName": "Full name",
+				"email": "Email",
+				"phone": "Mobile number",
+				"subject": "Subject",
+				"message": "Message"
+			},
+			"placeholders": {
+				"fullName": "Your full name",
+				"email": "you@example.com",
+				"phone": "+964 …",
+				"subject": "What is this regarding?",
+				"message": "Write your message here…"
+			},
+			"submit": "Send message",
+			"success": {
+				"title": "Message received",
+				"body": "Thank you for reaching out. We will respond as soon as we can."
+			},
+			"errors": {
+				"fullNameRequired": "Please enter your full name.",
+				"emailInvalid": "Please enter a valid email address.",
+				"subjectRequired": "Please enter a subject (at least 3 characters).",
+				"messageRequired": "Please enter a message (at least 10 characters)."
+			}
+		}
 	}
 }
