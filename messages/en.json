@@ -704,6 +704,67 @@
 			}
 		}
 	},
+	"Services": {
+		"pageTitle": "Our Services",
+		"metaDescription": "Services of the Kurdish Heritage Institute — hall, studio, research, printing, sales, library, and archive.",
+		"hero": {
+			"eyebrow": "Our Services",
+			"title": "Our Services",
+			"intro": "We have created a scientific and artistic environment so that researchers and creators can bring their projects to fruition through the institute's departments; our services are an effort to turn your ideas into worthy work.",
+			"cta": "See our services"
+		},
+		"nav": {
+			"label": "Services"
+		},
+		"items": {
+			"institute-hall": {
+				"title": "Institute Hall",
+				"body": "This hall accommodates 300 people and is equipped with professional sound and lighting engineering so audiences receive the best audio and visuals. The hall is arranged for film screenings, concerts, theatre, and other events; through a dedicated control room, artistic work can also be recorded professionally."
+			},
+			"studio": {
+				"title": "Studio",
+				"body": "Two recording studios are equipped with the highest-quality digital and analogue gear, along with specialised microphones for different fields. Technical detail is prioritised here to achieve the highest standard in recording music, dubbing, and film sound."
+			},
+			"research-publishing": {
+				"title": "Research & Publishing",
+				"body": "A scientific platform dedicated to refining projects and research that serve our people's language, history, and cultural identity. All submitted material is reviewed by a qualified committee so that content and quality meet scientific standards."
+			},
+			"printing-house": {
+				"title": "Printing House",
+				"body": "Using suitable materials and advanced printing equipment ensures the longevity of publications. Printing here is not merely a stage but the completion of the research process — after review, a sample print is made available."
+			},
+			"sales": {
+				"title": "Sales",
+				"body": "Our publications are available at both Sulaymaniyah and Duhok centres. Work is underway on an advanced system so that in the future ordering, purchasing, and delivery can be done quickly and conveniently through our website."
+			},
+			"library": {
+				"title": "Library",
+				"body": "Our library is a rich resource in history, lexicography, and the heritage of our people. The library environment is arranged to be a calm place for students and researchers, with thousands of rare sources available."
+			},
+			"audio-visual-archive": {
+				"title": "Audio & Visual Archive",
+				"body": "Our archive is a treasury of Kurdish audio and visual material. Students and researchers can draw on this rich archive for any project or creation that serves Kurdish culture."
+			},
+			"joint-projects": {
+				"title": "Joint Projects",
+				"body": "This is a centre for developing projects devoted to preserving Kurdish heritage. Those who hold rare archives and documents can here turn their work into scientific and artistic output of world-class quality."
+			}
+		},
+		"bottom": {
+			"donate": {
+				"eyebrow": "Donate to Heritage",
+				"title": "Donate",
+				"description": "Your donation powers the restoration of Kurdish cassettes, manuscripts, and historic photographs.",
+				"cta": "Support now"
+			},
+			"about": {
+				"eyebrow": "About Us",
+				"title": "About Us",
+				"description": "The Kurdish Heritage Institute — preserving, researching, and sharing Kurdish cultural heritage.",
+				"cta": "Learn more"
+			}
+		}
+	},
 	"Contact": {
 		"pageTitle": "Contact",
 		"metaDescription": "Reach the Kurdish Heritage Institute — offices in Sulaymaniyah and Duhok, Kurdistan.",

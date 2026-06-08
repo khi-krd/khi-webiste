@@ -701,6 +701,67 @@
 			}
 		}
 	},
+	"Services": {
+		"pageTitle": "Xizmetên Me",
+		"metaDescription": "Xizmetên Enstîtuya Kevneşopiya Kurdî — salon, stûdyo, lêkolîn, çap, firotin, pirtûkxane û arşîv.",
+		"hero": {
+			"eyebrow": "Xizmetên Me",
+			"title": "Xizmetên Me",
+			"intro": "Em çarçoveyek zanistî û hunerî ava kirine da ku lêkolîner û afirîner bi rêya beşên enstîtuyê projeyên xwe bi encam bigihînin; xizmetên me hewldaneke ne ji bo guhertina fikrên we bo berhemek layîq.",
+			"cta": "Xizmetên me bibîne"
+		},
+		"nav": {
+			"label": "Xizmet"
+		},
+		"items": {
+			"institute-hall": {
+				"title": "Salona Enstîtuyê",
+				"body": "Ev salon ji bo 300 kesan amade ye û bi pergala endezyariya deng û ronahiyê hatiye sazkirin da ku temaşevan herî baş deng û dîmen werbigirin. Salon ji bo nîşandana fîlm, konser, şano û bûyerên din hatiye rêzkirin; bi rêya odeya kontrola taybet jî dikare karên hunerî bi awayekî profesyonel werin tomarkirin."
+			},
+			"studio": {
+				"title": "Stûdyo",
+				"body": "Amûrên du stûdyoyên tomarkirina deng bi kalîteya herî bilind a dîjîtal û analog, bi gelek cure mikrofonên taybet ji bo qadên cuda hatine amadekirin. Li vir girîngî li hûrgiliyên teknîkî hatiye dayîn da ku bilindtirîn ast di tomarkirina muzîk, dubbing û denga fîlmê de were bidestxistin."
+			},
+			"research-publishing": {
+				"title": "Lêkolîn û Çap",
+				"body": "Platformek zanistî ye ji bo rafînekirina wan projeyan û lêkolînên ku xizmeta ziman, dîrok û nasnameya çandî ya gelê me dikin. Hemû mijarên tê pêşkêşkirin ji aliyê komîteyek jêhatî ve têne vekolandin da ku ji aliyê naverok û kalîteyê ve bi standardên zanistî re li hev bên."
+			},
+			"printing-house": {
+				"title": "Çapkhanê",
+				"body": "Bikaranîna materyalên guncav û çapkirin bi amûrên pêşketî garantî dike ku berhem demdirêj bimînin. Li vir çapkirin tenê qonaxek nine lê temamkirina beşa lêkolînê ye — piştî vekolînê, çapek nimûne tê peydakirin."
+			},
+			"sales": {
+				"title": "Firotin",
+				"body": "Berhemên me li her du navendên Silêmanî û Dihokê hene; hevdemî, kar li ser pêşxistina pergalek pêşketî tê kirin da ku di pêşerojê de ji rêya malpera me ve daxwaz, kirîn û radestkirin bi awayekî bilez û nûjen bêne kirin."
+			},
+			"library": {
+				"title": "Pirtûkxane",
+				"body": "Pirtûkxane ya me çavkaniyek dewlemend e li qadên dîrok, ferheng û kevneşopiya gelê me. Çarçoveya pirtûkxaneyê bi awayekî hatiye rêzkirin ku bibe cihê aram ji bo xwendekaran û lêkolîneran; li vir hezaran çavkaniyên nadîr hene."
+			},
+			"audio-visual-archive": {
+				"title": "Arşîva Deng û Wêne",
+				"body": "Arşîva me xezîneyek deng û wêneyên kurdî ye; xwendekar û lêkolîner dikarin ji vê arşîva dewlemend sûd werbigirin ji bo her projeyek an afirandinê ku xizmeta çanda kurdî dike."
+			},
+			"joint-projects": {
+				"title": "Projeyên Hevbeş",
+				"body": "Ev navendek e ji bo pêşxistina wan projeyan ku li parastina kevneşopiya kurdî ne. Yên arşîv û belgeyên nadîr li cem wan in dikarin li vir karên xwe biguherînin berhemek zanistî û hunerî bi kalîteya cîhanî."
+			}
+		},
+		"bottom": {
+			"donate": {
+				"eyebrow": "Bexşîn bo Mîrateyê",
+				"title": "Bexşîn",
+				"description": "Bexşîna te dibê hêz ji bo nûjenkirina kaset, destnivîs û wêneyên kevnare yên kurdî.",
+				"cta": "Niha piştgirî bike"
+			},
+			"about": {
+				"eyebrow": "Derbarê Me",
+				"title": "Derbarê Me",
+				"description": "Enstîtuya Kevneşopiya Kurdî — parastin, lêkolîn û parvekirina kevneşopiya çandî ya kurdî.",
+				"cta": "Zêdetir bizane"
+			}
+		}
+	},
 	"Contact": {
 		"pageTitle": "Têkilî",
 		"metaDescription": "Bi Enstîtuya Kevneşopiya Kurdî re têkilî daynin — ofîsên li Silêmanî û Dihokê.",
