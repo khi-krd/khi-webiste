@@ -3,6 +3,8 @@ import { FeaturedHero } from "@/components/hero/featured-hero";
 import { LatestUpdates } from "@/components/home/latest-updates";
 import { ProjectsSection } from "@/components/home/projects-section";
 import { SoundSection } from "@/components/home/sound-section";
+import { VideoSection } from "@/components/home/video-section";
+import { WritingsSection } from "@/components/home/writings-section";
 import { VisuallyHidden } from "@/components/ui/visually-hidden";
 
 export default async function Home({
@@ -21,6 +23,8 @@ export default async function Home({
 			<LatestUpdates />
 			<ProjectsSection />
 			<SoundSection />
+			<WritingsSection />
+			<VideoSection />
 		</main>
 	);
 }

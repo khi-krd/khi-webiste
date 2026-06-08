@@ -127,6 +127,32 @@
 		"description": "Oral history recordings, interviews, and radio archive audio from across Kurdistan.",
 		"cta": "Explore audio"
 	},
+	"Writings": {
+		"eyebrow": "Writings",
+		"title": "Essays, research, and long-form stories.",
+		"description": "Scholarly and literary writing on Kurdish culture, language, history, and society.",
+		"viewAll": "View all writings",
+		"readTime": "{minutes} min read",
+		"categories": {
+			"culture": "Culture",
+			"history": "History",
+			"language": "Language",
+			"heritage": "Heritage",
+			"society": "Society"
+		}
+	},
+	"Video": {
+		"eyebrow": "Film & video",
+		"title": "Documentaries, performances, and moving-image heritage.",
+		"description": "Lectures, newsreels, and recorded performances from across Kurdish regions.",
+		"viewAll": "Explore video",
+		"categories": {
+			"documentaries": "Documentaries",
+			"performances": "Performances",
+			"lectures": "Lectures",
+			"newsreels": "Newsreels"
+		}
+	},
 	"Hero": {
 		"regionLabel": "Featured Content",
 		"emptyTitle": "Explore Kurdish Heritage Collections",

@@ -124,6 +124,32 @@
 		"description": "Tomarên dengî yên dîrokê devkî, hevpeyvîn û arşîva radyoyê ji Kurdistanê.",
 		"cta": "Arşîva dengê keşf bike"
 	},
+	"Writings": {
+		"eyebrow": "Nivîs",
+		"title": "Nivîsar, lêkolîn û çîrokên dirêj.",
+		"description": "Nivîsên zanistî û edebî li ser kultura, ziman, dîrok û civaka Kurdî.",
+		"viewAll": "Hemû nivîs bibîne",
+		"readTime": "{minutes} deq xwendin",
+		"categories": {
+			"culture": "Kultûr",
+			"history": "Dîrok",
+			"language": "Ziman",
+			"heritage": "Mîrat",
+			"society": "Civak"
+		}
+	},
+	"Video": {
+		"eyebrow": "Fîlm & vîdyo",
+		"title": "Belgefîlm, performans û mîrata wêneyên livok.",
+		"description": "Ders, nûçeyên wêneyî û performansên hatine tomarkirin ji herêmên Kurdî.",
+		"viewAll": "Vîdyoyê keşf bike",
+		"categories": {
+			"documentaries": "Belgefîlm",
+			"performances": "Performans",
+			"lectures": "Ders",
+			"newsreels": "Nûçeyên wêneyî"
+		}
+	},
 	"Hero": {
 		"regionLabel": "Naveroka Hilbijartî",
 		"emptyTitle": "Beşa naveroka hilbijartî dê zû were",
