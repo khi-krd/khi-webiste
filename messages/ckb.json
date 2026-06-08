@@ -252,6 +252,10 @@
 				"title": "وێنە",
 				"description": "ڕێژەی لایەنەکان، object-cover، چوارچێوەی باریک."
 			},
+			"videoPlayer": {
+				"title": "لێدەری ڤیدیۆ",
+				"description": "شێوازی تایبەتی Vidstack بۆ MP4 و YouTube — کۆنتڕۆڵی کەم و تەواو بە تۆکنەکانی KHI."
+			},
 			"spinner": {
 				"title": "سپینەر",
 				"description": "نیشانەی بارکردن بە سێ قەبارە."
@@ -488,6 +492,21 @@
 			"nonDirectional": "ناوئاراستەیی (زیادکردن)",
 			"nonDirectionalHint": "هەرگیز هەڵناگەڕێتەوە",
 			"note": "هەمان نیشانە، دوو ئاراستە — لە ئاراستەی هەڵبژێردراو سەیری بکە."
+		},
+		"videoPlayer": {
+			"minimal": "کەم",
+			"full": "تەواو",
+			"withPoster": "لەگەڵ پۆستەر",
+			"youtube": "YouTube",
+			"sampleTitle": "وێنەی ئارشیڤ — لێکۆڵینەوەی شەپۆل",
+			"youtubeTitle": "نموونەی تێهەڵگرتنی YouTube",
+			"posterAlt": "چوارچێوەی پۆستەری دیمەنی ئارشیڤ",
+			"youtubePosterAlt": "وێنۆچکەی ڤیدیۆی YouTube",
+			"speed": "خێرایی لێدان",
+			"seekBackward": "١٠ چرکە بۆ دواوە",
+			"seekForward": "١٠ چرکە بۆ پێشەوە",
+			"captions": "گۆڕینی ژێرنووس",
+			"pip": "وێنە لەناو وێنە"
 		},
 		"image": {
 			"landscape": "ئاسۆیی ١٦/٩",

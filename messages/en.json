@@ -252,6 +252,10 @@
 				"title": "Image",
 				"description": "Aspect ratios, object-cover, hairline frame."
 			},
+			"videoPlayer": {
+				"title": "Video player",
+				"description": "Custom Vidstack layouts for MP4 and YouTube — minimal and full controls styled with KHI tokens."
+			},
 			"spinner": {
 				"title": "Spinner",
 				"description": "Loading glyph in three sizes."
@@ -488,6 +492,21 @@
 			"nonDirectional": "Non-directional (plus)",
 			"nonDirectionalHint": "never flips",
 			"note": "Same icon, two directions — watch it in the selected direction."
+		},
+		"videoPlayer": {
+			"minimal": "Minimal",
+			"full": "Full",
+			"withPoster": "With poster",
+			"youtube": "YouTube",
+			"sampleTitle": "Archive footage — wave study",
+			"youtubeTitle": "Sample YouTube embed",
+			"posterAlt": "Archive landscape poster frame",
+			"youtubePosterAlt": "YouTube video thumbnail",
+			"speed": "Playback speed",
+			"seekBackward": "Seek backward 10 seconds",
+			"seekForward": "Seek forward 10 seconds",
+			"captions": "Toggle captions",
+			"pip": "Picture in picture"
 		},
 		"image": {
 			"landscape": "Landscape 16/9",

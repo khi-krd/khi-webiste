@@ -115,6 +115,8 @@ export function AboutHero({
 				open={videoOpen}
 				onClose={() => setVideoOpen(false)}
 				videoSrc={videoSrc}
+				poster={poster}
+				title={title}
 				closeLabel={closeLabel}
 				dialogLabel={playLabel}
 			/>

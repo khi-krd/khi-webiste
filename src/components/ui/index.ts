@@ -17,4 +17,9 @@ export { Section } from "./section";
 export { Skeleton, SkeletonText } from "./skeleton";
 export { Spinner } from "./spinner";
 export { Textarea } from "./textarea";
+export {
+	VideoPlayer,
+	type VideoPlayerProps,
+	type VideoPlayerVariant,
+} from "./video-player";
 export { VisuallyHidden } from "./visually-hidden";

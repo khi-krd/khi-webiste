@@ -9,6 +9,7 @@ import type { Metadata } from "next";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import type { ReactNode } from "react";
 import { FormShowcase } from "@/components/dev/form-showcase";
+import { VideoPlayerShowcase } from "@/components/dev/video-player-showcase";
 import {
 	AboutHeroShowcase,
 	AboutTeamPhotoShowcase,
@@ -345,6 +346,16 @@ export default async function UiPlaygroundPage({
 							/>
 						</ShowcaseCard>
 					</div>
+				</Section>
+
+				<Section
+					id="videoPlayer"
+					titleAs="h3"
+					title={t("sections.videoPlayer.title")}
+					description={t("sections.videoPlayer.description")}
+					className={sectionClass}
+				>
+					<VideoPlayerShowcase />
 				</Section>
 
 				<Section

@@ -8,7 +8,7 @@ export const UI_PLAYGROUND_GROUPS = [
 		sections: ["button", "drawnBorder", "link", "directionalIcon"],
 	},
 	{ key: "forms", sections: ["input", "field"] },
-	{ key: "content", sections: ["prose", "image", "container"] },
+	{ key: "content", sections: ["prose", "image", "videoPlayer", "container"] },
 	{
 		key: "states",
 		sections: ["spinner", "emptyState", "errorState", "skeleton"],

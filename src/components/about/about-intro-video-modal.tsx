@@ -2,6 +2,7 @@
 
 import { XMarkIcon } from "@heroicons/react/24/outline";
 import { AnimatePresence, motion, useReducedMotion } from "motion/react";
+import dynamic from "next/dynamic";
 import {
 	type KeyboardEvent as ReactKeyboardEvent,
 	useCallback,
@@ -11,6 +12,11 @@ import {
 } from "react";
 import { createPortal } from "react-dom";
 import { Container } from "@/components/ui/container";
+
+const VideoPlayer = dynamic(
+	() => import("@/components/ui/video-player").then((mod) => mod.VideoPlayer),
+	{ ssr: false },
+);
 
 const FOCUSABLE =
 	'a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])';
@@ -26,6 +32,8 @@ type AboutIntroVideoModalProps = {
 	open: boolean;
 	onClose: () => void;
 	videoSrc: string;
+	poster: string;
+	title: string;
 	closeLabel: string;
 	dialogLabel: string;
 };
@@ -34,6 +42,8 @@ export function AboutIntroVideoModal({
 	open,
 	onClose,
 	videoSrc,
+	poster,
+	title,
 	closeLabel,
 	dialogLabel,
 }: AboutIntroVideoModalProps) {
@@ -41,7 +51,6 @@ export function AboutIntroVideoModal({
 	const dialogId = useId();
 	const panelRef = useRef<HTMLDivElement>(null);
 	const closeRef = useRef<HTMLButtonElement>(null);
-	const videoRef = useRef<HTMLVideoElement>(null);
 	const triggerRef = useRef<HTMLElement | null>(null);
 
 	const onKeyDown = useCallback(
@@ -80,7 +89,6 @@ export function AboutIntroVideoModal({
 			requestAnimationFrame(() => closeRef.current?.focus());
 		} else {
 			document.body.style.overflow = "";
-			videoRef.current?.pause();
 			triggerRef.current?.focus();
 		}
 
@@ -132,17 +140,15 @@ export function AboutIntroVideoModal({
 					</Container>
 
 					<div className="flex min-h-0 flex-1 items-center justify-center px-6 pb-10 sm:px-8 sm:pb-14">
-						<div className="relative aspect-video w-full max-w-6xl overflow-hidden border border-border-strong bg-foreground">
-							<video
-								ref={videoRef}
-								className="h-full w-full object-contain"
-								controls
-								playsInline
-								preload="metadata"
+						<div className="w-full max-w-6xl">
+							<VideoPlayer
 								src={videoSrc}
-							>
-								<track kind="captions" />
-							</video>
+								title={title}
+								poster={poster}
+								posterAlt={title}
+								variant="full"
+								className="w-full"
+							/>
 						</div>
 					</div>
 				</motion.div>

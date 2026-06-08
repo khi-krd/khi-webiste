@@ -249,6 +249,10 @@
 				"title": "Wêne",
 				"description": "Rêjeyên aliyan, object-cover, çarçoveya hûrik."
 			},
+			"videoPlayer": {
+				"title": "Lîstikvana vîdyoyê",
+				"description": "Sêwirana xwerû ya Vidstack ji bo MP4 û YouTube — kontrolên sade û tijî bi tokenên KHI."
+			},
 			"spinner": {
 				"title": "Spinner",
 				"description": "Nîşana barkirinê di sê mezinahiyan de."
@@ -485,6 +489,21 @@
 			"nonDirectional": "Ne-alîdar (lê zêde bike)",
 			"nonDirectionalHint": "qet berevajî nabe",
 			"note": "Heman nîşan, du alî — li dirêjahiya hilbijartî temaşe bike."
+		},
+		"videoPlayer": {
+			"minimal": "Sade",
+			"full": "Tijî",
+			"withPoster": "Bi poster",
+			"youtube": "YouTube",
+			"sampleTitle": "Wêneyên arşîvê — lêkolîna mewjeyan",
+			"youtubeTitle": "Nimûneya YouTube",
+			"posterAlt": "Çarçoveya posterê ya diyara arşîvê",
+			"youtubePosterAlt": "Wêneya piçûk a vîdyoya YouTube",
+			"speed": "Leza lîstinê",
+			"seekBackward": "10 çirkeyan paş ve biçe",
+			"seekForward": "10 çirkeyan pêş ve biçe",
+			"captions": "Jêrnivîs biguhere",
+			"pip": "Wêne-di-wêne"
 		},
 		"image": {
 			"landscape": "Asoyî 16/9",
