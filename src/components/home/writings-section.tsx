@@ -44,7 +44,7 @@ export async function WritingsSection() {
 					</Link>
 				</header>
 
-				<div className="mt-12 divide-y divide-border lg:mt-0">
+				<div className="mt-12 lg:mt-0">
 					{writings.map((item) => (
 						<WritingRow
 							key={item.id}

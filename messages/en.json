@@ -153,6 +153,12 @@
 			"newsreels": "Newsreels"
 		}
 	},
+	"ImageCollection": {
+		"eyebrow": "Image collection",
+		"title": "Photography, dress, and visual heritage from across Kurdistan.",
+		"description": "Curated galleries of architecture, textiles, family archives, and craftsmanship.",
+		"viewAll": "View gallery"
+	},
 	"Hero": {
 		"regionLabel": "Featured Content",
 		"emptyTitle": "Explore Kurdish Heritage Collections",

@@ -1,4 +1,5 @@
 @import "tailwindcss";
+@import "lenis/dist/lenis.css";
 
 /* Hover-only utilities — avoid sticky :hover on touch (buttons look "active" after tap). */
 @custom-variant fine-hover {
@@ -9,9 +10,10 @@
 	}
 }
 
-@custom-variant fine-group-hover {
+/* Named `group-fine` (not `fine-group-hover`) — Tailwind parses *-group-hover as the built-in group-hover variant. */
+@custom-variant group-fine {
 	@media (hover: hover) and (pointer: fine) {
-		:is(:where([class*="group"]):hover *) {
+		&:is(:where(.group):hover *) {
 			@slot;
 		}
 	}
@@ -144,7 +146,6 @@
 		background-color: var(--color-background);
 		text-rendering: optimizeLegibility;
 		-webkit-font-smoothing: antialiased;
-		scroll-behavior: smooth;
 
 		/* Font tokens — live in @layer base so locale overrides can win. */
 		--font-app-body: var(--font-vazirmatn);

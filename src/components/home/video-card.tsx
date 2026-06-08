@@ -49,7 +49,7 @@ export function VideoCard({
 							"absolute inset-[-5%] origin-center",
 							"transition-transform duration-[1.35s]",
 							imageEase,
-							"fine-group-hover:scale-[1.06] motion-reduce:transition-none motion-reduce:duration-0 motion-reduce:fine-group-hover:scale-100",
+							"group-fine:scale-[1.06] motion-reduce:transition-none motion-reduce:duration-0 motion-reduce:group-fine:scale-100",
 						)}
 					>
 						<NextImage
@@ -65,17 +65,17 @@ export function VideoCard({
 								"object-cover brightness-[0.78] contrast-[1.1] saturate-[0.65]",
 								"transition-[filter] duration-[1.35s]",
 								imageEase,
-								"fine-group-hover:brightness-[0.88] fine-group-hover:saturate-[0.8] motion-reduce:transition-none",
+								"group-fine:brightness-[0.88] group-fine:saturate-[0.8] motion-reduce:transition-none",
 							)}
 						/>
 					</div>
 
 					<div
-						className="pointer-events-none absolute inset-0 z-1 bg-foreground/30 transition-opacity duration-500 ease-out fine-group-hover:bg-foreground/45 motion-reduce:transition-none"
+						className="pointer-events-none absolute inset-0 z-1 bg-foreground/30 transition-opacity duration-500 ease-out group-fine:bg-foreground/45 motion-reduce:transition-none"
 						aria-hidden
 					/>
 					<div
-						className="pointer-events-none absolute inset-0 z-1 bg-linear-to-t from-foreground from-0% via-foreground/75 via-35% to-transparent to-70% transition-opacity duration-500 ease-out fine-group-hover:via-foreground/85 motion-reduce:transition-none"
+						className="pointer-events-none absolute inset-0 z-1 bg-linear-to-t from-foreground from-0% via-foreground/75 via-35% to-transparent to-70% transition-opacity duration-500 ease-out group-fine:via-foreground/85 motion-reduce:transition-none"
 						aria-hidden
 					/>
 				</div>
@@ -84,7 +84,7 @@ export function VideoCard({
 					<Badge
 						variant="subtle"
 						size="sm"
-						className="w-fit border border-white/20 bg-white/10 text-white/90 transition-[background-color,border-color] duration-300 fine-group-hover:border-white/35 fine-group-hover:bg-white/20 motion-reduce:transition-none"
+						className="w-fit border border-white/20 bg-white/10 text-white/90 transition-[background-color,border-color] duration-300 group-fine:border-white/35 group-fine:bg-white/20 motion-reduce:transition-none"
 					>
 						{categoryLabel}
 					</Badge>
@@ -98,8 +98,8 @@ export function VideoCard({
 						className={cn(
 							"inline-flex size-14 items-center justify-center rounded-full bg-foreground/70 text-white backdrop-blur-[2px]",
 							"transition-[transform,background-color,opacity] duration-300",
-							"opacity-80 fine-group-hover:scale-110 fine-group-hover:bg-foreground/85 fine-group-hover:opacity-100",
-							"motion-reduce:transition-none motion-reduce:fine-group-hover:scale-100",
+							"opacity-80 group-fine:scale-110 group-fine:bg-foreground/85 group-fine:opacity-100",
+							"motion-reduce:transition-none motion-reduce:group-fine:scale-100",
 						)}
 					>
 						<PlayIcon className="size-6 translate-x-0.5" />
@@ -113,13 +113,13 @@ export function VideoCard({
 								"font-heading font-semibold leading-snug text-balance",
 								variant === "featured" ? "text-h2" : "text-h3",
 								"transition-[text-decoration-color] duration-300",
-								"fine-group-hover:underline fine-group-hover:decoration-white/40 fine-group-hover:underline-offset-4",
-								"motion-reduce:fine-group-hover:no-underline",
+								"group-fine:underline group-fine:decoration-white/40 group-fine:underline-offset-4",
+								"motion-reduce:group-fine:no-underline",
 							)}
 						>
 							{item.title}
 						</h3>
-						<p className="mt-1.5 line-clamp-2 text-small text-white/85 transition-opacity duration-300 fine-group-hover:text-white/95 motion-reduce:transition-none">
+						<p className="mt-1.5 line-clamp-2 text-small text-white/85 transition-opacity duration-300 group-fine:text-white/95 motion-reduce:transition-none">
 							{item.subtitle}
 						</p>
 					</div>

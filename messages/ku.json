@@ -150,6 +150,12 @@
 			"newsreels": "Nûçeyên wêneyî"
 		}
 	},
+	"ImageCollection": {
+		"eyebrow": "Koleksiyona wêneyan",
+		"title": "Wêne, cil û mîrata dîtbarî ji Kurdistanê.",
+		"description": "Galeriyên bijartî yên mîmarî, tekstîl, arşîva malbatî û kariya destan.",
+		"viewAll": "Galeriyê bibîne"
+	},
 	"Hero": {
 		"regionLabel": "Naveroka Hilbijartî",
 		"emptyTitle": "Beşa naveroka hilbijartî dê zû were",
