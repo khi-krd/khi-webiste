@@ -55,3 +55,23 @@ export const UI_PLAYGROUND_GROUPS = [
 		],
 	},
 ] as const;
+
+export const UI_PLAYGROUND_SECTION_IDS = UI_PLAYGROUND_GROUPS.flatMap(
+	(group) => group.sections,
+);
+
+export type UiPlaygroundSectionId = (typeof UI_PLAYGROUND_SECTION_IDS)[number];
+
+const SECTION_ID_SET = new Set<string>([
+	UI_PLAYGROUND_INTRODUCTION_ID,
+	...UI_PLAYGROUND_SECTION_IDS,
+]);
+
+export function resolveUiPlaygroundSectionId(
+	section: string | undefined,
+): string {
+	if (section && SECTION_ID_SET.has(section)) {
+		return section;
+	}
+	return UI_PLAYGROUND_INTRODUCTION_ID;
+}
