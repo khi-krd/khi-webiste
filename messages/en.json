@@ -116,6 +116,54 @@
 			"society": "Society"
 		}
 	},
+	"Articles": {
+		"pageTitle": "Articles",
+		"metaDescription": "Research, essays, and stories on Kurdish culture, history, language, heritage, and society from the Kurdish Heritage Institute.",
+		"hero": {
+			"eyebrow": "Articles",
+			"title": "Discover our latest research",
+			"description": "Essays, field reports, and archival discoveries from across Kurdish regions — searchable and browsable by topic."
+		},
+		"search": {
+			"placeholder": "Search articles…",
+			"submit": "Find",
+			"label": "Search articles",
+			"clear": "Clear search",
+			"noResults": "No articles match your search. Try a different term or clear the filters."
+		},
+		"filter": {
+			"all": "All",
+			"clear": "Clear filters",
+			"label": "Filter by topic",
+			"active": "Showing"
+		},
+		"sections": {
+			"spotlight": "Spotlight",
+			"allArticles": "All articles",
+			"filtered": "{category} articles",
+			"browseDescription": "Browse the full archive — filter by topic or search by keyword."
+		},
+		"sidebar": {
+			"featured": "Featured",
+			"latest": "Latest"
+		},
+		"categories": {
+			"culture": "Culture",
+			"history": "History",
+			"language": "Language",
+			"heritage": "Heritage",
+			"society": "Society",
+			"viewAll": "Browse all topics"
+		},
+		"readTime": "{minutes} min read",
+		"pagination": {
+			"label": "Articles pagination",
+			"featuredLabel": "Featured articles pagination",
+			"latestLabel": "Latest articles pagination",
+			"previous": "Previous",
+			"next": "Next"
+		}
+	},
 	"Projects": {
 		"eyebrow": "Our projects",
 		"title": "Archive initiatives and collaborative preservation work.",

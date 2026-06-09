@@ -113,6 +113,54 @@
 			"society": "Civak"
 		}
 	},
+	"Articles": {
+		"pageTitle": "Gotar",
+		"metaDescription": "Lêkolîn, gotar û çîrok li ser çand, dîrok, ziman, mîrat û civaka Kurdî ji Enstîtûya Mîrateya Kurdî.",
+		"hero": {
+			"eyebrow": "Gotar",
+			"title": "Lêkolînên me yên dawî bibîne",
+			"description": "Gotar, raporên qeyadan û dîtina arşîvê ji herêmên Kurdî — bi lêgerîn û li gorî mijarê."
+		},
+		"search": {
+			"placeholder": "Gotaran bigere…",
+			"submit": "Bibîne",
+			"label": "Lêgerîna gotaran",
+			"clear": "Lêgerînê paqij bike",
+			"noResults": "Ti gotar bi lêgerîna we re li hev nayên. Peyvek din biceribîne an filtreyan paqij bike."
+		},
+		"filter": {
+			"all": "Hemû",
+			"clear": "Filtreyan paqij bike",
+			"label": "Li gorî mijarê filtir bike",
+			"active": "Tê xuyang kirin"
+		},
+		"sections": {
+			"spotlight": "Nûçeyên taybet",
+			"allArticles": "Hemû gotar",
+			"filtered": "Gotarên {category}",
+			"browseDescription": "Arşîva tevahî bigere — li gorî mijarê filtir bike an bi peyvekê bigere."
+		},
+		"sidebar": {
+			"featured": "Taybet",
+			"latest": "Dawîtirîn"
+		},
+		"categories": {
+			"culture": "Çand",
+			"history": "Dîrok",
+			"language": "Ziman",
+			"heritage": "Mîrat",
+			"society": "Civak",
+			"viewAll": "Hemû mijaran bibîne"
+		},
+		"readTime": "{minutes} xulek xwendin",
+		"pagination": {
+			"label": "Rûpelkirina gotaran",
+			"featuredLabel": "Rûpelkirina gotarên taybet",
+			"latestLabel": "Rûpelkirina gotarên dawîtirîn",
+			"previous": "Berê",
+			"next": "Paş"
+		}
+	},
 	"Projects": {
 		"eyebrow": "Projeyên me",
 		"title": "Destpêkên arşîvê û xebata hevpar a parastinê.",

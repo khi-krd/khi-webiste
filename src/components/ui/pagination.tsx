@@ -1,5 +1,7 @@
+"use client";
+
 import { ChevronLeftIcon, ChevronRightIcon } from "@heroicons/react/24/outline";
-import type { ComponentProps } from "react";
+import type { ComponentProps, MouseEvent } from "react";
 import { cn } from "@/lib/utils";
 import { DirectionalIcon } from "./directional-icon";
 import { Link } from "./link";
@@ -18,6 +20,8 @@ type PaginationProps = {
 	nextLabel?: string;
 	/** Page numbers shown on each side of the current page. Default 1. */
 	siblingCount?: number;
+	/** Client-side navigation — keeps href for SEO while avoiding full scroll reset. */
+	onPageChange?: (page: number) => void;
 	className?: string;
 };
 
@@ -63,7 +67,8 @@ const itemBase =
  *
  * Prev/Next use <DirectionalIcon> chevrons: previous points toward reading-
  * start, next toward reading-end — both flip in RTL. Pages are real <Link>s
- * (SEO); current renders as plain text; disabled prev/next render as
+ * (SEO); pass onPageChange for client navigation without scrolling to the
+ * page top. Current renders as plain text; disabled prev/next render as
  * aria-disabled spans. Decoupled from URL state — caller provides createHref.
  */
 export function Pagination({
@@ -74,8 +79,15 @@ export function Pagination({
 	previousLabel = "Previous",
 	nextLabel = "Next",
 	siblingCount = 1,
+	onPageChange,
 	className,
 }: PaginationProps) {
+	const handlePageClick =
+		(page: number) => (event: MouseEvent<HTMLAnchorElement>) => {
+			if (!onPageChange) return;
+			event.preventDefault();
+			onPageChange(page);
+		};
 	if (totalPages <= 1) return null;
 
 	const pages = buildPages(currentPage, totalPages, siblingCount);
@@ -100,8 +112,10 @@ export function Pagination({
 					) : (
 						<Link
 							href={createHref(currentPage - 1)}
+							scroll={false}
 							rel="prev"
 							aria-label={previousLabel}
+							onClick={handlePageClick(currentPage - 1)}
 							className={cn(itemBase, "text-foreground hover:bg-sunken")}
 						>
 							<DirectionalIcon icon={ChevronLeftIcon} className="size-4" />
@@ -134,6 +148,8 @@ export function Pagination({
 							) : (
 								<Link
 									href={createHref(page)}
+									scroll={false}
+									onClick={handlePageClick(page)}
 									className={cn(itemBase, "text-foreground hover:bg-sunken")}
 								>
 									{page}
@@ -158,8 +174,10 @@ export function Pagination({
 					) : (
 						<Link
 							href={createHref(currentPage + 1)}
+							scroll={false}
 							rel="next"
 							aria-label={nextLabel}
+							onClick={handlePageClick(currentPage + 1)}
 							className={cn(itemBase, "text-foreground hover:bg-sunken")}
 						>
 							<DirectionalIcon icon={ChevronRightIcon} className="size-4" />

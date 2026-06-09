@@ -89,11 +89,11 @@ export const NAV_ITEMS: NavItem[] = [
 		descriptionKey: "articlesDescription",
 		imageSrc: MENU_IMAGE("5.jpg"),
 		children: [
-			{ key: "articlesSubCulture", href: "/articles/culture" },
-			{ key: "articlesSubHistory", href: "/articles/history" },
-			{ key: "articlesSubLanguage", href: "/articles/language" },
-			{ key: "articlesSubSociety", href: "/articles/society" },
-			{ key: "articlesSubHeritage", href: "/articles/heritage" },
+			{ key: "articlesSubCulture", href: "/articles?category=culture" },
+			{ key: "articlesSubHistory", href: "/articles?category=history" },
+			{ key: "articlesSubLanguage", href: "/articles?category=language" },
+			{ key: "articlesSubSociety", href: "/articles?category=society" },
+			{ key: "articlesSubHeritage", href: "/articles?category=heritage" },
 		],
 	},
 	{
