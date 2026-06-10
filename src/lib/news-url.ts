@@ -1,16 +1,16 @@
-import { isValidCategory } from "@/lib/mock/articles";
+import { isValidCategory } from "@/lib/mock/news";
 
-export type ArticlesUrlParams = {
+export type NewsUrlParams = {
 	category?: string | null;
 	q?: string | null;
 	page?: number;
 };
 
-export function buildArticlesHref({
+export function buildNewsHref({
 	category,
 	q,
 	page,
-}: ArticlesUrlParams): "/articles" | `/articles?${string}` {
+}: NewsUrlParams): "/news" | `/news?${string}` {
 	const params = new URLSearchParams();
 
 	if (category && isValidCategory(category)) {
@@ -24,5 +24,5 @@ export function buildArticlesHref({
 	}
 
 	const qs = params.toString();
-	return qs ? (`/articles?${qs}` as const) : "/articles";
+	return qs ? (`/news?${qs}` as const) : "/news";
 }

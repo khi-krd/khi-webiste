@@ -2,21 +2,21 @@ import { ArrowRightIcon } from "@heroicons/react/24/outline";
 import { Badge } from "@/components/ui/badge";
 import { DirectionalIcon } from "@/components/ui/directional-icon";
 import { Link } from "@/components/ui/link";
-import type { ArticleItem } from "@/lib/mock/articles";
+import type { NewsItem } from "@/lib/mock/news";
 import { cn } from "@/lib/utils";
 
-type ArticleEditorialCardProps = {
-	item: ArticleItem;
+type NewsEditorialCardProps = {
+	item: NewsItem;
 	categoryLabel: string;
 	className?: string;
 };
 
-export function ArticleEditorialCard({
+export function NewsEditorialCard({
 	item,
 	categoryLabel,
 	className,
-}: ArticleEditorialCardProps) {
-	const href = `/articles/${item.slug}`;
+}: NewsEditorialCardProps) {
+	const href = `/news/${item.slug}`;
 
 	return (
 		<Link

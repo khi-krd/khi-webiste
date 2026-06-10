@@ -1,24 +1,24 @@
-import { ArticlesClearFilters } from "@/components/articles/articles-clear-filters";
-import { ArticlesFilterBar } from "@/components/articles/articles-filter-bar";
-import { ArticlesSidebarPanel } from "@/components/articles/articles-sidebar-panel";
+import { NewsClearFilters } from "@/components/news/news-clear-filters";
+import { NewsFilterBar } from "@/components/news/news-filter-bar";
+import { NewsSidebarPanel } from "@/components/news/news-sidebar-panel";
 import { NewsCard } from "@/components/home/news-card";
 import { Divider } from "@/components/ui/divider";
-import { ArticlesPagination } from "@/components/articles/articles-pagination";
+import { NewsPagination } from "@/components/news/news-pagination";
 import { homeInsetClass } from "@/lib/layout";
 import {
-	type ArticleCategory,
-	type ArticleItem,
-} from "@/lib/mock/articles";
+	type NewsCategory,
+	type NewsItem,
+} from "@/lib/mock/news";
 import { cn } from "@/lib/utils";
 
-type ArticlesShellProps = {
-	articles: ArticleItem[];
-	featured: ArticleItem[];
-	latest: ArticleItem[];
+type NewsShellProps = {
+	items: NewsItem[];
+	featured: NewsItem[];
+	latest: NewsItem[];
 	locale: string;
 	sectionTitle: string;
 	sectionDescription?: string;
-	categoryLabels: Record<ArticleCategory, string>;
+	categoryLabels: Record<NewsCategory, string>;
 	currentPage: number;
 	totalPages: number;
 	activeCategory?: string | null;
@@ -32,8 +32,8 @@ type ArticlesShellProps = {
 	className?: string;
 };
 
-export function ArticlesShell({
-	articles,
+export function NewsShell({
+	items,
 	featured,
 	latest,
 	locale,
@@ -51,23 +51,23 @@ export function ArticlesShell({
 	featuredLabel,
 	latestLabel,
 	className,
-}: ArticlesShellProps) {
+}: NewsShellProps) {
 	const hasFilters = Boolean(activeCategory || activeQuery?.trim());
-	const isEmpty = articles.length === 0;
+	const isEmpty = items.length === 0;
 
 	return (
 		<section
-			id="articles-grid"
+			id="news-grid"
 			className={cn(
 				"w-full border-t border-border bg-background py-12 sm:py-16 lg:py-20",
 				className,
 			)}
-			aria-labelledby="articles-grid-heading"
+			aria-labelledby="news-grid-heading"
 		>
 			<header className={cn(homeInsetClass, "mb-8 sm:mb-10")}>
 				<div className="max-w-2xl text-start">
 					<h2
-						id="articles-grid-heading"
+						id="news-grid-heading"
 						className="font-heading text-h1 font-bold leading-[1.1] text-balance"
 					>
 						{sectionTitle}
@@ -85,7 +85,7 @@ export function ArticlesShell({
 				)}
 			>
 				<div className="min-w-0">
-					<ArticlesFilterBar
+					<NewsFilterBar
 						activeCategory={activeCategory}
 						activeQuery={activeQuery}
 						categoryLabels={categoryLabels}
@@ -97,13 +97,13 @@ export function ArticlesShell({
 							<p className="text-body text-muted">{noResultsMessage}</p>
 							{hasFilters ? (
 								<div className="mt-6 flex justify-center">
-									<ArticlesClearFilters />
+									<NewsClearFilters />
 								</div>
 							) : null}
 						</div>
 					) : (
 						<div className="grid grid-cols-1 gap-3 sm:grid-cols-2 sm:gap-4 xl:grid-cols-3">
-							{articles.map((item) => (
+							{items.map((item) => (
 								<NewsCard
 									key={item.id}
 									item={item}
@@ -116,7 +116,7 @@ export function ArticlesShell({
 					)}
 
 					{!isEmpty && totalPages > 1 ? (
-						<ArticlesPagination
+						<NewsPagination
 							currentPage={currentPage}
 							totalPages={totalPages}
 							activeCategory={activeCategory}
@@ -131,7 +131,7 @@ export function ArticlesShell({
 
 				<aside className="mt-12 lg:mt-0 lg:sticky lg:top-28 lg:self-start">
 					<div className="flex flex-col gap-6">
-						<ArticlesSidebarPanel
+						<NewsSidebarPanel
 							title={featuredLabel}
 							items={featured}
 							locale={locale}
@@ -140,7 +140,7 @@ export function ArticlesShell({
 
 						<Divider />
 
-						<ArticlesSidebarPanel
+						<NewsSidebarPanel
 							title={latestLabel}
 							items={latest}
 							locale={locale}

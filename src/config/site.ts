@@ -84,16 +84,16 @@ export const NAV_ITEMS: NavItem[] = [
 		],
 	},
 	{
-		key: "articles",
-		href: "/articles",
-		descriptionKey: "articlesDescription",
+		key: "news",
+		href: "/news",
+		descriptionKey: "newsDescription",
 		imageSrc: MENU_IMAGE("5.jpg"),
 		children: [
-			{ key: "articlesSubCulture", href: "/articles?category=culture" },
-			{ key: "articlesSubHistory", href: "/articles?category=history" },
-			{ key: "articlesSubLanguage", href: "/articles?category=language" },
-			{ key: "articlesSubSociety", href: "/articles?category=society" },
-			{ key: "articlesSubHeritage", href: "/articles?category=heritage" },
+			{ key: "newsSubCulture", href: "/news?category=culture" },
+			{ key: "newsSubHistory", href: "/news?category=history" },
+			{ key: "newsSubLanguage", href: "/news?category=language" },
+			{ key: "newsSubSociety", href: "/news?category=society" },
+			{ key: "newsSubHeritage", href: "/news?category=heritage" },
 		],
 	},
 	{
@@ -135,7 +135,7 @@ export const NAV_ITEMS: NavItem[] = [
 export const SEARCH_SUGGESTION_KEYS = [
 	"books",
 	"songs",
-	"articles",
+	"news",
 	"archive",
 	"about",
 ] as const;

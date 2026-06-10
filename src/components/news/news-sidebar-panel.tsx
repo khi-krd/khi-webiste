@@ -1,22 +1,22 @@
-import { ArticleSidebarCard } from "@/components/articles/article-sidebar-card";
-import type { ArticleCategory, ArticleItem } from "@/lib/mock/articles";
+import { NewsSidebarCard } from "@/components/news/news-sidebar-card";
+import type { NewsCategory, NewsItem } from "@/lib/mock/news";
 import { cn } from "@/lib/utils";
 
-type ArticlesSidebarPanelProps = {
+type NewsSidebarPanelProps = {
 	title: string;
-	items: ArticleItem[];
+	items: NewsItem[];
 	locale: string;
-	categoryLabels: Record<ArticleCategory, string>;
+	categoryLabels: Record<NewsCategory, string>;
 	className?: string;
 };
 
-export function ArticlesSidebarPanel({
+export function NewsSidebarPanel({
 	title,
 	items,
 	locale,
 	categoryLabels,
 	className,
-}: ArticlesSidebarPanelProps) {
+}: NewsSidebarPanelProps) {
 	return (
 		<div className={cn("text-start", className)}>
 			<h3 className="font-heading text-h3 font-bold">{title}</h3>
@@ -24,7 +24,7 @@ export function ArticlesSidebarPanel({
 			<ul className="mt-4 flex flex-col gap-3">
 				{items.map((item) => (
 					<li key={item.id}>
-						<ArticleSidebarCard
+						<NewsSidebarCard
 							item={item}
 							categoryLabel={categoryLabels[item.category]}
 							locale={locale}

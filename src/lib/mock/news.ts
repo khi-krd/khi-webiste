@@ -1,8 +1,8 @@
 import type { LatestUpdateCategory } from "@/lib/mock/latest-updates";
 
-export type ArticleCategory = LatestUpdateCategory;
+export type NewsCategory = LatestUpdateCategory;
 
-export const ARTICLE_CATEGORIES: ArticleCategory[] = [
+export const NEWS_CATEGORIES: NewsCategory[] = [
 	"culture",
 	"history",
 	"language",
@@ -10,12 +10,12 @@ export const ARTICLE_CATEGORIES: ArticleCategory[] = [
 	"society",
 ];
 
-export type ArticleItem = {
+export type NewsItem = {
 	id: string;
 	slug: string;
 	title: string;
 	excerpt: string;
-	category: ArticleCategory;
+	category: NewsCategory;
 	publishedAt: string;
 	featured?: boolean;
 	author?: string;
@@ -26,11 +26,11 @@ export type ArticleItem = {
 	};
 };
 
-type LocaleCopy = ArticleItem[];
+type LocaleCopy = NewsItem[];
 
 const EN_ITEMS: LocaleCopy = [
 	{
-		id: "article-1",
+		id: "news-1",
 		slug: "oral-history-preservation",
 		title: "Why Oral History Matters More Than Ever for Kurdish Communities",
 		excerpt:
@@ -43,7 +43,7 @@ const EN_ITEMS: LocaleCopy = [
 		image: { url: "/menu/2.jpg", alt: "Oral history recording session" },
 	},
 	{
-		id: "article-2",
+		id: "news-2",
 		slug: "manuscript-digitization",
 		title: "Inside the Institute's Manuscript Digitization Project",
 		excerpt:
@@ -56,7 +56,7 @@ const EN_ITEMS: LocaleCopy = [
 		image: { url: "/menu/1.jpg", alt: "Manuscript being digitized" },
 	},
 	{
-		id: "article-3",
+		id: "news-3",
 		slug: "kurdish-folk-music-revival",
 		title: "How Folk Music Is Finding New Audiences in the Digital Archive",
 		excerpt:
@@ -69,7 +69,7 @@ const EN_ITEMS: LocaleCopy = [
 		image: { url: "/menu/5.jpg", alt: "Musician performing folk music" },
 	},
 	{
-		id: "article-4",
+		id: "news-4",
 		slug: "sorani-dialect-mapping",
 		title: "Mapping Sorani Dialect Variations Across Southern Kurdistan",
 		excerpt:
@@ -81,7 +81,7 @@ const EN_ITEMS: LocaleCopy = [
 		image: { url: "/menu/6.jpg", alt: "Linguistic map of dialect regions" },
 	},
 	{
-		id: "article-5",
+		id: "news-5",
 		slug: "traditional-dress-exhibition",
 		title: "Ten Garments That Tell the Story of Kurdish Identity",
 		excerpt:
@@ -93,7 +93,7 @@ const EN_ITEMS: LocaleCopy = [
 		image: { url: "/menu/3.jpg", alt: "Traditional Kurdish dress on display" },
 	},
 	{
-		id: "article-6",
+		id: "news-6",
 		slug: "heritage-education-initiative",
 		title: "Bringing Heritage Education Into Kurdish Classrooms",
 		excerpt:
@@ -105,7 +105,7 @@ const EN_ITEMS: LocaleCopy = [
 		image: { url: "/menu/4.jpg", alt: "Students exploring heritage materials" },
 	},
 	{
-		id: "article-7",
+		id: "news-7",
 		slug: "photographic-archive-discovery",
 		title: "Rare Photographs Resurface From a Private Family Collection",
 		excerpt:
@@ -117,7 +117,7 @@ const EN_ITEMS: LocaleCopy = [
 		image: { url: "/menu/7.jpg", alt: "Historical photograph from family archive" },
 	},
 	{
-		id: "article-8",
+		id: "news-8",
 		slug: "kurdish-poetry-translation",
 		title: "Translating Kurdish Poetry for a Global Readership",
 		excerpt:
@@ -129,7 +129,7 @@ const EN_ITEMS: LocaleCopy = [
 		image: { url: "/menu/1.jpg", alt: "Open poetry manuscript" },
 	},
 	{
-		id: "article-9",
+		id: "news-9",
 		slug: "hawraman-heritage-landscape",
 		title: "Hawraman's Terraced Villages and the Living Heritage of the Mountains",
 		excerpt:
@@ -141,7 +141,7 @@ const EN_ITEMS: LocaleCopy = [
 		image: { url: "/menu/6.jpg", alt: "Hawraman mountain village terraces" },
 	},
 	{
-		id: "article-10",
+		id: "news-10",
 		slug: "women-in-oral-tradition",
 		title: "Women's Voices in Kurdish Oral Tradition",
 		excerpt:
@@ -153,7 +153,7 @@ const EN_ITEMS: LocaleCopy = [
 		image: { url: "/menu/2.jpg", alt: "Elder woman sharing oral history" },
 	},
 	{
-		id: "article-11",
+		id: "news-11",
 		slug: "newroz-celebration-origins",
 		title: "Newroz: Ritual, Resistance, and Renewal Across Generations",
 		excerpt:
@@ -165,7 +165,7 @@ const EN_ITEMS: LocaleCopy = [
 		image: { url: "/menu/5.jpg", alt: "Newroz fire celebration" },
 	},
 	{
-		id: "article-12",
+		id: "news-12",
 		slug: "archive-access-policy",
 		title: "Opening the Archive: Access Policies for Researchers and Communities",
 		excerpt:
@@ -177,7 +177,7 @@ const EN_ITEMS: LocaleCopy = [
 		image: { url: "/menu/4.jpg", alt: "Researchers in archive reading room" },
 	},
 	{
-		id: "article-13",
+		id: "news-13",
 		slug: "kurdish-cinema-retrospective",
 		title: "A Retrospective of Kurdish Cinema From the 1970s to Today",
 		excerpt:
@@ -189,7 +189,7 @@ const EN_ITEMS: LocaleCopy = [
 		image: { url: "/menu/3.jpg", alt: "Film still from Kurdish cinema" },
 	},
 	{
-		id: "article-14",
+		id: "news-14",
 		slug: "ancient-settlement-excavation",
 		title: "What Recent Excavations Reveal About Pre-Islamic Settlement Patterns",
 		excerpt:
@@ -201,7 +201,7 @@ const EN_ITEMS: LocaleCopy = [
 		image: { url: "/menu/7.jpg", alt: "Archaeological excavation site" },
 	},
 	{
-		id: "article-15",
+		id: "news-15",
 		slug: "kurmanci-sorani-bridge",
 		title: "Building Bridges Between Kurmancî and Sorani Literary Traditions",
 		excerpt:
@@ -213,7 +213,7 @@ const EN_ITEMS: LocaleCopy = [
 		image: { url: "/menu/1.jpg", alt: "Books in multiple Kurdish dialects" },
 	},
 	{
-		id: "article-16",
+		id: "news-16",
 		slug: "craft-revival-weaving",
 		title: "Reviving Traditional Weaving Techniques in Contemporary Kurdistan",
 		excerpt:
@@ -225,7 +225,7 @@ const EN_ITEMS: LocaleCopy = [
 		image: { url: "/menu/3.jpg", alt: "Traditional weaving loom" },
 	},
 	{
-		id: "article-17",
+		id: "news-17",
 		slug: "youth-heritage-ambassadors",
 		title: "Youth Heritage Ambassadors Programme Launches Across Kurdistan",
 		excerpt:
@@ -237,7 +237,7 @@ const EN_ITEMS: LocaleCopy = [
 		image: { url: "/menu/4.jpg", alt: "Youth volunteers at heritage workshop" },
 	},
 	{
-		id: "article-18",
+		id: "news-18",
 		slug: "radio-archive-digitization",
 		title: "Digitizing Decades of Kurdish Radio Broadcasts",
 		excerpt:
@@ -252,7 +252,7 @@ const EN_ITEMS: LocaleCopy = [
 
 const KU_ITEMS: LocaleCopy = EN_ITEMS.map((item, i) => ({
 	...item,
-	id: `article-${i + 1}`,
+	id: `news-${i + 1}`,
 	title: [
 		"Çima Dîroka Devkî Niha Ji Her Demê Ji Bo Civakên Kurd Girîngtire",
 		"Di Projeya Dîjîtalîzekirina Destnivîsan de Navend",
@@ -297,7 +297,7 @@ const KU_ITEMS: LocaleCopy = EN_ITEMS.map((item, i) => ({
 
 const CKB_ITEMS: LocaleCopy = EN_ITEMS.map((item, i) => ({
 	...item,
-	id: `article-${i + 1}`,
+	id: `news-${i + 1}`,
 	title: [
 		"بۆچی مێژووی شفاهی ئێستا لە هەموو کاتێک گرینگترە بۆ کۆمەڵگە کوردییەکان",
 		"ناوەندی پڕۆژەی دیجیتاڵکردنی دەستنووسەکان",
@@ -340,26 +340,26 @@ const CKB_ITEMS: LocaleCopy = EN_ITEMS.map((item, i) => ({
 	][i],
 }));
 
-function withArticleImages(items: LocaleCopy): LocaleCopy {
+function withNewsImages(items: LocaleCopy): LocaleCopy {
 	return items.map((item, index) => ({
 		...item,
 		image: {
 			...item.image,
-			url: `/articles/${(index % 10) + 1}.jpg`,
+			url: `/news/${(index % 10) + 1}.jpg`,
 		},
 	}));
 }
 
 const LOCALE_ITEMS: Record<string, LocaleCopy> = {
-	en: withArticleImages(EN_ITEMS),
-	ku: withArticleImages(KU_ITEMS),
-	ckb: withArticleImages(CKB_ITEMS),
+	en: withNewsImages(EN_ITEMS),
+	ku: withNewsImages(KU_ITEMS),
+	ckb: withNewsImages(CKB_ITEMS),
 };
 
-export const ARTICLES_PER_PAGE = 10;
+export const NEWS_PER_PAGE = 10;
 export const SIDEBAR_ITEMS_LIMIT = 3;
 
-export function getArticles(locale: string): ArticleItem[] {
+export function getNews(locale: string): NewsItem[] {
 	const items = LOCALE_ITEMS[locale] ?? EN_ITEMS;
 	return [...items].sort(
 		(a, b) =>
@@ -367,23 +367,23 @@ export function getArticles(locale: string): ArticleItem[] {
 	);
 }
 
-export function getFeaturedArticles(locale: string): ArticleItem[] {
-	return getArticles(locale)
+export function getFeaturedNews(locale: string): NewsItem[] {
+	return getNews(locale)
 		.filter((item) => item.featured)
 		.slice(0, SIDEBAR_ITEMS_LIMIT);
 }
 
-export function getLatestArticles(locale: string): ArticleItem[] {
-	return getArticles(locale).slice(0, SIDEBAR_ITEMS_LIMIT);
+export function getLatestNews(locale: string): NewsItem[] {
+	return getNews(locale).slice(0, SIDEBAR_ITEMS_LIMIT);
 }
 
-export function getBentoArticles(locale: string): {
-	hero: ArticleItem;
-	rail: ArticleItem[];
-	editorial: ArticleItem;
-	wide: ArticleItem;
+export function getBentoNews(locale: string): {
+	hero: NewsItem;
+	rail: NewsItem[];
+	editorial: NewsItem;
+	wide: NewsItem;
 } {
-	const items = getArticles(locale);
+	const items = getNews(locale);
 	const [hero, railA, railB, railC, railD, editorial, , wide] = items;
 	return {
 		hero,
@@ -393,21 +393,21 @@ export function getBentoArticles(locale: string): {
 	};
 }
 
-export type ArticleFilter = {
+export type NewsFilter = {
 	category?: string | null;
 	query?: string | null;
 };
 
 export function isValidCategory(
 	category: string,
-): category is ArticleCategory {
-	return (ARTICLE_CATEGORIES as string[]).includes(category);
+): category is NewsCategory {
+	return (NEWS_CATEGORIES as string[]).includes(category);
 }
 
-export function filterArticles(
-	items: ArticleItem[],
-	{ category, query }: ArticleFilter,
-): ArticleItem[] {
+export function filterNews(
+	items: NewsItem[],
+	{ category, query }: NewsFilter,
+): NewsItem[] {
 	let result = items;
 
 	if (category && isValidCategory(category)) {
@@ -426,10 +426,10 @@ export function filterArticles(
 	return result;
 }
 
-export function paginateArticles<T>(
+export function paginateNews<T>(
 	items: T[],
 	page: number,
-	perPage: number = ARTICLES_PER_PAGE,
+	perPage: number = NEWS_PER_PAGE,
 ): { items: T[]; totalPages: number; currentPage: number } {
 	const totalPages = Math.max(1, Math.ceil(items.length / perPage));
 	const currentPage = Math.min(Math.max(1, page), totalPages);
@@ -442,7 +442,7 @@ export function paginateArticles<T>(
 	};
 }
 
-export function formatArticleDate(
+export function formatNewsDate(
 	isoDate: string,
 	locale: string,
 ): string {

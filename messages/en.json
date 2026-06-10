@@ -11,7 +11,7 @@
 		"songs": "Songs",
 		"audio": "Audio",
 		"video": "Video",
-		"articles": "Articles",
+		"news": "News",
 		"gallery": "Gallery",
 		"archive": "Archive",
 		"about": "About",
@@ -42,12 +42,12 @@
 		"videoSubPerformances": "Performances",
 		"videoSubLectures": "Lectures & talks",
 		"videoSubNewsreels": "Newsreels",
-		"articlesDescription": "Research and essays on Kurdish culture, history, language, and society.",
-		"articlesSubCulture": "Culture",
-		"articlesSubHistory": "History",
-		"articlesSubLanguage": "Language",
-		"articlesSubSociety": "Society",
-		"articlesSubHeritage": "Heritage",
+		"newsDescription": "Research and essays on Kurdish culture, history, language, and society.",
+		"newsSubCulture": "Culture",
+		"newsSubHistory": "History",
+		"newsSubLanguage": "Language",
+		"newsSubSociety": "Society",
+		"newsSubHeritage": "Heritage",
 		"galleryDescription": "Photography, traditional dress, and visual art from the Kurdish world.",
 		"gallerySubPhotography": "Photography",
 		"gallerySubDress": "Traditional dress",
@@ -79,7 +79,7 @@
 		"songs": "Songs",
 		"audio": "Audio",
 		"video": "Video",
-		"articles": "Articles",
+		"news": "News",
 		"gallery": "Gallery",
 		"archive": "Archive",
 		"events": "Events",
@@ -106,7 +106,7 @@
 		"eyebrow": "News",
 		"title": "Latest Updates",
 		"description": "Research, essays, and stories on Kurdish culture, history, language, and heritage.",
-		"viewAll": "View all articles",
+		"viewAll": "View all news",
 		"byAuthor": "By {author}",
 		"categories": {
 			"culture": "Culture",
@@ -116,20 +116,20 @@
 			"society": "Society"
 		}
 	},
-	"Articles": {
-		"pageTitle": "Articles",
+	"News": {
+		"pageTitle": "News",
 		"metaDescription": "Research, essays, and stories on Kurdish culture, history, language, heritage, and society from the Kurdish Heritage Institute.",
 		"hero": {
-			"eyebrow": "Articles",
+			"eyebrow": "News",
 			"title": "Discover our latest research",
 			"description": "Essays, field reports, and archival discoveries from across Kurdish regions — searchable and browsable by topic."
 		},
 		"search": {
-			"placeholder": "Search articles…",
+			"placeholder": "Search news…",
 			"submit": "Find",
-			"label": "Search articles",
+			"label": "Search news",
 			"clear": "Clear search",
-			"noResults": "No articles match your search. Try a different term or clear the filters."
+			"noResults": "No news match your search. Try a different term or clear the filters."
 		},
 		"filter": {
 			"all": "All",
@@ -139,8 +139,8 @@
 		},
 		"sections": {
 			"spotlight": "Spotlight",
-			"allArticles": "All articles",
-			"filtered": "{category} articles",
+			"allNews": "All news",
+			"filtered": "{category} news",
 			"browseDescription": "Browse the full archive — filter by topic or search by keyword."
 		},
 		"sidebar": {
@@ -157,9 +157,9 @@
 		},
 		"readTime": "{minutes} min read",
 		"pagination": {
-			"label": "Articles pagination",
-			"featuredLabel": "Featured articles pagination",
-			"latestLabel": "Latest articles pagination",
+			"label": "News pagination",
+			"featuredLabel": "Featured news pagination",
+			"latestLabel": "Latest news pagination",
 			"previous": "Previous",
 			"next": "Next"
 		}

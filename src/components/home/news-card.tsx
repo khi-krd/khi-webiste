@@ -43,7 +43,7 @@ export function NewsCard({
 	categoryLabel,
 	className,
 }: NewsCardProps) {
-	const href = `/articles/${item.slug}`;
+	const href = `/news/${item.slug}`;
 	const showExcerpt = variant === "featured" || variant === "tall" || variant === "wide";
 	const isFeatured = variant === "featured";
 

@@ -1,26 +1,26 @@
-import { ArticleEditorialCard } from "@/components/articles/article-editorial-card";
+import { NewsEditorialCard } from "@/components/news/news-editorial-card";
 import { NewsCard } from "@/components/home/news-card";
 import { homeInsetClass } from "@/lib/layout";
 import {
-	getBentoArticles,
-	type ArticleCategory,
-} from "@/lib/mock/articles";
+	getBentoNews,
+	type NewsCategory,
+} from "@/lib/mock/news";
 import { cn } from "@/lib/utils";
 
-type ArticlesBentoProps = {
+type NewsBentoProps = {
 	locale: string;
-	categoryLabels: Record<ArticleCategory, string>;
+	categoryLabels: Record<NewsCategory, string>;
 	spotlightLabel: string;
 	className?: string;
 };
 
-export function ArticlesBento({
+export function NewsBento({
 	locale,
 	categoryLabels,
 	spotlightLabel,
 	className,
-}: ArticlesBentoProps) {
-	const { hero, rail, editorial, wide } = getBentoArticles(locale);
+}: NewsBentoProps) {
+	const { hero, rail, editorial, wide } = getBentoNews(locale);
 
 	return (
 		<section
@@ -28,11 +28,11 @@ export function ArticlesBento({
 				"w-full border-b border-border bg-background py-12 sm:py-16 lg:py-20",
 				className,
 			)}
-			aria-labelledby="articles-bento-heading"
+			aria-labelledby="news-bento-heading"
 		>
 			<header className={cn(homeInsetClass, "mb-8 sm:mb-10")}>
 				<h2
-					id="articles-bento-heading"
+					id="news-bento-heading"
 					className="font-heading text-h1 font-bold leading-[1.1] text-balance"
 				>
 					{spotlightLabel}
@@ -63,7 +63,7 @@ export function ArticlesBento({
 
 				{/* Row 3: editorial accent + wide */}
 				<div className="mt-3 grid grid-cols-1 gap-3 sm:mt-4 sm:grid-cols-2 sm:gap-4 lg:grid-cols-12 lg:gap-4">
-					<ArticleEditorialCard
+					<NewsEditorialCard
 						item={editorial}
 						categoryLabel={categoryLabels[editorial.category]}
 						className="sm:col-span-2 lg:col-span-5"

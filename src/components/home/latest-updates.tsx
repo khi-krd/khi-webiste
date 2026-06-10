@@ -48,7 +48,7 @@ export async function LatestUpdates() {
 					</div>
 
 					<Link
-						href="/articles"
+						href="/news"
 						variant="nav"
 						className="group/viewall relative inline-flex w-fit shrink-0 items-center gap-2.5 overflow-hidden border border-foreground px-5 py-2.5 font-heading text-small font-semibold text-foreground no-underline transition-[color,gap,box-shadow] duration-300 ease-out before:absolute before:inset-0 before:z-0 before:origin-bottom before:scale-y-0 before:bg-foreground before:transition-transform before:duration-300 before:ease-[cubic-bezier(0.22,1,0.36,1)] hover:gap-3.5 hover:text-primary-foreground hover:shadow-[0_8px_24px_-12px_rgba(26,24,19,0.35)] hover:before:scale-y-100 motion-reduce:before:transition-none motion-reduce:hover:before:scale-y-100 motion-reduce:hover:gap-2.5"
 					>

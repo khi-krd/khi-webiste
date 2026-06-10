@@ -1,18 +1,18 @@
 import type { Metadata } from "next";
 import { getTranslations, setRequestLocale } from "next-intl/server";
-import { ArticlesBento } from "@/components/articles/articles-bento";
-import { ArticlesHero } from "@/components/articles/articles-hero";
-import { ArticlesShell } from "@/components/articles/articles-shell";
+import { NewsBento } from "@/components/news/news-bento";
+import { NewsHero } from "@/components/news/news-hero";
+import { NewsShell } from "@/components/news/news-shell";
 import {
-	ARTICLE_CATEGORIES,
-	type ArticleCategory,
-	filterArticles,
-	getArticles,
-	getFeaturedArticles,
-	getLatestArticles,
+	NEWS_CATEGORIES,
+	type NewsCategory,
+	filterNews,
+	getNews,
+	getFeaturedNews,
+	getLatestNews,
 	isValidCategory,
-	paginateArticles,
-} from "@/lib/mock/articles";
+	paginateNews,
+} from "@/lib/mock/news";
 
 export async function generateMetadata({
 	params,
@@ -20,7 +20,7 @@ export async function generateMetadata({
 	params: Promise<{ locale: string }>;
 }): Promise<Metadata> {
 	const { locale } = await params;
-	const t = await getTranslations({ locale, namespace: "Articles" });
+	const t = await getTranslations({ locale, namespace: "News" });
 
 	return {
 		title: t("pageTitle"),
@@ -28,7 +28,7 @@ export async function generateMetadata({
 	};
 }
 
-type ArticlesPageProps = {
+type NewsPageProps = {
 	params: Promise<{ locale: string }>;
 	searchParams: Promise<{
 		category?: string;
@@ -37,59 +37,59 @@ type ArticlesPageProps = {
 	}>;
 };
 
-export default async function ArticlesPage({
+export default async function NewsPage({
 	params,
 	searchParams,
-}: ArticlesPageProps) {
+}: NewsPageProps) {
 	const { locale } = await params;
 	const { category, q, page: pageParam } = await searchParams;
 	setRequestLocale(locale);
 
-	const t = await getTranslations("Articles");
+	const t = await getTranslations("News");
 	const activeCategory =
 		category && isValidCategory(category) ? category : null;
 	const activeQuery = q?.trim() || null;
 	const page = Math.max(1, Number.parseInt(pageParam ?? "1", 10) || 1);
 
 	const categoryLabels = Object.fromEntries(
-		ARTICLE_CATEGORIES.map((key) => [key, t(`categories.${key}`)]),
-	) as Record<ArticleCategory, string>;
+		NEWS_CATEGORIES.map((key) => [key, t(`categories.${key}`)]),
+	) as Record<NewsCategory, string>;
 
-	const allArticles = getArticles(locale);
-	const filtered = filterArticles(allArticles, {
+	const allNews = getNews(locale);
+	const filtered = filterNews(allNews, {
 		category: activeCategory,
 		query: activeQuery,
 	});
-	const { items, totalPages, currentPage } = paginateArticles(
+	const { items, totalPages, currentPage } = paginateNews(
 		filtered,
 		page,
 	);
 
-	const featuredItems = getFeaturedArticles(locale);
-	const latestItems = getLatestArticles(locale);
+	const featuredItems = getFeaturedNews(locale);
+	const latestItems = getLatestNews(locale);
 
 	const sectionTitle = activeCategory
 		? t("sections.filtered", {
 				category: categoryLabels[activeCategory],
 			})
-		: t("sections.allArticles");
+		: t("sections.allNews");
 
 	return (
 		<main className="-mt-26 sm:-mt-30">
-			<ArticlesHero
+			<NewsHero
 				eyebrow={t("hero.eyebrow")}
 				title={t("hero.title")}
 				description={t("hero.description")}
 			/>
 
-			<ArticlesBento
+			<NewsBento
 				locale={locale}
 				categoryLabels={categoryLabels}
 				spotlightLabel={t("sections.spotlight")}
 			/>
 
-			<ArticlesShell
-				articles={items}
+			<NewsShell
+				items={items}
 				featured={featuredItems}
 				latest={latestItems}
 				locale={locale}

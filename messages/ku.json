@@ -11,7 +11,7 @@
 		"songs": "Stran",
 		"audio": "Deng",
 		"video": "Vîdyo",
-		"articles": "Gotar",
+		"news": "Gotar",
 		"gallery": "Galerî",
 		"archive": "Arşîv",
 		"about": "Derbarê",
@@ -42,12 +42,12 @@
 		"videoSubPerformances": "Performans",
 		"videoSubLectures": "Ders û civîn",
 		"videoSubNewsreels": "Nûçeyên wêneyî",
-		"articlesDescription": "Gotarên lêkolînê li ser çand, dîrok, ziman û civaka Kurd.",
-		"articlesSubCulture": "Çand",
-		"articlesSubHistory": "Dîrok",
-		"articlesSubLanguage": "Ziman",
-		"articlesSubSociety": "Civak",
-		"articlesSubHeritage": "Mîrat",
+		"newsDescription": "Gotarên lêkolînê li ser çand, dîrok, ziman û civaka Kurd.",
+		"newsSubCulture": "Çand",
+		"newsSubHistory": "Dîrok",
+		"newsSubLanguage": "Ziman",
+		"newsSubSociety": "Civak",
+		"newsSubHeritage": "Mîrat",
 		"galleryDescription": "Wêne, cil û berhemên hunerî yên mîrateya dîmenî ya Kurdistanê.",
 		"gallerySubPhotography": "Wêne",
 		"gallerySubDress": "Cilên kevneşopî",
@@ -79,7 +79,7 @@
 		"songs": "Stran",
 		"audio": "Deng",
 		"video": "Vîdyo",
-		"articles": "Gotar",
+		"news": "Gotar",
 		"gallery": "Galerî",
 		"archive": "Arşîv",
 		"events": "Bûyer",
@@ -113,7 +113,7 @@
 			"society": "Civak"
 		}
 	},
-	"Articles": {
+	"News": {
 		"pageTitle": "Gotar",
 		"metaDescription": "Lêkolîn, gotar û çîrok li ser çand, dîrok, ziman, mîrat û civaka Kurdî ji Enstîtûya Mîrateya Kurdî.",
 		"hero": {
@@ -136,7 +136,7 @@
 		},
 		"sections": {
 			"spotlight": "Nûçeyên taybet",
-			"allArticles": "Hemû gotar",
+			"allNews": "Hemû gotar",
 			"filtered": "Gotarên {category}",
 			"browseDescription": "Arşîva tevahî bigere — li gorî mijarê filtir bike an bi peyvekê bigere."
 		},

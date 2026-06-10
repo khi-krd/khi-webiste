@@ -1,22 +1,22 @@
 import { homeInsetClass } from "@/lib/layout";
 import { cn } from "@/lib/utils";
 
-type ArticlesHeroProps = {
+type NewsHeroProps = {
 	eyebrow: string;
 	title: string;
 	description: string;
 	className?: string;
 };
 
-export function ArticlesHero({
+export function NewsHero({
 	eyebrow,
 	title,
 	description,
 	className,
-}: ArticlesHeroProps) {
+}: NewsHeroProps) {
 	return (
 		<section
-			aria-labelledby="articles-hero-heading"
+			aria-labelledby="news-hero-heading"
 			className={cn(
 				"relative w-full overflow-hidden border-b border-border bg-background",
 				className,
@@ -31,7 +31,7 @@ export function ArticlesHero({
 				<div className="max-w-3xl text-start">
 					<p className="label font-medium">{eyebrow}</p>
 					<h1
-						id="articles-hero-heading"
+						id="news-hero-heading"
 						className="mt-2 font-heading text-h1 font-bold leading-[1.1] text-balance sm:text-display sm:leading-[1.08]"
 					>
 						{title}

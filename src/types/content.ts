@@ -17,7 +17,7 @@ export const TYPE_SEGMENTS: Record<ContentType, string> = {
 	song: "songs",
 	audio: "audio",
 	video: "video",
-	article: "articles",
+	article: "news",
 	gallery: "gallery",
 	archive: "archive",
 };

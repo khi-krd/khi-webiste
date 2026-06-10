@@ -3,10 +3,10 @@
 import { useTransition } from "react";
 import { useRouter } from "@/i18n/navigation";
 import { Pagination } from "@/components/ui/pagination";
-import { buildArticlesHref } from "@/lib/articles-url";
+import { buildNewsHref } from "@/lib/news-url";
 import { cn } from "@/lib/utils";
 
-type ArticlesPaginationProps = {
+type NewsPaginationProps = {
 	currentPage: number;
 	totalPages: number;
 	activeCategory?: string | null;
@@ -17,7 +17,7 @@ type ArticlesPaginationProps = {
 	className?: string;
 };
 
-export function ArticlesPagination({
+export function NewsPagination({
 	currentPage,
 	totalPages,
 	activeCategory,
@@ -26,14 +26,14 @@ export function ArticlesPagination({
 	previousLabel,
 	nextLabel,
 	className,
-}: ArticlesPaginationProps) {
+}: NewsPaginationProps) {
 	const router = useRouter();
 	const [isPending, startTransition] = useTransition();
 
 	const handlePageChange = (page: number) => {
 		startTransition(() => {
 			router.replace(
-				buildArticlesHref({
+				buildNewsHref({
 					category: activeCategory,
 					q: activeQuery,
 					page,
@@ -41,7 +41,7 @@ export function ArticlesPagination({
 				{ scroll: false },
 			);
 
-			document.getElementById("articles-grid")?.scrollIntoView({
+			document.getElementById("news-grid")?.scrollIntoView({
 				behavior: "smooth",
 				block: "start",
 			});
@@ -53,7 +53,7 @@ export function ArticlesPagination({
 			currentPage={currentPage}
 			totalPages={totalPages}
 			createHref={(page) =>
-				buildArticlesHref({
+				buildNewsHref({
 					category: activeCategory,
 					q: activeQuery,
 					page,

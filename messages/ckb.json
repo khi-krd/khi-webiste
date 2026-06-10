@@ -11,7 +11,7 @@
 		"songs": "گۆرانییەکان",
 		"audio": "دەنگ",
 		"video": "ڤیدیۆ",
-		"articles": "وتارەکان",
+		"news": "وتارەکان",
 		"gallery": "گەلەری",
 		"archive": "ئەرشیف",
 		"about": "دەربارە",
@@ -42,12 +42,12 @@
 		"videoSubPerformances": "پیشاندان",
 		"videoSubLectures": "وانە و کۆنگرە",
 		"videoSubNewsreels": "هەواڵی وێنەیی",
-		"articlesDescription": "وتارە لێکۆڵینەوەییەکان لەسەر کەلتوور، مێژوو، زمان و کۆمەڵگای کوردی.",
-		"articlesSubCulture": "کەلتوور",
-		"articlesSubHistory": "مێژوو",
-		"articlesSubLanguage": "زمان",
-		"articlesSubSociety": "کۆمەڵگا",
-		"articlesSubHeritage": "میرات",
+		"newsDescription": "وتارە لێکۆڵینەوەییەکان لەسەر کەلتوور، مێژوو، زمان و کۆمەڵگای کوردی.",
+		"newsSubCulture": "کەلتوور",
+		"newsSubHistory": "مێژوو",
+		"newsSubLanguage": "زمان",
+		"newsSubSociety": "کۆمەڵگا",
+		"newsSubHeritage": "میرات",
 		"galleryDescription": "وێنە، جلوبەرگ و پێشانگای هونەری میراتی دیمەنی کوردستان.",
 		"gallerySubPhotography": "وێنە",
 		"gallerySubDress": "جلوبەرگی کۆن",
@@ -79,7 +79,7 @@
 		"songs": "گۆرانییەکان",
 		"audio": "دەنگ",
 		"video": "ڤیدیۆ",
-		"articles": "وتارەکان",
+		"news": "وتارەکان",
 		"gallery": "گەلەری",
 		"archive": "ئەرشیف",
 		"events": "ڕووداوەکان",
@@ -116,7 +116,7 @@
 			"society": "کۆمەڵگا"
 		}
 	},
-	"Articles": {
+	"News": {
 		"pageTitle": "وتارەکان",
 		"metaDescription": "وتار، لێکۆڵینەوە و چیرۆک لەسەر کەلتوور، مێژوو، زمان، میرات و کۆمەڵگای کوردی لە ئینستیتوتی میراتی کوردی.",
 		"hero": {
@@ -139,7 +139,7 @@
 		},
 		"sections": {
 			"spotlight": "تیشک خستنە سەر",
-			"allArticles": "هەموو وتارەکان",
+			"allNews": "هەموو وتارەکان",
 			"filtered": "وتارەکانی {category}",
 			"browseDescription": "گەڕان لە ئارشیڤی تەواو — فلتەر بەپێی بابەت یان گەڕان بە وشەی سەرەکی."
 		},

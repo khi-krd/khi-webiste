@@ -11,28 +11,28 @@ import { useCallback, useEffect, useRef, useState, useTransition } from "react";
 import { useRouter } from "@/i18n/navigation";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { buildArticlesHref } from "@/lib/articles-url";
+import { buildNewsHref } from "@/lib/news-url";
 import {
-	ARTICLE_CATEGORIES,
-	type ArticleCategory,
+	NEWS_CATEGORIES,
+	type NewsCategory,
 	isValidCategory,
-} from "@/lib/mock/articles";
+} from "@/lib/mock/news";
 import { cn } from "@/lib/utils";
 
-type ArticlesFilterBarProps = {
+type NewsFilterBarProps = {
 	activeCategory?: string | null;
 	activeQuery?: string | null;
-	categoryLabels: Record<ArticleCategory, string>;
+	categoryLabels: Record<NewsCategory, string>;
 	className?: string;
 };
 
-export function ArticlesFilterBar({
+export function NewsFilterBar({
 	activeCategory,
 	activeQuery,
 	categoryLabels,
 	className,
-}: ArticlesFilterBarProps) {
-	const t = useTranslations("Articles");
+}: NewsFilterBarProps) {
+	const t = useTranslations("News");
 	const router = useRouter();
 	const searchParams = useSearchParams();
 	const [isPending, startTransition] = useTransition();
@@ -52,7 +52,7 @@ export function ArticlesFilterBar({
 		(category: string | null, q: string) => {
 			startTransition(() => {
 				router.replace(
-					buildArticlesHref({
+					buildNewsHref({
 						category,
 						q,
 						page: 1,
@@ -60,7 +60,7 @@ export function ArticlesFilterBar({
 					{ scroll: false },
 				);
 
-				const grid = document.getElementById("articles-grid");
+				const grid = document.getElementById("news-grid");
 				if (grid && searchParams.toString()) {
 					grid.scrollIntoView({ behavior: "smooth", block: "start" });
 				}
@@ -96,7 +96,7 @@ export function ArticlesFilterBar({
 	const handleClearAll = () => {
 		if (debounceRef.current) clearTimeout(debounceRef.current);
 		setQuery("");
-		router.replace(buildArticlesHref({}), { scroll: false });
+		router.replace(buildNewsHref({}), { scroll: false });
 	};
 
 	useEffect(
@@ -196,7 +196,7 @@ export function ArticlesFilterBar({
 					>
 						{t("filter.all")}
 					</CategoryPill>
-					{ARTICLE_CATEGORIES.map((category) => (
+					{NEWS_CATEGORIES.map((category) => (
 						<CategoryPill
 							key={category}
 							active={activeCategory === category}

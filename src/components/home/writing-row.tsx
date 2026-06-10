@@ -19,7 +19,7 @@ export function WritingRow({
 	index,
 	className,
 }: WritingRowProps) {
-	const href = `/articles/${item.slug}`;
+	const href = `/news/${item.slug}`;
 	const displayIndex = String(index + 1).padStart(2, "0");
 
 	return (

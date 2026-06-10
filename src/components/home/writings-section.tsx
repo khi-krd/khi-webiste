@@ -32,7 +32,7 @@ export async function WritingsSection() {
 						{t("description")}
 					</p>
 					<Link
-						href="/articles"
+						href="/news"
 						variant="nav"
 						className={`${viewAllClass} mt-8`}
 					>

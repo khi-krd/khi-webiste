@@ -27,7 +27,7 @@ const footerColumns: FooterColumn[] = [
 	{
 		titleKey: "insights",
 		links: [
-			{ labelKey: "articles", href: "/articles" },
+			{ labelKey: "news", href: "/news" },
 			{ labelKey: "gallery", href: "/gallery" },
 			{ labelKey: "archive", href: "/archive" },
 			{ labelKey: "events", href: "/events" },
