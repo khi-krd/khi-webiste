@@ -13,9 +13,9 @@ type LanguageSwitcherProps = {
 	variant?: "links" | "group";
 	/** Dark overlay footer — light-on-ink token overrides for the grouped toggle. */
 	overlay?: boolean;
+	/** Called before navigating to the new locale (e.g. close the nav overlay). */
+	onLocaleChange?: () => void;
 };
-
-const REOPEN_NAV_DRAWER_STORAGE_KEY = "khi:reopen-nav-drawer";
 
 /**
  * Locale switcher. Preserves the current pathname when switching language.
@@ -26,6 +26,7 @@ const REOPEN_NAV_DRAWER_STORAGE_KEY = "khi:reopen-nav-drawer";
 export function LanguageSwitcher({
 	variant = "links",
 	overlay = false,
+	onLocaleChange,
 }: LanguageSwitcherProps) {
 	const t = useTranslations("LanguageSwitcher");
 	const activeLocale = useLocale();
@@ -35,7 +36,7 @@ export function LanguageSwitcher({
 
 	function switchLocale(locale: (typeof routing.locales)[number]) {
 		if (locale === activeLocale) return;
-		sessionStorage.setItem(REOPEN_NAV_DRAWER_STORAGE_KEY, "1");
+		onLocaleChange?.();
 		startTransition(() => {
 			router.replace(pathname, { locale });
 		});

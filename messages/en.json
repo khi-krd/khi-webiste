@@ -170,6 +170,56 @@
 		"description": "Long-term programmes digitising manuscripts, oral history, music, dress, and photography from across Kurdish regions.",
 		"viewAll": "View all"
 	},
+	"Gallery": {
+		"pageTitle": "Gallery",
+		"metaDescription": "A visual archive of Kurdish life — photography, traditional dress, and handicrafts from across Kurdistan, preserved by the Kurdish Heritage Institute.",
+		"hero": {
+			"eyebrow": "Visual archive",
+			"title": "Discover the living visual heritage of Kurdistan",
+			"cta": "Explore the collection",
+			"scrollDown": "Scroll down"
+		},
+		"posts": {
+			"eyebrow": "Archive index",
+			"title": "The collections",
+			"description": "Each collection gathers photographs around a single place, craft, or tradition — chapters of one visual record of Kurdish life.",
+			"photosCount": "{count} photographs",
+			"types": {
+				"SINGLE": "Single image",
+				"GALLERY": "Gallery",
+				"PHOTO_STORY": "Photo story"
+			},
+			"pagination": {
+				"label": "Gallery pagination",
+				"previous": "Previous",
+				"next": "Next"
+			}
+		},
+		"post": {
+			"back": "Archive index",
+			"navLabel": "More collections",
+			"previous": "Previous collection",
+			"next": "Next collection",
+			"location": "Location",
+			"collectedBy": "Collected by",
+			"tags": "Tags"
+		},
+		"lightbox": {
+			"close": "Close",
+			"previous": "Previous image",
+			"next": "Next image",
+			"metadata": {
+				"dimensions": "Dimensions",
+				"fileSize": "File size",
+				"fileSizeBytes": "File size (bytes)",
+				"mimeType": "MIME type",
+				"aspectRatio": "Aspect ratio",
+				"sortOrder": "Sort order",
+				"externalUrl": "External link",
+				"embedUrl": "Embed URL"
+			}
+		}
+	},
 	"Sound": {
 		"eyebrow": "Sound & oral history",
 		"title": "Listen to voices preserved for generations.",

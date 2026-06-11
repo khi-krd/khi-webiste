@@ -45,17 +45,6 @@ const BG_DURATION = 0.35;
 const CONTENT_DURATION = 0.2;
 const PANEL_ENTER_DURATION = 0.2;
 const PANEL_EXIT_DURATION = 0.15;
-const REOPEN_NAV_DRAWER_STORAGE_KEY = "khi:reopen-nav-drawer";
-
-function shouldRestoreNavDrawerOpen() {
-	if (typeof window === "undefined") return false;
-	try {
-		return sessionStorage.getItem(REOPEN_NAV_DRAWER_STORAGE_KEY) === "1";
-	} catch {
-		return false;
-	}
-}
-
 function getFocusable(container: HTMLElement | null): HTMLElement[] {
 	if (!container) return [];
 	return Array.from(container.querySelectorAll<HTMLElement>(FOCUSABLE));
@@ -200,8 +189,7 @@ export function NavDrawer() {
 	const reduceMotion = useReducedMotion();
 	const isLg = useIsLg();
 
-	const restoredOpen = shouldRestoreNavDrawerOpen();
-	const [open, setOpen] = useState(restoredOpen);
+	const [open, setOpen] = useState(false);
 	const [view, setView] = useState<"nav" | "search">("nav");
 	const [hoveredKey, setHoveredKey] = useState<string | null>(null);
 	const [activeKey, setActiveKey] = useState<string | null>(null);
@@ -231,13 +219,7 @@ export function NavDrawer() {
 		setView("nav");
 		setActiveKey(null);
 		setHoveredKey(null);
-		sessionStorage.removeItem(REOPEN_NAV_DRAWER_STORAGE_KEY);
 	}, []);
-
-	useEffect(() => {
-		if (!restoredOpen) return;
-		sessionStorage.removeItem(REOPEN_NAV_DRAWER_STORAGE_KEY);
-	}, [restoredOpen]);
 
 	useEffect(() => {
 		if (!open) return;
@@ -333,7 +315,7 @@ export function NavDrawer() {
 				exit: { opacity: 0 },
 			}
 		: {
-				initial: restoredOpen ? false : { opacity: 0, y: -16 },
+				initial: { opacity: 0, y: -16 },
 				animate: { opacity: 1, y: 0 },
 				exit: { opacity: 0, y: -16 },
 			};
@@ -347,8 +329,6 @@ export function NavDrawer() {
 		animate: { opacity: 1 },
 		exit: { opacity: 0 },
 	};
-
-	const skipInitialBackgroundAnimation = restoredOpen;
 
 	return (
 		<>
@@ -391,7 +371,6 @@ export function NavDrawer() {
 									src={bgSrc}
 									reduceMotion={reduceMotion}
 									priority
-									instant={skipInitialBackgroundAnimation}
 								/>
 							</AnimatePresence>
 							{/* Legibility scrim — stronger where text sits, photos still show through elsewhere. */}
@@ -664,7 +643,11 @@ export function NavDrawer() {
 								<footer className="relative z-10 mt-auto shrink-0 border-t border-primary-foreground/20 bg-foreground">
 									<Container className="max-w-none py-4">
 										<div className="flex items-center justify-between gap-4">
-											<LanguageSwitcher variant="group" overlay />
+											<LanguageSwitcher
+												variant="group"
+												overlay
+												onLocaleChange={close}
+											/>
 											<div className="flex items-center gap-3">
 												<Link
 													href={ARCHIVE_HREF}

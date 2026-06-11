@@ -1,0 +1,84 @@
+import type { Metadata } from "next";
+import { notFound } from "next/navigation";
+import { getTranslations, setRequestLocale } from "next-intl/server";
+import { GalleryPostView } from "@/components/gallery/gallery-post-view";
+import { getGalleryPostBySlug } from "@/lib/mock/gallery";
+
+type GalleryPostPageProps = {
+	params: Promise<{ locale: string; slug: string }>;
+};
+
+export async function generateMetadata({
+	params,
+}: GalleryPostPageProps): Promise<Metadata> {
+	const { locale, slug } = await params;
+	const detail = getGalleryPostBySlug(locale, slug);
+	// Thrown HERE (not just in the page) so the 404 status is decided before
+	// the shell starts streaming with a 200.
+	if (!detail) notFound();
+
+	return {
+		title: detail.post.title,
+		// descriptionHtml is Tiptap HTML — strip tags for the meta description.
+		description: detail.post.descriptionHtml
+			.replace(/<[^>]+>/g, " ")
+			.replace(/\s+/g, " ")
+			.trim(),
+	};
+}
+
+/** publishmentDate is an ISO LocalDate — format for the active locale. */
+function formatPublishmentDate(locale: string, isoDate: string): string {
+	try {
+		return new Intl.DateTimeFormat(locale, { dateStyle: "long" }).format(
+			new Date(isoDate),
+		);
+	} catch {
+		return isoDate;
+	}
+}
+
+export default async function GalleryPostPage({
+	params,
+}: GalleryPostPageProps) {
+	const { locale, slug } = await params;
+	setRequestLocale(locale);
+
+	const detail = getGalleryPostBySlug(locale, slug);
+	if (!detail) notFound();
+
+	const t = await getTranslations("Gallery");
+
+	return (
+		<main className="-mt-26 sm:-mt-30">
+			<GalleryPostView
+				detail={detail}
+				photosLabel={t("posts.photosCount", {
+					count: detail.post.album.length,
+				})}
+				typeLabel={t(`posts.types.${detail.post.collectionType}`)}
+				dateLabel={formatPublishmentDate(locale, detail.post.publishmentDate)}
+				backLabel={t("post.back")}
+				locationLabel={t("post.location")}
+				collectedByLabel={t("post.collectedBy")}
+				tagsLabel={t("post.tags")}
+				navLabel={t("post.navLabel")}
+				previousLabel={t("post.previous")}
+				nextLabel={t("post.next")}
+				closeLabel={t("lightbox.close")}
+				lightboxPreviousLabel={t("lightbox.previous")}
+				lightboxNextLabel={t("lightbox.next")}
+				metadataLabels={{
+					dimensions: t("lightbox.metadata.dimensions"),
+					fileSize: t("lightbox.metadata.fileSize"),
+					fileSizeBytes: t("lightbox.metadata.fileSizeBytes"),
+					mimeType: t("lightbox.metadata.mimeType"),
+					aspectRatio: t("lightbox.metadata.aspectRatio"),
+					sortOrder: t("lightbox.metadata.sortOrder"),
+					externalUrl: t("lightbox.metadata.externalUrl"),
+					embedUrl: t("lightbox.metadata.embedUrl"),
+				}}
+			/>
+		</main>
+	);
+}

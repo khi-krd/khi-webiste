@@ -167,6 +167,56 @@
 		"description": "Bernameyên dirêjdem destnivîs, dîroka devkî, stran, cil û wêne ji herêmên Kurdî dîjîtal dikin.",
 		"viewAll": "Hemû bibîne"
 	},
+	"Gallery": {
+		"pageTitle": "Galerî",
+		"metaDescription": "Arşîveke dîmenî ya jiyana Kurdî — wêne, cilên kevneşopî û kariya destan ji seranserê Kurdistanê.",
+		"hero": {
+			"eyebrow": "Arşîva dîmenî",
+			"title": "Mîrateya dîmenî ya zindî ya Kurdistanê bibîne",
+			"cta": "Berhevokê vekole",
+			"scrollDown": "Berjêr biçe"
+		},
+		"posts": {
+			"eyebrow": "Pêrista arşîvê",
+			"title": "Berhevok",
+			"description": "Her berhevokek wêneyan li dora cihekî, pîşeyekî an kevneşopiyekê kom dike — wek beşên tomareke dîmenî ya jiyana Kurdî.",
+			"photosCount": "{count} wêne",
+			"types": {
+				"SINGLE": "Wêneyeke tak",
+				"GALLERY": "Galerî",
+				"PHOTO_STORY": "Çîroka wêneyî"
+			},
+			"pagination": {
+				"label": "Rûpelkirina galerîyê",
+				"previous": "Berê",
+				"next": "Paş"
+			}
+		},
+		"post": {
+			"back": "Pêrista arşîvê",
+			"navLabel": "Berhevokên din",
+			"previous": "Berhevoka berê",
+			"next": "Berhevoka paşê",
+			"location": "Cih",
+			"collectedBy": "Berhevkirî ji aliyê",
+			"tags": "Etîket"
+		},
+		"lightbox": {
+			"close": "Bigire",
+			"previous": "Wêneya berê",
+			"next": "Wêneya paşê",
+			"metadata": {
+				"dimensions": "Pîvan",
+				"fileSize": "Mezinahiya pelê",
+				"fileSizeBytes": "Mezinahiya pelê (byte)",
+				"mimeType": "Cureya MIME",
+				"aspectRatio": "Rêjeya alîyan",
+				"sortOrder": "Rêza rêzkirinê",
+				"externalUrl": "Girêdana derve",
+				"embedUrl": "URL-ya embedê"
+			}
+		}
+	},
 	"Sound": {
 		"eyebrow": "Deng & dîroka devkî",
 		"title": "Bihîse dengên ku ji bo nifşan hatine parastin.",
