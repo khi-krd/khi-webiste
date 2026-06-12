@@ -1,0 +1,62 @@
+/* KHI audio player bar — hairline range sliders, square thumb, token colors.
+   Fill direction follows the document `dir`; Firefox handles RTL natively via
+   ::-moz-range-progress, WebKit needs the gradient flipped. */
+
+.khi-audio-range {
+	appearance: none;
+	-webkit-appearance: none;
+	height: 16px;
+	background: transparent;
+	cursor: pointer;
+}
+
+.khi-audio-range:focus-visible {
+	outline: 2px solid var(--color-ring);
+	outline-offset: 2px;
+}
+
+.khi-audio-range::-webkit-slider-runnable-track {
+	height: 2px;
+	background: linear-gradient(
+		to right,
+		var(--color-foreground) calc(var(--progress, 0) * 100%),
+		var(--color-border) calc(var(--progress, 0) * 100%)
+	);
+}
+
+[dir="rtl"] .khi-audio-range::-webkit-slider-runnable-track {
+	background: linear-gradient(
+		to left,
+		var(--color-foreground) calc(var(--progress, 0) * 100%),
+		var(--color-border) calc(var(--progress, 0) * 100%)
+	);
+}
+
+.khi-audio-range::-webkit-slider-thumb {
+	-webkit-appearance: none;
+	appearance: none;
+	width: 10px;
+	height: 10px;
+	margin-top: -4px;
+	border: none;
+	border-radius: 0;
+	background: var(--color-foreground);
+}
+
+.khi-audio-range::-moz-range-track {
+	height: 2px;
+	background: var(--color-border);
+}
+
+.khi-audio-range::-moz-range-progress {
+	height: 2px;
+	background: var(--color-foreground);
+}
+
+.khi-audio-range::-moz-range-thumb {
+	width: 10px;
+	height: 10px;
+	border: none;
+	border-radius: 0;
+	background: var(--color-foreground);
+}

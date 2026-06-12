@@ -223,6 +223,149 @@
 		"description": "Tomarên dengî yên dîrokê devkî, hevpeyvîn û arşîva radyoyê ji Kurdistanê.",
 		"cta": "Arşîva dengê keşf bike"
 	},
+	"Audio": {
+		"pageTitle": "Arşîva Dengê",
+		"metaDescription": "Tomarên dengî yên dîroka devkî, stranên gelêrî, xwendinên helbestan û arşîva radyoyê ku ji aliyê Enstîtuya Mîrateya Kurdî ve hatine parastin.",
+		"page": {
+			"hero": {
+				"eyebrow": "Arşîva dengê",
+				"title": "Hin deng bi demê re winda dibin.",
+				"titleEmphasis": "Ev hatine tomarkirin da ku tu carî winda nebin.",
+				"description": "Stranên gelêrî, xwendinên helbestan, dîroka devkî û tomarên radyoyê ji arşîva dengê ya enstîtuyê.",
+				"cta": "Li arşîvê bigere"
+			}
+		},
+		"memories": {
+			"title": "Albûma Bîranînan",
+			"description": "Tomarên nûvekirî ji plak, kaset û radyoyê — bîranîneke dengî ji bo dengên berê.",
+			"badge": "Albûma Bîranînan"
+		},
+		"grid": {
+			"allTitle": "Berhevoka dengê.",
+			"itemCount": "{formatted} tomar",
+			"empty": "Niha tu tomar tune ne. Ji kerema xwe paşê dîsa serdana me bikin.",
+			"noResults": "Tu tomar bi fîltreyên te re li hev nayê. Wan biguherîne an paqij bike."
+		},
+		"filter": {
+			"label": "Fîltre & lêgerîn",
+			"all": "Hemû cure",
+			"reset": "Ji nû ve dest pê bike",
+			"active": "Aktîf:",
+			"typeLabel": "Cureyê dengê",
+			"stateLabel": "Format",
+			"topicLabel": "Mijar",
+			"topicAll": "Hemû mijar",
+			"searchPlaceholder": "Li gorî sernav, hunermend an etîketê bigere…",
+			"searchLabel": "Di tomaran de bigere",
+			"searchClear": "Lêgerînê paqij bike"
+		},
+		"state": {
+			"all": "Hemû format",
+			"single": "Tomara tek",
+			"multi": "Albûm"
+		},
+		"soundTypes": {
+			"poem": "Helbest",
+			"music": "Muzîk",
+			"folk": "Folklor",
+			"religious": "Olî",
+			"speech": "Axaftin",
+			"interview": "Hevpeyvîn",
+			"radio": "Radyo"
+		},
+		"pagination": {
+			"label": "Rûpelkirina dengan",
+			"previous": "Rûpela berê",
+			"next": "Rûpela paş"
+		},
+		"card": {
+			"instituteBadge": "Berhema enstîtuyê",
+			"albumTracks": "{count, plural, one {Albûm — # parçe} other {Albûm — # parçe}}"
+		},
+		"player": {
+			"label": "Lêdana dengê",
+			"play": "Lê bide",
+			"pause": "Rawestîne",
+			"previous": "Parçeya berê",
+			"next": "Parçeya paş",
+			"seek": "Di parçeyê de bigere",
+			"volume": "Asta dengê",
+			"mute": "Bêdeng bike",
+			"unmute": "Dengê vegerîne"
+		},
+		"post": {
+			"back": "Vegere arşîvê",
+			"playAlbum": "Albûmê lê bide",
+			"playTrack": "Tomarê lê bide",
+			"topic": "Mijar",
+			"terms": "Zarava / têgîn",
+			"genre": "Janr",
+			"locations": "Cih",
+			"reader": "Xwendevan / hunermend",
+			"directors": "Derhêner",
+			"languagesLabel": "Ziman",
+			"languages": {
+				"CKB": "Kurdiya Soranî",
+				"KMR": "Kurdiya Kurmancî"
+			},
+			"tracklist": "Lîsteya parçeyan",
+			"cdNumber": "CD {number}",
+			"fileDetails": "Agahiyên teknîkî",
+			"externalLink": "Girêdana derveyî veke",
+			"tags": "Etîket",
+			"keywords": "Peyvên sereke",
+			"published": "Hat zêdekirin",
+			"updated": "Hat nûvekirin"
+		},
+		"stats": {
+			"duration": "Dirêjahiya giştî",
+			"size": "Mezinahiya giştî",
+			"tracks": "Parçe",
+			"year": "Sal"
+		},
+		"channel": {
+			"STEREO": "Stereo",
+			"MONO": "Mono"
+		},
+		"tech": {
+			"fileFormat": "Format",
+			"bitRate": "Rêjeya bit",
+			"sampleRate": "Rêjeya nimûneyê",
+			"audioChannel": "Kanal",
+			"size": "Mezinahiya dosyayê",
+			"recordingVenue": "Cihê tomarkirinê",
+			"year": "Sal"
+		},
+		"brochures": {
+			"title": "Broşur & karên hunerî",
+			"open": "Wêneyê bibîne",
+			"close": "Bigire",
+			"previous": "Wêneya berê",
+			"next": "Wêneya paş",
+			"metadata": {
+				"dimensions": "Pîvan",
+				"fileSize": "Mezinahiya dosyayê",
+				"fileSizeBytes": "Mezinahî (bayt)",
+				"mimeType": "Cureyê MIME",
+				"aspectRatio": "Rêjeya aliyan",
+				"sortOrder": "Rêzkirin",
+				"externalUrl": "Girêdana derveyî",
+				"embedUrl": "Girêdana embedê"
+			}
+		},
+		"attachments": {
+			"title": "Çavkanî & daxistin",
+			"untitled": "Pêveka bê sernav",
+			"download": "Daxe",
+			"types": {
+				"PDF": "Belgeya PDF",
+				"VIDEO": "Vîdyo",
+				"IMAGE": "Wêne",
+				"AUDIO": "Deng",
+				"OTHER": "Dosya"
+			}
+		}
+	},
 	"Writings": {
 		"pageTitle": "Nivîs",
 		"metaDescription": "Nivîsên zanistî û edebî li ser ziman, edebiyat û dîroka Kurdî ji Enstîtuya Kevneşopiya Kurdî.",

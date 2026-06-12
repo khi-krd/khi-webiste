@@ -1,0 +1,51 @@
+import type { Metadata } from "next";
+import { notFound } from "next/navigation";
+import { setRequestLocale } from "next-intl/server";
+import { AudioPostView } from "@/components/audio/audio-post-view";
+import { getAudioTrackById } from "@/lib/api/audio";
+
+type AudioDetailPageProps = {
+	params: Promise<{ locale: string; id: string }>;
+};
+
+function parseTrackId(raw: string): number | null {
+	const parsed = Number.parseInt(raw, 10);
+	return Number.isInteger(parsed) && parsed > 0 ? parsed : null;
+}
+
+export async function generateMetadata({
+	params,
+}: AudioDetailPageProps): Promise<Metadata> {
+	const { locale, id } = await params;
+	const trackId = parseTrackId(id);
+	// Thrown HERE (not just in the page) so the 404 status is decided before
+	// the shell starts streaming with a 200.
+	if (trackId == null) notFound();
+
+	const detail = await getAudioTrackById(locale, trackId);
+	if (!detail) notFound();
+
+	return {
+		title: detail.title,
+		description: detail.description || undefined,
+	};
+}
+
+export default async function AudioDetailPage({
+	params,
+}: AudioDetailPageProps) {
+	const { locale, id } = await params;
+	setRequestLocale(locale);
+
+	const trackId = parseTrackId(id);
+	if (trackId == null) notFound();
+
+	const detail = await getAudioTrackById(locale, trackId);
+	if (!detail) notFound();
+
+	return (
+		<main className="-mt-26 bg-background sm:-mt-30">
+			<AudioPostView detail={detail} locale={locale} />
+		</main>
+	);
+}

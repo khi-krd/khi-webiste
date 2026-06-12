@@ -226,6 +226,149 @@
 		"description": "Oral history recordings, interviews, and radio archive audio from across Kurdistan.",
 		"cta": "Explore audio"
 	},
+	"Audio": {
+		"pageTitle": "Audio Archive",
+		"metaDescription": "Oral history recordings, folk songs, poetry readings, and radio archive audio preserved by the Kurdish Heritage Institute.",
+		"page": {
+			"hero": {
+				"eyebrow": "Audio archive",
+				"title": "Some voices fade with time.",
+				"titleEmphasis": "These were recorded so they never will.",
+				"description": "Folk songs, poetry readings, oral history, and radio recordings from the Institute's sound archive.",
+				"cta": "Browse the archive"
+			}
+		},
+		"memories": {
+			"title": "Album of Memories",
+			"description": "Restored recordings from vinyl, tape, and radio — a sound memorial to voices of the past.",
+			"badge": "Album of Memories"
+		},
+		"grid": {
+			"allTitle": "The sound collection.",
+			"itemCount": "{formatted} {count, plural, one {recording} other {recordings}}",
+			"empty": "No recordings are available at the moment. Please check back soon.",
+			"noResults": "No recordings match your filters. Try adjusting or clearing them."
+		},
+		"filter": {
+			"label": "Filter & search",
+			"all": "All types",
+			"reset": "Reset",
+			"active": "Active:",
+			"typeLabel": "Sound type",
+			"stateLabel": "Format",
+			"topicLabel": "Topic",
+			"topicAll": "All topics",
+			"searchPlaceholder": "Search by title, performer, or tag…",
+			"searchLabel": "Search recordings",
+			"searchClear": "Clear search"
+		},
+		"state": {
+			"all": "All formats",
+			"single": "Single recording",
+			"multi": "Album"
+		},
+		"soundTypes": {
+			"poem": "Poetry",
+			"music": "Music",
+			"folk": "Folk",
+			"religious": "Religious",
+			"speech": "Speech",
+			"interview": "Interview",
+			"radio": "Radio"
+		},
+		"pagination": {
+			"label": "Audio pagination",
+			"previous": "Previous page",
+			"next": "Next page"
+		},
+		"card": {
+			"instituteBadge": "KHI production",
+			"albumTracks": "{count, plural, one {Album — # track} other {Album — # tracks}}"
+		},
+		"player": {
+			"label": "Audio player",
+			"play": "Play",
+			"pause": "Pause",
+			"previous": "Previous track",
+			"next": "Next track",
+			"seek": "Seek",
+			"volume": "Volume",
+			"mute": "Mute",
+			"unmute": "Unmute"
+		},
+		"post": {
+			"back": "Back to the archive",
+			"playAlbum": "Play album",
+			"playTrack": "Play recording",
+			"topic": "Topic",
+			"terms": "Dialect / terms",
+			"genre": "Genre",
+			"locations": "Locations",
+			"reader": "Performer",
+			"directors": "Directors",
+			"languagesLabel": "Languages",
+			"languages": {
+				"CKB": "Sorani Kurdish",
+				"KMR": "Kurmanji Kurdish"
+			},
+			"tracklist": "Tracklist",
+			"cdNumber": "CD {number}",
+			"fileDetails": "Technical details",
+			"externalLink": "Open external link",
+			"tags": "Tags",
+			"keywords": "Keywords",
+			"published": "Added",
+			"updated": "Updated"
+		},
+		"stats": {
+			"duration": "Total duration",
+			"size": "Total size",
+			"tracks": "Tracks",
+			"year": "Year"
+		},
+		"channel": {
+			"STEREO": "Stereo",
+			"MONO": "Mono"
+		},
+		"tech": {
+			"fileFormat": "Format",
+			"bitRate": "Bit rate",
+			"sampleRate": "Sample rate",
+			"audioChannel": "Channel",
+			"size": "File size",
+			"recordingVenue": "Recording venue",
+			"year": "Year"
+		},
+		"brochures": {
+			"title": "Brochure & artwork",
+			"open": "View image",
+			"close": "Close",
+			"previous": "Previous image",
+			"next": "Next image",
+			"metadata": {
+				"dimensions": "Dimensions",
+				"fileSize": "File size",
+				"fileSizeBytes": "File size (bytes)",
+				"mimeType": "MIME type",
+				"aspectRatio": "Aspect ratio",
+				"sortOrder": "Sort order",
+				"externalUrl": "External link",
+				"embedUrl": "Embed URL"
+			}
+		},
+		"attachments": {
+			"title": "Resources & downloads",
+			"untitled": "Untitled attachment",
+			"download": "Download",
+			"types": {
+				"PDF": "PDF document",
+				"VIDEO": "Video",
+				"IMAGE": "Image",
+				"AUDIO": "Audio",
+				"OTHER": "File"
+			}
+		}
+	},
 	"Writings": {
 		"pageTitle": "Writings",
 		"metaDescription": "Scholarly and literary writings on Kurdish language, literature, and history from the Kurdish Heritage Institute.",

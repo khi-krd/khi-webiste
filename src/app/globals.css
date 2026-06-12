@@ -41,6 +41,10 @@
 	--warm-400: oklch(0.600 0.018 78); /* ≈ #877F73  strong/interactive border */
 	--warm-500: oklch(0.500 0.014 75); /* ≈ #696158  muted — 5.5:1 on paper (WCAG AA ✓ at 12px) */
 	--warm-900: oklch(0.220 0.012 67); /* ≈ #1A1813  near-black ink           */
+
+	/* Kurdish-identity green — calm, archival (flag green, desaturated to sit
+	   on the warm paper). Referenced ONLY via --color-accent below. */
+	--green-600: oklch(0.52 0.105 152); /* ≈ #2E7B4D */
 }
 
 /* ----------------------------------------------------------------------------
@@ -70,10 +74,10 @@
 	--color-primary: var(--warm-900);
 	--color-primary-foreground: var(--warm-50); /* ink/text ON primary */
 
-	/* ▼▼ FUTURE KURDISH-IDENTITY HOOK ▼▼
-	   Monochrome for now (accent = ink). To introduce the single Kurdish accent
-	   color later, change THIS ONE LINE — no component edits required. */
-	--color-accent: var(--warm-900);
+	/* ▼▼ KURDISH-IDENTITY HOOK ▼▼
+	   The single Kurdish accent color. Swappable via THIS ONE LINE — no
+	   component edits required. Used sparingly: player progress/visualizer. */
+	--color-accent: var(--green-600);
 
 	/* Focus ring — ink for a strong, accessible outline on the cream canvas. */
 	--color-ring: var(--warm-900);
