@@ -1,0 +1,197 @@
+.writing-pdf-viewer .writing-pdf-viewer__document {
+	display: flex;
+	justify-content: center;
+	width: 100%;
+}
+
+.writing-pdf-viewer .writing-pdf-viewer__spread {
+	display: flex;
+	width: 100%;
+	justify-content: center;
+	align-items: flex-start;
+}
+
+.writing-pdf-viewer .writing-pdf-viewer__page-slot {
+	flex: 0 0 auto;
+	display: flex;
+	justify-content: center;
+}
+
+.writing-pdf-viewer .writing-pdf-viewer__spread--double {
+	gap: 0.75rem;
+	align-items: flex-start;
+}
+
+.writing-pdf-viewer .writing-pdf-viewer__spread--double .writing-pdf-viewer__page {
+	flex: 0 0 auto;
+}
+
+.writing-pdf-viewer .writing-pdf-viewer__page {
+	margin-inline: auto;
+}
+
+.writing-pdf-viewer .writing-pdf-viewer__page--pending .react-pdf__Page__canvas,
+.writing-pdf-viewer .writing-pdf-viewer__page--pending .react-pdf__Page__textContent,
+.writing-pdf-viewer .writing-pdf-viewer__page--pending .react-pdf__Page__annotations {
+	visibility: hidden;
+}
+
+.writing-pdf-viewer .react-pdf__Page {
+	display: block;
+	margin-inline: auto;
+}
+
+.writing-pdf-viewer .react-pdf__Page__canvas {
+	display: block;
+	margin-inline: auto;
+	border: 1px solid var(--color-border);
+	background: var(--color-background);
+	box-shadow: 0 1px 2px rgb(26 24 19 / 6%);
+}
+
+.writing-pdf-viewer .react-pdf__Page__textContent,
+.writing-pdf-viewer .react-pdf__Page__annotations {
+	inset-inline: 0 !important;
+}
+
+.writing-pdf-scrubber__track {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 3px;
+	min-height: 1.25rem;
+	padding-block: 0.25rem;
+	cursor: grab;
+	touch-action: none;
+	user-select: none;
+}
+
+.writing-pdf-scrubber__track--dragging {
+	cursor: grabbing;
+}
+
+.writing-pdf-scrubber__dot {
+	flex-shrink: 0;
+	width: 4px;
+	height: 4px;
+	padding: 0;
+	border: 0;
+	border-radius: 9999px;
+	background: var(--color-border-strong);
+	transition:
+		width 150ms ease,
+		height 150ms ease,
+		background-color 150ms ease;
+}
+
+.writing-pdf-scrubber__dot--passed {
+	background: color-mix(in srgb, var(--color-foreground) 35%, transparent);
+}
+
+.writing-pdf-scrubber__dot--active {
+	width: 9px;
+	height: 9px;
+	background: var(--color-foreground);
+}
+
+.writing-pdf-scrubber__dot--preview {
+	width: 9px;
+	height: 9px;
+	background: color-mix(in srgb, var(--color-foreground) 55%, transparent);
+}
+
+.writing-pdf-launch__overlay {
+	position: absolute;
+	inset: 0;
+	background: color-mix(in srgb, var(--color-foreground) 28%, transparent);
+}
+
+.writing-pdf-launch__center {
+	position: absolute;
+	inset: 0;
+	z-index: 1;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+}
+
+.writing-pdf-launch__read-btn {
+	position: relative;
+	display: inline-flex;
+	min-height: 3.25rem;
+	align-items: center;
+	justify-content: center;
+	gap: 0.625rem;
+	padding: 0.75rem 1.375rem;
+	border: 1px solid color-mix(in srgb, white 24%, transparent);
+	background-color: color-mix(in srgb, var(--color-foreground) 72%, transparent);
+	color: white;
+	opacity: 0.92;
+	-webkit-backdrop-filter: blur(6px);
+	backdrop-filter: blur(6px);
+	box-shadow:
+		0 0 0 1px color-mix(in srgb, black 10%, transparent),
+		0 10px 36px color-mix(in srgb, black 38%, transparent);
+	transition:
+		transform 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+		background-color 0.3s ease,
+		border-color 0.3s ease,
+		opacity 0.3s ease,
+		box-shadow 0.3s ease;
+}
+
+.writing-pdf-launch__read-ring {
+	position: absolute;
+	inset: -0.375rem;
+	border: 1px solid color-mix(in srgb, white 18%, transparent);
+	opacity: 0;
+	transform: scale(0.92);
+	transition:
+		opacity 0.3s ease,
+		transform 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+@media (hover: hover) and (pointer: fine) {
+	.writing-pdf-launch__read-btn:hover {
+		transform: scale(1.1);
+		background-color: color-mix(in srgb, var(--color-foreground) 86%, transparent);
+		border-color: color-mix(in srgb, white 38%, transparent);
+		opacity: 1;
+		box-shadow:
+			0 0 0 1px color-mix(in srgb, black 8%, transparent),
+			0 14px 40px color-mix(in srgb, black 44%, transparent);
+	}
+
+	.writing-pdf-launch__read-btn:hover .writing-pdf-launch__read-ring {
+		opacity: 1;
+		transform: scale(1);
+	}
+}
+
+.writing-pdf-launch__read-btn:focus-visible {
+	outline: 2px solid var(--color-ring);
+	outline-offset: 3px;
+}
+
+.writing-pdf-launch__read-btn:active {
+	transform: scale(1.02);
+}
+
+.writing-pdf-launch__read-icon {
+	position: relative;
+	z-index: 1;
+	width: 1.375rem;
+	height: 1.375rem;
+	flex-shrink: 0;
+}
+
+.writing-pdf-launch__read-label {
+	position: relative;
+	z-index: 1;
+	font-family: var(--font-heading);
+	font-size: var(--text-small);
+	font-weight: 600;
+	letter-spacing: 0.02em;
+	line-height: 1;
+}

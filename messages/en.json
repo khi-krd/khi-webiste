@@ -227,11 +227,139 @@
 		"cta": "Explore audio"
 	},
 	"Writings": {
+		"pageTitle": "Writings",
+		"metaDescription": "Scholarly and literary writings on Kurdish language, literature, and history from the Kurdish Heritage Institute.",
 		"eyebrow": "Writings",
 		"title": "Essays, research, and long-form stories.",
 		"description": "Scholarly and literary writing on Kurdish culture, language, history, and society.",
 		"viewAll": "View all writings",
 		"readTime": "{minutes} min read",
+		"page": {
+			"hero": {
+				"eyebrow": "Writings",
+				"title": "Some writings inform.",
+				"titleEmphasis": "Others preserve how we see ourselves.",
+				"cta": "Browse the collection",
+				"learnMore": "Learn more"
+			}
+		},
+		"carousel": {
+			"empty": "No writings are available at the moment. Please check back soon.",
+			"download": "Read",
+			"instituteBadge": "KHI",
+			"paginationLabel": "Writings pagination",
+			"autoplayLabel": "Auto-advancing",
+			"previous": "Previous page",
+			"next": "Next page",
+			"pagesCount": "{count} pages"
+		},
+		"grid": {
+			"allTitle": "Writings",
+			"itemCount": "{count, plural, one {# item} other {# items}}",
+			"empty": "No writings match your filters.",
+			"noResults": "No writings match your search. Try adjusting your filters.",
+			"categoryNavLabel": "Browse by category"
+		},
+		"filter": {
+			"label": "Filter & sort",
+			"all": "All genres",
+			"reset": "Reset",
+			"clear": "Clear filters",
+			"active": "Active:",
+			"genreLabel": "Genre",
+			"searchPlaceholder": "Search by title, author, or series…",
+			"searchLabel": "Search writings",
+			"searchClear": "Clear search"
+		},
+		"sort": {
+			"label": "Sort by",
+			"newest": "Newest",
+			"title": "Title A–Z"
+		},
+		"pagination": {
+			"label": "Writings pagination",
+			"previous": "Previous page",
+			"next": "Next page"
+		},
+		"post": {
+			"back": "Back to writings",
+			"writer": "Writer",
+			"topic": "Topic",
+			"series": "Series",
+			"seriesVolume": "Volume {order} of {total}",
+			"tags": "Tags",
+			"keywords": "Keywords",
+			"downloads": "Downloads",
+			"published": "Published",
+			"updated": "Updated",
+			"languages": {
+				"ckb": "Sorani (CKB)",
+				"kmr": "Kurmanji (KMR)"
+			},
+			"preview": {
+				"title": "Document preview"
+			},
+			"reader": {
+				"previousPage": "Previous page",
+				"nextPage": "Next page",
+				"pageOf": "Page {page} of {total}",
+				"pageNavLabel": "Page navigation",
+				"goToPage": "Go to page {page}",
+				"pagesRemaining": "{count} pages left",
+				"twoPageSpread": "Two-page spread",
+				"singlePage": "Single page",
+				"zoomIn": "Zoom in",
+				"zoomOut": "Zoom out",
+				"fitWidth": "Width",
+				"fitHeight": "Height",
+				"fullSize": "Full size",
+				"exitFullSize": "Exit full size",
+				"readButton": "Read",
+				"loading": "Loading document…",
+				"errorTitle": "Could not load document",
+				"errorDescription": "The file may be unavailable or blocked by your browser. Try again later.",
+				"unavailableTitle": "No preview available",
+				"unavailableDescription": "This writing does not include a PDF file to display."
+			}
+		},
+		"subcategories": {
+			"literature": {
+				"metaDescription": "Novels, short stories, drama, and literary writing from the Kurdish Heritage Institute."
+			},
+			"history": {
+				"metaDescription": "Historical, biographical, and social writings on Kurdish history and society."
+			},
+			"poetry": {
+				"metaDescription": "Poetry and verse from Kurdish literary traditions."
+			},
+			"manuscripts": {
+				"metaDescription": "Folklore, religious texts, linguistics, and manuscript collections."
+			}
+		},
+		"genres": {
+			"POETRY": "Poetry",
+			"NOVEL": "Novel",
+			"SHORT_STORY": "Short story",
+			"DRAMA": "Drama",
+			"HISTORY": "History",
+			"BIOGRAPHY": "Biography",
+			"PHILOSOPHY": "Philosophy",
+			"RELIGION": "Religion",
+			"FOLKLORE": "Folklore",
+			"POLITICS": "Politics",
+			"SOCIOLOGY": "Sociology",
+			"ECONOMICS": "Economics",
+			"LAW": "Law",
+			"LINGUISTICS": "Linguistics",
+			"ARTS": "Arts",
+			"CULTURAL": "Cultural",
+			"SCIENCE": "Science",
+			"MEDICINE": "Medicine",
+			"EDUCATIONAL": "Educational",
+			"CHILDREN": "Children",
+			"TRAVEL": "Travel",
+			"OTHER": "Other"
+		},
 		"categories": {
 			"culture": "Culture",
 			"history": "History",

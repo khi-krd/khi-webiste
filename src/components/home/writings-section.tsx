@@ -1,10 +1,12 @@
 import { ArrowRightIcon } from "@heroicons/react/24/outline";
 import { getLocale, getTranslations } from "next-intl/server";
 import { WritingRow } from "@/components/home/writing-row";
+import { buildGenreLabels } from "@/components/writing/writing-card";
 import { Container } from "@/components/ui/container";
 import { DirectionalIcon } from "@/components/ui/directional-icon";
 import { Link } from "@/components/ui/link";
-import { getWritings } from "@/lib/mock/writings";
+import { getWritingsCarousel } from "@/lib/api/writings";
+import type { BookGenre } from "@/types/writing";
 
 const viewAllClass =
 	"group/viewall relative inline-flex h-10 w-fit shrink-0 items-center gap-2.5 overflow-hidden border border-foreground px-5 font-heading text-small font-semibold text-foreground no-underline transition-[color,gap,box-shadow] duration-300 ease-out before:absolute before:inset-0 before:z-0 before:origin-bottom before:scale-y-0 before:bg-foreground before:transition-transform before:duration-300 before:ease-[cubic-bezier(0.22,1,0.36,1)] fine-hover:gap-3.5 fine-hover:text-primary-foreground fine-hover:shadow-[0_8px_24px_-12px_rgba(26,24,19,0.35)] fine-hover:before:scale-y-100 motion-reduce:before:transition-none motion-reduce:fine-hover:before:scale-y-100 motion-reduce:fine-hover:gap-2.5";
@@ -12,7 +14,27 @@ const viewAllClass =
 export async function WritingsSection() {
 	const locale = await getLocale();
 	const t = await getTranslations("Writings");
-	const writings = getWritings(locale);
+	const writings = await getWritingsCarousel(locale, 4);
+
+	const translateGenre = (genre: BookGenre) => t(`genres.${genre}`);
+
+	const rows = writings.map((item) => {
+		const genreLabels = buildGenreLabels(
+			item.genres,
+			item.freeTextGenre,
+			translateGenre,
+		);
+
+		return {
+			id: item.id,
+			title: item.title,
+			writer: item.writer,
+			excerpt: item.excerpt,
+			coverUrl: item.coverUrl,
+			genreLabel: genreLabels[0] ?? item.topicName ?? t("eyebrow"),
+			fileUrl: item.fileUrl,
+		};
+	});
 
 	return (
 		<section
@@ -32,7 +54,7 @@ export async function WritingsSection() {
 						{t("description")}
 					</p>
 					<Link
-						href="/news"
+						href="/writings"
 						variant="nav"
 						className={`${viewAllClass} mt-8`}
 					>
@@ -45,14 +67,8 @@ export async function WritingsSection() {
 				</header>
 
 				<div className="mt-12 lg:mt-0">
-					{writings.map((item, index) => (
-						<WritingRow
-							key={item.id}
-							item={item}
-							index={index}
-							categoryLabel={t(`categories.${item.category}`)}
-							readTimeLabel={t("readTime", { minutes: item.readTime })}
-						/>
+					{rows.map((item, index) => (
+						<WritingRow key={item.id} item={item} index={index} />
 					))}
 				</div>
 			</Container>

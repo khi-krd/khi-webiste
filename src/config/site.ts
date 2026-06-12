@@ -38,14 +38,14 @@ export const NAV_DEFAULT_IMAGE = MENU_IMAGE("1.jpg");
 export const NAV_ITEMS: NavItem[] = [
 	{
 		key: "books",
-		href: "/books",
+		href: "/writings",
 		descriptionKey: "booksDescription",
 		imageSrc: MENU_IMAGE("1.jpg"),
 		children: [
-			{ key: "booksSubLiterature", href: "/books/literature" },
-			{ key: "booksSubHistory", href: "/books/history" },
-			{ key: "booksSubPoetry", href: "/books/poetry" },
-			{ key: "booksSubManuscripts", href: "/books/manuscripts" },
+			{ key: "booksSubLiterature", href: "/writings/literature" },
+			{ key: "booksSubHistory", href: "/writings/history" },
+			{ key: "booksSubPoetry", href: "/writings/poetry" },
+			{ key: "booksSubManuscripts", href: "/writings/manuscripts" },
 		],
 	},
 	{

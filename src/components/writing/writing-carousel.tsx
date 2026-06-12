@@ -1,0 +1,167 @@
+/* biome-ignore-all lint/a11y/useSemanticElements: carousel slide semantics require role="group". */
+"use client";
+
+import Autoplay, { type AutoplayType } from "embla-carousel-autoplay";
+import useEmblaCarousel from "embla-carousel-react";
+import { useCallback, useEffect, useMemo, useState } from "react";
+import {
+	type WritingCardProps,
+	WritingCard,
+} from "@/components/writing/writing-card";
+import { cn } from "@/lib/utils";
+
+const AUTOPLAY_DELAY_MS = 4500;
+
+type WritingCarouselProps = {
+	cards: WritingCardProps[];
+	direction: "ltr" | "rtl";
+	emptyLabel: string;
+	carouselLabel: string;
+};
+
+const slideClass =
+	"min-w-0 shrink-0 basis-[82%] pe-4 sm:basis-[48%] md:basis-[32%] lg:basis-[25%] last:pe-0";
+
+export function WritingCarousel({
+	cards,
+	direction,
+	emptyLabel,
+	carouselLabel,
+}: WritingCarouselProps) {
+	const hasMultipleSlides = cards.length > 1;
+
+	const autoplay = useMemo<AutoplayType | null>(() => {
+		if (!hasMultipleSlides) {
+			return null;
+		}
+
+		return Autoplay({
+			delay: AUTOPLAY_DELAY_MS,
+			stopOnMouseEnter: true,
+			stopOnFocusIn: true,
+			stopOnInteraction: false,
+			playOnInit: false,
+		});
+	}, [hasMultipleSlides]);
+
+	const [emblaRef, emblaApi] = useEmblaCarousel(
+		{
+			loop: hasMultipleSlides,
+			align: "start",
+			containScroll: false,
+			direction,
+			slidesToScroll: 1,
+			duration: 32,
+		},
+		autoplay ? [autoplay] : [],
+	);
+
+	const [selectedIndex, setSelectedIndex] = useState(0);
+	const [snapCount, setSnapCount] = useState(cards.length);
+	const [prefersReducedMotion, setPrefersReducedMotion] = useState(false);
+
+	useEffect(() => {
+		const mediaQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
+		const updatePreference = () => setPrefersReducedMotion(mediaQuery.matches);
+		updatePreference();
+		mediaQuery.addEventListener("change", updatePreference);
+		return () => mediaQuery.removeEventListener("change", updatePreference);
+	}, []);
+
+	const syncEmbla = useCallback(() => {
+		if (!emblaApi) {
+			return;
+		}
+		setSelectedIndex(emblaApi.selectedScrollSnap());
+		setSnapCount(emblaApi.scrollSnapList().length);
+	}, [emblaApi]);
+
+	useEffect(() => {
+		if (!emblaApi) {
+			return;
+		}
+		syncEmbla();
+		emblaApi.on("select", syncEmbla);
+		emblaApi.on("reInit", syncEmbla);
+		return () => {
+			emblaApi.off("select", syncEmbla);
+			emblaApi.off("reInit", syncEmbla);
+		};
+	}, [emblaApi, syncEmbla]);
+
+	useEffect(() => {
+		emblaApi?.reInit();
+	}, [cards, emblaApi]);
+
+	useEffect(() => {
+		if (!emblaApi || !autoplay) {
+			return;
+		}
+
+		if (prefersReducedMotion) {
+			autoplay.stop();
+		} else {
+			autoplay.play();
+		}
+	}, [autoplay, emblaApi, prefersReducedMotion]);
+
+	return (
+		<section
+			id="writings-content"
+			aria-labelledby="writings-carousel-heading"
+			className="scroll-mt-26 sm:scroll-mt-30"
+			aria-roledescription="carousel"
+			aria-label={carouselLabel}
+		>
+			<h2 id="writings-carousel-heading" className="visually-hidden">
+				{carouselLabel}
+			</h2>
+
+			{cards.length === 0 ? (
+				<p className="px-6 py-20 text-center text-body text-muted sm:px-10">
+					{emptyLabel}
+				</p>
+			) : (
+				<div className="px-6 pb-8 pt-2 sm:px-10 sm:pb-10 sm:pt-4">
+					<div
+						className="overflow-hidden"
+						ref={emblaRef}
+						data-lenis-prevent-horizontal
+						data-lenis-prevent-touch
+					>
+						<ul className="flex touch-pan-y">
+							{cards.map((card) => (
+								<li
+									key={card.id}
+									role="group"
+									aria-roledescription="slide"
+									className={slideClass}
+								>
+									<WritingCard {...card} />
+								</li>
+							))}
+						</ul>
+					</div>
+
+					{hasMultipleSlides ? (
+						<div className="mt-8 border-t border-border pt-6">
+							<p
+								className="label font-medium tabular-nums text-muted"
+								aria-live="polite"
+								aria-atomic="true"
+							>
+								<span className="text-foreground">
+									{String(selectedIndex + 1).padStart(2, "0")}
+								</span>
+								<span aria-hidden="true" className="mx-2">
+									/
+								</span>
+								{String(snapCount).padStart(2, "0")}
+							</p>
+						</div>
+					) : null}
+				</div>
+			)}
+		</section>
+	);
+}

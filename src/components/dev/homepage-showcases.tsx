@@ -247,10 +247,16 @@ export function WritingRowShowcase() {
 				{writings.map((item, index) => (
 					<WritingRow
 						key={item.id}
-						item={item}
+						item={{
+							id: Number.parseInt(item.id.replace(/\D/g, ""), 10) || index,
+							title: item.title,
+							writer: item.author ?? "",
+							excerpt: item.excerpt,
+							coverUrl: item.image?.url ?? null,
+							genreLabel: t(`categories.${item.category}`),
+							fileUrl: null,
+						}}
 						index={index}
-						categoryLabel={t(`categories.${item.category}`)}
-						readTimeLabel={t("readTime", { minutes: item.readTime })}
 					/>
 				))}
 			</div>

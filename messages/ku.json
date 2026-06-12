@@ -224,11 +224,139 @@
 		"cta": "Arşîva dengê keşf bike"
 	},
 	"Writings": {
+		"pageTitle": "Nivîs",
+		"metaDescription": "Nivîsên zanistî û edebî li ser ziman, edebiyat û dîroka Kurdî ji Enstîtuya Kevneşopiya Kurdî.",
 		"eyebrow": "Nivîs",
 		"title": "Nivîsar, lêkolîn û çîrokên dirêj.",
 		"description": "Nivîsên zanistî û edebî li ser kultura, ziman, dîrok û civaka Kurdî.",
-		"viewAll": "Hemû nivîs bibîne",
+		"viewAll": "Hemû nivîsan bibîne",
 		"readTime": "{minutes} deq xwendin",
+		"page": {
+			"hero": {
+				"eyebrow": "Nivîs",
+				"title": "Hin nivîs agahdar dikin.",
+				"titleEmphasis": "Yên din jî parastina nêrîna me li xwe ne.",
+				"cta": "Koleksiyonê bigere",
+				"learnMore": "Zêdetir bizane"
+			}
+		},
+		"carousel": {
+			"empty": "Niha ti nivîs tune ne. Ji kerema xwe paşê dîsa serdan bikin.",
+			"download": "Bixwîne",
+			"instituteBadge": "EKK",
+			"paginationLabel": "Rûpelkirina nivîsan",
+			"autoplayLabel": "Bixweber diçe",
+			"previous": "Rûpela berê",
+			"next": "Rûpela paş",
+			"pagesCount": "{count} rûpel"
+		},
+		"grid": {
+			"allTitle": "Nivîs",
+			"itemCount": "{count, plural, one {# tişt} other {# tişt}}",
+			"empty": "Ti nivîs bi van filtreyan re nayê hev.",
+			"noResults": "Ti encam nehat dîtin. Filtreyan biguherîne.",
+			"categoryNavLabel": "Li gorî kategoriyê bigere"
+		},
+		"filter": {
+			"label": "Fîltre & rêz",
+			"all": "Hemû janr",
+			"reset": "Ji nû ve dest pê bike",
+			"clear": "Filtreyan paqij bike",
+			"active": "Aktîf:",
+			"genreLabel": "Janr",
+			"searchPlaceholder": "Li gorî sernav, nivîskar an rêzê bigere…",
+			"searchLabel": "Di nivîsan de bigere",
+			"searchClear": "Lêgerînê paqij bike"
+		},
+		"sort": {
+			"label": "Rêz bike li gorî",
+			"newest": "Herî nû",
+			"title": "Sernav A–Z"
+		},
+		"pagination": {
+			"label": "Rûpelkirina nivîsan",
+			"previous": "Rûpela berê",
+			"next": "Rûpela paş"
+		},
+		"post": {
+			"back": "Vegere nivîsan",
+			"writer": "Nivîskar",
+			"topic": "Mijar",
+			"series": "Rêz",
+			"seriesVolume": "Cild {order} ji {total}",
+			"tags": "Etîket",
+			"keywords": "Peyvên sereke",
+			"downloads": "Daxistin",
+			"published": "Weşandin",
+			"updated": "Rojanekirin",
+			"languages": {
+				"ckb": "Soranî (CKB)",
+				"kmr": "Kurmancî (KMR)"
+			},
+			"preview": {
+				"title": "Pêşdîtina belgeyê"
+			},
+			"reader": {
+				"previousPage": "Rûpela berê",
+				"nextPage": "Rûpela din",
+				"pageOf": "Rûpel {page} ji {total}",
+				"pageNavLabel": "Navigasyona rûpelan",
+				"goToPage": "Here rûpel {page}",
+				"pagesRemaining": "{count} rûpel mayî",
+				"twoPageSpread": "Du rûpel",
+				"singlePage": "Rûpelek",
+				"zoomIn": "Nêzîk bike",
+				"zoomOut": "Dûr bike",
+				"fitWidth": "Firehî",
+				"fitHeight": "Bilindî",
+				"fullSize": "Mezinahiya tevahî",
+				"exitFullSize": "Ji mezinahiya tevahî derkeve",
+				"readButton": "Bixwîne",
+				"loading": "Belge tê barkirin…",
+				"errorTitle": "Belge nehat barkirin",
+				"errorDescription": "Dibe ku pel ne berdest be an ji hêla geroka te ve were astengkirin. Paşê dîsa biceribîne.",
+				"unavailableTitle": "Pêşdîtin tune",
+				"unavailableDescription": "Ev nivîs PDFek ji bo nîşandanê tune."
+			}
+		},
+		"subcategories": {
+			"literature": {
+				"metaDescription": "Roman, çîroka kurt, şano û nivîsên edebî ji Enstîtuya Kevneşopiya Kurdî."
+			},
+			"history": {
+				"metaDescription": "Nivîsên dîrokî, jiyanname û civakî li ser dîrok û civata Kurdî."
+			},
+			"poetry": {
+				"metaDescription": "Şîir û helbest ji tradîsyonên edebî yên Kurdî."
+			},
+			"manuscripts": {
+				"metaDescription": "Zargotina gelêrî, nivîsên olî, zimanzanî û koleksiyonên destnivîsê."
+			}
+		},
+		"genres": {
+			"POETRY": "Şîir",
+			"NOVEL": "Roman",
+			"SHORT_STORY": "Çîroka kurt",
+			"DRAMA": "Şano",
+			"HISTORY": "Dîrok",
+			"BIOGRAPHY": "Jiyanname",
+			"PHILOSOPHY": "Felsefe",
+			"RELIGION": "Ol",
+			"FOLKLORE": "Zargotina gelêrî",
+			"POLITICS": "Siyaset",
+			"SOCIOLOGY": "Komelezanî",
+			"ECONOMICS": "Aborî",
+			"LAW": "Qanûn",
+			"LINGUISTICS": "Zimanzanî",
+			"ARTS": "Huner",
+			"CULTURAL": "Kultûrî",
+			"SCIENCE": "Zanist",
+			"MEDICINE": "Pizîşkî",
+			"EDUCATIONAL": "Perwerdeyî",
+			"CHILDREN": "Zarokan",
+			"TRAVEL": "Ger û gerr",
+			"OTHER": "Yên din"
+		},
 		"categories": {
 			"culture": "Kultûr",
 			"history": "Dîrok",

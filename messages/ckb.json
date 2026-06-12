@@ -227,11 +227,139 @@
 		"cta": "ئەرشیفی دەنگ بکۆڵێوە"
 	},
 	"Writings": {
+		"pageTitle": "نووسین",
+		"metaDescription": "نووسینی زانستی و ئەدەبی لەسەر زمانی کوردی، ئەدەب و مێژوو لە ئینستیوتی کەلەپووری کوردی.",
 		"eyebrow": "نووسین",
 		"title": "وتار، توێژینەوە و چیرۆکی درێژ.",
 		"description": "نووسینی زانستی و ئەدەبی لەسەر کەلتوور، زمان، مێژوو و کۆمەڵگای کوردی.",
 		"viewAll": "هەموو نووسینەکان ببینە",
 		"readTime": "{minutes} خولەک خوێندن",
+		"page": {
+			"hero": {
+				"eyebrow": "نووسین",
+				"title": "هەندێک نووسین زانیاری دەدەن.",
+				"titleEmphasis": "هەندێکیان پاراستنی چۆنیەتی بینینی خۆمانە.",
+				"cta": "کۆڵێکشنەکە بگەڕێ",
+				"learnMore": "زیاتر بزانە"
+			}
+		},
+		"carousel": {
+			"empty": "لە ئێستادا هیچ نووسینێک بەردەست نییە. تکایە دواتر سەردان بکەوە.",
+			"download": "بیخوێنەوە",
+			"instituteBadge": "ئەکە",
+			"paginationLabel": "لاپەڕەکردنی نووسینەکان",
+			"autoplayLabel": "خۆکارانە دەجوڵێت",
+			"previous": "لاپەڕەی پێشوو",
+			"next": "لاپەڕەی دواتر",
+			"pagesCount": "{count} لاپەڕە"
+		},
+		"grid": {
+			"allTitle": "نووسین",
+			"itemCount": "{count, plural, one {# بابەت} other {# بابەت}}",
+			"empty": "هیچ نووسینێک لەگەڵ ئەم فلتەرانە ناگونجێت.",
+			"noResults": "هیچ ئەنجامێک نەدۆزرایەوە. فلتەرەکان بگۆڕە.",
+			"categoryNavLabel": "گەڕان بەپێی پۆل"
+		},
+		"filter": {
+			"label": "فلتەر و ڕیزکردن",
+			"all": "هەموو جۆرەکان",
+			"reset": "ڕێکخستنەوە",
+			"clear": "فلتەرەکان پاک بکەوە",
+			"active": "چالاک:",
+			"genreLabel": "جۆر",
+			"searchPlaceholder": "گەڕان بە ناونیشان، نووسەر یان زنجیرە…",
+			"searchLabel": "گەڕان لە نووسینەکان",
+			"searchClear": "گەڕان پاک بکەوە"
+		},
+		"sort": {
+			"label": "ڕیزکردن بەپێی",
+			"newest": "نوێترین",
+			"title": "ناونیشان ئ–ی"
+		},
+		"pagination": {
+			"label": "لاپەڕەکردنی نووسینەکان",
+			"previous": "لاپەڕەی پێشوو",
+			"next": "لاپەڕەی دواتر"
+		},
+		"post": {
+			"back": "گەڕانەوە بۆ نووسینەکان",
+			"writer": "نووسەر",
+			"topic": "بابەت",
+			"series": "زنجیرە",
+			"seriesVolume": "بەندی {order} لە {total}",
+			"tags": "تاگ",
+			"keywords": "وشە سەرەکییەکان",
+			"downloads": "داگرتن",
+			"published": "بڵاوکراوە",
+			"updated": "نوێکراوە",
+			"languages": {
+				"ckb": "سۆرانی (CKB)",
+				"kmr": "کورمانجی (KMR)"
+			},
+			"preview": {
+				"title": "پێشبینینی بەڵگەنامە"
+			},
+			"reader": {
+				"previousPage": "پەڕەی پێشوو",
+				"nextPage": "پەڕەی دواتر",
+				"pageOf": "پەڕەی {page} لە {total}",
+				"pageNavLabel": "گەڕان لە نێوان پەڕەکان",
+				"goToPage": "بڕۆ بۆ پەڕەی {page}",
+				"pagesRemaining": "{count} پەڕە ماوە",
+				"twoPageSpread": "دوو پەڕە",
+				"singlePage": "تاک پەڕە",
+				"zoomIn": "گەورەکردنەوە",
+				"zoomOut": "بچووککردنەوە",
+				"fitWidth": "پانی",
+				"fitHeight": "بەرزی",
+				"fullSize": "قەبارەی تەواو",
+				"exitFullSize": "داخستنی قەبارەی تەواو",
+				"readButton": "بیخوێنەوە",
+				"loading": "بارکردنی بەڵگەنامە…",
+				"errorTitle": "بەڵگەنامەکە بار نەکرا",
+				"errorDescription": "ڕەنگە فایلەکە بەردەست نەبێت یان وەشانەکەت ڕێگری لێ بکات. دواتر دووبارە هەوڵ بدەرەوە.",
+				"unavailableTitle": "پێشبینین بەردەست نییە",
+				"unavailableDescription": "ئەم نووسراوە فایلی PDFی بۆ پیشاندان نییە."
+			}
+		},
+		"subcategories": {
+			"literature": {
+				"metaDescription": "ڕۆمان، چیرۆکی کورت، شانۆ و نووسینی ئەدەبی لە ئینستیوتی کەلەپووری کوردی."
+			},
+			"history": {
+				"metaDescription": "نووسینی مێژوویی، ژیاننامە و کۆمەڵایەتی لەسەر مێژوو و کۆمەڵگای کوردی."
+			},
+			"poetry": {
+				"metaDescription": "شیعر و هەڵمەت لە نەریتە ئەدەبییە کوردییەکان."
+			},
+			"manuscripts": {
+				"metaDescription": "زارگوتن، دەقە ئایینییەکان، زمانناسی و کۆکراوەی دەستنووس."
+			}
+		},
+		"genres": {
+			"POETRY": "شیعر",
+			"NOVEL": "ڕۆمان",
+			"SHORT_STORY": "چیرۆکی کورت",
+			"DRAMA": "شانۆ",
+			"HISTORY": "مێژوو",
+			"BIOGRAPHY": "ژیاننامە",
+			"PHILOSOPHY": "فەلسەفە",
+			"RELIGION": "ئایین",
+			"FOLKLORE": "زارگوتن",
+			"POLITICS": "سیاسەت",
+			"SOCIOLOGY": "کۆمەڵناسی",
+			"ECONOMICS": "ئابووری",
+			"LAW": "یاسا",
+			"LINGUISTICS": "زمانناسی",
+			"ARTS": "هونەر",
+			"CULTURAL": "کولتووری",
+			"SCIENCE": "زانست",
+			"MEDICINE": "پزیشکی",
+			"EDUCATIONAL": "پەروەردەیی",
+			"CHILDREN": "منداڵان",
+			"TRAVEL": "گەشتوگوزار",
+			"OTHER": "یتر"
+		},
 		"categories": {
 			"culture": "کەلتوور",
 			"history": "مێژوو",

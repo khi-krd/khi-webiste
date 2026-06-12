@@ -13,7 +13,7 @@ export const ContentTypeSchema = z.enum([
 export type ContentType = z.infer<typeof ContentTypeSchema>;
 
 export const TYPE_SEGMENTS: Record<ContentType, string> = {
-	book: "books",
+	book: "writings",
 	song: "songs",
 	audio: "audio",
 	video: "video",
