@@ -33,6 +33,7 @@ import {
 import { spreadStartPage, visibleSpreadPages } from "@/lib/writing/pdf-page-range";
 import { resolvePdfViewerUrl } from "@/lib/writing/pdf-url";
 import type { WritingFileOffer } from "@/types/writing";
+import { useIsMobile } from "@/lib/use-is-mobile";
 import { cn } from "@/lib/utils";
 import "./writing-pdf-viewer.css";
 
@@ -43,11 +44,14 @@ const MAX_ZOOM = 2.5;
 const ZOOM_STEP = 0.25;
 const FIT_EPSILON = 0.01;
 const VIEWPORT_PADDING_Y = 32;
+const VIEWPORT_PADDING_Y_MOBILE = 16;
 const VIEWPORT_PADDING_X = 48;
+const VIEWPORT_PADDING_X_MOBILE = 8;
+const SWIPE_THRESHOLD_PX = 48;
 const FULLSCREEN_CHROME_HEIGHT = 140;
 const SPREAD_PAGE_GAP = 12;
 
-const INLINE_VIEWPORT_CLASS = "h-[24rem] sm:h-[28rem]";
+const INLINE_VIEWPORT_CLASS = "h-[28rem] min-h-[50dvh] sm:h-[28rem] sm:min-h-0";
 const FULLSCREEN_VIEWPORT_CLASS = "min-h-0 flex-1";
 
 type FitMode = "width" | "height";
@@ -220,6 +224,7 @@ type PdfReaderToolbarProps = {
 	zoom: number;
 	twoPageSpread: boolean;
 	isFullscreen?: boolean;
+	isMobile?: boolean;
 	onZoomOut: () => void;
 	onZoomIn: () => void;
 	onFitWidth: () => void;
@@ -246,6 +251,7 @@ function PdfReaderToolbar({
 	zoom,
 	twoPageSpread,
 	isFullscreen = false,
+	isMobile = false,
 	onZoomOut,
 	onZoomIn,
 	onFitWidth,
@@ -256,12 +262,19 @@ function PdfReaderToolbar({
 }: PdfReaderToolbarProps) {
 	const isBaseZoom = Math.abs(zoom - 1) < FIT_EPSILON;
 	const showZoomLabel = !isBaseZoom;
+	const activeFitMode = isMobile ? "width" : fitMode;
+	const touchButtonClass = isMobile
+		? "inline-flex size-11 items-center justify-center border border-border-strong text-foreground transition-colors fine-hover:bg-sunken disabled:pointer-events-none disabled:opacity-40"
+		: navButtonClass;
+	const touchFitButtonClass = isMobile
+		? "h-11 min-w-11 border border-border-strong px-3 font-heading text-small font-medium transition-colors fine-hover:bg-sunken disabled:pointer-events-none disabled:opacity-40"
+		: fitButtonClass;
 
 	return (
-		<div className="flex flex-wrap items-center justify-end gap-2 border-b border-border px-4 py-3 sm:px-5">
+		<div className="flex flex-wrap items-center justify-end gap-1.5 border-b border-border px-3 py-2.5 sm:gap-2 sm:px-5 sm:py-3">
 				<button
 					type="button"
-					className={navButtonClass}
+					className={touchButtonClass}
 					onClick={onZoomOut}
 					disabled={zoom <= MIN_ZOOM}
 					aria-label={labels.zoomOut}
@@ -275,7 +288,7 @@ function PdfReaderToolbar({
 				) : null}
 				<button
 					type="button"
-					className={navButtonClass}
+					className={touchButtonClass}
 					onClick={onZoomIn}
 					disabled={zoom >= MAX_ZOOM}
 					aria-label={labels.zoomIn}
@@ -286,27 +299,30 @@ function PdfReaderToolbar({
 					type="button"
 					onClick={onFitWidth}
 					aria-label={labels.fitWidth}
-					aria-pressed={fitMode === "width" && isBaseZoom}
+					aria-pressed={activeFitMode === "width" && isBaseZoom}
 					className={cn(
-						fitButtonClass,
-						fitMode === "width" && isBaseZoom && "bg-sunken",
+						touchFitButtonClass,
+						activeFitMode === "width" && isBaseZoom && "bg-sunken",
 					)}
 				>
 					{labels.fitWidth}
 				</button>
-				<button
-					type="button"
-					onClick={onFitHeight}
-					aria-label={labels.fitHeight}
-					aria-pressed={fitMode === "height" && isBaseZoom}
-					className={cn(
-						fitButtonClass,
-						fitMode === "height" && isBaseZoom && "bg-sunken",
-					)}
-				>
-					{labels.fitHeight}
-				</button>
-				<button
+				{!isMobile ? (
+					<button
+						type="button"
+						onClick={onFitHeight}
+						aria-label={labels.fitHeight}
+						aria-pressed={fitMode === "height" && isBaseZoom}
+						className={cn(
+							touchFitButtonClass,
+							fitMode === "height" && isBaseZoom && "bg-sunken",
+						)}
+					>
+						{labels.fitHeight}
+					</button>
+				) : null}
+				{!isMobile ? (
+					<button
 						type="button"
 						onClick={onToggleSpread}
 						aria-label={
@@ -314,15 +330,16 @@ function PdfReaderToolbar({
 						}
 						aria-pressed={twoPageSpread}
 						className={cn(
-							fitButtonClass,
+							touchFitButtonClass,
 							twoPageSpread && "bg-sunken",
 						)}
 					>
 						<Square2StackIcon className="size-4" aria-hidden />
 					</button>
+				) : null}
 					<button
 						type="button"
-						className={navButtonClass}
+						className={touchButtonClass}
 						onClick={onToggleFullscreen}
 						aria-label={isFullscreen ? labels.exitFullSize : labels.fullSize}
 					>
@@ -375,7 +392,9 @@ type PdfReaderViewportProps = {
 	viewportClassName: string;
 	pageContainerClassName: string;
 	viewportRef: React.RefObject<HTMLDivElement | null>;
-	onKeyDown: (event: React.KeyboardEvent<HTMLDivElement>) => void;
+	onSwipeNavigate?: (direction: 1 | -1) => void;
+	enableSwipe?: boolean;
+	isMobile?: boolean;
 	onLoadSuccess: (total: number) => void;
 	onLoadError: () => void;
 	onInitialDisplayReady: () => void;
@@ -447,13 +466,16 @@ function PdfReaderViewport({
 	viewportClassName,
 	pageContainerClassName,
 	viewportRef,
-	onKeyDown,
+	onSwipeNavigate,
+	enableSwipe = false,
+	isMobile = false,
 	onLoadSuccess,
 	onLoadError,
 	onInitialDisplayReady,
 	initialDisplayComplete = false,
 	labels,
 }: PdfReaderViewportProps) {
+	const swipeStartRef = useRef<{ x: number; y: number } | null>(null);
 	const hasPageSize =
 		(pageRenderSize.width ?? 0) > 0 || (pageRenderSize.height ?? 0) > 0;
 	const canRenderPages = documentReady && isViewportReady && hasPageSize;
@@ -497,11 +519,56 @@ function PdfReaderViewport({
 	const showSpinner =
 		!loadError && !hasDisplayedOnce && (!canRenderPages || !allPagesRendered);
 
+	const handleTouchStart = useCallback(
+		(event: React.TouchEvent<HTMLDivElement>) => {
+			if (!enableSwipe || event.touches.length !== 1) {
+				swipeStartRef.current = null;
+				return;
+			}
+			const touch = event.touches[0];
+			swipeStartRef.current = { x: touch.clientX, y: touch.clientY };
+		},
+		[enableSwipe],
+	);
+
+	const handleTouchEnd = useCallback(
+		(event: React.TouchEvent<HTMLDivElement>) => {
+			if (!enableSwipe || !onSwipeNavigate || !swipeStartRef.current) {
+				return;
+			}
+
+			const touch = event.changedTouches[0];
+			const deltaX = touch.clientX - swipeStartRef.current.x;
+			const deltaY = touch.clientY - swipeStartRef.current.y;
+			swipeStartRef.current = null;
+
+			if (
+				Math.abs(deltaX) < SWIPE_THRESHOLD_PX ||
+				Math.abs(deltaX) <= Math.abs(deltaY)
+			) {
+				return;
+			}
+
+			const rtl = document.documentElement.dir === "rtl";
+			const forward = deltaX < 0;
+			onSwipeNavigate(forward === rtl ? -1 : 1);
+		},
+		[enableSwipe, onSwipeNavigate],
+	);
+
 	return (
 		<div
 			ref={viewportRef}
-			className={cn("relative overflow-auto bg-sunken", viewportClassName)}
-			onKeyDown={onKeyDown}
+			className={cn(
+				"relative overflow-auto bg-sunken",
+				enableSwipe && "writing-pdf-viewer__viewport--swipeable",
+				viewportClassName,
+			)}
+			onTouchStart={handleTouchStart}
+			onTouchEnd={handleTouchEnd}
+			onTouchCancel={() => {
+				swipeStartRef.current = null;
+			}}
 			tabIndex={0}
 			role="region"
 			aria-label={title}
@@ -516,7 +583,12 @@ function PdfReaderViewport({
 					/>
 				</div>
 			) : (
-				<div className="flex h-full justify-center px-4 py-4 sm:px-6 sm:py-5">
+				<div
+					className={cn(
+						"flex h-full justify-center py-3 sm:py-5",
+						isMobile ? "px-1.5" : "px-4 sm:px-6",
+					)}
+				>
 					<div className={cn("relative w-full", pageContainerClassName)}>
 						{showSpinner ? (
 							<div className="absolute inset-0 z-1 flex items-center justify-center">
@@ -578,6 +650,7 @@ export function WritingPdfViewer({
 	className,
 }: WritingPdfViewerProps) {
 	const t = useTranslations("Writings.post.reader");
+	const isMobile = useIsMobile();
 	const pdfOffers = useMemo(() => getPdfFileOffers(fileOffers), [fileOffers]);
 	const defaultOffer = useMemo(
 		() => pickDefaultPdfOffer(fileOffers, locale),
@@ -635,6 +708,8 @@ export function WritingPdfViewer({
 	const scrubberLabels = useMemo(
 		() => ({
 			navLabel: t("pageNavLabel"),
+			previousPage: t("previousPage"),
+			nextPage: t("nextPage"),
 			pageOf: (page: number, total: number) =>
 				t("pageOf", { page, total }),
 			pagesRemaining: (count: number) =>
@@ -688,7 +763,10 @@ export function WritingPdfViewer({
 		stablePageRenderSizeRef.current = {};
 	}, []);
 
-	const navigateStep = twoPageSpread ? 2 : 1;
+	const effectiveTwoPageSpread = twoPageSpread && !isMobile;
+	const effectiveFitMode: FitMode = isMobile ? "width" : fitMode;
+	const navigateStep = effectiveTwoPageSpread ? 2 : 1;
+	const canSwipeNavigate = Math.abs(zoom - 1) < FIT_EPSILON;
 
 	const goToPage = useCallback(
 		(delta: number) => {
@@ -706,9 +784,9 @@ export function WritingPdfViewer({
 	const goToPageNumber = useCallback(
 		(page: number) => {
 			const clamped = Math.min(Math.max(page, 1), Math.max(numPages, 1));
-			setPageNumber(spreadStartPage(clamped, twoPageSpread));
+			setPageNumber(spreadStartPage(clamped, effectiveTwoPageSpread));
 		},
-		[numPages, twoPageSpread],
+		[numPages, effectiveTwoPageSpread],
 	);
 
 	const toggleSpread = useCallback(() => {
@@ -721,8 +799,22 @@ export function WritingPdfViewer({
 		});
 	}, []);
 
-	const onKeyDown = useCallback(
-		(event: React.KeyboardEvent<HTMLDivElement>) => {
+	useEffect(() => {
+		if (!isReaderActive || loadError || numPages <= 1) {
+			return;
+		}
+
+		const handleKeyDown = (event: KeyboardEvent) => {
+			const target = event.target;
+			if (
+				target instanceof HTMLElement &&
+				target.closest(
+					'input:not([type="range"]), textarea, select, [contenteditable="true"]',
+				)
+			) {
+				return;
+			}
+
 			const rtl = document.documentElement.dir === "rtl";
 			if (event.key === (rtl ? "ArrowLeft" : "ArrowRight")) {
 				event.preventDefault();
@@ -735,9 +827,11 @@ export function WritingPdfViewer({
 			if (event.key === "Escape" && isFullscreen) {
 				dialogRef.current?.close();
 			}
-		},
-		[goToPage, isFullscreen],
-	);
+		};
+
+		window.addEventListener("keydown", handleKeyDown);
+		return () => window.removeEventListener("keydown", handleKeyDown);
+	}, [isReaderActive, loadError, numPages, goToPage, isFullscreen]);
 
 	const openFullscreen = useCallback(() => {
 		setIsFullscreen(true);
@@ -769,27 +863,33 @@ export function WritingPdfViewer({
 		: inlineViewportSize;
 	const isViewportReady =
 		activeViewportSize.width > 0 && activeViewportSize.height > 0;
-	const pagesToShow = visibleSpreadPages(pageNumber, numPages, twoPageSpread);
-	const spreadColumns = twoPageSpread && pagesToShow.length > 1 ? 2 : 1;
+	const pagesToShow = visibleSpreadPages(
+		pageNumber,
+		numPages,
+		effectiveTwoPageSpread,
+	);
+	const spreadColumns = effectiveTwoPageSpread && pagesToShow.length > 1 ? 2 : 1;
+	const viewportPaddingX = isMobile ? VIEWPORT_PADDING_X_MOBILE : VIEWPORT_PADDING_X;
+	const viewportPaddingY = isMobile ? VIEWPORT_PADDING_Y_MOBILE : VIEWPORT_PADDING_Y;
 	const pageRenderSize = useMemo(() => {
 		if (!isViewportReady) {
 			return stablePageRenderSizeRef.current;
 		}
 
 		const availableWidth = Math.max(
-			activeViewportSize.width - VIEWPORT_PADDING_X,
+			activeViewportSize.width - viewportPaddingX,
 			0,
 		);
 		const viewportHeight = activeViewportSize.height;
 		const next = resolvePageRenderSize({
-			fitMode,
+			fitMode: effectiveFitMode,
 			zoom,
 			containerWidth: availableWidth,
 			viewportHeight,
 			spreadColumns,
 			chromeHeight: isFullscreen
 				? FULLSCREEN_CHROME_HEIGHT
-				: VIEWPORT_PADDING_Y,
+				: viewportPaddingY,
 		});
 
 		const hasSize = (next.width ?? 0) > 0 || (next.height ?? 0) > 0;
@@ -810,11 +910,13 @@ export function WritingPdfViewer({
 	}, [
 		activeViewportSize.width,
 		activeViewportSize.height,
-		fitMode,
+		effectiveFitMode,
 		isViewportReady,
 		zoom,
 		spreadColumns,
 		isFullscreen,
+		viewportPaddingX,
+		viewportPaddingY,
 	]);
 
 	if (pdfOffers.length === 0) {
@@ -863,7 +965,13 @@ export function WritingPdfViewer({
 					title={title}
 					coverUrl={coverUrl}
 					readLabel={t("readButton")}
-					onStart={() => setIsReaderActive(true)}
+					onStart={() => {
+						if (isMobile) {
+							setFitMode("width");
+							setTwoPageSpread(false);
+						}
+						setIsReaderActive(true);
+					}}
 				/>
 			</div>
 		);
@@ -893,8 +1001,11 @@ export function WritingPdfViewer({
 		<PdfPageScrubber
 			pageNumber={pageNumber}
 			numPages={numPages}
-			twoPageSpread={twoPageSpread}
+			twoPageSpread={effectiveTwoPageSpread}
 			onSelectPage={goToPageNumber}
+			onPrevious={() => goToPage(-1)}
+			onNext={() => goToPage(1)}
+			isMobile={isMobile}
 			labels={scrubberLabels}
 		/>
 	) : null;
@@ -904,12 +1015,14 @@ export function WritingPdfViewer({
 				title,
 				pdfSrc,
 				visiblePages: pagesToShow,
-				twoPageSpread,
+				twoPageSpread: effectiveTwoPageSpread,
 				pageRenderSize,
 				documentReady,
 				isViewportReady,
 				loadError,
-				onKeyDown,
+				onSwipeNavigate: goToPage,
+				enableSwipe: canSwipeNavigate && numPages > 1,
+				isMobile,
 				onLoadSuccess: handleDocumentLoadSuccess,
 				onLoadError: handleDocumentLoadError,
 				onInitialDisplayReady: handleInitialDisplayReady,
@@ -927,6 +1040,7 @@ export function WritingPdfViewer({
 					toolbar={
 						<PdfReaderToolbar
 							{...toolbarProps}
+							isMobile={isMobile}
 							onToggleFullscreen={openFullscreen}
 						/>
 					}
@@ -936,9 +1050,11 @@ export function WritingPdfViewer({
 								{...viewportProps}
 								viewportClassName={INLINE_VIEWPORT_CLASS}
 								pageContainerClassName={
-									twoPageSpread
-										? "max-w-3xl sm:max-w-4xl"
-										: "max-w-xl sm:max-w-2xl"
+									isMobile
+										? "max-w-none"
+										: effectiveTwoPageSpread
+											? "max-w-3xl sm:max-w-4xl"
+											: "max-w-xl sm:max-w-2xl"
 								}
 								viewportRef={inlineViewportRef}
 							/>
@@ -961,6 +1077,7 @@ export function WritingPdfViewer({
 							<PdfReaderToolbar
 								{...toolbarProps}
 								isFullscreen
+								isMobile={isMobile}
 								onToggleFullscreen={closeFullscreen}
 							/>
 						}
@@ -970,9 +1087,11 @@ export function WritingPdfViewer({
 									{...viewportProps}
 									viewportClassName={FULLSCREEN_VIEWPORT_CLASS}
 									pageContainerClassName={
-										twoPageSpread
-											? "max-w-6xl xl:max-w-7xl"
-											: "max-w-5xl xl:max-w-6xl"
+										isMobile
+											? "max-w-none"
+											: effectiveTwoPageSpread
+												? "max-w-6xl xl:max-w-7xl"
+												: "max-w-5xl xl:max-w-6xl"
 									}
 									viewportRef={fullscreenViewportRef}
 								/>
