@@ -1,58 +1,113 @@
-import { ArrowRightIcon } from "@heroicons/react/24/outline";
+import { ArrowRightIcon, ArrowUpRightIcon } from "@heroicons/react/24/outline";
 import { getTranslations } from "next-intl/server";
 import { Logo } from "@/components/layout/logo";
 import { Container } from "@/components/ui/container";
+import { DirectionalIcon } from "@/components/ui/directional-icon";
 import { Link } from "@/components/ui/link";
+import {
+	FOOTER_COLUMNS,
+	FOOTER_SOCIAL_LINKS,
+	type FooterLink,
+} from "@/config/site";
+import { cn } from "@/lib/utils";
 
-type FooterLink = {
-	labelKey: string;
-	href: string;
-};
-
-type FooterColumn = {
-	titleKey: string;
+type FooterNavPanelProps = {
+	index: string;
+	title: string;
 	links: FooterLink[];
+	resolveLabel: (link: FooterLink) => string;
 };
 
-const footerColumns: FooterColumn[] = [
-	{
-		titleKey: "industries",
-		links: [
-			{ labelKey: "writings", href: "/writings" },
-			{ labelKey: "sound", href: "/audio" },
-			{ labelKey: "video", href: "/videos" },
-			{ labelKey: "gallery", href: "/gallery" },
-		],
-	},
-	{
-		titleKey: "insights",
-		links: [
-			{ labelKey: "news", href: "/news" },
-			{ labelKey: "projects", href: "/projects" },
-			{ labelKey: "services", href: "/services" },
-			{ labelKey: "donate", href: "/donate" },
-		],
-	},
-	{
-		titleKey: "company",
-		links: [
-			{ labelKey: "about", href: "/about" },
-			{ labelKey: "careers", href: "/careers" },
-			{ labelKey: "joinUs", href: "/join-us" },
-			{ labelKey: "contact", href: "/contact" },
-		],
-	},
-];
+function FooterNavPanel({
+	index,
+	title,
+	links,
+	resolveLabel,
+}: FooterNavPanelProps) {
+	return (
+		<div className="flex min-h-full flex-col bg-surface p-6 sm:p-7">
+			<div className="mb-5 flex items-baseline gap-3 border-b border-border pb-4">
+				<span
+					aria-hidden="true"
+					className="font-heading text-[0.6875rem] font-bold tabular-nums tracking-[0.08em] text-muted/70"
+				>
+					{index}
+				</span>
+				<h4 className="font-heading text-small font-bold uppercase tracking-[0.12em] text-foreground">
+					{title}
+				</h4>
+			</div>
+			<ul className="flex flex-1 flex-col">
+				{links.map((item) => {
+					const label = resolveLabel(item);
+					const key = item.navKey ?? item.labelKey ?? item.href;
 
-const socialLinks = [
-	{ labelKey: "x", href: "https://x.com" },
-	{ labelKey: "instagram", href: "https://instagram.com" },
-	{ labelKey: "facebook", href: "https://facebook.com" },
-	{ labelKey: "linkedin", href: "https://linkedin.com" },
-] as const;
+					if (item.external) {
+						return (
+							<li key={key} className="border-t border-border/70 first:border-t-0">
+								<a
+									href={item.href}
+									target="_blank"
+									rel="noreferrer"
+									className={cn(
+										"group flex items-center justify-between gap-3 py-3.5",
+										"font-heading text-[0.9375rem] font-medium leading-snug text-foreground/75",
+										"no-underline transition-colors fine-hover:text-foreground",
+									)}
+								>
+									<span>{label}</span>
+									<ArrowUpRightIcon
+										className="size-3.5 shrink-0 opacity-35 transition-[opacity,transform] fine-hover:translate-x-px fine-hover:-translate-y-px fine-hover:opacity-100"
+										aria-hidden="true"
+									/>
+								</a>
+							</li>
+						);
+					}
+
+					return (
+						<li key={key} className="border-t border-border/70 first:border-t-0">
+							<Link
+								href={item.href}
+								className={cn(
+									"group flex items-center justify-between gap-3 py-3.5",
+									"font-heading text-[0.9375rem] font-medium leading-snug text-foreground/75",
+									"no-underline transition-colors fine-hover:text-foreground",
+								)}
+							>
+								<span>{label}</span>
+								<DirectionalIcon
+									icon={ArrowRightIcon}
+									className="size-3.5 shrink-0 opacity-0 transition-[opacity,transform] group-fine:translate-x-0.5 group-fine:opacity-55"
+								/>
+							</Link>
+						</li>
+					);
+				})}
+			</ul>
+		</div>
+	);
+}
 
 export async function Footer() {
 	const t = await getTranslations("Footer");
+
+	const resolveLabel = (link: FooterLink) => t(link.labelKey ?? "");
+
+	const navPanels = [
+		...FOOTER_COLUMNS.map((column, index) => ({
+			key: column.titleKey,
+			index: String(index + 1).padStart(2, "0"),
+			title: t(column.titleKey),
+			links: column.links,
+		})),
+		{
+			key: "connect",
+			index: String(FOOTER_COLUMNS.length + 1).padStart(2, "0"),
+			title: t("connect"),
+			links: FOOTER_SOCIAL_LINKS,
+		},
+	];
 
 	return (
 		<footer className="relative mt-20 overflow-hidden border-t border-foreground/20">
@@ -101,96 +156,53 @@ export async function Footer() {
 						</form>
 					</section>
 
-					<section className="mt-12 border border-border/70 bg-background/70 text-foreground shadow-[0_14px_60px_-30px_rgba(0,0,0,0.65)] backdrop-blur-[2px]">
-						<div className="grid gap-10 p-8 sm:p-10 lg:grid-cols-[1.15fr_3fr] lg:gap-12">
-							<div className="space-y-5 border-border lg:border-e lg:pe-9">
-								<Logo />
-								<h3 className="max-w-sm font-heading text-h2 font-semibold leading-[1.15]">
-									{t("brandTagline")}
-								</h3>
+					<section className="mt-12 overflow-hidden border border-border bg-border text-foreground shadow-[0_28px_90px_-48px_rgba(26,24,19,0.45)]">
+						<div
+							aria-hidden="true"
+							className="h-0.5 bg-foreground"
+						/>
+
+						<div className="grid gap-px lg:grid-cols-[minmax(0,19rem)_1fr] xl:grid-cols-[minmax(0,22rem)_1fr]">
+							<div className="flex flex-col justify-between gap-8 bg-surface p-8 sm:p-9 lg:p-10">
+								<div className="space-y-6">
+									<Logo />
+									<p className="label font-medium text-muted">
+										{t("brandEyebrow")}
+									</p>
+									<h3 className="max-w-[16rem] font-heading text-[clamp(1.625rem,2.4vw,2.125rem)] font-bold leading-[1.1] text-balance">
+										{t("brandTagline")}
+									</h3>
+								</div>
 								<Link
 									href="/contact"
-									variant="text"
-									className="font-heading text-small font-semibold text-foreground"
+									className={cn(
+										"inline-flex h-11 w-fit items-center gap-2 border border-border-strong",
+										"bg-background px-5 font-heading text-small font-semibold text-foreground",
+										"transition fine-hover:bg-sunken",
+									)}
 									withArrow
 								>
 									{t("getInTouch")}
 								</Link>
 							</div>
 
-							<div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
-								{footerColumns.map((column) => (
-									<div key={column.titleKey}>
-										<h4 className="mb-3 border-b border-border pb-2 font-heading text-small font-semibold uppercase tracking-[0.06em] text-muted">
-											{t(column.titleKey)}
-										</h4>
-										<ul className="space-y-3">
-											{column.links.map((item) => (
-												<li key={item.labelKey}>
-													<Link
-														href={item.href}
-														variant="nav"
-														className="text-body text-foreground/85 hover:text-foreground"
-													>
-														{t(item.labelKey)}
-													</Link>
-												</li>
-											))}
-										</ul>
-									</div>
+							<div className="grid gap-px bg-border sm:grid-cols-2 lg:grid-cols-3">
+								{navPanels.map((panel) => (
+									<FooterNavPanel
+										key={panel.key}
+										index={panel.index}
+										title={panel.title}
+										links={panel.links}
+										resolveLabel={resolveLabel}
+									/>
 								))}
-
-								<div>
-									<h4 className="mb-3 border-b border-border pb-2 font-heading text-small font-semibold uppercase tracking-[0.06em] text-muted">
-										{t("connect")}
-									</h4>
-									<ul className="space-y-3">
-										{socialLinks.map((item) => (
-											<li key={item.labelKey}>
-												<a
-													href={item.href}
-													target="_blank"
-													rel="noreferrer"
-													className="inline-flex items-center text-body text-foreground/80 no-underline transition-colors hover:text-foreground"
-												>
-													{t(item.labelKey)}
-												</a>
-											</li>
-										))}
-									</ul>
-								</div>
 							</div>
 						</div>
 
-						<div className="border-t border-border px-8 py-4 sm:px-10">
-							<div className="flex flex-col gap-2 text-small text-muted sm:flex-row sm:items-center sm:justify-between">
-								<ul className="flex flex-wrap items-center gap-x-6 gap-y-2">
-									<li>
-										<Link
-											href="/privacy-policy"
-											variant="nav"
-											className="text-muted"
-										>
-											{t("privacyPolicy")}
-										</Link>
-									</li>
-									<li>
-										<Link href="/terms" variant="nav" className="text-muted">
-											{t("termsOfUse")}
-										</Link>
-									</li>
-									<li>
-										<Link
-											href="/cookie-consent"
-											variant="nav"
-											className="text-muted"
-										>
-											{t("cookieConsent")}
-										</Link>
-									</li>
-								</ul>
-								<p>{t("copyright")}</p>
-							</div>
+						<div className="border-t border-border bg-sunken/80 px-8 py-5 sm:px-10 lg:px-12">
+							<p className="text-small leading-relaxed text-muted">
+								{t("copyright")}
+							</p>
 						</div>
 					</section>
 				</Container>

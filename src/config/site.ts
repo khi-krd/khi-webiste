@@ -162,6 +162,52 @@ export const SERVICES_HREF = "/services";
 
 export const DONATE_HREF = "/donate";
 
+/** A footer navigation link — label resolved via the "Footer" message namespace. */
+export type FooterLink = {
+	/** Key under Footer.* when navKey is unset. */
+	labelKey?: string;
+	/** Key under Nav.* for sub-links shared with the mega menu. */
+	navKey?: string;
+	href: string;
+	external?: boolean;
+};
+
+export type FooterColumn = {
+	titleKey: string;
+	links: FooterLink[];
+};
+
+/** Footer columns — only routes that exist under `[locale]` today. */
+export const FOOTER_COLUMNS: FooterColumn[] = [
+	{
+		titleKey: "collections",
+		links: [
+			{ labelKey: "news", href: "/news" },
+			{ labelKey: "sound", href: "/audio" },
+			{ labelKey: "video", href: "/videos" },
+			{ labelKey: "shortFilms", href: "/videos/shortfilms" },
+			{ labelKey: "gallery", href: "/gallery" },
+			{ labelKey: "writings", href: "/writings" },
+		],
+	},
+	{
+		titleKey: "institute",
+		links: [
+			{ labelKey: "services", href: "/services" },
+			{ labelKey: "about", href: "/about" },
+			{ labelKey: "donate", href: DONATE_HREF },
+			{ labelKey: "contact", href: "/contact" },
+		],
+	},
+];
+
+export const FOOTER_SOCIAL_LINKS: FooterLink[] = [
+	{ labelKey: "x", href: "https://x.com", external: true },
+	{ labelKey: "instagram", href: "https://instagram.com", external: true },
+	{ labelKey: "facebook", href: "https://facebook.com", external: true },
+	{ labelKey: "linkedin", href: "https://linkedin.com", external: true },
+];
+
 /**
  * Language self-names (autonyms). Intentionally IDENTICAL across every UI locale
  * — a language is always shown in its own script so any reader can find it,
