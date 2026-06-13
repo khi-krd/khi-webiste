@@ -189,6 +189,44 @@
 	}
 }
 
+/* Boot loader fallback — mirrors inline critical CSS once the bundle loads. */
+html[data-page-loading]:not([data-page-loading="exiting"]) {
+	overflow: hidden;
+}
+
+html[data-page-loading]:not([data-page-loading="exiting"]) #khi-app-shell {
+	visibility: hidden;
+}
+
+html[data-page-loading="exiting"] #khi-app-shell {
+	visibility: visible;
+}
+
+html[data-page-loading="exiting"] #khi-app-header {
+	opacity: 1;
+	filter: none;
+}
+
+html[data-page-loading="exiting"] {
+	overflow: hidden;
+}
+
+@media (prefers-reduced-motion: reduce) {
+	html[data-page-loading]:not([data-page-loading="exiting"]) #khi-app-shell {
+		visibility: visible;
+	}
+
+	html[data-page-loading]:not([data-page-loading="exiting"]) {
+		overflow: auto;
+	}
+
+	html[data-page-loading="exiting"] #khi-app-content {
+		animation: none;
+		filter: none;
+		opacity: 1;
+	}
+}
+
 /* Accessibility: respect users who reduce motion (Motion is in the stack).
    Unlayered + !important so it always wins, neutralizing animation, transition,
    and smooth-scroll globally. */

@@ -5,6 +5,9 @@ import { AudioPlayerBar } from "@/components/audio/audio-player-bar";
 import { AudioPlayerProvider } from "@/components/audio/audio-player-context";
 import { Footer } from "@/components/layout/footer";
 import { Header } from "@/components/layout/header";
+import { PAGE_LOADER_CRITICAL_CSS } from "@/components/layout/page-loader-critical";
+import { PageLoaderOverlay } from "@/components/layout/page-loader-overlay";
+import { PageLoaderStatic } from "@/components/layout/page-loader-static";
 import { LenisProvider } from "@/components/providers/lenis-provider";
 import { routing } from "@/i18n/routing";
 import { archivo, clashDisplay, vazirmatn } from "@/lib/fonts";
@@ -41,25 +44,38 @@ export default async function LocaleLayout({ children, params }: Props) {
 			lang={locale}
 			dir={getDir(locale)}
 			data-script={isLatin ? "latin" : "arabic"}
+			data-page-loading=""
 			className={
 				isLatin
 					? `${archivo.variable} ${clashDisplay.variable}`
 					: vazirmatn.variable
 			}
 		>
+			<head>
+				{/* Blocking first-paint preloader — must not depend on the CSS bundle. */}
+				<style>{PAGE_LOADER_CRITICAL_CSS}</style>
+			</head>
 			<body
 				className={cn(
 					isLatin ? archivo.className : vazirmatn.className,
 					"antialiased",
 				)}
 			>
+				<PageLoaderStatic />
 				<NextIntlClientProvider messages={messages}>
 					<LenisProvider>
 						<AudioPlayerProvider>
-							<Header />
-							<div className="pt-26 sm:pt-30">{children}</div>
-							<Footer />
-							<AudioPlayerBar />
+							<PageLoaderOverlay />
+							<div id="khi-app-shell">
+								<div id="khi-app-header">
+									<Header />
+								</div>
+								<div id="khi-app-content">
+									<div className="pt-26 sm:pt-30">{children}</div>
+									<Footer />
+									<AudioPlayerBar />
+								</div>
+							</div>
 						</AudioPlayerProvider>
 					</LenisProvider>
 				</NextIntlClientProvider>

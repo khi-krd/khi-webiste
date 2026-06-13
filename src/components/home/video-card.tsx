@@ -2,15 +2,24 @@ import { PlayIcon } from "@heroicons/react/24/solid";
 import NextImage from "next/image";
 import { Badge } from "@/components/ui/badge";
 import { Link } from "@/components/ui/link";
-import type { VideoItem } from "@/lib/mock/videos";
 import { cn } from "@/lib/utils";
 
 const imageEase = "ease-[cubic-bezier(0.25,0.46,0.45,0.94)]";
 
 type VideoCardVariant = "featured" | "compact";
 
+/** Minimal shape the home bento needs — fed from a `ResolvedVideoCard`. */
+export type HomeVideoCardItem = {
+	id: number;
+	title: string;
+	subtitle: string | null;
+	durationLabel: string | null;
+	coverUrl: string | null;
+	coverAlt?: string | null;
+};
+
 type VideoCardProps = {
-	item: VideoItem;
+	item: HomeVideoCardItem;
 	categoryLabel: string;
 	variant?: VideoCardVariant;
 	/** Absolute-fill layout for bento cells (parent must be `relative` + sized). */
@@ -25,7 +34,7 @@ export function VideoCard({
 	fill = false,
 	className,
 }: VideoCardProps) {
-	const href = `/video/${item.slug}`;
+	const href = `/videos/${item.id}`;
 
 	const frameClass = fill
 		? "absolute inset-0 h-full w-full"
@@ -52,22 +61,33 @@ export function VideoCard({
 							"group-fine:scale-[1.06] motion-reduce:transition-none motion-reduce:duration-0 motion-reduce:group-fine:scale-100",
 						)}
 					>
-						<NextImage
-							src={item.image.url}
-							alt={item.image.alt ?? item.title}
-							fill
-							sizes={
-								variant === "featured"
-									? "(max-width: 1024px) 100vw, 58vw"
-									: "(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 28vw"
-							}
-							className={cn(
-								"object-cover brightness-[0.78] contrast-[1.1] saturate-[0.65]",
-								"transition-[filter] duration-[1.35s]",
-								imageEase,
-								"group-fine:brightness-[0.88] group-fine:saturate-[0.8] motion-reduce:transition-none",
-							)}
-						/>
+						{item.coverUrl ? (
+							<NextImage
+								src={item.coverUrl}
+								alt={item.coverAlt ?? item.title}
+								fill
+								sizes={
+									variant === "featured"
+										? "(max-width: 1024px) 100vw, 58vw"
+										: "(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 28vw"
+								}
+								className={cn(
+									"object-cover brightness-[0.78] contrast-[1.1] saturate-[0.65]",
+									"transition-[filter] duration-[1.35s]",
+									imageEase,
+									"group-fine:brightness-[0.88] group-fine:saturate-[0.8] motion-reduce:transition-none",
+								)}
+							/>
+						) : (
+							<div
+								aria-hidden
+								className="flex h-full w-full items-center justify-center bg-foreground"
+							>
+								<span className="font-heading text-display font-bold text-primary-foreground/15">
+									{item.title.charAt(0)}
+								</span>
+							</div>
+						)}
 					</div>
 
 					<div
@@ -119,14 +139,18 @@ export function VideoCard({
 						>
 							{item.title}
 						</h3>
-						<p className="mt-1.5 line-clamp-2 text-small text-white/85 transition-opacity duration-300 group-fine:text-white/95 motion-reduce:transition-none">
-							{item.subtitle}
-						</p>
+						{item.subtitle ? (
+							<p className="mt-1.5 line-clamp-2 text-small text-white/85 transition-opacity duration-300 group-fine:text-white/95 motion-reduce:transition-none">
+								{item.subtitle}
+							</p>
+						) : null}
 					</div>
 
-					<span className="shrink-0 text-label font-medium text-white/80">
-						{item.duration}
-					</span>
+					{item.durationLabel ? (
+						<span className="shrink-0 text-label font-medium text-white/80">
+							{item.durationLabel}
+						</span>
+					) : null}
 				</div>
 			</div>
 		</Link>

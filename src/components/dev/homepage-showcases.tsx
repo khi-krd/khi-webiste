@@ -6,7 +6,10 @@ import { FeaturedCarousel } from "@/components/hero/featured-carousel";
 import { FeaturedSlide } from "@/components/hero/featured-slide";
 import { NewsCard } from "@/components/home/news-card";
 import { ProjectCard } from "@/components/home/project-card";
-import { VideoCard } from "@/components/home/video-card";
+import {
+	type HomeVideoCardItem,
+	VideoCard,
+} from "@/components/home/video-card";
 import { WritingRow } from "@/components/home/writing-row";
 import {
 	getLatestUpdates,
@@ -14,7 +17,6 @@ import {
 } from "@/lib/mock/latest-updates";
 import { getProjects } from "@/lib/mock/projects";
 import { getWritings } from "@/lib/mock/writings";
-import { getVideos } from "@/lib/mock/videos";
 import type { HeroSlide } from "@/types/content";
 
 const showcaseGridClass = "grid gap-6 lg:gap-7 xl:grid-cols-2";
@@ -265,31 +267,36 @@ export function WritingRowShowcase() {
 }
 
 export function VideoCardShowcase() {
-	const locale = useLocale();
 	const t = useTranslations("Video");
-	const videos = getVideos(locale);
-	const [featured, compact] = videos;
 
-	if (!featured || !compact) {
-		return null;
-	}
-
-	const categoryLabel = (category: (typeof featured)["category"]) =>
-		t(`categories.${category}`);
+	const featured: HomeVideoCardItem = {
+		id: 1,
+		title: "Voices of the Mountains",
+		subtitle: "Oral histories from the Zagros highlands",
+		durationLabel: "12:00",
+		coverUrl: "/menu/4.jpg",
+	};
+	const compact: HomeVideoCardItem = {
+		id: 5,
+		title: "Dengbêj Performance",
+		subtitle: "A recorded evening of traditional storytelling song",
+		durationLabel: "22:55",
+		coverUrl: "/menu/7.jpg",
+	};
 
 	return (
 		<div className={showcaseGridClass}>
 			<ShowcaseCard title="featured">
 				<VideoCard
 					item={featured}
-					categoryLabel={categoryLabel(featured.category)}
+					categoryLabel={t("typeBadge.FILM")}
 					variant="featured"
 				/>
 			</ShowcaseCard>
 			<ShowcaseCard title="compact">
 				<VideoCard
 					item={compact}
-					categoryLabel={categoryLabel(compact.category)}
+					categoryLabel={t("typeBadge.VIDEO_CLIP")}
 					variant="compact"
 				/>
 			</ShowcaseCard>

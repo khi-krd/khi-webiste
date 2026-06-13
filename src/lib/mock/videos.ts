@@ -1,219 +1,1037 @@
-export type VideoCategory =
-	| "documentaries"
-	| "performances"
-	| "lectures"
-	| "newsreels";
+import type { Video, VideoTopic } from "@/types/video";
 
-export type VideoItem = {
-	id: string;
-	slug: string;
-	title: string;
-	subtitle: string;
-	category: VideoCategory;
-	duration: string;
-	image: {
-		url: string;
-		alt?: string;
+/**
+ * Demo Videos in raw API shape — used whenever `API_BASE_URL` is unset or the
+ * upstream call fails (mirrors `lib/mock/audio.ts`). The set is intentionally
+ * varied to exercise every branch of the UI: FILM via direct MP4, YouTube, and
+ * a non-YouTube embed (iframe fallback); VIDEO_CLIP playlists; album-of-memories
+ * tint; a null cover (glyph fallback); and a record with no Kurmanji content.
+ */
+
+export const DEMO_VIDEO_TOPICS: VideoTopic[] = [
+	{ id: 1, nameCkb: "کورتە فیلم", nameKmr: "Kurtefîlm" },
+	{ id: 2, nameCkb: "بەڵگەنامە", nameKmr: "Belgefîlm" },
+	{ id: 3, nameCkb: "پیشاندان", nameKmr: "Performans" },
+	{ id: 4, nameCkb: "وانە", nameKmr: "Ders" },
+	{ id: 5, nameCkb: "هەواڵی وێنەیی", nameKmr: "Nûçeyên wêneyî" },
+];
+
+/** The topic the `/videos/shortfilms` sub-page is pinned to. */
+export const SHORT_FILMS_TOPIC_ID = 1;
+
+const SAMPLE_MP4 = "/video/wave.mp4";
+
+type VideoSeed = Partial<Video> & Pick<Video, "id" | "videoType" | "createdAt">;
+
+function makeVideo(seed: VideoSeed): Video {
+	const base: Video = {
+		albumOfMemories: false,
+		ckbCoverUrl: null,
+		kmrCoverUrl: null,
+		hoverCoverUrl: null,
+		topicId: null,
+		topicNameCkb: null,
+		topicNameKmr: null,
+		contentLanguages: ["CKB", "KMR"],
+		ckbContent: null,
+		kmrContent: null,
+		sourceUrl: null,
+		sourceExternalUrl: null,
+		sourceEmbedUrl: null,
+		videoClipItems: null,
+		fileFormat: null,
+		durationSeconds: null,
+		publishmentDate: null,
+		resolution: null,
+		fileSizeMb: null,
+		tagsCkb: [],
+		tagsKmr: [],
+		keywordsCkb: [],
+		keywordsKmr: [],
+		updatedAt: seed.createdAt,
+		...seed,
 	};
-};
 
-type LocaleCopy = VideoItem[];
+	const topic =
+		base.topicId != null
+			? DEMO_VIDEO_TOPICS.find((item) => item.id === base.topicId)
+			: undefined;
 
-const EN_ITEMS: LocaleCopy = [
-	{
-		id: "video-1",
-		slug: "voices-of-the-mountains",
-		title: "Voices of the Mountains",
-		subtitle: "Oral histories from the Zagros highlands",
-		category: "documentaries",
-		duration: "42 min",
-		image: {
-			url: "/menu/4.jpg",
-			alt: "Documentary poster showing mountain landscapes",
+	return {
+		...base,
+		topicNameCkb: base.topicNameCkb ?? topic?.nameCkb ?? null,
+		topicNameKmr: base.topicNameKmr ?? topic?.nameKmr ?? null,
+	};
+}
+
+const RAW_VIDEOS: Video[] = [
+	makeVideo({
+		id: 1,
+		videoType: "FILM",
+		topicId: SHORT_FILMS_TOPIC_ID,
+		ckbCoverUrl: "/menu/4.jpg",
+		kmrCoverUrl: "/menu/4.jpg",
+		ckbContent: {
+			title: "کورتە فیلمی هەورامان",
+			description:
+				"کورتە فیلمێک کە ژیانی ڕۆژانە و کەلتووری دەڤەری هەورامان نیشان دەدات، لە نێوان شاخ و کێڵگەکاندا.",
+			location: "هەورامان",
+			director: "ئاکۆ مەحمود",
+			producer: "ئینستیتیوتی کەلەپووری کوردی",
 		},
-	},
-	{
-		id: "video-2",
-		slug: "dengbej-performance-hawraman",
-		title: "Dengbêj Performance in Hawraman",
-		subtitle: "A recorded evening of traditional storytelling song",
-		category: "performances",
-		duration: "18 min",
-		image: {
-			url: "/menu/6.jpg",
-			alt: "Performance of a dengbêj singer in Hawraman",
+		kmrContent: {
+			title: "Kurtefîlma Hewramanê",
+			description:
+				"Kurtefîlmek ku jiyana rojane û çanda herêma Hewramanê nîşan dide, di navbera çiya û zeviyan de.",
+			location: "Hewraman",
+			director: "Ako Mehmûd",
+			producer: "Enstîtuya Kelepora Kurdî",
 		},
-	},
-	{
-		id: "video-3",
-		slug: "lecture-kurdish-manuscripts",
-		title: "Kurdish Manuscripts in the Digital Age",
-		subtitle: "Scholarly lecture on preservation and access",
-		category: "lectures",
-		duration: "55 min",
-		image: {
-			url: "/menu/1.jpg",
-			alt: "Lecture on Kurdish manuscript digitization",
+		sourceUrl: SAMPLE_MP4,
+		fileFormat: "mp4",
+		durationSeconds: 720,
+		publishmentDate: "2026-05-18",
+		resolution: "1920x1080",
+		fileSizeMb: 412.5,
+		tagsCkb: ["هەورامان", "کورتە فیلم"],
+		tagsKmr: ["Hewraman", "Kurtefîlm"],
+		keywordsCkb: ["کەلتوور"],
+		keywordsKmr: ["Çand"],
+		createdAt: "2026-05-18T10:00:00",
+		castMembers: [
+			{
+				nameCkb: "ڕێبەر عەبدوڵا",
+				nameKmr: "Rêber Abdullah",
+				roleCkb: "وەک کچ",
+				roleKmr: "Wek keç",
+				photoUrl: "/menu/2.jpg",
+			},
+			{
+				nameCkb: "سارا محەمەد",
+				nameKmr: "Sara Muhammed",
+				roleCkb: "وەک دایک",
+				roleKmr: "Wek dayik",
+				photoUrl: "/menu/3.jpg",
+			},
+			{
+				nameCkb: "کاروان ئەحمەد",
+				nameKmr: "Karwan Ehmed",
+				roleCkb: "وەک باوک",
+				roleKmr: "Wek bav",
+				photoUrl: "/menu/5.jpg",
+			},
+		],
+		highlightClips: [
+			{
+				titleCkb: "سەرەتای گەشت",
+				titleKmr: "Destpêka gerê",
+				thumbnailUrl: "/menu/4.jpg",
+				url: SAMPLE_MP4,
+			},
+			{
+				titleCkb: "لە ناو کێڵگەکان",
+				titleKmr: "Di nav zeviyan de",
+				thumbnailUrl: "/menu/1.jpg",
+				url: SAMPLE_MP4,
+			},
+			{
+				titleCkb: "کۆتایی ڕۆژ",
+				titleKmr: "Dawiya rojê",
+				thumbnailUrl: "/menu/6.jpg",
+				url: SAMPLE_MP4,
+			},
+			{
+				titleCkb: "دیمەنی شاخ",
+				titleKmr: "Dîmena çiya",
+				thumbnailUrl: "/gallery/1.jpg",
+				url: SAMPLE_MP4,
+			},
+			{
+				titleCkb: "ژیانی گوند",
+				titleKmr: "Jiyana gund",
+				thumbnailUrl: "/news/1.jpg",
+				url: SAMPLE_MP4,
+			},
+		],
+	}),
+	makeVideo({
+		id: 2,
+		videoType: "FILM",
+		topicId: SHORT_FILMS_TOPIC_ID,
+		ckbCoverUrl: "/menu/6.jpg",
+		kmrCoverUrl: "/menu/6.jpg",
+		hoverCoverUrl: "/menu/2.jpg",
+		ckbContent: {
+			title: "دەنگی شاخ",
+			description:
+				"کورتە فیلمێکی هونەری دەربارەی پەیوەندی نێوان مرۆڤ و سروشتی شاخەکانی کوردستان.",
+			location: "ڕانیە",
+			director: "شیلان عەلی",
+			producer: "ئینستیتیوتی کەلەپووری کوردی",
 		},
-	},
-	{
-		id: "video-4",
-		slug: "newsreel-1960s-sulaymaniyah",
-		title: "Sulaymaniyah, 1960s",
-		subtitle: "Restored newsreel footage from the city archive",
-		category: "newsreels",
-		duration: "8 min",
-		image: {
-			url: "/menu/7.jpg",
-			alt: "Historical newsreel footage of Sulaymaniyah",
+		kmrContent: {
+			title: "Dengê Çiya",
+			description:
+				"Kurtefîlmeke hunerî derbarê têkiliya navbera mirov û siruşta çiyayên Kurdistanê.",
+			location: "Ranya",
+			director: "Şîlan Elî",
+			producer: "Enstîtuya Kelepora Kurdî",
 		},
-	},
-	{
-		id: "video-5",
-		slug: "weaving-traditions-documentary",
-		title: "Weaving Traditions",
-		subtitle: "Documentary on textile crafts across Kurdistan",
-		category: "documentaries",
-		duration: "31 min",
-		image: {
-			url: "/menu/3.jpg",
-			alt: "Documentary on Kurdish weaving traditions",
+		sourceExternalUrl: "https://www.youtube.com/watch?v=aqz-KE-bpKQ",
+		fileFormat: "mp4",
+		durationSeconds: 540,
+		publishmentDate: "2026-05-02",
+		resolution: "1920x1080",
+		fileSizeMb: 318.0,
+		tagsCkb: ["سروشت", "کورتە فیلم"],
+		tagsKmr: ["Siruşt", "Kurtefîlm"],
+		keywordsCkb: ["شاخ"],
+		keywordsKmr: ["Çiya"],
+		createdAt: "2026-05-02T10:00:00",
+		castMembers: [
+			{
+				nameCkb: "هێمن ڕەشید",
+				nameKmr: "Hêmin Reşid",
+				roleCkb: "وەک گەڕان",
+				roleKmr: "Wek gerok",
+				photoUrl: "/menu/6.jpg",
+			},
+			{
+				nameCkb: "لەیلا کەریم",
+				nameKmr: "Leyla Kerîm",
+				roleCkb: "وەک دەنگی شاخ",
+				roleKmr: "Wek dengê çiya",
+				photoUrl: "/menu/2.jpg",
+			},
+			{
+				nameCkb: "کامەران حەسەن",
+				nameKmr: "Kameran Hesên",
+				roleCkb: "وەک ڕێنمایی",
+				roleKmr: "Wek rêber",
+				photoUrl: "/gallery/2.jpg",
+			},
+		],
+		highlightClips: [
+			{
+				titleCkb: "سەرچاوەی ئاو",
+				titleKmr: "Kaniya avê",
+				thumbnailUrl: "/menu/6.jpg",
+				url: SAMPLE_MP4,
+			},
+			{
+				titleCkb: "لەسەر لوتکە",
+				titleKmr: "Li ser bilindahiyê",
+				thumbnailUrl: "/menu/2.jpg",
+				url: SAMPLE_MP4,
+			},
+			{
+				titleCkb: "لە ناو دارستان",
+				titleKmr: "Di nav daristanê de",
+				thumbnailUrl: "/gallery/3.jpg",
+			},
+			{
+				titleCkb: "بەیانی لە شاخ",
+				titleKmr: "Sibeh li çiya",
+				thumbnailUrl: "/news/2.jpg",
+			},
+		],
+	}),
+	makeVideo({
+		id: 3,
+		videoType: "FILM",
+		topicId: SHORT_FILMS_TOPIC_ID,
+		ckbCoverUrl: "/menu/1.jpg",
+		kmrCoverUrl: "/menu/1.jpg",
+		hoverCoverUrl: "/gallery/4.jpg",
+		ckbContent: {
+			title: "ڕێگای ئاو",
+			description:
+				"کورتە فیلمێک کە گەشتی ئاو لە سەرچاوەکانی شاخەوە بۆ کێڵگەکان دەگێڕێتەوە.",
+			location: "هەڵەبجە",
+			director: "دیار ڕەسوڵ",
+			producer: "ئینستیتیوتی کەلەپووری کوردی",
 		},
-	},
+		kmrContent: {
+			title: "Rêya Avê",
+			description:
+				"Kurtefîlmek ku rêwîtiya avê ji kaniyên çiya heta zeviyan vedibêje.",
+			location: "Helebce",
+			director: "Diyar Resûl",
+			producer: "Enstîtuya Kelepora Kurdî",
+		},
+		sourceEmbedUrl: "https://player.vimeo.com/video/76979871",
+		fileFormat: "mp4",
+		durationSeconds: 612,
+		publishmentDate: "2026-04-20",
+		resolution: "1280x720",
+		fileSizeMb: 256.4,
+		tagsCkb: ["ئاو", "کورتە فیلم"],
+		tagsKmr: ["Av", "Kurtefîlm"],
+		keywordsCkb: ["ژینگە"],
+		keywordsKmr: ["Jîngeh"],
+		createdAt: "2026-04-20T10:00:00",
+		castMembers: [
+			{
+				nameCkb: "نێرگز حەسەن",
+				nameKmr: "Nêrgiz Hesên",
+				roleCkb: "وەک جوتیار",
+				roleKmr: "Wek cotkar",
+				photoUrl: "/menu/1.jpg",
+			},
+			{
+				nameCkb: "سامان عەلی",
+				nameKmr: "Saman Elî",
+				roleCkb: "وەک مامۆستا",
+				roleKmr: "Wek mamoste",
+				photoUrl: "/about/m2.jpg",
+			},
+		],
+		highlightClips: [
+			{
+				titleCkb: "سەرچاوەی شاخ",
+				titleKmr: "Kaniya çiya",
+				thumbnailUrl: "/menu/1.jpg",
+				url: SAMPLE_MP4,
+			},
+			{
+				titleCkb: "ڕێگای ئاو",
+				titleKmr: "Rêya avê",
+				thumbnailUrl: "/gallery/5.jpg",
+			},
+			{
+				titleCkb: "کێڵگەی خوارەوە",
+				titleKmr: "Zeviya jêr",
+				thumbnailUrl: "/news/3.jpg",
+			},
+		],
+	}),
+	makeVideo({
+		id: 4,
+		videoType: "FILM",
+		topicId: 2,
+		albumOfMemories: true,
+		ckbCoverUrl: "/menu/3.jpg",
+		kmrCoverUrl: "/menu/3.jpg",
+		hoverCoverUrl: "/gallery/1.jpg",
+		ckbContent: {
+			title: "بەڵگەنامەی شاری سلێمانی",
+			description:
+				"بەڵگەنامەیەکی مێژوویی دەربارەی گەشەکردنی شاری سلێمانی لە سەدەی بیستەمدا، بە وێنە و تۆماری کۆن.",
+			location: "سلێمانی",
+			director: "ئەحمەد کەریم",
+			producer: "ئینستیتیوتی کەلەپووری کوردی",
+		},
+		kmrContent: {
+			title: "Belgefîlma Bajarê Silêmanî",
+			description:
+				"Belgefîlmeke dîrokî derbarê geşedana bajarê Silêmanî di sedsala bîstan de, bi wêne û tomarên kevn.",
+			location: "Silêmanî",
+			director: "Ehmed Kerîm",
+			producer: "Enstîtuya Kelepora Kurdî",
+		},
+		sourceUrl: SAMPLE_MP4,
+		fileFormat: "mp4",
+		durationSeconds: 4200,
+		publishmentDate: "2026-03-11",
+		resolution: "1920x1080",
+		fileSizeMb: 1840.0,
+		tagsCkb: ["سلێمانی", "مێژوو"],
+		tagsKmr: ["Silêmanî", "Dîrok"],
+		keywordsCkb: ["شار"],
+		keywordsKmr: ["Bajar"],
+		createdAt: "2026-03-11T10:00:00",
+	}),
+	makeVideo({
+		id: 5,
+		videoType: "VIDEO_CLIP",
+		topicId: 3,
+		ckbCoverUrl: "/menu/7.jpg",
+		kmrCoverUrl: "/menu/7.jpg",
+		hoverCoverUrl: "/gallery/2.jpg",
+		ckbContent: {
+			title: "پیشاندانی دەنگبێژان",
+			description:
+				"زنجیرەیەک کلیپ لە پیشاندانی دەنگبێژانی کورد، هەر کلیپێک گۆرانییەکی نەریتی.",
+			location: "هەولێر",
+			director: "نیان ئیبراهیم",
+			producer: "ئینستیتیوتی کەلەپووری کوردی",
+		},
+		kmrContent: {
+			title: "Performansa Dengbêjan",
+			description:
+				"Rêzeyek klîp ji performansa dengbêjên kurd, her klîp stranek kevneşopî.",
+			location: "Hewlêr",
+			director: "Nîyan Îbrahîm",
+			producer: "Enstîtuya Kelepora Kurdî",
+		},
+		videoClipItems: [
+			{
+				clipNumber: 1,
+				url: SAMPLE_MP4,
+				durationSeconds: 320,
+				titleCkb: "لاوک",
+				titleKmr: "Lawik",
+			},
+			{
+				clipNumber: 2,
+				url: SAMPLE_MP4,
+				durationSeconds: 280,
+				titleCkb: "حەیران",
+				titleKmr: "Heyran",
+			},
+			{
+				clipNumber: 3,
+				url: SAMPLE_MP4,
+				durationSeconds: 410,
+				titleCkb: "پەستێ",
+				titleKmr: "Pestê",
+			},
+			{
+				clipNumber: 4,
+				url: SAMPLE_MP4,
+				durationSeconds: 365,
+				titleCkb: "لاوژە",
+				titleKmr: "Lawje",
+			},
+		],
+		fileFormat: "mp4",
+		durationSeconds: 1375,
+		publishmentDate: "2026-02-25",
+		resolution: "1280x720",
+		fileSizeMb: 690.2,
+		tagsCkb: ["دەنگبێژ", "گۆرانی"],
+		tagsKmr: ["Dengbêj", "Stran"],
+		keywordsCkb: ["مۆسیقا"],
+		keywordsKmr: ["Muzîk"],
+		createdAt: "2026-02-25T10:00:00",
+	}),
+	makeVideo({
+		id: 6,
+		videoType: "FILM",
+		topicId: 4,
+		contentLanguages: ["CKB"],
+		ckbCoverUrl: "/gallery/3.jpg",
+		hoverCoverUrl: "/news/1.jpg",
+		ckbContent: {
+			title: "وانەی مێژووی کورد",
+			description:
+				"وانەیەکی زانستی دەربارەی سەرچاوەکانی مێژووی کورد و گرنگیی پاراستنیان بۆ نەوەکانی داهاتوو.",
+			location: "هەولێر",
+			director: "د. ڕێبوار ئەحمەد",
+			producer: "ئینستیتیوتی کەلەپووری کوردی",
+		},
+		kmrContent: null,
+		sourceExternalUrl: "https://www.youtube.com/watch?v=aqz-KE-bpKQ",
+		fileFormat: "mp4",
+		durationSeconds: 3600,
+		publishmentDate: "2026-02-10",
+		resolution: "1920x1080",
+		fileSizeMb: 1520.5,
+		tagsCkb: ["مێژوو", "وانە"],
+		tagsKmr: [],
+		keywordsCkb: ["پەروەردە"],
+		keywordsKmr: [],
+		createdAt: "2026-02-10T10:00:00",
+	}),
+	makeVideo({
+		id: 7,
+		videoType: "FILM",
+		topicId: 5,
+		albumOfMemories: true,
+		ckbCoverUrl: "/news/2.jpg",
+		kmrCoverUrl: "/news/2.jpg",
+		hoverCoverUrl: "/gallery/4.jpg",
+		ckbContent: {
+			title: "هەواڵی سلێمانی ١٩٦٠",
+			description:
+				"تۆماری هەواڵی ڕێستۆرکراو لە ئەرشیفی شار کە دیمەنی ژیانی سلێمانی لە ساڵانی شەستەکان نیشان دەدات.",
+			location: "سلێمانی",
+			director: "ئەرشیفی شار",
+			producer: "ئینستیتیوتی کەلەپووری کوردی",
+		},
+		kmrContent: {
+			title: "Nûçeyên Silêmanî 1960",
+			description:
+				"Tomara nûçeyên restorekirî ji arşîva bajêr ku dîmenê jiyana Silêmanî di salên şêstan de nîşan dide.",
+			location: "Silêmanî",
+			director: "Arşîva Bajêr",
+			producer: "Enstîtuya Kelepora Kurdî",
+		},
+		sourceUrl: SAMPLE_MP4,
+		fileFormat: "mp4",
+		durationSeconds: 480,
+		publishmentDate: "2026-01-30",
+		resolution: "1440x1080",
+		fileSizeMb: 240.0,
+		tagsCkb: ["ئەرشیف", "هەواڵ"],
+		tagsKmr: ["Arşîv", "Nûçe"],
+		keywordsCkb: ["مێژوو"],
+		keywordsKmr: ["Dîrok"],
+		createdAt: "2026-01-30T10:00:00",
+	}),
+	makeVideo({
+		id: 8,
+		videoType: "VIDEO_CLIP",
+		topicId: SHORT_FILMS_TOPIC_ID,
+		ckbCoverUrl: "/menu/1.jpg",
+		kmrCoverUrl: "/menu/1.jpg",
+		hoverCoverUrl: "/menu/5.jpg",
+		ckbContent: {
+			title: "کورتە فیلمی منداڵان",
+			description:
+				"زنجیرە کورتە فیلمی کورت بۆ منداڵان، چیرۆکی نەریتی کوردی بە شێوازی نوێ.",
+			location: "دهۆک",
+			director: "ڤیان سەعید",
+			producer: "ئینستیتیوتی کەلەپووری کوردی",
+		},
+		kmrContent: {
+			title: "Kurtefîlmên Zarokan",
+			description:
+				"Rêzefîlmên kurt ji bo zarokan, çîrokên kevneşopî yên kurdî bi şêwazek nû.",
+			location: "Dihok",
+			director: "Vîyan Seîd",
+			producer: "Enstîtuya Kelepora Kurdî",
+		},
+		videoClipItems: [
+			{
+				clipNumber: 1,
+				url: SAMPLE_MP4,
+				durationSeconds: 180,
+				titleCkb: "کەژاڵ و ڕێوی",
+				titleKmr: "Kejal û Rovî",
+			},
+			{
+				clipNumber: 2,
+				url: SAMPLE_MP4,
+				durationSeconds: 210,
+				titleCkb: "هەنگوین",
+				titleKmr: "Hingiv",
+			},
+			{
+				clipNumber: 3,
+				url: SAMPLE_MP4,
+				durationSeconds: 195,
+				titleCkb: "بەفر",
+				titleKmr: "Berf",
+			},
+		],
+		fileFormat: "mp4",
+		durationSeconds: 585,
+		publishmentDate: "2026-01-15",
+		resolution: "1920x1080",
+		fileSizeMb: 305.0,
+		tagsCkb: ["منداڵان", "کورتە فیلم"],
+		tagsKmr: ["Zarok", "Kurtefîlm"],
+		keywordsCkb: ["چیرۆک"],
+		keywordsKmr: ["Çîrok"],
+		createdAt: "2026-01-15T10:00:00",
+		castMembers: [
+			{
+				nameCkb: "زەینەب ڕەشید",
+				nameKmr: "Zeyneb Reşid",
+				roleCkb: "وەک کەژاڵ",
+				roleKmr: "Wek kejal",
+				photoUrl: "/news/4.jpg",
+			},
+			{
+				nameCkb: "ئارام سلیم",
+				nameKmr: "Aram Silêm",
+				roleCkb: "وەک ڕێوی",
+				roleKmr: "Wek rovî",
+				photoUrl: "/news/5.jpg",
+			},
+		],
+		highlightClips: [
+			{
+				titleCkb: "کەژاڵ و ڕێوی",
+				titleKmr: "Kejal û Rovî",
+				thumbnailUrl: "/gallery/6.jpg",
+				url: SAMPLE_MP4,
+			},
+			{
+				titleCkb: "هەنگوین",
+				titleKmr: "Hingiv",
+				thumbnailUrl: "/gallery/7.jpg",
+				url: SAMPLE_MP4,
+			},
+			{
+				titleCkb: "بەفر",
+				titleKmr: "Berf",
+				thumbnailUrl: "/gallery/8.jpg",
+				url: SAMPLE_MP4,
+			},
+		],
+	}),
+	makeVideo({
+		id: 9,
+		videoType: "FILM",
+		topicId: 2,
+		ckbCoverUrl: "/news/9.jpg",
+		kmrCoverUrl: "/news/9.jpg",
+		hoverCoverUrl: "/gallery/7.jpg",
+		ckbContent: {
+			title: "بەڵگەنامەی نەناسراو",
+			description:
+				"بەڵگەنامەیەک بێ پۆستەر کە تەنها بە ناوەڕۆکی خۆی پێناسە دەکرێت — تاقیکردنەوەی دیمەنی پیتی سەرەتایی.",
+			location: "کەرکوک",
+			director: "هێمن قادر",
+			producer: "ئینستیتیوتی کەلەپووری کوردی",
+		},
+		kmrContent: {
+			title: "Belgefîlma Nenas",
+			description:
+				"Belgefîlmek bê poster ku tenê bi naveroka xwe tê nasîn — testa dîmenê tîpa destpêkê.",
+			location: "Kerkûk",
+			director: "Hêmin Qadir",
+			producer: "Enstîtuya Kelepora Kurdî",
+		},
+		sourceUrl: SAMPLE_MP4,
+		fileFormat: "mp4",
+		durationSeconds: 2700,
+		publishmentDate: "2025-12-19",
+		resolution: "1280x720",
+		fileSizeMb: 1180.0,
+		tagsCkb: ["کەرکوک"],
+		tagsKmr: ["Kerkûk"],
+		keywordsCkb: ["بەڵگەنامە"],
+		keywordsKmr: ["Belge"],
+		createdAt: "2025-12-19T10:00:00",
+	}),
+	makeVideo({
+		id: 10,
+		videoType: "FILM",
+		topicId: 3,
+		ckbCoverUrl: "/menu/6.jpg",
+		kmrCoverUrl: "/menu/6.jpg",
+		hoverCoverUrl: "/news/10.jpg",
+		ckbContent: {
+			title: "پیشاندانی مۆسیقا",
+			description:
+				"تۆماری پیشاندانێکی مۆسیقای زیندوو لە سەرسامی هونەرمەندانی ناوچەکە، بە ساز و ئامێری نەریتی.",
+			location: "هەولێر",
+			director: "ڕۆژین مستەفا",
+			producer: "ئینستیتیوتی کەلەپووری کوردی",
+		},
+		kmrContent: {
+			title: "Performansa Muzîkê",
+			description:
+				"Tomara performanseke muzîkê ya zindî ji hunermendên herêmê, bi saz û amûrên kevneşopî.",
+			location: "Hewlêr",
+			director: "Rojîn Mistefa",
+			producer: "Enstîtuya Kelepora Kurdî",
+		},
+		sourceUrl: SAMPLE_MP4,
+		fileFormat: "mp4",
+		durationSeconds: 1980,
+		publishmentDate: "2025-12-01",
+		resolution: "1920x1080",
+		fileSizeMb: 880.0,
+		tagsCkb: ["مۆسیقا", "پیشاندان"],
+		tagsKmr: ["Muzîk", "Performans"],
+		keywordsCkb: ["ساز"],
+		keywordsKmr: ["Saz"],
+		createdAt: "2025-12-01T10:00:00",
+	}),
+	makeVideo({
+		id: 11,
+		videoType: "FILM",
+		topicId: SHORT_FILMS_TOPIC_ID,
+		ckbCoverUrl: "/menu/7.jpg",
+		kmrCoverUrl: "/menu/7.jpg",
+		ckbContent: {
+			title: "کورتە فیلمی بێ سەرچاوە",
+			description:
+				"تۆمارێک کە هێشتا سەرچاوەی ڤیدیۆکەی زیاد نەکراوە — تاقیکردنەوەی دۆخی نەبوونی سەرچاوە.",
+			location: "زاخۆ",
+			director: "ئاراس عومەر",
+			producer: "ئینستیتیوتی کەلەپووری کوردی",
+		},
+		kmrContent: {
+			title: "Kurtefîlma Bê Çavkanî",
+			description:
+				"Tomarek ku hê çavkaniya vîdyoyê lê nehatiye zêdekirin — testa rewşa bê çavkanî.",
+			location: "Zaxo",
+			director: "Aras Omer",
+			producer: "Enstîtuya Kelepora Kurdî",
+		},
+		fileFormat: "mp4",
+		durationSeconds: 360,
+		publishmentDate: "2025-11-20",
+		resolution: "1920x1080",
+		fileSizeMb: 0,
+		tagsCkb: ["کورتە فیلم"],
+		tagsKmr: ["Kurtefîlm"],
+		keywordsCkb: [],
+		keywordsKmr: [],
+		createdAt: "2025-11-20T10:00:00",
+		castMembers: [
+			{
+				nameCkb: "ڕۆژین عومەر",
+				nameKmr: "Rojîn Omer",
+				roleCkb: "وەک گەڕان",
+				roleKmr: "Wek gerok",
+				photoUrl: "/about/services-bg.jpg",
+			},
+		],
+		highlightClips: [
+			{
+				titleCkb: "دیمەنی زاخۆ",
+				titleKmr: "Dîmena Zaxo",
+				thumbnailUrl: "/news/7.jpg",
+			},
+			{
+				titleCkb: "کۆتایی ڕۆژ",
+				titleKmr: "Dawiya rojê",
+				thumbnailUrl: "/news/8.jpg",
+			},
+		],
+	}),
+	makeVideo({
+		id: 12,
+		videoType: "FILM",
+		topicId: SHORT_FILMS_TOPIC_ID,
+		ckbCoverUrl: "/menu/chloe-Pai-B9eIomI-unsplash.jpg",
+		kmrCoverUrl: "/menu/chloe-Pai-B9eIomI-unsplash.jpg",
+		ckbContent: {
+			title: "ساڵانی منداڵی",
+			description:
+				"کورتە فیلمێک کە یادەوەری منداڵی لە گوندێکی کوردستان دەگێڕێتەوە، بە چاوی منداڵێکەوە.",
+			location: "هەڵەبجە",
+			director: "لانە سەعید",
+			producer: "ئینستیتیوتی کەلەپووری کوردی",
+		},
+		kmrContent: {
+			title: "Salên Zaroktiyê",
+			description:
+				"Kurtefîlmek ku bîranînên zaroktiyê li gundekî Kurdistanê vedibêje, bi çavê zarokekî.",
+			location: "Helebce",
+			director: "Lane Seîd",
+			producer: "Enstîtuya Kelepora Kurdî",
+		},
+		sourceUrl: SAMPLE_MP4,
+		fileFormat: "mp4",
+		durationSeconds: 480,
+		publishmentDate: "2025-10-30",
+		resolution: "1920x1080",
+		fileSizeMb: 268.0,
+		tagsCkb: ["منداڵان", "کۆمەڵایەتی"],
+		tagsKmr: ["Zarok", "Civak"],
+		keywordsCkb: ["یادەوەری"],
+		keywordsKmr: ["Bîranîn"],
+		createdAt: "2025-10-30T10:00:00",
+		castMembers: [
+			{
+				nameCkb: "لانە سەعید",
+				nameKmr: "Lane Seîd",
+				roleCkb: "وەک منداڵ",
+				roleKmr: "Wek zarok",
+				photoUrl: "/about/artworks-000171267883-evk1m7-t500x500.jpg",
+			},
+			{
+				nameCkb: "هەڵۆ ڕەشید",
+				nameKmr: "Helo Reşid",
+				roleCkb: "وەک دایک",
+				roleKmr: "Wek dayik",
+				photoUrl: "/about/image_9310b7.PNG",
+			},
+		],
+		highlightClips: [
+			{
+				titleCkb: "یاری لە گوند",
+				titleKmr: "Lîstik li gund",
+				thumbnailUrl: "/gallery/1.jpg",
+				url: SAMPLE_MP4,
+			},
+			{
+				titleCkb: "شەوی هاوین",
+				titleKmr: "Şeva havînê",
+				thumbnailUrl: "/gallery/2.jpg",
+			},
+		],
+	}),
+	makeVideo({
+		id: 13,
+		videoType: "FILM",
+		topicId: SHORT_FILMS_TOPIC_ID,
+		ckbCoverUrl: "/menu/felix-ngo-tw9qM705ERY-unsplash.jpg",
+		kmrCoverUrl: "/menu/felix-ngo-tw9qM705ERY-unsplash.jpg",
+		ckbContent: {
+			title: "ڕەنگەکانی شار",
+			description:
+				"گەشتێکی هونەری بەناو کۆڵانەکانی شاری کۆن، لە نێوان ڕووناکی و سێبەردا.",
+			location: "سلێمانی",
+			director: "هاوار جەلال",
+			producer: "ئینستیتیوتی کەلەپووری کوردی",
+		},
+		kmrContent: {
+			title: "Rengên Bajêr",
+			description:
+				"Rêwîtiyeke hunerî di kolanên bajarê kevn de, di navbera ronahî û siyê de.",
+			location: "Silêmanî",
+			director: "Hawar Celal",
+			producer: "Enstîtuya Kelepora Kurdî",
+		},
+		sourceUrl: SAMPLE_MP4,
+		fileFormat: "mp4",
+		durationSeconds: 360,
+		publishmentDate: "2025-10-12",
+		resolution: "1920x1080",
+		fileSizeMb: 198.5,
+		tagsCkb: ["هونەر", "شار"],
+		tagsKmr: ["Huner", "Bajar"],
+		keywordsCkb: ["ڕەنگ"],
+		keywordsKmr: ["Reng"],
+		createdAt: "2025-10-12T10:00:00",
+		castMembers: [
+			{
+				nameCkb: "هاوار جەلال",
+				nameKmr: "Hawar Celal",
+				roleCkb: "وەک گەڕان",
+				roleKmr: "Wek gerok",
+				photoUrl: "/about/475203467_1007002848126180_7383496220452921499_n.jpg",
+			},
+		],
+		highlightClips: [
+			{
+				titleCkb: "کۆڵانی کۆن",
+				titleKmr: "Kolanek kevn",
+				thumbnailUrl: "/gallery/3.jpg",
+				url: SAMPLE_MP4,
+			},
+			{
+				titleCkb: "لە نێوان سێبەر",
+				titleKmr: "Di nav siyê de",
+				thumbnailUrl: "/gallery/4.jpg",
+			},
+		],
+	}),
+	makeVideo({
+		id: 14,
+		videoType: "FILM",
+		topicId: SHORT_FILMS_TOPIC_ID,
+		ckbCoverUrl: "/menu/irakli-shubitidze-YGj_mpiJg6U-unsplash.jpg",
+		kmrCoverUrl: "/menu/irakli-shubitidze-YGj_mpiJg6U-unsplash.jpg",
+		ckbContent: {
+			title: "گەشتی کۆچ",
+			description:
+				"کورتە فیلمێکی بەڵگەنامەیی دەربارەی کۆچ و یادەوەریی ماڵی بەجێهێشتراو.",
+			location: "دهۆک",
+			director: "ئاواز مەجید",
+			producer: "ئینستیتیوتی کەلەپووری کوردی",
+		},
+		kmrContent: {
+			title: "Rêwîtiya Koçê",
+			description:
+				"Kurtefîlmeke belgeyî derbarê koçê û bîranîna mala hatî hiştin.",
+			location: "Dihok",
+			director: "Awaz Mecîd",
+			producer: "Enstîtuya Kelepora Kurdî",
+		},
+		sourceUrl: SAMPLE_MP4,
+		fileFormat: "mp4",
+		durationSeconds: 720,
+		publishmentDate: "2025-09-22",
+		resolution: "1920x1080",
+		fileSizeMb: 392.0,
+		tagsCkb: ["مێژوو", "کۆمەڵایەتی"],
+		tagsKmr: ["Dîrok", "Civak"],
+		keywordsCkb: ["کۆچ"],
+		keywordsKmr: ["Koç"],
+		createdAt: "2025-09-22T10:00:00",
+		castMembers: [
+			{
+				nameCkb: "ئاواز مەجید",
+				nameKmr: "Awaz Mecîd",
+				roleCkb: "وەک گەڕان",
+				roleKmr: "Wek gerok",
+				photoUrl: "/news/6.jpg",
+			},
+			{
+				nameCkb: "هەڤاڵ ڕەحمانی",
+				nameKmr: "Heval Rehmanî",
+				roleCkb: "وەک یادەوەری",
+				roleKmr: "Wek bîranîn",
+				photoUrl: "/news/10.jpg",
+			},
+		],
+		highlightClips: [
+			{
+				titleCkb: "ڕێگای کۆچ",
+				titleKmr: "Rêya koçê",
+				thumbnailUrl: "/writings.jpg",
+				url: SAMPLE_MP4,
+			},
+			{
+				titleCkb: "ماڵی بەجێهێشراو",
+				titleKmr: "Malê hiştî",
+				thumbnailUrl: "/news/10.jpg",
+			},
+		],
+	}),
+	makeVideo({
+		id: 15,
+		videoType: "FILM",
+		topicId: SHORT_FILMS_TOPIC_ID,
+		ckbCoverUrl: "/menu/zheng-xue-8QiCDuR0yKE-unsplash.jpg",
+		kmrCoverUrl: "/menu/zheng-xue-8QiCDuR0yKE-unsplash.jpg",
+		ckbContent: {
+			title: "دەنگی ئاو",
+			description:
+				"کورتە فیلمێکی سروشتی کە چیرۆکی ڕووبارێک لە سەرچاوەوە تا دەریا دەگێڕێتەوە.",
+			location: "ڕانیە",
+			director: "شنە کەمال",
+			producer: "ئینستیتیوتی کەلەپووری کوردی",
+		},
+		kmrContent: {
+			title: "Dengê Avê",
+			description:
+				"Kurtefîlmeke siruştî ku çîroka çemekî ji kanî heta deryayê vedibêje.",
+			location: "Ranya",
+			director: "Şene Kemal",
+			producer: "Enstîtuya Kelepora Kurdî",
+		},
+		sourceUrl: SAMPLE_MP4,
+		fileFormat: "mp4",
+		durationSeconds: 540,
+		publishmentDate: "2025-09-05",
+		resolution: "1920x1080",
+		fileSizeMb: 305.0,
+		tagsCkb: ["سروشت"],
+		tagsKmr: ["Siruşt"],
+		keywordsCkb: ["ئاو"],
+		keywordsKmr: ["Av"],
+		createdAt: "2025-09-05T10:00:00",
+		castMembers: [
+			{
+				nameCkb: "شنە کەمال",
+				nameKmr: "Şene Kemal",
+				roleCkb: "وەک چاودێر",
+				roleKmr: "Wek temaşevan",
+				photoUrl: "/news/3.jpg",
+			},
+		],
+		highlightClips: [
+			{
+				titleCkb: "سەرچاوەی ڕووبار",
+				titleKmr: "Kaniya çem",
+				thumbnailUrl: "/news/4.jpg",
+				url: SAMPLE_MP4,
+			},
+			{
+				titleCkb: "بۆ دەریا",
+				titleKmr: "Bo deryayê",
+				thumbnailUrl: "/gallery/5.jpg",
+			},
+		],
+	}),
+	makeVideo({
+		id: 16,
+		videoType: "FILM",
+		topicId: SHORT_FILMS_TOPIC_ID,
+		ckbCoverUrl: "/menu/5.jpg",
+		kmrCoverUrl: "/menu/5.jpg",
+		ckbContent: {
+			title: "نەخشی دەست",
+			description:
+				"بەڵگەنامەیەکی کورت دەربارەی پیشەی نەختەکاری و نەخشی دەستی کوردی.",
+			location: "هەولێر",
+			director: "بەهار ئەحمەد",
+			producer: "ئینستیتیوتی کەلەپووری کوردی",
+		},
+		kmrContent: {
+			title: "Neqşa Destan",
+			description: "Belgeyeke kurt derbarê hunera neqşê û destnîgariya kurdî.",
+			location: "Hewlêr",
+			director: "Behar Ehmed",
+			producer: "Enstîtuya Kelepora Kurdî",
+		},
+		sourceUrl: SAMPLE_MP4,
+		fileFormat: "mp4",
+		durationSeconds: 420,
+		publishmentDate: "2025-08-18",
+		resolution: "1280x720",
+		fileSizeMb: 232.0,
+		tagsCkb: ["هونەر", "کەلتوور"],
+		tagsKmr: ["Huner", "Çand"],
+		keywordsCkb: ["پیشە"],
+		keywordsKmr: ["Pîşe"],
+		createdAt: "2025-08-18T10:00:00",
+		castMembers: [
+			{
+				nameCkb: "بەهار ئەحمەد",
+				nameKmr: "Behar Ehmed",
+				roleCkb: "وەک نەخشکێش",
+				roleKmr: "Wek neqşkêş",
+				photoUrl: "/news/8.jpg",
+			},
+		],
+		highlightClips: [
+			{
+				titleCkb: "دەست لەسەر قوماش",
+				titleKmr: "Dest li qumaş",
+				thumbnailUrl: "/about/m2.jpg",
+				url: SAMPLE_MP4,
+			},
+		],
+	}),
+	makeVideo({
+		id: 17,
+		videoType: "FILM",
+		topicId: SHORT_FILMS_TOPIC_ID,
+		ckbCoverUrl: "/menu/3.jpg",
+		kmrCoverUrl: "/menu/3.jpg",
+		hoverCoverUrl: "/menu/6.jpg",
+		ckbContent: {
+			title: "شەوی هەورامان",
+			description:
+				"کورتە فیلمێک کە شەوێکی هاوینە لە گوندەکانی هەورامان وێنا دەکات.",
+			location: "هەورامان",
+			director: "ئاکۆ مەحمود",
+			producer: "ئینستیتیوتی کەلەپووری کوردی",
+		},
+		kmrContent: {
+			title: "Şeva Hewramanê",
+			description:
+				"Kurtefîlmek ku şeveke havînê li gundên Hewramanê tasvîr dike.",
+			location: "Hewraman",
+			director: "Ako Mehmûd",
+			producer: "Enstîtuya Kelepora Kurdî",
+		},
+		sourceUrl: SAMPLE_MP4,
+		fileFormat: "mp4",
+		durationSeconds: 612,
+		publishmentDate: "2025-08-01",
+		resolution: "1920x1080",
+		fileSizeMb: 356.0,
+		tagsCkb: ["هەورامان", "سروشت"],
+		tagsKmr: ["Hewraman", "Siruşt"],
+		keywordsCkb: ["شەو"],
+		keywordsKmr: ["Şev"],
+		createdAt: "2025-08-01T10:00:00",
+		castMembers: [
+			{
+				nameCkb: "ئاکۆ مەحمود",
+				nameKmr: "Ako Mehmûd",
+				roleCkb: "وەک گەڕان",
+				roleKmr: "Wek gerok",
+				photoUrl: "/news/6.jpg",
+			},
+		],
+		highlightClips: [
+			{
+				titleCkb: "شەوی هەورامان",
+				titleKmr: "Şeva Hewramanê",
+				thumbnailUrl: "/news/9.jpg",
+				url: SAMPLE_MP4,
+			},
+		],
+	}),
 ];
 
-const KU_ITEMS: LocaleCopy = [
-	{
-		id: "video-1",
-		slug: "voices-of-the-mountains",
-		title: "Dengên Çiyan",
-		subtitle: "Dîroka devkî ji bilindahiyên Zagrosê",
-		category: "documentaries",
-		duration: "42 deq",
-		image: {
-			url: "/menu/4.jpg",
-			alt: "Posterê belgefîlmê li ser çiyayên Zagrosê",
-		},
-	},
-	{
-		id: "video-2",
-		slug: "dengbej-performance-hawraman",
-		title: "Performansa Dengbêj li Hewramanê",
-		subtitle: "Tomarek êvarî ya strana çîrokbêjî ya kevneşopî",
-		category: "performances",
-		duration: "18 deq",
-		image: {
-			url: "/menu/6.jpg",
-			alt: "Performansa dengbêjek li Hewramanê",
-		},
-	},
-	{
-		id: "video-3",
-		slug: "lecture-kurdish-manuscripts",
-		title: "Destnivîsên Kurdî di Çaxa Dîjîtal de",
-		subtitle: "Dersa zanistî li ser parastin û gihîştinê",
-		category: "lectures",
-		duration: "55 deq",
-		image: {
-			url: "/menu/1.jpg",
-			alt: "Ders li ser dîjîtalîzekirina destnivîsên kurdî",
-		},
-	},
-	{
-		id: "video-4",
-		slug: "newsreel-1960s-sulaymaniyah",
-		title: "Silêmanî, 1960an",
-		subtitle: "Wêneyên nûçeyên arşîva bajarê hatine vegerandin",
-		category: "newsreels",
-		duration: "8 deq",
-		image: {
-			url: "/menu/7.jpg",
-			alt: "Wêneyên dîrokî yên Silêmanî",
-		},
-	},
-	{
-		id: "video-5",
-		slug: "weaving-traditions-documentary",
-		title: "Tradîsyona Wevingê",
-		subtitle: "Belgefîlm li ser hunera tekstîlê li seranserî Kurdistanê",
-		category: "documentaries",
-		duration: "31 deq",
-		image: {
-			url: "/menu/3.jpg",
-			alt: "Belgefîlm li ser tradîsyona wevinga kurdî",
-		},
-	},
-];
+export function getAllDemoVideos(): Video[] {
+	return RAW_VIDEOS;
+}
 
-const CKB_ITEMS: LocaleCopy = [
-	{
-		id: "video-1",
-		slug: "voices-of-the-mountains",
-		title: "دەنگەکانی چیاکان",
-		subtitle: "مێژووی شفاهی لە شاخەکانی زاگرۆس",
-		category: "documentaries",
-		duration: "٤٢ خولەک",
-		image: {
-			url: "/menu/4.jpg",
-			alt: "پۆستەری بەڵگەنامە لەسەر دیمەنی چیاکان",
-		},
-	},
-	{
-		id: "video-2",
-		slug: "dengbej-performance-hawraman",
-		title: "پیشاندانی دەنگبێژ لە هەورامان",
-		subtitle: "تۆمارێکی ئێواری گۆرانی چیرۆکگوتنی نەریتی",
-		category: "performances",
-		duration: "١٨ خولەک",
-		image: {
-			url: "/menu/6.jpg",
-			alt: "پیشاندانی دەنگبێژێک لە هەورامان",
-		},
-	},
-	{
-		id: "video-3",
-		slug: "lecture-kurdish-manuscripts",
-		title: "دەستنووسە کوردییەکان لە سەردەمی دیجیتاڵ",
-		subtitle: "وتاری زانستی لەسەر پاراستن و بەردەستبوون",
-		category: "lectures",
-		duration: "٥٥ خولەک",
-		image: {
-			url: "/menu/1.jpg",
-			alt: "وتار لەسەر دیجیتاڵکردنی دەستنووسە کوردییەکان",
-		},
-	},
-	{
-		id: "video-4",
-		slug: "newsreel-1960s-sulaymaniyah",
-		title: "سلێمانی، ١٩٦٠ەکان",
-		subtitle: "وێنەی هەواڵی گەڕێندراوەوە لە ئارشیڤی شار",
-		category: "newsreels",
-		duration: "٨ خولەک",
-		image: {
-			url: "/menu/7.jpg",
-			alt: "وێنەی مێژوویی سلێمانی",
-		},
-	},
-	{
-		id: "video-5",
-		slug: "weaving-traditions-documentary",
-		title: "نەریتی بەرکردن",
-		subtitle: "بەڵگەنامە لەسەر پیشەی قوماش لە سەرانسەری کوردستان",
-		category: "documentaries",
-		duration: "٣١ خولەک",
-		image: {
-			url: "/menu/3.jpg",
-			alt: "بەڵگەنامە لەسەر نەریتی بەرکردنی کوردی",
-		},
-	},
-];
-
-const LOCALE_ITEMS: Record<string, LocaleCopy> = {
-	en: EN_ITEMS,
-	ku: KU_ITEMS,
-	ckb: CKB_ITEMS,
-};
-
-export function getVideos(locale: string): VideoItem[] {
-	return LOCALE_ITEMS[locale] ?? EN_ITEMS;
+export function getDemoVideoById(id: number): Video | null {
+	return RAW_VIDEOS.find((video) => video.id === id) ?? null;
 }

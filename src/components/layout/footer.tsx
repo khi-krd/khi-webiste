@@ -21,7 +21,7 @@ const footerColumns: FooterColumn[] = [
 			{ labelKey: "books", href: "/writings" },
 			{ labelKey: "songs", href: "/songs" },
 			{ labelKey: "audio", href: "/audio" },
-			{ labelKey: "video", href: "/video" },
+			{ labelKey: "video", href: "/videos" },
 		],
 	},
 	{

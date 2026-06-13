@@ -42,6 +42,10 @@
 		"videoSubPerformances": "Performans",
 		"videoSubLectures": "Ders û civîn",
 		"videoSubNewsreels": "Nûçeyên wêneyî",
+		"videoSubShortFilms": "Kurtefîlm",
+		"videoSubFilms": "Fîlm",
+		"videoSubClips": "Klîp",
+		"videoSubMemories": "Albuma bîranînan",
 		"newsDescription": "Gotarên lêkolînê li ser çand, dîrok, ziman û civaka Kurd.",
 		"newsSubCulture": "Çand",
 		"newsSubHistory": "Dîrok",
@@ -513,11 +517,122 @@
 		"title": "Belgefîlm, performans û mîrata wêneyên livok.",
 		"description": "Ders, nûçeyên wêneyî û performansên hatine tomarkirin ji herêmên Kurdî.",
 		"viewAll": "Vîdyoyê keşf bike",
+		"pageTitle": "Arşîva Fîlm û Vîdyo",
+		"metaDescription": "Fîlm, belgefîlm, performans û tomarên wêneyî yên mîrateya kurdî — sînematêka Enstîtuya Kelepora Kurdî.",
 		"categories": {
 			"documentaries": "Belgefîlm",
 			"performances": "Performans",
 			"lectures": "Ders",
 			"newsreels": "Nûçeyên wêneyî"
+		},
+		"page": {
+			"hero": {
+				"eyebrow": "Arşîva fîlm û vîdyo",
+				"title": "Wêneyên livok tiştê ku bêdengî nikare digirin.",
+				"titleEmphasis": "Sînematêkek ji bîranîna kurdî, wêne bi wêne.",
+				"description": "Fîlm, belgefîlm û performansên tomarkirî — hatine berhevkirin, parastin û ji bo nifşên pêşerojê di livê de têne hiştin.",
+				"cta": "Li arşîvê bigere"
+			}
+		},
+		"grid": {
+			"allTitle": "Koleksiyona wêneyên livok.",
+			"itemCount": "{formatted} {count, plural, one {fîlm} other {fîlm}}",
+			"empty": "Niha tu vîdyo tune ye.",
+			"noResults": "Tu vîdyo li gorî parzûnên te nayê."
+		},
+		"filter": {
+			"label": "Parzûn & lêgerîn",
+			"reset": "Jê bibe",
+			"all": "Hemû",
+			"typeLabel": "Format",
+			"searchPlaceholder": "Bi sernav, derhêner an etîketê bigere…",
+			"searchLabel": "Li vîdyoyan bigere",
+			"searchClear": "Lêgerînê paqij bike",
+			"topicLabel": "Mijar",
+			"topicAll": "Hemû mijar",
+			"collectionLabel": "Koleksiyon",
+			"memoriesLabel": "Albuma bîranînan",
+			"active": "Çalak:"
+		},
+		"types": {
+			"FILM": "Fîlm",
+			"VIDEO_CLIP": "Klîp"
+		},
+		"typeBadge": {
+			"FILM": "Fîlm",
+			"VIDEO_CLIP": "Rêze"
+		},
+		"card": {
+			"clipCount": "{formatted} {count, plural, one {klîp} other {klîp}}",
+			"memoriesBadge": "Albuma bîranînan"
+		},
+		"pagination": {
+			"label": "Rûpelbendiya vîdyo",
+			"previous": "Paş",
+			"next": "Pêş"
+		},
+		"detail": {
+			"back": "Vegere vîdyoyan",
+			"director": "Derhêner",
+			"producer": "Hilberîner",
+			"location": "Cih",
+			"topic": "Mijar",
+			"duration": "Dem",
+			"resolution": "Rezolûsyon",
+			"fileFormat": "Format",
+			"publishmentDate": "Hat weşandin",
+			"fileSize": "Mezinahiya pelê",
+			"languagesLabel": "Ziman",
+			"languages": {
+				"CKB": "Soranî",
+				"KMR": "Kurmancî"
+			},
+			"clips": "Klîpên vê rêzê",
+			"playClip": "Klîpê lê bike",
+			"nowPlaying": "Niha tê lîstin",
+			"noSource": "Çavkaniya lîstinê ya vê vîdyoyê hê nehatiye zêdekirin.",
+			"tags": "Etîket",
+			"keywords": "Peyvên sereke",
+			"published": "Hat weşandin",
+			"updated": "Hat nûkirin"
+		},
+		"shortfilms": {
+			"pageTitle": "Kurtefîlm",
+			"metaDescription": "Hilbijartineke kurtefîlmên kurdî ji arşîva Enstîtuya Kelepora Kurdî.",
+			"hero": {
+				"eyebrow": "Kurtefîlm",
+				"title": "Wêneyên biçûk, cîhanên temam.",
+				"description": "Bernameyeke bijartî ya kurtefîlmên kurdî — nêz, afirîner û bi mebest kurt.",
+				"cta": "Kurtefîlman bibîne"
+			},
+			"allTitle": "Bernameya kurtefîlman.",
+			"featuredEyebrow": "Kurtefîlma hilbijartî",
+			"watchNow": "Niha temaşe bike",
+			"details": "Hûrgilî",
+			"trending": "Kurtefîlmên navdar",
+			"continueWatching": "Berdewam bibe",
+			"more": "Bêtir kurtefîlm",
+			"seeMore": "Bêtir bibîne",
+			"allPopular": "Hemû navdar",
+			"empty": "Niha tu kurtefîlm tune ye.",
+			"promo": {
+				"title": "Kurtefîlmên kurdî — çîrokên nêz di çarçoveyên biçûk de.",
+				"description": "Bernameyeke bijartî ya kurtefîlman ji arşîvê — cuda ji koleksiyona sereke ya fîlman.",
+				"cta": "Kurtefîlman bibîne",
+				"count": "{formatted} kurtefîlm di bernameyê de"
+			},
+			"detail": {
+				"back": "Vegere kurtefîlman",
+				"bookmark": "Tomar bike bo lîsteya temaşeyê",
+				"description": "Danasîn",
+				"cast": "Lîstikvan",
+				"selectedClips": "Clipên bijartî",
+				"related": "Bêtir kurtefîlm",
+				"duration": "Dem",
+				"releaseDate": "Dîroka weşanê",
+				"genre": "Cure",
+				"director": "Derhêner"
+			}
 		}
 	},
 	"ImageCollection": {

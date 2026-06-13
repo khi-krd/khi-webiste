@@ -42,6 +42,10 @@
 		"videoSubPerformances": "Performances",
 		"videoSubLectures": "Lectures & talks",
 		"videoSubNewsreels": "Newsreels",
+		"videoSubShortFilms": "Short films",
+		"videoSubFilms": "Films",
+		"videoSubClips": "Clips",
+		"videoSubMemories": "Album of memories",
 		"newsDescription": "Research and essays on Kurdish culture, history, language, and society.",
 		"newsSubCulture": "Culture",
 		"newsSubHistory": "History",
@@ -516,11 +520,122 @@
 		"title": "Documentaries, performances, and moving-image heritage.",
 		"description": "Lectures, newsreels, and recorded performances from across Kurdish regions.",
 		"viewAll": "Explore video",
+		"pageTitle": "Film & Video Archive",
+		"metaDescription": "Films, documentaries, performances, and moving-image records of Kurdish heritage — a cinematheque of the Kurdish Heritage Institute.",
 		"categories": {
 			"documentaries": "Documentaries",
 			"performances": "Performances",
 			"lectures": "Lectures",
 			"newsreels": "Newsreels"
+		},
+		"page": {
+			"hero": {
+				"eyebrow": "Film & video archive",
+				"title": "Moving images hold what stillness cannot.",
+				"titleEmphasis": "A cinematheque of Kurdish memory, frame by frame.",
+				"description": "Films, documentaries, and recorded performances — gathered, preserved, and kept in motion for the generations to come.",
+				"cta": "Browse the archive"
+			}
+		},
+		"grid": {
+			"allTitle": "The moving-image collection.",
+			"itemCount": "{formatted} {count, plural, one {film} other {films}}",
+			"empty": "No videos are available at the moment.",
+			"noResults": "No videos match your filters."
+		},
+		"filter": {
+			"label": "Filter & search",
+			"reset": "Reset",
+			"all": "All",
+			"typeLabel": "Format",
+			"searchPlaceholder": "Search by title, director, or tag…",
+			"searchLabel": "Search videos",
+			"searchClear": "Clear search",
+			"topicLabel": "Topic",
+			"topicAll": "All topics",
+			"collectionLabel": "Collection",
+			"memoriesLabel": "Album of memories",
+			"active": "Active:"
+		},
+		"types": {
+			"FILM": "Films",
+			"VIDEO_CLIP": "Clips"
+		},
+		"typeBadge": {
+			"FILM": "Film",
+			"VIDEO_CLIP": "Series"
+		},
+		"card": {
+			"clipCount": "{formatted} {count, plural, one {clip} other {clips}}",
+			"memoriesBadge": "Album of memories"
+		},
+		"pagination": {
+			"label": "Video pagination",
+			"previous": "Previous",
+			"next": "Next"
+		},
+		"detail": {
+			"back": "Back to videos",
+			"director": "Director",
+			"producer": "Producer",
+			"location": "Location",
+			"topic": "Topic",
+			"duration": "Duration",
+			"resolution": "Resolution",
+			"fileFormat": "Format",
+			"publishmentDate": "Published",
+			"fileSize": "File size",
+			"languagesLabel": "Languages",
+			"languages": {
+				"CKB": "Sorani",
+				"KMR": "Kurmanji"
+			},
+			"clips": "Clips in this series",
+			"playClip": "Play clip",
+			"nowPlaying": "Now playing",
+			"noSource": "This video has no playable source yet.",
+			"tags": "Tags",
+			"keywords": "Keywords",
+			"published": "Published",
+			"updated": "Updated"
+		},
+		"shortfilms": {
+			"pageTitle": "Short Films",
+			"metaDescription": "A curated selection of Kurdish short films from the Kurdish Heritage Institute archive.",
+			"hero": {
+				"eyebrow": "Short films",
+				"title": "Small frames, whole worlds.",
+				"description": "A curated programme of Kurdish short films — intimate, inventive, and brief by design.",
+				"cta": "Browse short films"
+			},
+			"allTitle": "The short-film programme.",
+			"featuredEyebrow": "Featured short film",
+			"watchNow": "Watch Now",
+			"details": "Details",
+			"trending": "Trending Short Films",
+			"continueWatching": "Continue Watching",
+			"more": "More Short Films",
+			"seeMore": "See more",
+			"allPopular": "All Popular",
+			"empty": "No short films are available at the moment.",
+			"promo": {
+				"title": "Kurdish short films — intimate stories in brief frames.",
+				"description": "A curated programme of short films from the archive, separate from the main film collection.",
+				"cta": "Browse short films",
+				"count": "{formatted} {count, plural, one {short film} other {short films}} in the programme"
+			},
+			"detail": {
+				"back": "Back to short films",
+				"bookmark": "Save to watchlist",
+				"description": "Description",
+				"cast": "Cast",
+				"selectedClips": "Selected Clips",
+				"related": "More Short Films",
+				"duration": "Duration",
+				"releaseDate": "Release Date",
+				"genre": "Genre",
+				"director": "Director"
+			}
 		}
 	},
 	"ImageCollection": {

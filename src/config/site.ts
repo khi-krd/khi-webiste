@@ -73,14 +73,14 @@ export const NAV_ITEMS: NavItem[] = [
 	},
 	{
 		key: "video",
-		href: "/video",
+		href: "/videos",
 		descriptionKey: "videoDescription",
 		imageSrc: MENU_IMAGE("4.jpg"),
 		children: [
-			{ key: "videoSubDocumentaries", href: "/video/documentaries" },
-			{ key: "videoSubPerformances", href: "/video/performances" },
-			{ key: "videoSubLectures", href: "/video/lectures" },
-			{ key: "videoSubNewsreels", href: "/video/newsreels" },
+			{ key: "videoSubShortFilms", href: "/videos/shortfilms" },
+			{ key: "videoSubFilms", href: "/videos?type=film" },
+			{ key: "videoSubClips", href: "/videos?type=clip" },
+			{ key: "videoSubMemories", href: "/videos?memories=1" },
 		],
 	},
 	{
