@@ -50,6 +50,7 @@ export const VideoTopicSchema = z.object({
 	id: z.number(),
 	nameCkb: z.string().nullable(),
 	nameKmr: z.string().nullable(),
+	nameEn: z.string().nullable().optional(),
 });
 
 export type VideoTopic = z.infer<typeof VideoTopicSchema>;
@@ -64,9 +65,11 @@ export const VideoSchema = z.object({
 	topicId: z.number().nullable(),
 	topicNameCkb: z.string().nullable(),
 	topicNameKmr: z.string().nullable(),
+	topicNameEn: z.string().nullable().optional(),
 	contentLanguages: z.array(VideoContentLanguageSchema),
 	ckbContent: VideoContentSchema.nullable(),
 	kmrContent: VideoContentSchema.nullable(),
+	enContent: VideoContentSchema.nullable().optional(),
 	sourceUrl: z.string().nullable(),
 	sourceExternalUrl: z.string().nullable(),
 	sourceEmbedUrl: z.string().nullable(),
@@ -78,8 +81,10 @@ export const VideoSchema = z.object({
 	fileSizeMb: z.number().nullable(),
 	tagsCkb: z.array(z.string()),
 	tagsKmr: z.array(z.string()),
+	tagsEn: z.array(z.string()).optional(),
 	keywordsCkb: z.array(z.string()),
 	keywordsKmr: z.array(z.string()),
+	keywordsEn: z.array(z.string()).optional(),
 	createdAt: z.string(),
 	updatedAt: z.string(),
 	castMembers: z.array(VideoCastMemberSchema).optional(),

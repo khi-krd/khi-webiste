@@ -204,9 +204,9 @@ export async function getAudioTopics(
 						.map((topic) => ({
 							id: topic.id,
 							name:
-								locale === "ku"
-									? (topic.nameKmr ?? topic.nameCkb)
-									: (topic.nameCkb ?? topic.nameKmr),
+								locale === "ckb"
+									? (topic.nameCkb ?? topic.nameKmr)
+									: (topic.nameKmr ?? topic.nameCkb),
 						}))
 						.filter((topic): topic is AudioTopicOption => topic.name != null);
 				}
@@ -219,9 +219,9 @@ export async function getAudioTopics(
 	return DEMO_SOUND_TOPICS.map((topic) => ({
 		id: topic.id,
 		name:
-			locale === "ku"
-				? (topic.nameKmr ?? topic.nameCkb ?? "")
-				: (topic.nameCkb ?? topic.nameKmr ?? ""),
+			locale === "ckb"
+				? (topic.nameCkb ?? topic.nameKmr ?? "")
+				: (topic.nameKmr ?? topic.nameCkb ?? ""),
 	})).filter((topic) => topic.name.length > 0);
 }
 

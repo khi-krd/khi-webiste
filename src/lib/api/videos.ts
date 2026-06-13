@@ -5,6 +5,7 @@ import {
 	getAllDemoVideos,
 	getDemoVideoById,
 } from "@/lib/mock/videos";
+import { DEMO_VIDEO_TOPICS_EN } from "@/lib/mock/videos-en";
 import { filterVideos, paginateVideos, sortVideos } from "@/lib/video/filter";
 import { resolveVideoCard, resolveVideoDetail } from "@/lib/video/resolve";
 import type {
@@ -182,9 +183,11 @@ export async function getVideoTopics(
 						.map((topic) => ({
 							id: topic.id,
 							name:
-								locale === "ku"
-									? (topic.nameKmr ?? topic.nameCkb)
-									: (topic.nameCkb ?? topic.nameKmr),
+								locale === "en"
+									? (topic.nameEn ?? topic.nameKmr ?? topic.nameCkb)
+									: locale === "ckb"
+										? (topic.nameCkb ?? topic.nameKmr)
+										: (topic.nameKmr ?? topic.nameCkb),
 						}))
 						.filter((topic): topic is VideoTopicOption => topic.name != null);
 				}
@@ -197,9 +200,14 @@ export async function getVideoTopics(
 	return DEMO_VIDEO_TOPICS.map((topic) => ({
 		id: topic.id,
 		name:
-			locale === "ku"
-				? (topic.nameKmr ?? topic.nameCkb ?? "")
-				: (topic.nameCkb ?? topic.nameKmr ?? ""),
+			locale === "en"
+				? (DEMO_VIDEO_TOPICS_EN[topic.id] ??
+					topic.nameKmr ??
+					topic.nameCkb ??
+					"")
+				: locale === "ckb"
+					? (topic.nameCkb ?? topic.nameKmr ?? "")
+					: (topic.nameKmr ?? topic.nameCkb ?? ""),
 	})).filter((topic) => topic.name.length > 0);
 }
 

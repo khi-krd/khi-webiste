@@ -13,12 +13,15 @@ export type WritingCategorySlug = (typeof WRITING_CATEGORY_SLUGS)[number];
 /** i18n keys under the Nav namespace for each slug. */
 export const WRITING_CATEGORY_NAV_KEYS: Record<
 	WritingCategorySlug,
-	"booksSubLiterature" | "booksSubHistory" | "booksSubPoetry" | "booksSubManuscripts"
+	| "writingsSubLiterature"
+	| "writingsSubHistory"
+	| "writingsSubPoetry"
+	| "writingsSubManuscripts"
 > = {
-	literature: "booksSubLiterature",
-	history: "booksSubHistory",
-	poetry: "booksSubPoetry",
-	manuscripts: "booksSubManuscripts",
+	literature: "writingsSubLiterature",
+	history: "writingsSubHistory",
+	poetry: "writingsSubPoetry",
+	manuscripts: "writingsSubManuscripts",
 };
 
 /** Map each nav category to API BookGenre values for filtering. */

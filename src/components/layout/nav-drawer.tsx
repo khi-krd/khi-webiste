@@ -27,15 +27,8 @@ import { Link } from "@/components/ui/link";
 import { NAV_DEFAULT_IMAGE, NAV_ITEMS, type NavItem } from "@/config/site";
 import { cn } from "@/lib/utils";
 
-const ARCHIVE_HREF =
-	NAV_ITEMS.find((item) => item.key === "archive")?.href ?? "/archive";
-
-/** Footer controls on the dark overlay bar — square corners, 44px min touch target. */
 const overlayFooterIconButtonClass =
 	"inline-flex min-h-11 min-w-11 items-center justify-center border border-primary-foreground/25 bg-primary-foreground/5 transition-colors hover:border-primary-foreground/30 hover:bg-primary-foreground/10 focus-visible:border-primary-foreground/40";
-
-const overlayArchiveLinkClass =
-	"inline-flex min-h-11 items-center gap-2 border border-primary-foreground/25 bg-primary-foreground/5 px-4 font-sans text-small font-medium text-primary-foreground/80 no-underline transition-colors hover:border-primary-foreground/30 hover:bg-primary-foreground/10 hover:text-primary-foreground focus-visible:border-primary-foreground/40";
 
 const FOCUSABLE =
 	'a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])';
@@ -207,7 +200,7 @@ export function NavDrawer() {
 	const wasOpen = useRef(false);
 
 	const activeItem = NAV_ITEMS.find((item) => item.key === activeKey);
-	const primaryNavItems = NAV_ITEMS.filter((item) => item.key !== "archive");
+	const primaryNavItems = NAV_ITEMS;
 	const bgKey =
 		hoveredKey ?? activeKey ?? primaryNavItems[0]?.key ?? "default";
 	const bgItem =
@@ -649,14 +642,6 @@ export function NavDrawer() {
 												onLocaleChange={close}
 											/>
 											<div className="flex items-center gap-3">
-												<Link
-													href={ARCHIVE_HREF}
-													variant="nav"
-													onClick={close}
-													className={overlayArchiveLinkClass}
-												>
-													{t("archive")}
-												</Link>
 												<button
 													type="button"
 													onClick={() => setView("search")}

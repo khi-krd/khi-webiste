@@ -33,26 +33,26 @@ export function resolveAudioContent(
 	locale: string,
 	track: SoundTrack,
 ): SoundContent | null {
-	if (locale === "ku") {
-		return track.kmrContent ?? track.ckbContent;
+	if (locale === "ckb") {
+		return track.ckbContent ?? track.kmrContent;
 	}
-	return track.ckbContent ?? track.kmrContent;
+	return track.kmrContent ?? track.ckbContent;
 }
 
 export function resolveAudioCoverUrl(
 	locale: string,
 	track: SoundTrack,
 ): string | null {
-	if (locale === "ku") {
+	if (locale === "ckb") {
 		return firstNonBlank(
-			track.kmrCoverUrl,
 			track.ckbCoverUrl,
+			track.kmrCoverUrl,
 			track.hoverCoverUrl,
 		);
 	}
 	return firstNonBlank(
-		track.ckbCoverUrl,
 		track.kmrCoverUrl,
+		track.ckbCoverUrl,
 		track.hoverCoverUrl,
 	);
 }
@@ -61,10 +61,10 @@ export function resolveAudioTopicName(
 	locale: string,
 	track: SoundTrack,
 ): string | null {
-	if (locale === "ku") {
-		return firstNonBlank(track.topicNameKmr, track.topicNameCkb);
+	if (locale === "ckb") {
+		return firstNonBlank(track.topicNameCkb, track.topicNameKmr);
 	}
-	return firstNonBlank(track.topicNameCkb, track.topicNameKmr);
+	return firstNonBlank(track.topicNameKmr, track.topicNameCkb);
 }
 
 function resolveBilingualStrings(
@@ -72,13 +72,10 @@ function resolveBilingualStrings(
 	ckb: string[],
 	kmr: string[],
 ): string[] {
-	if (locale === "ku") {
-		return kmr.length > 0 ? kmr : ckb;
-	}
 	if (locale === "ckb") {
 		return ckb.length > 0 ? ckb : kmr;
 	}
-	return [...new Set([...ckb, ...kmr])];
+	return kmr.length > 0 ? kmr : ckb;
 }
 
 function isPlayable(file: SoundTrackFile): boolean {

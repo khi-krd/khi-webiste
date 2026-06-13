@@ -18,19 +18,19 @@ const footerColumns: FooterColumn[] = [
 	{
 		titleKey: "industries",
 		links: [
-			{ labelKey: "books", href: "/writings" },
-			{ labelKey: "songs", href: "/songs" },
-			{ labelKey: "audio", href: "/audio" },
+			{ labelKey: "writings", href: "/writings" },
+			{ labelKey: "sound", href: "/audio" },
 			{ labelKey: "video", href: "/videos" },
+			{ labelKey: "gallery", href: "/gallery" },
 		],
 	},
 	{
 		titleKey: "insights",
 		links: [
 			{ labelKey: "news", href: "/news" },
-			{ labelKey: "gallery", href: "/gallery" },
-			{ labelKey: "archive", href: "/archive" },
-			{ labelKey: "events", href: "/events" },
+			{ labelKey: "projects", href: "/projects" },
+			{ labelKey: "services", href: "/services" },
+			{ labelKey: "donate", href: "/donate" },
 		],
 	},
 	{
@@ -93,7 +93,10 @@ export async function Footer() {
 								className="inline-flex h-12 items-center justify-center gap-2 border border-primary bg-primary px-6 font-heading text-small font-semibold text-primary-foreground transition hover:opacity-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-foreground/45"
 							>
 								{t("signUp")}
-								<ArrowRightIcon className="size-4 shrink-0" aria-hidden="true" />
+								<ArrowRightIcon
+									className="size-4 shrink-0"
+									aria-hidden="true"
+								/>
 							</button>
 						</form>
 					</section>
@@ -163,7 +166,11 @@ export async function Footer() {
 							<div className="flex flex-col gap-2 text-small text-muted sm:flex-row sm:items-center sm:justify-between">
 								<ul className="flex flex-wrap items-center gap-x-6 gap-y-2">
 									<li>
-										<Link href="/privacy-policy" variant="nav" className="text-muted">
+										<Link
+											href="/privacy-policy"
+											variant="nav"
+											className="text-muted"
+										>
 											{t("privacyPolicy")}
 										</Link>
 									</li>
@@ -173,7 +180,11 @@ export async function Footer() {
 										</Link>
 									</li>
 									<li>
-										<Link href="/cookie-consent" variant="nav" className="text-muted">
+										<Link
+											href="/cookie-consent"
+											variant="nav"
+											className="text-muted"
+										>
 											{t("cookieConsent")}
 										</Link>
 									</li>

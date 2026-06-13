@@ -37,26 +37,29 @@ export function resolveVideoContent(
 	locale: string,
 	video: Video,
 ): VideoContent | null {
-	if (locale === "ku") {
-		return video.kmrContent ?? video.ckbContent;
+	if (locale === "en") {
+		return video.enContent ?? video.kmrContent ?? video.ckbContent;
 	}
-	return video.ckbContent ?? video.kmrContent;
+	if (locale === "ckb") {
+		return video.ckbContent ?? video.kmrContent;
+	}
+	return video.kmrContent ?? video.ckbContent;
 }
 
 export function resolveVideoCoverUrl(
 	locale: string,
 	video: Video,
 ): string | null {
-	if (locale === "ku") {
+	if (locale === "ckb") {
 		return firstNonBlank(
-			video.kmrCoverUrl,
 			video.ckbCoverUrl,
+			video.kmrCoverUrl,
 			video.hoverCoverUrl,
 		);
 	}
 	return firstNonBlank(
-		video.ckbCoverUrl,
 		video.kmrCoverUrl,
+		video.ckbCoverUrl,
 		video.hoverCoverUrl,
 	);
 }
@@ -65,24 +68,35 @@ export function resolveVideoTopicName(
 	locale: string,
 	video: Video,
 ): string | null {
-	if (locale === "ku") {
-		return firstNonBlank(video.topicNameKmr, video.topicNameCkb);
+	if (locale === "en") {
+		return firstNonBlank(
+			video.topicNameEn,
+			video.topicNameKmr,
+			video.topicNameCkb,
+		);
 	}
-	return firstNonBlank(video.topicNameCkb, video.topicNameKmr);
+	if (locale === "ckb") {
+		return firstNonBlank(video.topicNameCkb, video.topicNameKmr);
+	}
+	return firstNonBlank(video.topicNameKmr, video.topicNameCkb);
 }
 
 function resolveBilingualStrings(
 	locale: string,
 	ckb: string[],
 	kmr: string[],
+	en?: string[],
 ): string[] {
-	if (locale === "ku") {
+	if (locale === "en") {
+		if (en && en.length > 0) {
+			return en;
+		}
 		return kmr.length > 0 ? kmr : ckb;
 	}
 	if (locale === "ckb") {
 		return ckb.length > 0 ? ckb : kmr;
 	}
-	return [...new Set([...ckb, ...kmr])];
+	return kmr.length > 0 ? kmr : ckb;
 }
 
 /** Locale-relative detail path consumed by the i18n-aware `Link`. */
@@ -159,16 +173,16 @@ function resolveCastMember(
 	member: VideoCastMember,
 ): ResolvedVideoCastMember | null {
 	const name =
-		locale === "ku"
-			? firstNonBlank(member.nameKmr, member.nameCkb)
-			: firstNonBlank(member.nameCkb, member.nameKmr);
+		locale === "ckb"
+			? firstNonBlank(member.nameCkb, member.nameKmr)
+			: firstNonBlank(member.nameKmr, member.nameCkb);
 	if (!name) {
 		return null;
 	}
 	const role =
-		(locale === "ku"
-			? firstNonBlank(member.roleKmr, member.roleCkb)
-			: firstNonBlank(member.roleCkb, member.roleKmr)) ?? "";
+		(locale === "ckb"
+			? firstNonBlank(member.roleCkb, member.roleKmr)
+			: firstNonBlank(member.roleKmr, member.roleCkb)) ?? "";
 
 	return {
 		name,
@@ -182,9 +196,9 @@ function resolveHighlight(
 	highlight: VideoHighlightClip,
 ): ResolvedVideoHighlight | null {
 	const title =
-		locale === "ku"
-			? firstNonBlank(highlight.titleKmr, highlight.titleCkb)
-			: firstNonBlank(highlight.titleCkb, highlight.titleKmr);
+		locale === "ckb"
+			? firstNonBlank(highlight.titleCkb, highlight.titleKmr)
+			: firstNonBlank(highlight.titleKmr, highlight.titleCkb);
 	if (!title) {
 		return null;
 	}
@@ -202,9 +216,9 @@ function resolveClip(
 	clip: NonNullable<Video["videoClipItems"]>[number],
 ): ResolvedVideoClip {
 	const title =
-		locale === "ku"
-			? firstNonBlank(clip.titleKmr, clip.titleCkb)
-			: firstNonBlank(clip.titleCkb, clip.titleKmr);
+		locale === "ckb"
+			? firstNonBlank(clip.titleCkb, clip.titleKmr)
+			: firstNonBlank(clip.titleKmr, clip.titleCkb);
 
 	return {
 		clipNumber: clip.clipNumber,
@@ -263,11 +277,17 @@ export function resolveVideoCard(
 				? (video.videoClipItems?.length ?? 0)
 				: null,
 		year: publishmentYear(video),
-		tags: resolveBilingualStrings(locale, video.tagsCkb, video.tagsKmr),
+		tags: resolveBilingualStrings(
+			locale,
+			video.tagsCkb,
+			video.tagsKmr,
+			video.tagsEn,
+		),
 		keywords: resolveBilingualStrings(
 			locale,
 			video.keywordsCkb,
 			video.keywordsKmr,
+			video.keywordsEn,
 		),
 		createdAt: video.createdAt,
 	};
@@ -317,11 +337,17 @@ export function resolveVideoDetail(
 		clips,
 		cast,
 		highlights,
-		tags: resolveBilingualStrings(locale, video.tagsCkb, video.tagsKmr),
+		tags: resolveBilingualStrings(
+			locale,
+			video.tagsCkb,
+			video.tagsKmr,
+			video.tagsEn,
+		),
 		keywords: resolveBilingualStrings(
 			locale,
 			video.keywordsCkb,
 			video.keywordsKmr,
+			video.keywordsEn,
 		),
 		createdAt: video.createdAt,
 		updatedAt: video.updatedAt,

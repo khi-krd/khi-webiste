@@ -8,7 +8,7 @@ import type { Locale } from "@/i18n/routing";
 
 /** A secondary link shown in the overlay right panel. */
 export type NavSubLink = {
-	/** Key under the "Nav" message namespace (e.g. Nav.booksSubLiterature). */
+	/** Key under the "Nav" message namespace (e.g. Nav.writingsSubLiterature). */
 	key: string;
 	/** Locale-relative route — may 404 until pages exist. */
 	href: string;
@@ -16,14 +16,14 @@ export type NavSubLink = {
 
 /** A primary-navigation item. */
 export type NavItem = {
-	/** Key under the "Nav" message namespace (e.g. Nav.books). */
+	/** Key under the "Nav" message namespace (e.g. Nav.writings). */
 	key: string;
 	/**
 	 * Locale-RELATIVE route. The locale prefix is added by the locale-aware Link,
 	 * so paths here are unprefixed.
 	 */
 	href: string;
-	/** Key for the section description (e.g. Nav.booksDescription). */
+	/** Key for the section description (e.g. Nav.writingsDescription). */
 	descriptionKey: string;
 	/** Full-bleed background from /public/menu. */
 	imageSrc: string;
@@ -34,60 +34,13 @@ const MENU_IMAGE = (file: string) => `/menu/${file}`;
 
 export const NAV_DEFAULT_IMAGE = MENU_IMAGE("1.jpg");
 
-/** Provisional catalog taxonomy — labels via i18n; routes may 404 until pages ship. */
+/** Primary nav — order mirrors the external API catalogue. */
 export const NAV_ITEMS: NavItem[] = [
-	{
-		key: "books",
-		href: "/writings",
-		descriptionKey: "booksDescription",
-		imageSrc: MENU_IMAGE("1.jpg"),
-		children: [
-			{ key: "booksSubLiterature", href: "/writings/literature" },
-			{ key: "booksSubHistory", href: "/writings/history" },
-			{ key: "booksSubPoetry", href: "/writings/poetry" },
-			{ key: "booksSubManuscripts", href: "/writings/manuscripts" },
-		],
-	},
-	{
-		key: "songs",
-		href: "/songs",
-		descriptionKey: "songsDescription",
-		imageSrc: MENU_IMAGE("2.jpg"),
-		children: [
-			{ key: "songsSubFolk", href: "/songs/folk" },
-			{ key: "songsSubWedding", href: "/songs/wedding" },
-			{ key: "songsSubLament", href: "/songs/lament" },
-			{ key: "songsSubModern", href: "/songs/modern" },
-		],
-	},
-	{
-		key: "audio",
-		href: "/audio",
-		descriptionKey: "audioDescription",
-		imageSrc: MENU_IMAGE("3.jpg"),
-		children: [
-			{ key: "audioSubOralHistory", href: "/audio/oral-history" },
-			{ key: "audioSubInterviews", href: "/audio/interviews" },
-			{ key: "audioSubRadio", href: "/audio/radio-archives" },
-		],
-	},
-	{
-		key: "video",
-		href: "/videos",
-		descriptionKey: "videoDescription",
-		imageSrc: MENU_IMAGE("4.jpg"),
-		children: [
-			{ key: "videoSubShortFilms", href: "/videos/shortfilms" },
-			{ key: "videoSubFilms", href: "/videos?type=film" },
-			{ key: "videoSubClips", href: "/videos?type=clip" },
-			{ key: "videoSubMemories", href: "/videos?memories=1" },
-		],
-	},
 	{
 		key: "news",
 		href: "/news",
 		descriptionKey: "newsDescription",
-		imageSrc: MENU_IMAGE("5.jpg"),
+		imageSrc: MENU_IMAGE("2.jpg"),
 		children: [
 			{ key: "newsSubCulture", href: "/news?category=culture" },
 			{ key: "newsSubHistory", href: "/news?category=history" },
@@ -97,10 +50,58 @@ export const NAV_ITEMS: NavItem[] = [
 		],
 	},
 	{
+		key: "projects",
+		href: "/projects",
+		descriptionKey: "projectsDescription",
+		imageSrc: MENU_IMAGE("1.jpg"),
+		children: [
+			{
+				key: "projectsSubOralHistory",
+				href: "/projects/oral-history-archive",
+			},
+			{
+				key: "projectsSubManuscripts",
+				href: "/projects/manuscript-digitization",
+			},
+			{
+				key: "projectsSubFolkMusic",
+				href: "/projects/folk-music-collection",
+			},
+			{
+				key: "projectsSubDress",
+				href: "/projects/traditional-dress-archive",
+			},
+		],
+	},
+	{
+		key: "sound",
+		href: "/audio",
+		descriptionKey: "soundDescription",
+		imageSrc: MENU_IMAGE("3.jpg"),
+		children: [
+			{ key: "soundSubOralHistory", href: "/audio?type=speech" },
+			{ key: "soundSubInterviews", href: "/audio?type=interview" },
+			{ key: "soundSubRadio", href: "/audio?type=radio" },
+		],
+	},
+	{
+		key: "video",
+		href: "/videos",
+		descriptionKey: "videoDescription",
+		imageSrc: MENU_IMAGE("4.jpg"),
+		children: [
+			{ key: "videoSubShortFilms", href: "/videos/shortfilms" },
+			{ key: "videoSubDocumentaries", href: "/videos?topic=2" },
+			{ key: "videoSubPerformances", href: "/videos?topic=3" },
+			{ key: "videoSubLectures", href: "/videos?topic=4" },
+			{ key: "videoSubNewsreels", href: "/videos?topic=5" },
+		],
+	},
+	{
 		key: "gallery",
 		href: "/gallery",
 		descriptionKey: "galleryDescription",
-		imageSrc: MENU_IMAGE("6.jpg"),
+		imageSrc: MENU_IMAGE("5.jpg"),
 		children: [
 			{ key: "gallerySubPhotography", href: "/gallery/photography" },
 			{ key: "gallerySubDress", href: "/gallery/traditional-dress" },
@@ -108,15 +109,30 @@ export const NAV_ITEMS: NavItem[] = [
 		],
 	},
 	{
-		key: "archive",
-		href: "/archive",
-		descriptionKey: "archiveDescription",
+		key: "writings",
+		href: "/writings",
+		descriptionKey: "writingsDescription",
+		imageSrc: MENU_IMAGE("6.jpg"),
+		children: [
+			{ key: "writingsSubLiterature", href: "/writings/literature" },
+			{ key: "writingsSubHistory", href: "/writings/history" },
+			{ key: "writingsSubPoetry", href: "/writings/poetry" },
+			{ key: "writingsSubManuscripts", href: "/writings/manuscripts" },
+		],
+	},
+	{
+		key: "services",
+		href: "/services",
+		descriptionKey: "servicesDescription",
 		imageSrc: MENU_IMAGE("7.jpg"),
 		children: [
-			{ key: "archiveSubManuscripts", href: "/archive/manuscripts" },
-			{ key: "archiveSubMaps", href: "/archive/maps" },
-			{ key: "archiveSubPhotographs", href: "/archive/photographs" },
-			{ key: "archiveSubRecords", href: "/archive/records" },
+			{ key: "servicesSubInstituteHall", href: "/services#institute-hall" },
+			{ key: "servicesSubStudio", href: "/services#studio" },
+			{
+				key: "servicesSubResearch",
+				href: "/services#research-publishing",
+			},
+			{ key: "servicesSubLibrary", href: "/services#library" },
 		],
 	},
 	{
@@ -125,18 +141,20 @@ export const NAV_ITEMS: NavItem[] = [
 		descriptionKey: "aboutDescription",
 		imageSrc: MENU_IMAGE("7.jpg"),
 		children: [
-			{ key: "aboutSubMission", href: "/about/mission" },
-			{ key: "aboutSubTeam", href: "/about/team" },
+			{ key: "aboutSubMission", href: "/about" },
+			{ key: "aboutSubTeam", href: "/about" },
 			{ key: "aboutSubContact", href: "/contact" },
 		],
 	},
 ];
 
 export const SEARCH_SUGGESTION_KEYS = [
-	"books",
-	"songs",
 	"news",
-	"archive",
+	"projects",
+	"sound",
+	"video",
+	"writings",
+	"services",
 	"about",
 ] as const;
 

@@ -30,23 +30,13 @@ export function resolveContent(
 	locale: string,
 	writing: Writing,
 ): WritingContent | null {
-	if (locale === "ku") {
-		return writing.kmrContent ?? writing.ckbContent;
-	}
 	if (locale === "ckb") {
 		return writing.ckbContent ?? writing.kmrContent;
 	}
-	return writing.ckbContent ?? writing.kmrContent;
+	return writing.kmrContent ?? writing.ckbContent;
 }
 
 export function resolveCoverUrl(locale: string, writing: Writing): string | null {
-	if (locale === "ku") {
-		return firstNonBlank(
-			writing.kmrCoverUrl,
-			writing.ckbCoverUrl,
-			writing.hoverCoverUrl,
-		);
-	}
 	if (locale === "ckb") {
 		return firstNonBlank(
 			writing.ckbCoverUrl,
@@ -55,8 +45,8 @@ export function resolveCoverUrl(locale: string, writing: Writing): string | null
 		);
 	}
 	return firstNonBlank(
-		writing.ckbCoverUrl,
 		writing.kmrCoverUrl,
+		writing.ckbCoverUrl,
 		writing.hoverCoverUrl,
 	);
 }
@@ -68,10 +58,10 @@ export function resolveTopicName(
 	if (!topic) {
 		return null;
 	}
-	if (locale === "ku") {
-		return firstNonBlank(topic.nameKmr, topic.nameCkb);
+	if (locale === "ckb") {
+		return firstNonBlank(topic.nameCkb, topic.nameKmr);
 	}
-	return firstNonBlank(topic.nameCkb, topic.nameKmr);
+	return firstNonBlank(topic.nameKmr, topic.nameCkb);
 }
 
 export function resolveWritingCard(
@@ -127,13 +117,10 @@ function resolveBilingualStrings(
 	ckb: string[],
 	kmr: string[],
 ): string[] {
-	if (locale === "ku") {
-		return kmr.length > 0 ? kmr : ckb;
-	}
 	if (locale === "ckb") {
 		return ckb.length > 0 ? ckb : kmr;
 	}
-	return [...new Set([...ckb, ...kmr])];
+	return kmr.length > 0 ? kmr : ckb;
 }
 
 function isPartOfSeries(writing: Writing): boolean {
@@ -232,9 +219,9 @@ export function resolveSeriesBooks(
 	return books
 		.map((book) => {
 			const title =
-				locale === "ku"
-					? book.titleKmr ?? book.titleCkb
-					: book.titleCkb ?? book.titleKmr;
+				locale === "ckb"
+					? book.titleCkb ?? book.titleKmr
+					: book.titleKmr ?? book.titleCkb;
 			if (!title) {
 				return null;
 			}
@@ -250,11 +237,8 @@ export function resolveSeriesBooks(
 }
 
 export function apiSearchLanguage(locale: string): "ckb" | "kmr" | "both" {
-	if (locale === "ku") {
-		return "kmr";
-	}
 	if (locale === "ckb") {
 		return "ckb";
 	}
-	return "both";
+	return "kmr";
 }
