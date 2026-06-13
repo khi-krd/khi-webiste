@@ -11,6 +11,7 @@ import {
 } from "react";
 import { DirectionalIcon } from "@/components/ui/directional-icon";
 import { Link } from "@/components/ui/link";
+import { galleryDetailHref } from "@/lib/content/href";
 import type { ImageCollectionItem } from "@/lib/mock/image-collection";
 import { cn } from "@/lib/utils";
 
@@ -50,7 +51,7 @@ function ImageCollectionPanel({
 	onHover,
 	onLeavePanel,
 }: ImageCollectionPanelProps) {
-	const href = `/gallery/${item.slug}`;
+	const href = galleryDetailHref(item.slug);
 
 	return (
 		<Link

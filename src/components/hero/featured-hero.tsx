@@ -1,16 +1,19 @@
 import { getLocale, getTranslations } from "next-intl/server";
 import { FeaturedCarousel } from "@/components/hero/featured-carousel";
+import { getPathname } from "@/i18n/navigation";
 import { getFeaturedItems } from "@/lib/api/featured";
-import { type HeroSlide, TYPE_SEGMENTS } from "@/types/content";
+import { contentDetailHref, contentListingHref } from "@/lib/content/href";
+import type { HeroSlide } from "@/types/content";
 
-function toAbsoluteUrl(href: string): string {
+function toAbsoluteUrl(locale: string, href: string): string {
 	const siteUrl = process.env.NEXT_PUBLIC_SITE_URL;
 	if (!siteUrl) {
 		return href;
 	}
 
 	try {
-		return new URL(href, siteUrl).toString();
+		const localizedHref = getPathname({ locale, href });
+		return new URL(localizedHref, siteUrl).toString();
 	} catch {
 		return href;
 	}
@@ -106,7 +109,9 @@ type FeaturedHeroProps = {
 	compact?: boolean;
 };
 
-export async function FeaturedHero({ compact = false }: FeaturedHeroProps = {}) {
+export async function FeaturedHero({
+	compact = false,
+}: FeaturedHeroProps = {}) {
 	const locale = await getLocale();
 	const t = await getTranslations("Hero");
 	const featuredItems = await getFeaturedItems(locale);
@@ -119,12 +124,17 @@ export async function FeaturedHero({ compact = false }: FeaturedHeroProps = {}) 
 	if (featuredItems.length === 0) {
 		const fallbackImageNames = ["5.jpg", "6.jpg", "7.jpg"] as const;
 		const mockCopy = getMockCopy(locale);
+		const fallbackHrefs = [
+			contentListingHref("book"),
+			contentListingHref("audio"),
+			contentListingHref("gallery"),
+		] as const;
 		const fallbackSlides: HeroSlide[] = fallbackImageNames.map(
 			(imageName, index) => {
 				const copy = mockCopy[index];
 				return {
 					id: `fallback-${imageName}`,
-					href: `/${locale}`,
+					href: fallbackHrefs[index],
 					title: copy.title,
 					description: copy.description,
 					typeLabel: copy.typeLabel,
@@ -162,7 +172,7 @@ export async function FeaturedHero({ compact = false }: FeaturedHeroProps = {}) 
 
 	const slides: HeroSlide[] = featuredItems.map((item, index) => ({
 		id: item.id,
-		href: `/${locale}/${TYPE_SEGMENTS[item.type]}/${item.slug}`,
+		href: contentDetailHref(item),
 		title: item.title,
 		description: item.description,
 		typeLabel: t(`types.${item.type}`),
@@ -181,7 +191,7 @@ export async function FeaturedHero({ compact = false }: FeaturedHeroProps = {}) 
 		itemListElement: slides.map((slide, index) => ({
 			"@type": "ListItem",
 			position: index + 1,
-			url: toAbsoluteUrl(slide.href),
+			url: toAbsoluteUrl(locale, slide.href),
 			name: slide.title,
 		})),
 	};

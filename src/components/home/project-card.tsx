@@ -3,6 +3,7 @@ import NextImage from "next/image";
 import { DirectionalIcon } from "@/components/ui/directional-icon";
 import { DrawnBorder } from "@/components/ui/drawn-border";
 import { Link } from "@/components/ui/link";
+import { projectDetailHref } from "@/lib/content/href";
 import type { ProjectItem } from "@/lib/mock/projects";
 import { cn } from "@/lib/utils";
 
@@ -16,7 +17,7 @@ type ProjectCardProps = {
 };
 
 export function ProjectCard({ item, className }: ProjectCardProps) {
-	const href = `/projects/${item.slug}`;
+	const href = projectDetailHref(item.slug);
 
 	return (
 		<Link

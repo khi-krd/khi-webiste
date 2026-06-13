@@ -151,6 +151,13 @@
 			"viewAll": "Hemû mijaran bibîne"
 		},
 		"readTime": "{minutes} xulek xwendin",
+		"post": {
+			"back": "Vegere nûçeyan",
+			"byAuthor": "Ji aliyê {author}",
+			"navLabel": "Gotarên têkildar",
+			"previous": "Berê",
+			"next": "Piştî"
+		},
 		"pagination": {
 			"label": "Rûpelkirina gotaran",
 			"featuredLabel": "Rûpelkirina gotarên taybet",

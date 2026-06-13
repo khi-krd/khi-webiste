@@ -1,5 +1,11 @@
 import "server-only";
-import { type FeaturedItem, FeaturedItemsSchema } from "@/types/content";
+import { getDemoFeaturedItems } from "@/lib/mock/featured";
+import {
+	type ContentType,
+	ContentTypeSchema,
+	type FeaturedItem,
+	FeaturedItemsSchema,
+} from "@/types/content";
 
 const FEATURED_ENDPOINT = "/featured";
 const FEATURED_TAG = "featured";
@@ -22,6 +28,46 @@ function getString(value: unknown): string | undefined {
 function getNumber(value: unknown): number | undefined {
 	return typeof value === "number" && Number.isFinite(value)
 		? value
+		: undefined;
+}
+
+function getIdentifier(value: unknown): string | undefined {
+	const asString = getString(value);
+	if (asString) {
+		return asString;
+	}
+
+	const asNumber = getNumber(value);
+	return asNumber != null ? String(asNumber) : undefined;
+}
+
+function normalizeContentType(
+	raw: string | undefined,
+): ContentType | undefined {
+	if (!raw) {
+		return undefined;
+	}
+
+	const normalized = raw.toLowerCase().replace(/[_\s-]/g, "");
+	const aliases: Record<string, ContentType> = {
+		book: "book",
+		writing: "book",
+		writings: "book",
+		song: "song",
+		audio: "audio",
+		sound: "audio",
+		soundtrack: "audio",
+		video: "video",
+		article: "article",
+		news: "article",
+		gallery: "gallery",
+		image: "gallery",
+		archive: "archive",
+	};
+
+	const mapped = aliases[normalized];
+	return mapped && ContentTypeSchema.safeParse(mapped).success
+		? mapped
 		: undefined;
 }
 
@@ -54,13 +100,19 @@ function remapFeaturedItem(rawItem: unknown): unknown {
 	const image = pickImage(item);
 	const localized = asRecord(item.localized);
 
+	const rawType =
+		getString(item.type) ??
+		getString(item.contentType) ??
+		getString(item.content_type);
+
 	return {
-		id: getString(item.id) ?? getString(item._id),
-		type:
-			getString(item.type) ??
-			getString(item.contentType) ??
-			getString(item.content_type),
-		slug: getString(item.slug) ?? getString(item.path),
+		id: getIdentifier(item.id) ?? getIdentifier(item._id),
+		type: normalizeContentType(rawType) ?? rawType,
+		slug:
+			getString(item.slug) ??
+			getString(item.path) ??
+			getIdentifier(item.id) ??
+			getIdentifier(item._id),
 		title:
 			getString(item.title) ??
 			getString(item.name) ??
@@ -118,7 +170,7 @@ export async function getFeaturedItems(
 ): Promise<FeaturedItem[]> {
 	const apiBaseUrl = process.env.API_BASE_URL;
 	if (!apiBaseUrl) {
-		return [];
+		return getDemoFeaturedItems(locale);
 	}
 
 	try {
@@ -130,7 +182,7 @@ export async function getFeaturedItems(
 		});
 
 		if (!response.ok) {
-			return [];
+			return getDemoFeaturedItems(locale);
 		}
 
 		const payload: unknown = await response.json();
@@ -138,12 +190,12 @@ export async function getFeaturedItems(
 		const remappedItems = rawItems.map((item) => remapFeaturedItem(item));
 		const parsed = FeaturedItemsSchema.safeParse(remappedItems);
 
-		if (!parsed.success) {
-			return [];
+		if (!parsed.success || parsed.data.length === 0) {
+			return getDemoFeaturedItems(locale);
 		}
 
 		return parsed.data;
 	} catch {
-		return [];
+		return getDemoFeaturedItems(locale);
 	}
 }

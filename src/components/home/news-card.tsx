@@ -1,8 +1,9 @@
 import NextImage from "next/image";
 import { Badge } from "@/components/ui/badge";
 import { Link } from "@/components/ui/link";
-import { cn } from "@/lib/utils";
+import { newsDetailHref } from "@/lib/content/href";
 import type { LatestUpdateItem } from "@/lib/mock/latest-updates";
+import { cn } from "@/lib/utils";
 
 export type NewsCardVariant =
 	| "featured"
@@ -43,8 +44,9 @@ export function NewsCard({
 	categoryLabel,
 	className,
 }: NewsCardProps) {
-	const href = `/news/${item.slug}`;
-	const showExcerpt = variant === "featured" || variant === "tall" || variant === "wide";
+	const href = newsDetailHref(item.slug);
+	const showExcerpt =
+		variant === "featured" || variant === "tall" || variant === "wide";
 	const isFeatured = variant === "featured";
 
 	return (

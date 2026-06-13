@@ -15,7 +15,7 @@ type LocaleCopy = ImageCollectionItem[];
 const EN_ITEMS: LocaleCopy = [
 	{
 		id: "collection-1",
-		slug: "traditional-architecture",
+		slug: "the-mountain-keeps-us",
 		title: "Traditional Architecture",
 		subtitle: "Erbil & Sulaymaniyah",
 		catalogRef: "Plate 01",
@@ -26,7 +26,7 @@ const EN_ITEMS: LocaleCopy = [
 	},
 	{
 		id: "collection-2",
-		slug: "textile-patterns",
+		slug: "threads-of-identity",
 		title: "Textile Patterns",
 		subtitle: "Duhok region",
 		catalogRef: "Plate 02",
@@ -37,7 +37,7 @@ const EN_ITEMS: LocaleCopy = [
 	},
 	{
 		id: "collection-3",
-		slug: "family-archives",
+		slug: "city-of-poets",
 		title: "Family Archives",
 		subtitle: "Historic photographs",
 		catalogRef: "Plate 03",
@@ -48,7 +48,7 @@ const EN_ITEMS: LocaleCopy = [
 	},
 	{
 		id: "collection-4",
-		slug: "craftsmanship",
+		slug: "made-by-hand",
 		title: "Craftsmanship",
 		subtitle: "Metalwork & wood carving",
 		catalogRef: "Plate 04",
@@ -62,7 +62,7 @@ const EN_ITEMS: LocaleCopy = [
 const KU_ITEMS: LocaleCopy = [
 	{
 		id: "collection-1",
-		slug: "traditional-architecture",
+		slug: "the-mountain-keeps-us",
 		title: "Mîmariya Kevneşopî",
 		subtitle: "Hewlêr & Silêmanî",
 		catalogRef: "Plate 01",
@@ -73,7 +73,7 @@ const KU_ITEMS: LocaleCopy = [
 	},
 	{
 		id: "collection-2",
-		slug: "textile-patterns",
+		slug: "threads-of-identity",
 		title: "Desenên Tekstîlê",
 		subtitle: "Herêma Dihokê",
 		catalogRef: "Plate 02",
@@ -84,7 +84,7 @@ const KU_ITEMS: LocaleCopy = [
 	},
 	{
 		id: "collection-3",
-		slug: "family-archives",
+		slug: "city-of-poets",
 		title: "Arşîva Malbatî",
 		subtitle: "Wêneyên dîrokî",
 		catalogRef: "Plate 03",
@@ -95,7 +95,7 @@ const KU_ITEMS: LocaleCopy = [
 	},
 	{
 		id: "collection-4",
-		slug: "craftsmanship",
+		slug: "made-by-hand",
 		title: "Kariya Destan",
 		subtitle: "Xemilandin & darxistin",
 		catalogRef: "Plate 04",
@@ -109,7 +109,7 @@ const KU_ITEMS: LocaleCopy = [
 const CKB_ITEMS: LocaleCopy = [
 	{
 		id: "collection-1",
-		slug: "traditional-architecture",
+		slug: "the-mountain-keeps-us",
 		title: "تەلارسازی نەریتی",
 		subtitle: "هەولێر و سلێمانی",
 		catalogRef: "Plate 01",
@@ -120,7 +120,7 @@ const CKB_ITEMS: LocaleCopy = [
 	},
 	{
 		id: "collection-2",
-		slug: "textile-patterns",
+		slug: "threads-of-identity",
 		title: "نموونەی قوماش",
 		subtitle: "هەرێمی دهۆک",
 		catalogRef: "Plate 02",
@@ -131,7 +131,7 @@ const CKB_ITEMS: LocaleCopy = [
 	},
 	{
 		id: "collection-3",
-		slug: "family-archives",
+		slug: "city-of-poets",
 		title: "ئارشیڤی خێزانی",
 		subtitle: "وێنەی مێژوویی",
 		catalogRef: "Plate 03",
@@ -142,7 +142,7 @@ const CKB_ITEMS: LocaleCopy = [
 	},
 	{
 		id: "collection-4",
-		slug: "craftsmanship",
+		slug: "made-by-hand",
 		title: "پیشەسازی دەستی",
 		subtitle: "کاری کانزا و دار",
 		catalogRef: "Plate 04",

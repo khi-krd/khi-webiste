@@ -151,6 +151,13 @@
 			"viewAll": "Browse all topics"
 		},
 		"readTime": "{minutes} min read",
+		"post": {
+			"back": "Back to news",
+			"byAuthor": "By {author}",
+			"navLabel": "Adjacent articles",
+			"previous": "Previous",
+			"next": "Next"
+		},
 		"pagination": {
 			"label": "News pagination",
 			"featuredLabel": "Featured news pagination",

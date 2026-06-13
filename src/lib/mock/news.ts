@@ -114,7 +114,10 @@ const EN_ITEMS: LocaleCopy = [
 		publishedAt: "2026-05-02",
 		author: "Narin Ali",
 		readTime: 5,
-		image: { url: "/menu/7.jpg", alt: "Historical photograph from family archive" },
+		image: {
+			url: "/menu/7.jpg",
+			alt: "Historical photograph from family archive",
+		},
 	},
 	{
 		id: "news-8",
@@ -131,7 +134,8 @@ const EN_ITEMS: LocaleCopy = [
 	{
 		id: "news-9",
 		slug: "hawraman-heritage-landscape",
-		title: "Hawraman's Terraced Villages and the Living Heritage of the Mountains",
+		title:
+			"Hawraman's Terraced Villages and the Living Heritage of the Mountains",
 		excerpt:
 			"How landscape, architecture, and seasonal migration patterns form an integrated cultural system worth protecting.",
 		category: "heritage",
@@ -167,7 +171,8 @@ const EN_ITEMS: LocaleCopy = [
 	{
 		id: "news-12",
 		slug: "archive-access-policy",
-		title: "Opening the Archive: Access Policies for Researchers and Communities",
+		title:
+			"Opening the Archive: Access Policies for Researchers and Communities",
 		excerpt:
 			"Balancing scholarly access with community ownership when digitized collections return knowledge to source regions.",
 		category: "society",
@@ -191,7 +196,8 @@ const EN_ITEMS: LocaleCopy = [
 	{
 		id: "news-14",
 		slug: "ancient-settlement-excavation",
-		title: "What Recent Excavations Reveal About Pre-Islamic Settlement Patterns",
+		title:
+			"What Recent Excavations Reveal About Pre-Islamic Settlement Patterns",
 		excerpt:
 			"Archaeological teams in the Zagros foothills uncover evidence of trade routes that connected highland communities.",
 		category: "history",
@@ -367,6 +373,23 @@ export function getNews(locale: string): NewsItem[] {
 	);
 }
 
+export function getNewsBySlug(
+	locale: string,
+	slug: string,
+): { item: NewsItem; previous: NewsItem | null; next: NewsItem | null } | null {
+	const items = getNews(locale);
+	const index = items.findIndex((item) => item.slug === slug);
+	if (index === -1) {
+		return null;
+	}
+
+	return {
+		item: items[index],
+		previous: items[index - 1] ?? null,
+		next: items[index + 1] ?? null,
+	};
+}
+
 export function getFeaturedNews(locale: string): NewsItem[] {
 	return getNews(locale)
 		.filter((item) => item.featured)
@@ -398,9 +421,7 @@ export type NewsFilter = {
 	query?: string | null;
 };
 
-export function isValidCategory(
-	category: string,
-): category is NewsCategory {
+export function isValidCategory(category: string): category is NewsCategory {
 	return (NEWS_CATEGORIES as string[]).includes(category);
 }
 
@@ -442,10 +463,7 @@ export function paginateNews<T>(
 	};
 }
 
-export function formatNewsDate(
-	isoDate: string,
-	locale: string,
-): string {
+export function formatNewsDate(isoDate: string, locale: string): string {
 	return new Intl.DateTimeFormat(locale === "ckb" ? "ar-IQ" : locale, {
 		year: "numeric",
 		month: "short",

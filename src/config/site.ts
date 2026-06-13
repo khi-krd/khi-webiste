@@ -1,4 +1,5 @@
 import type { Locale } from "@/i18n/routing";
+import { projectDetailHref } from "@/lib/content/href";
 
 /**
  * Site-wide static configuration. Plain data only (NO JSX) so it can be imported
@@ -51,25 +52,25 @@ export const NAV_ITEMS: NavItem[] = [
 	},
 	{
 		key: "projects",
-		href: "/projects",
+		href: "/about",
 		descriptionKey: "projectsDescription",
 		imageSrc: MENU_IMAGE("1.jpg"),
 		children: [
 			{
 				key: "projectsSubOralHistory",
-				href: "/projects/oral-history-archive",
+				href: projectDetailHref("oral-history-archive"),
 			},
 			{
 				key: "projectsSubManuscripts",
-				href: "/projects/manuscript-digitization",
+				href: projectDetailHref("manuscript-digitization"),
 			},
 			{
 				key: "projectsSubFolkMusic",
-				href: "/projects/folk-music-collection",
+				href: projectDetailHref("folk-music-collection"),
 			},
 			{
 				key: "projectsSubDress",
-				href: "/projects/traditional-dress-archive",
+				href: projectDetailHref("traditional-dress-archive"),
 			},
 		],
 	},
@@ -103,9 +104,9 @@ export const NAV_ITEMS: NavItem[] = [
 		descriptionKey: "galleryDescription",
 		imageSrc: MENU_IMAGE("5.jpg"),
 		children: [
-			{ key: "gallerySubPhotography", href: "/gallery/photography" },
-			{ key: "gallerySubDress", href: "/gallery/traditional-dress" },
-			{ key: "gallerySubCrafts", href: "/gallery/crafts" },
+			{ key: "gallerySubPhotography", href: "/gallery/the-mountain-keeps-us" },
+			{ key: "gallerySubDress", href: "/gallery/threads-of-identity" },
+			{ key: "gallerySubCrafts", href: "/gallery/made-by-hand" },
 		],
 	},
 	{

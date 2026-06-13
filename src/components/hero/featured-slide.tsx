@@ -1,7 +1,7 @@
 import { ChevronRightIcon } from "@heroicons/react/24/outline";
 import Image from "next/image";
-import Link from "next/link";
 import { DirectionalIcon } from "@/components/ui/directional-icon";
+import { Link } from "@/i18n/navigation";
 import { cn } from "@/lib/utils";
 import type { HeroSlide } from "@/types/content";
 

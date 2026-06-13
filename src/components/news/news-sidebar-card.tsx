@@ -1,9 +1,7 @@
 import NextImage from "next/image";
 import { Link } from "@/components/ui/link";
-import {
-	formatNewsDate,
-	type NewsItem,
-} from "@/lib/mock/news";
+import { newsDetailHref } from "@/lib/content/href";
+import { formatNewsDate, type NewsItem } from "@/lib/mock/news";
 import { cn } from "@/lib/utils";
 
 type NewsSidebarCardProps = {
@@ -19,7 +17,7 @@ export function NewsSidebarCard({
 	locale,
 	className,
 }: NewsSidebarCardProps) {
-	const href = `/news/${item.slug}`;
+	const href = newsDetailHref(item.slug);
 	const dateLabel = formatNewsDate(item.publishedAt, locale);
 
 	return (

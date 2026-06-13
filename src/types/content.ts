@@ -14,12 +14,12 @@ export type ContentType = z.infer<typeof ContentTypeSchema>;
 
 export const TYPE_SEGMENTS: Record<ContentType, string> = {
 	book: "writings",
-	song: "songs",
+	song: "audio",
 	audio: "audio",
-	video: "video",
+	video: "videos",
 	article: "news",
 	gallery: "gallery",
-	archive: "archive",
+	archive: "donate",
 };
 
 export const FeaturedImageSchema = z.object({
