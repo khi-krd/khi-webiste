@@ -5,18 +5,18 @@ import {
 	MagnifyingGlassIcon,
 	XMarkIcon,
 } from "@heroicons/react/24/outline";
-import { useTranslations } from "next-intl";
 import { useSearchParams } from "next/navigation";
+import { useTranslations } from "next-intl";
 import { useCallback, useEffect, useRef, useState, useTransition } from "react";
-import { useRouter } from "@/i18n/navigation";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { buildNewsHref } from "@/lib/news-url";
+import { useRouter } from "@/i18n/navigation";
 import {
+	isValidCategory,
 	NEWS_CATEGORIES,
 	type NewsCategory,
-	isValidCategory,
 } from "@/lib/mock/news";
+import { buildNewsHref } from "@/lib/news-url";
 import { cn } from "@/lib/utils";
 
 type NewsFilterBarProps = {
@@ -168,7 +168,10 @@ export function NewsFilterBar({
 			<div className="px-4 py-4 sm:px-5 sm:py-5">
 				<div className="flex flex-wrap items-center justify-between gap-3">
 					<div className="flex items-center gap-2 text-muted">
-						<AdjustmentsHorizontalIcon className="size-4 shrink-0" aria-hidden />
+						<AdjustmentsHorizontalIcon
+							className="size-4 shrink-0"
+							aria-hidden
+						/>
 						<p className="font-heading text-label font-semibold uppercase tracking-[0.14em]">
 							{t("filter.label")}
 						</p>

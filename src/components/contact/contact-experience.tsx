@@ -93,7 +93,9 @@ export function ContactExperience({
 									office={office}
 									isSelected={selectedId === office.id}
 									onSelect={setSelectedId}
-									className={index > 0 ? "lg:border-s lg:border-border" : undefined}
+									className={
+										index > 0 ? "lg:border-s lg:border-border" : undefined
+									}
 									copy={{
 										name: copy.name,
 										nameLatin: copy.nameLatin,

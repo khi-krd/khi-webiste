@@ -1,10 +1,7 @@
-import { NewsEditorialCard } from "@/components/news/news-editorial-card";
 import { NewsCard } from "@/components/home/news-card";
+import { NewsEditorialCard } from "@/components/news/news-editorial-card";
+import { getBentoNews, type NewsCategory } from "@/lib/api/news";
 import { homeInsetClass } from "@/lib/layout";
-import {
-	getBentoNews,
-	type NewsCategory,
-} from "@/lib/mock/news";
 import { cn } from "@/lib/utils";
 
 type NewsBentoProps = {
@@ -14,13 +11,13 @@ type NewsBentoProps = {
 	className?: string;
 };
 
-export function NewsBento({
+export async function NewsBento({
 	locale,
 	categoryLabels,
 	spotlightLabel,
 	className,
 }: NewsBentoProps) {
-	const { hero, rail, editorial, wide } = getBentoNews(locale);
+	const { hero, rail, editorial, wide } = await getBentoNews(locale);
 
 	return (
 		<section

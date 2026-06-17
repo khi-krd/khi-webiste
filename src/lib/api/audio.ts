@@ -1,6 +1,12 @@
 import "server-only";
 import { z } from "zod";
 import {
+	apiFetch,
+	BULK_FETCH_SIZE,
+	DEFAULT_REVALIDATE,
+} from "@/lib/api/client";
+import { getApiBaseUrl } from "@/lib/api/config";
+import {
 	filterAudioTracks,
 	paginateAudioTracks,
 	sortAudioTracks,
@@ -26,12 +32,9 @@ import {
 	SoundTrackSchema,
 	SoundTracksPageSchema,
 } from "@/types/audio";
-import { ApiResponseSchema } from "@/types/writing";
 
 const SOUND_TRACKS_ENDPOINT = "/api/v1/sound-tracks";
 const SOUND_TRACKS_TAG = "sound-tracks";
-const SOUND_TRACKS_REVALIDATE_SECONDS = 600;
-const SOUND_TRACKS_FETCH_ALL_SIZE = 200;
 
 export const AUDIO_GRID_PAGE_SIZE = 12;
 export const AUDIO_MEMORIES_SIZE = 8;
@@ -54,39 +57,14 @@ export type AudioListingOptions = {
 };
 
 async function fetchAllTracksFromApi(): Promise<SoundTrack[] | null> {
-	const apiBaseUrl = process.env.API_BASE_URL;
-	if (!apiBaseUrl) {
-		return null;
-	}
+	const page = await apiFetch(SOUND_TRACKS_ENDPOINT, {
+		schema: SoundTracksPageSchema,
+		tags: [SOUND_TRACKS_TAG],
+		revalidate: DEFAULT_REVALIDATE,
+		searchParams: { page: 0, size: BULK_FETCH_SIZE },
+	});
 
-	try {
-		const endpoint = new URL(SOUND_TRACKS_ENDPOINT, apiBaseUrl);
-		endpoint.searchParams.set("page", "0");
-		endpoint.searchParams.set("size", String(SOUND_TRACKS_FETCH_ALL_SIZE));
-
-		const response = await fetch(endpoint, {
-			next: {
-				revalidate: SOUND_TRACKS_REVALIDATE_SECONDS,
-				tags: [SOUND_TRACKS_TAG],
-			},
-		});
-
-		if (!response.ok) {
-			return null;
-		}
-
-		const payload: unknown = await response.json();
-		const parsed = ApiResponseSchema(SoundTracksPageSchema).safeParse(payload);
-
-		if (!parsed.success) {
-			return null;
-		}
-
-		const tracks = parsed.data.data.content;
-		return tracks.length > 0 ? tracks : null;
-	} catch {
-		return null;
-	}
+	return page?.content.length ? page.content : null;
 }
 
 async function getAllSoundTracks(): Promise<SoundTrack[]> {
@@ -126,11 +104,29 @@ export async function getAudioListing(
 	return paginateAudioTracks(sorted, page, size);
 }
 
-/** Album-of-memories strip (future `GET /album-of-memories`). */
+/** Album-of-memories strip (`GET /api/v1/sound-tracks/album-of-memories`). */
 export async function getAlbumOfMemories(
 	locale: string,
 	size = AUDIO_MEMORIES_SIZE,
 ): Promise<ResolvedAudioCard[]> {
+	if (getApiBaseUrl()) {
+		const page = await apiFetch(`${SOUND_TRACKS_ENDPOINT}/album-of-memories`, {
+			schema: SoundTracksPageSchema,
+			tags: [SOUND_TRACKS_TAG, "album-of-memories"],
+			revalidate: DEFAULT_REVALIDATE,
+			searchParams: { page: 0, size },
+		});
+
+		if (page?.content.length) {
+			const items = page.content
+				.map((track) => resolveAudioCard(locale, track))
+				.filter((item): item is ResolvedAudioCard => item != null);
+			if (items.length > 0) {
+				return sortAudioTracks(items).slice(0, size);
+			}
+		}
+	}
+
 	const allItems = await getAllAudioCards(locale);
 	return sortAudioTracks(allItems.filter((item) => item.albumOfMemories)).slice(
 		0,
@@ -142,30 +138,18 @@ export async function getAudioTrackById(
 	locale: string,
 	id: number,
 ): Promise<ResolvedAudioDetail | null> {
-	const apiBaseUrl = process.env.API_BASE_URL;
+	if (getApiBaseUrl()) {
+		const detail = await apiFetch(`${SOUND_TRACKS_ENDPOINT}/${id}`, {
+			schema: SoundTrackSchema,
+			tags: [SOUND_TRACKS_TAG, `sound-track-${id}`],
+			revalidate: DEFAULT_REVALIDATE,
+		});
 
-	if (apiBaseUrl) {
-		try {
-			const endpoint = new URL(`${SOUND_TRACKS_ENDPOINT}/${id}`, apiBaseUrl);
-			const response = await fetch(endpoint, {
-				next: {
-					revalidate: SOUND_TRACKS_REVALIDATE_SECONDS,
-					tags: [SOUND_TRACKS_TAG, `sound-track-${id}`],
-				},
-			});
-
-			if (response.ok) {
-				const payload: unknown = await response.json();
-				const parsed = ApiResponseSchema(SoundTrackSchema).safeParse(payload);
-				if (parsed.success) {
-					const detail = resolveAudioDetail(locale, parsed.data.data);
-					if (detail?.id === id) {
-						return detail;
-					}
-				}
+		if (detail) {
+			const resolved = resolveAudioDetail(locale, detail);
+			if (resolved?.id === id) {
+				return resolved;
 			}
-		} catch {
-			// fall through to demo data
 		}
 	}
 
@@ -178,41 +162,27 @@ export type AudioTopicOption = {
 	name: string;
 };
 
-/** Topic options for the filter UI (future `GET /topics`). */
+/** Topic options for the filter UI (`GET /api/v1/sound-tracks/topics`). */
 export async function getAudioTopics(
 	locale: string,
 ): Promise<AudioTopicOption[]> {
-	const apiBaseUrl = process.env.API_BASE_URL;
+	if (getApiBaseUrl()) {
+		const topics = await apiFetch(`${SOUND_TRACKS_ENDPOINT}/topics`, {
+			schema: z.array(SoundTopicSchema),
+			tags: [SOUND_TRACKS_TAG],
+			revalidate: DEFAULT_REVALIDATE,
+		});
 
-	if (apiBaseUrl) {
-		try {
-			const endpoint = new URL(`${SOUND_TRACKS_ENDPOINT}/topics`, apiBaseUrl);
-			const response = await fetch(endpoint, {
-				next: {
-					revalidate: SOUND_TRACKS_REVALIDATE_SECONDS,
-					tags: [SOUND_TRACKS_TAG],
-				},
-			});
-
-			if (response.ok) {
-				const payload: unknown = await response.json();
-				const parsed = ApiResponseSchema(z.array(SoundTopicSchema)).safeParse(
-					payload,
-				);
-				if (parsed.success && parsed.data.data.length > 0) {
-					return parsed.data.data
-						.map((topic) => ({
-							id: topic.id,
-							name:
-								locale === "ckb"
-									? (topic.nameCkb ?? topic.nameKmr)
-									: (topic.nameKmr ?? topic.nameCkb),
-						}))
-						.filter((topic): topic is AudioTopicOption => topic.name != null);
-				}
-			}
-		} catch {
-			// fall through to demo data
+		if (topics && topics.length > 0) {
+			return topics
+				.map((topic) => ({
+					id: topic.id,
+					name:
+						locale === "ckb"
+							? (topic.nameCkb ?? topic.nameKmr)
+							: (topic.nameKmr ?? topic.nameCkb),
+				}))
+				.filter((topic): topic is AudioTopicOption => topic.name != null);
 		}
 	}
 

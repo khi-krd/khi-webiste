@@ -756,7 +756,8 @@ function buildAlbum(base: GalleryPostBase, locale: string): GalleryAlbumItem[] {
 			id: base.albumStart * 100 + i,
 			imageUrl: url,
 			caption,
-			description: description && description !== caption ? description : undefined,
+			description:
+				description && description !== caption ? description : undefined,
 			sortOrder: i,
 		};
 		if (w != null && h != null) {

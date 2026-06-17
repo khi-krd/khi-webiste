@@ -7,7 +7,7 @@ import {
 	getGalleryHeroColumns,
 	getGalleryPosts,
 	paginateGalleryPosts,
-} from "@/lib/mock/gallery";
+} from "@/lib/api/gallery";
 
 export async function generateMetadata({
 	params,
@@ -37,10 +37,10 @@ export default async function GalleryPage({
 	setRequestLocale(locale);
 
 	const t = await getTranslations("Gallery");
-	const columns = getGalleryHeroColumns(locale);
+	const columns = await getGalleryHeroColumns(locale);
 
 	const page = Math.max(1, Number.parseInt(pageParam ?? "1", 10) || 1);
-	const allPosts = getGalleryPosts(locale);
+	const allPosts = await getGalleryPosts(locale);
 	const { items, totalPages, currentPage } = paginateGalleryPosts(
 		allPosts,
 		page,

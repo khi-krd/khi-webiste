@@ -1,6 +1,6 @@
 import { ArrowLeftIcon, BookmarkIcon } from "@heroicons/react/24/outline";
-import { getTranslations } from "next-intl/server";
 import NextImage from "next/image";
+import { getTranslations } from "next-intl/server";
 import { DirectionalIcon } from "@/components/ui/directional-icon";
 import { Link } from "@/components/ui/link";
 import { VideoPlayerFrame } from "@/components/video/video-player-frame";
@@ -10,10 +10,7 @@ import {
 } from "@/components/video/video-poster-card";
 import { homeInsetClass } from "@/lib/layout";
 import { cn } from "@/lib/utils";
-import {
-	formatDuration,
-	formatPublishmentDate,
-} from "@/lib/video/format";
+import { formatDuration, formatPublishmentDate } from "@/lib/video/format";
 import type {
 	ResolvedVideoCastMember,
 	ResolvedVideoDetail,
@@ -30,7 +27,9 @@ function MetaStat({ label, value }: { label: string; value: string }) {
 	return (
 		<div className="flex flex-col gap-1">
 			<dt className="text-label text-primary-foreground/60">{label}</dt>
-			<dd className="text-small font-medium text-primary-foreground">{value}</dd>
+			<dd className="text-small font-medium text-primary-foreground">
+				{value}
+			</dd>
 		</div>
 	);
 }
@@ -230,10 +229,7 @@ export async function ShortFilmDetailView({
 						</h2>
 						<div className="mt-5 flex gap-4 overflow-x-auto pb-2">
 							{detail.highlights.map((highlight) => (
-								<HighlightCard
-									key={highlight.title}
-									highlight={highlight}
-								/>
+								<HighlightCard key={highlight.title} highlight={highlight} />
 							))}
 						</div>
 					</section>
@@ -246,10 +242,7 @@ export async function ShortFilmDetailView({
 						</h2>
 						<div className="mt-5 flex gap-3 overflow-x-auto pb-2 sm:gap-4">
 							{relatedShortFilms.map((card) => (
-								<div
-									key={card.id}
-									className="w-36 shrink-0 sm:w-40 lg:w-44"
-								>
+								<div key={card.id} className="w-36 shrink-0 sm:w-40 lg:w-44">
 									<VideoPosterCard {...card} />
 								</div>
 							))}

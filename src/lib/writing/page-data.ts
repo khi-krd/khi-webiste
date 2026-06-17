@@ -1,3 +1,4 @@
+import { getWritingsListing, parseWritingsGenre } from "@/lib/api/writings";
 import {
 	buildCategoryCarouselItems,
 	buildWritingGridCards,
@@ -8,12 +9,14 @@ import {
 	WRITING_CATEGORY_SLUGS,
 	type WritingCategorySlug,
 } from "@/lib/writing/categories";
-import { getWritingsListing, parseWritingsGenre } from "@/lib/api/writings";
 import { BOOK_GENRES } from "@/lib/writing/genres";
 import { parseWritingsSort } from "@/lib/writings-url";
 import type { BookGenre } from "@/types/writing";
 
-type TranslateFn = (key: string, values?: Record<string, string | number>) => string;
+type TranslateFn = (
+	key: string,
+	values?: Record<string, string | number>,
+) => string;
 
 export type WritingsPageSearchParams = {
 	genre?: string;
@@ -71,7 +74,9 @@ export async function loadWritingsPageData(
 		? categoryLabels[categorySlug]
 		: t("grid.allTitle");
 
-	const hasFilters = Boolean(activeGenre || activeQuery || activeSort !== "newest");
+	const hasFilters = Boolean(
+		activeGenre || activeQuery || activeSort !== "newest",
+	);
 
 	return {
 		activeGenre,

@@ -1,11 +1,11 @@
 import { getLocale, getTranslations } from "next-intl/server";
 import { ImageCollectionShowcase } from "@/components/home/image-collection-showcase";
-import { getImageCollection } from "@/lib/mock/image-collection";
+import { getImageCollection } from "@/lib/api/image-collection";
 
 export async function ImageCollectionSection() {
 	const locale = await getLocale();
 	const t = await getTranslations("ImageCollection");
-	const items = getImageCollection(locale);
+	const items = await getImageCollection(locale);
 
 	return (
 		<section

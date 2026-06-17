@@ -51,8 +51,8 @@ export default async function VideosPage({
 	const heroCovers = [
 		...new Set(
 			pageData.listing.items.flatMap((item) =>
-				[item.coverUrl, item.hoverCoverUrl].filter(
-					(cover): cover is string => Boolean(cover),
+				[item.coverUrl, item.hoverCoverUrl].filter((cover): cover is string =>
+					Boolean(cover),
 				),
 			),
 		),

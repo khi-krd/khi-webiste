@@ -43,7 +43,9 @@ export function VideoPosterCard({
 			aria-label={title}
 			className={cn(
 				"group relative block w-full overflow-hidden no-underline",
-				dark ? "border border-primary-foreground/20" : "border border-border bg-sunken",
+				dark
+					? "border border-primary-foreground/20"
+					: "border border-border bg-sunken",
 				className,
 			)}
 		>

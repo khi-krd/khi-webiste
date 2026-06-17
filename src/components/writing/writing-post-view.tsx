@@ -1,14 +1,17 @@
 import { ArrowLeftIcon } from "@heroicons/react/24/outline";
 import NextImage from "next/image";
-import { WritingPdfPreview } from "@/components/writing/writing-pdf-preview";
-import { buildGenreLabels } from "@/components/writing/writing-card";
 import { Badge } from "@/components/ui/badge";
 import { DirectionalIcon } from "@/components/ui/directional-icon";
 import { Link } from "@/components/ui/link";
+import { buildGenreLabels } from "@/components/writing/writing-card";
+import { WritingPdfPreview } from "@/components/writing/writing-pdf-preview";
 import { homeInsetClass } from "@/lib/layout";
-import type { BookGenre } from "@/types/writing";
-import type { ResolvedSeriesBook, ResolvedWritingDetail } from "@/types/writing";
 import { cn } from "@/lib/utils";
+import type {
+	BookGenre,
+	ResolvedSeriesBook,
+	ResolvedWritingDetail,
+} from "@/types/writing";
 
 type WritingPostViewProps = {
 	detail: ResolvedWritingDetail;

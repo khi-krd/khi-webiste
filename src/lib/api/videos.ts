@@ -1,6 +1,12 @@
 import "server-only";
 import { z } from "zod";
 import {
+	apiFetch,
+	BULK_FETCH_SIZE,
+	DEFAULT_REVALIDATE,
+} from "@/lib/api/client";
+import { getApiBaseUrl } from "@/lib/api/config";
+import {
 	DEMO_VIDEO_TOPICS,
 	getAllDemoVideos,
 	getDemoVideoById,
@@ -15,12 +21,9 @@ import type {
 	VideoType,
 } from "@/types/video";
 import { VideoSchema, VideosPageSchema, VideoTopicSchema } from "@/types/video";
-import { ApiResponseSchema } from "@/types/writing";
 
 const VIDEOS_ENDPOINT = "/api/v1/videos";
 const VIDEOS_TAG = "videos";
-const VIDEOS_REVALIDATE_SECONDS = 600;
-const VIDEOS_FETCH_ALL_SIZE = 200;
 
 export const VIDEO_GRID_PAGE_SIZE = 12;
 
@@ -43,39 +46,14 @@ export type VideoListingOptions = {
 };
 
 async function fetchAllVideosFromApi(): Promise<Video[] | null> {
-	const apiBaseUrl = process.env.API_BASE_URL;
-	if (!apiBaseUrl) {
-		return null;
-	}
+	const page = await apiFetch(VIDEOS_ENDPOINT, {
+		schema: VideosPageSchema,
+		tags: [VIDEOS_TAG],
+		revalidate: DEFAULT_REVALIDATE,
+		searchParams: { page: 0, size: BULK_FETCH_SIZE },
+	});
 
-	try {
-		const endpoint = new URL(VIDEOS_ENDPOINT, apiBaseUrl);
-		endpoint.searchParams.set("page", "0");
-		endpoint.searchParams.set("size", String(VIDEOS_FETCH_ALL_SIZE));
-
-		const response = await fetch(endpoint, {
-			next: {
-				revalidate: VIDEOS_REVALIDATE_SECONDS,
-				tags: [VIDEOS_TAG],
-			},
-		});
-
-		if (!response.ok) {
-			return null;
-		}
-
-		const payload: unknown = await response.json();
-		const parsed = ApiResponseSchema(VideosPageSchema).safeParse(payload);
-
-		if (!parsed.success) {
-			return null;
-		}
-
-		const videos = parsed.data.data.content;
-		return videos.length > 0 ? videos : null;
-	} catch {
-		return null;
-	}
+	return page?.content.length ? page.content : null;
 }
 
 async function getAllVideos(): Promise<Video[]> {
@@ -121,30 +99,18 @@ export async function getVideoById(
 	locale: string,
 	id: number,
 ): Promise<ResolvedVideoDetail | null> {
-	const apiBaseUrl = process.env.API_BASE_URL;
+	if (getApiBaseUrl()) {
+		const detail = await apiFetch(`${VIDEOS_ENDPOINT}/${id}`, {
+			schema: VideoSchema,
+			tags: [VIDEOS_TAG, `video-${id}`],
+			revalidate: DEFAULT_REVALIDATE,
+		});
 
-	if (apiBaseUrl) {
-		try {
-			const endpoint = new URL(`${VIDEOS_ENDPOINT}/${id}`, apiBaseUrl);
-			const response = await fetch(endpoint, {
-				next: {
-					revalidate: VIDEOS_REVALIDATE_SECONDS,
-					tags: [VIDEOS_TAG, `video-${id}`],
-				},
-			});
-
-			if (response.ok) {
-				const payload: unknown = await response.json();
-				const parsed = ApiResponseSchema(VideoSchema).safeParse(payload);
-				if (parsed.success) {
-					const detail = resolveVideoDetail(locale, parsed.data.data);
-					if (detail?.id === id) {
-						return detail;
-					}
-				}
+		if (detail) {
+			const resolved = resolveVideoDetail(locale, detail);
+			if (resolved?.id === id) {
+				return resolved;
 			}
-		} catch {
-			// fall through to demo data
 		}
 	}
 
@@ -161,39 +127,25 @@ export type VideoTopicOption = {
 export async function getVideoTopics(
 	locale: string,
 ): Promise<VideoTopicOption[]> {
-	const apiBaseUrl = process.env.API_BASE_URL;
+	if (getApiBaseUrl()) {
+		const topics = await apiFetch(`${VIDEOS_ENDPOINT}/topics`, {
+			schema: z.array(VideoTopicSchema),
+			tags: [VIDEOS_TAG],
+			revalidate: DEFAULT_REVALIDATE,
+		});
 
-	if (apiBaseUrl) {
-		try {
-			const endpoint = new URL(`${VIDEOS_ENDPOINT}/topics`, apiBaseUrl);
-			const response = await fetch(endpoint, {
-				next: {
-					revalidate: VIDEOS_REVALIDATE_SECONDS,
-					tags: [VIDEOS_TAG],
-				},
-			});
-
-			if (response.ok) {
-				const payload: unknown = await response.json();
-				const parsed = ApiResponseSchema(z.array(VideoTopicSchema)).safeParse(
-					payload,
-				);
-				if (parsed.success && parsed.data.data.length > 0) {
-					return parsed.data.data
-						.map((topic) => ({
-							id: topic.id,
-							name:
-								locale === "en"
-									? (topic.nameEn ?? topic.nameKmr ?? topic.nameCkb)
-									: locale === "ckb"
-										? (topic.nameCkb ?? topic.nameKmr)
-										: (topic.nameKmr ?? topic.nameCkb),
-						}))
-						.filter((topic): topic is VideoTopicOption => topic.name != null);
-				}
-			}
-		} catch {
-			// fall through to demo data
+		if (topics && topics.length > 0) {
+			return topics
+				.map((topic) => ({
+					id: topic.id,
+					name:
+						locale === "en"
+							? (topic.nameEn ?? topic.nameKmr ?? topic.nameCkb)
+							: locale === "ckb"
+								? (topic.nameCkb ?? topic.nameKmr)
+								: (topic.nameKmr ?? topic.nameCkb),
+				}))
+				.filter((topic): topic is VideoTopicOption => topic.name != null);
 		}
 	}
 

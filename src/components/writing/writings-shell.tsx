@@ -2,17 +2,17 @@ import {
 	WritingCategoryCarousel,
 	type WritingCategoryCarouselItem,
 } from "@/components/writing/writing-category-carousel";
-import { WritingsFilterBar } from "@/components/writing/writings-filter-bar";
 import {
 	WritingGridCard,
 	type WritingGridCardProps,
 } from "@/components/writing/writing-grid-card";
+import { WritingsFilterBar } from "@/components/writing/writings-filter-bar";
 import { WritingsPagination } from "@/components/writing/writings-pagination";
 import { homeInsetClass } from "@/lib/layout";
+import { cn } from "@/lib/utils";
 import type { WritingCategorySlug } from "@/lib/writing/categories";
 import type { WritingsSort } from "@/lib/writing/filter";
 import type { BookGenre } from "@/types/writing";
-import { cn } from "@/lib/utils";
 
 type WritingsShellProps = {
 	id?: string;

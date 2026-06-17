@@ -3,17 +3,14 @@ import { notFound } from "next/navigation";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { WritingPostView } from "@/components/writing/writing-post-view";
 import { WritingsShell } from "@/components/writing/writings-shell";
-import {
-	getWritingById,
-	getWritingSeriesBooks,
-} from "@/lib/api/writings";
+import { getWritingById, getWritingSeriesBooks } from "@/lib/api/writings";
 import {
 	WRITING_CATEGORY_NAV_KEYS,
 	type WritingCategorySlug,
 } from "@/lib/writing/categories";
+import { BOOK_GENRES } from "@/lib/writing/genres";
 import { loadWritingsPageData } from "@/lib/writing/page-data";
 import { parseWritingSegment } from "@/lib/writing/segment";
-import { BOOK_GENRES } from "@/lib/writing/genres";
 import type { BookGenre } from "@/types/writing";
 
 type WritingsSegmentPageProps = {

@@ -1,4 +1,7 @@
-import { isWritingCategorySlug, type WritingCategorySlug } from "@/lib/writing/categories";
+import {
+	isWritingCategorySlug,
+	type WritingCategorySlug,
+} from "@/lib/writing/categories";
 
 export type WritingSegment =
 	| { kind: "category"; slug: WritingCategorySlug }

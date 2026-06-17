@@ -1,7 +1,5 @@
 import { getTranslations } from "next-intl/server";
-import {
-	UI_PLAYGROUND_INTRODUCTION_ID,
-} from "@/components/dev/ui-playground-groups";
+import { UI_PLAYGROUND_INTRODUCTION_ID } from "@/components/dev/ui-playground-groups";
 import { Link } from "@/components/ui/link";
 import { type Locale, routing } from "@/i18n/routing";
 

@@ -1,6 +1,6 @@
 import { ArrowLeftIcon, ArrowRightIcon } from "@heroicons/react/24/outline";
-import type { GalleryAlbumMetadataLabels } from "@/components/gallery/gallery-album-item";
 import { GalleryAlbum } from "@/components/gallery/gallery-album";
+import type { GalleryAlbumMetadataLabels } from "@/components/gallery/gallery-album-item";
 import { Badge } from "@/components/ui/badge";
 import { DirectionalIcon } from "@/components/ui/directional-icon";
 import { Link } from "@/i18n/navigation";

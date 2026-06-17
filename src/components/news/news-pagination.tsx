@@ -1,8 +1,8 @@
 "use client";
 
 import { useTransition } from "react";
-import { useRouter } from "@/i18n/navigation";
 import { Pagination } from "@/components/ui/pagination";
+import { useRouter } from "@/i18n/navigation";
 import { buildNewsHref } from "@/lib/news-url";
 import { cn } from "@/lib/utils";
 

@@ -1,11 +1,11 @@
 import { getLocale, getTranslations } from "next-intl/server";
 import { ProjectsShowcase } from "@/components/home/projects-showcase";
-import { getProjects } from "@/lib/mock/projects";
+import { getProjects } from "@/lib/api/projects";
 
 export async function ProjectsSection() {
 	const locale = await getLocale();
 	const t = await getTranslations("Projects");
-	const projects = getProjects(locale);
+	const projects = await getProjects(locale);
 	const direction = locale === "ckb" ? "rtl" : "ltr";
 
 	return (

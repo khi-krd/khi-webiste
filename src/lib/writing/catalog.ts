@@ -1,9 +1,9 @@
+import { buildGridFileMetaLabel } from "@/components/writing/writing-card";
 import type { WritingCategoryCarouselItem } from "@/components/writing/writing-category-carousel";
 import type { WritingGridCardProps } from "@/components/writing/writing-grid-card";
-import { buildGridFileMetaLabel } from "@/components/writing/writing-card";
 import {
-	WRITING_CATEGORY_SLUGS,
 	WRITING_CATEGORY_GENRES,
+	WRITING_CATEGORY_SLUGS,
 	type WritingCategorySlug,
 } from "@/lib/writing/categories";
 import type { BookGenre, ResolvedWritingCard } from "@/types/writing";

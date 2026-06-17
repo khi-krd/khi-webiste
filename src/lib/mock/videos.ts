@@ -1,8 +1,8 @@
-import type { Video, VideoTopic } from "@/types/video";
 import {
 	DEMO_VIDEO_TOPICS_EN,
 	withEnglishVideoOverlay,
 } from "@/lib/mock/videos-en";
+import type { Video, VideoTopic } from "@/types/video";
 
 /**
  * Demo Videos in raw API shape — used whenever `API_BASE_URL` is unset or the

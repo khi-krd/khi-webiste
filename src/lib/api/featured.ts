@@ -1,4 +1,6 @@
 import "server-only";
+import { apiFetchRaw, DEFAULT_REVALIDATE } from "@/lib/api/client";
+import { getApiBaseUrl } from "@/lib/api/config";
 import { getDemoFeaturedItems } from "@/lib/mock/featured";
 import {
 	type ContentType,
@@ -9,7 +11,7 @@ import {
 
 const FEATURED_ENDPOINT = "/featured";
 const FEATURED_TAG = "featured";
-const FEATURED_REVALIDATE_SECONDS = 600;
+const FEATURED_REVALIDATE_SECONDS = DEFAULT_REVALIDATE;
 
 type UnknownRecord = Record<string, unknown>;
 
@@ -168,24 +170,21 @@ function normalizeItems(payload: unknown): unknown[] {
 export async function getFeaturedItems(
 	locale: string,
 ): Promise<FeaturedItem[]> {
-	const apiBaseUrl = process.env.API_BASE_URL;
-	if (!apiBaseUrl) {
+	if (!getApiBaseUrl()) {
 		return getDemoFeaturedItems(locale);
 	}
 
 	try {
-		const endpoint = new URL(FEATURED_ENDPOINT, apiBaseUrl);
-		endpoint.searchParams.set("locale", locale);
-
-		const response = await fetch(endpoint, {
-			next: { revalidate: FEATURED_REVALIDATE_SECONDS, tags: [FEATURED_TAG] },
+		const payload = await apiFetchRaw(FEATURED_ENDPOINT, {
+			revalidate: FEATURED_REVALIDATE_SECONDS,
+			tags: [FEATURED_TAG],
+			searchParams: { locale },
 		});
 
-		if (!response.ok) {
+		if (!payload) {
 			return getDemoFeaturedItems(locale);
 		}
 
-		const payload: unknown = await response.json();
 		const rawItems = normalizeItems(payload);
 		const remappedItems = rawItems.map((item) => remapFeaturedItem(item));
 		const parsed = FeaturedItemsSchema.safeParse(remappedItems);

@@ -38,7 +38,17 @@ const overlaySizes: Record<Size, string> = {
  * Email/url/tel/number fields force LTR content for natural caret placement in RTL.
  */
 export const Input = forwardRef<HTMLInputElement, InputProps>(
-	({ type = "text", variant = "default", fieldSize = "md", className, dir, ...props }, ref) => (
+	(
+		{
+			type = "text",
+			variant = "default",
+			fieldSize = "md",
+			className,
+			dir,
+			...props
+		},
+		ref,
+	) => (
 		<input
 			ref={ref}
 			type={type}
@@ -46,7 +56,9 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
 			className={cn(
 				sharedClass,
 				variant === "overlay" ? overlayClass : defaultClass,
-				variant === "overlay" ? overlaySizes[fieldSize] : defaultSizes[fieldSize],
+				variant === "overlay"
+					? overlaySizes[fieldSize]
+					: defaultSizes[fieldSize],
 				className,
 			)}
 			{...props}

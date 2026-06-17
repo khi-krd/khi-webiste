@@ -2,9 +2,9 @@ import { ArrowUpRightIcon } from "@heroicons/react/24/outline";
 import NextImage from "next/image";
 import { DirectionalIcon } from "@/components/ui/directional-icon";
 import { Link } from "@/components/ui/link";
+import { cn } from "@/lib/utils";
 import { formatFileSize } from "@/lib/writing/resolve";
 import type { BookGenre } from "@/types/writing";
-import { cn } from "@/lib/utils";
 
 export type WritingCardProps = {
 	id: number;
@@ -49,7 +49,9 @@ export function WritingCard({
 	downloadLabel,
 }: WritingCardProps) {
 	const hasHoverCover =
-		hoverCoverUrl != null && hoverCoverUrl.length > 0 && hoverCoverUrl !== coverUrl;
+		hoverCoverUrl != null &&
+		hoverCoverUrl.length > 0 &&
+		hoverCoverUrl !== coverUrl;
 	const subtitle = genreLabels[0] ?? topicName ?? null;
 
 	return (
@@ -120,10 +122,7 @@ export function WritingCard({
 								)}
 							>
 								{downloadLabel}
-								<DirectionalIcon
-									icon={ArrowUpRightIcon}
-									className="size-3.5"
-								/>
+								<DirectionalIcon icon={ArrowUpRightIcon} className="size-3.5" />
 							</Link>
 							<span
 								aria-hidden

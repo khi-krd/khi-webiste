@@ -63,7 +63,9 @@ function MarqueeCard({
 				>
 					<div className="min-w-0 flex-1 text-start">
 						{item.categoryLabel ? (
-							<p className="label font-medium text-muted">{item.categoryLabel}</p>
+							<p className="label font-medium text-muted">
+								{item.categoryLabel}
+							</p>
 						) : null}
 						<p
 							className={cn(

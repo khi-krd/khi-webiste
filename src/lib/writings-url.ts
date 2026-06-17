@@ -2,8 +2,8 @@ import {
 	isWritingCategorySlug,
 	type WritingCategorySlug,
 } from "@/lib/writing/categories";
-import { isBookGenre } from "@/lib/writing/genres";
 import type { WritingsSort } from "@/lib/writing/filter";
+import { isBookGenre } from "@/lib/writing/genres";
 import type { BookGenre } from "@/types/writing";
 
 export type WritingsUrlParams = {

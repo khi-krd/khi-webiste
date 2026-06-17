@@ -2,10 +2,13 @@
 
 import {
 	albumItemToLightboxItem,
-	galleryPhotoSurfaceClass,
 	type GalleryAlbumMetadataLabels,
+	galleryPhotoSurfaceClass,
 } from "@/components/gallery/gallery-album-item";
-import { GalleryLightbox, useGalleryLightbox } from "@/components/gallery/gallery-lightbox";
+import {
+	GalleryLightbox,
+	useGalleryLightbox,
+} from "@/components/gallery/gallery-lightbox";
 import { Image } from "@/components/ui/image";
 import { homeInsetClass } from "@/lib/layout";
 import type { GalleryAlbumItem } from "@/lib/mock/gallery";

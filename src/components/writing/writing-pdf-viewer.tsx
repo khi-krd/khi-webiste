@@ -12,29 +12,29 @@ import {
 import NextImage from "next/image";
 import { useTranslations } from "next-intl";
 import {
+	type ReactNode,
 	useCallback,
 	useEffect,
 	useMemo,
 	useRef,
 	useState,
-	type ReactNode,
 } from "react";
 import { Document, Page, pdfjs } from "react-pdf";
 import "react-pdf/dist/Page/AnnotationLayer.css";
 import "react-pdf/dist/Page/TextLayer.css";
-import { PdfPageScrubber } from "@/components/writing/writing-pdf-page-scrubber";
 import { EmptyState } from "@/components/ui/empty-state";
 import { ErrorState } from "@/components/ui/error-state";
 import { Spinner } from "@/components/ui/spinner";
-import {
-	getPdfFileOffers,
-	pickDefaultPdfOffer,
-} from "@/lib/writing/pdf-offer";
-import { spreadStartPage, visibleSpreadPages } from "@/lib/writing/pdf-page-range";
-import { resolvePdfViewerUrl } from "@/lib/writing/pdf-url";
-import type { WritingFileOffer } from "@/types/writing";
+import { PdfPageScrubber } from "@/components/writing/writing-pdf-page-scrubber";
 import { useIsMobile } from "@/lib/use-is-mobile";
 import { cn } from "@/lib/utils";
+import { getPdfFileOffers, pickDefaultPdfOffer } from "@/lib/writing/pdf-offer";
+import {
+	spreadStartPage,
+	visibleSpreadPages,
+} from "@/lib/writing/pdf-page-range";
+import { resolvePdfViewerUrl } from "@/lib/writing/pdf-url";
+import type { WritingFileOffer } from "@/types/writing";
 import "./writing-pdf-viewer.css";
 
 pdfjs.GlobalWorkerOptions.workerSrc = "/pdf/pdf.worker.min.mjs";
@@ -106,7 +106,10 @@ function PdfReaderLaunch({
 						aria-label={`${readLabel} — ${title}`}
 					>
 						<span className="writing-pdf-launch__read-ring" aria-hidden />
-						<BookOpenIcon className="writing-pdf-launch__read-icon" aria-hidden />
+						<BookOpenIcon
+							className="writing-pdf-launch__read-icon"
+							aria-hidden
+						/>
 						<span className="writing-pdf-launch__read-label">{readLabel}</span>
 					</button>
 				</div>
@@ -272,83 +275,78 @@ function PdfReaderToolbar({
 
 	return (
 		<div className="flex flex-wrap items-center justify-end gap-1.5 border-b border-border px-3 py-2.5 sm:gap-2 sm:px-5 sm:py-3">
+			<button
+				type="button"
+				className={touchButtonClass}
+				onClick={onZoomOut}
+				disabled={zoom <= MIN_ZOOM}
+				aria-label={labels.zoomOut}
+			>
+				<MagnifyingGlassMinusIcon className="size-4" aria-hidden />
+			</button>
+			{showZoomLabel ? (
+				<span className="label min-w-9 text-center font-medium tabular-nums">
+					{Math.round(zoom * 100)}%
+				</span>
+			) : null}
+			<button
+				type="button"
+				className={touchButtonClass}
+				onClick={onZoomIn}
+				disabled={zoom >= MAX_ZOOM}
+				aria-label={labels.zoomIn}
+			>
+				<MagnifyingGlassPlusIcon className="size-4" aria-hidden />
+			</button>
+			<button
+				type="button"
+				onClick={onFitWidth}
+				aria-label={labels.fitWidth}
+				aria-pressed={activeFitMode === "width" && isBaseZoom}
+				className={cn(
+					touchFitButtonClass,
+					activeFitMode === "width" && isBaseZoom && "bg-sunken",
+				)}
+			>
+				{labels.fitWidth}
+			</button>
+			{!isMobile ? (
 				<button
 					type="button"
-					className={touchButtonClass}
-					onClick={onZoomOut}
-					disabled={zoom <= MIN_ZOOM}
-					aria-label={labels.zoomOut}
-				>
-					<MagnifyingGlassMinusIcon className="size-4" aria-hidden />
-				</button>
-				{showZoomLabel ? (
-					<span className="label min-w-9 text-center font-medium tabular-nums">
-						{Math.round(zoom * 100)}%
-					</span>
-				) : null}
-				<button
-					type="button"
-					className={touchButtonClass}
-					onClick={onZoomIn}
-					disabled={zoom >= MAX_ZOOM}
-					aria-label={labels.zoomIn}
-				>
-					<MagnifyingGlassPlusIcon className="size-4" aria-hidden />
-				</button>
-				<button
-					type="button"
-					onClick={onFitWidth}
-					aria-label={labels.fitWidth}
-					aria-pressed={activeFitMode === "width" && isBaseZoom}
+					onClick={onFitHeight}
+					aria-label={labels.fitHeight}
+					aria-pressed={fitMode === "height" && isBaseZoom}
 					className={cn(
 						touchFitButtonClass,
-						activeFitMode === "width" && isBaseZoom && "bg-sunken",
+						fitMode === "height" && isBaseZoom && "bg-sunken",
 					)}
 				>
-					{labels.fitWidth}
+					{labels.fitHeight}
 				</button>
-				{!isMobile ? (
-					<button
-						type="button"
-						onClick={onFitHeight}
-						aria-label={labels.fitHeight}
-						aria-pressed={fitMode === "height" && isBaseZoom}
-						className={cn(
-							touchFitButtonClass,
-							fitMode === "height" && isBaseZoom && "bg-sunken",
-						)}
-					>
-						{labels.fitHeight}
-					</button>
-				) : null}
-				{!isMobile ? (
-					<button
-						type="button"
-						onClick={onToggleSpread}
-						aria-label={
-							twoPageSpread ? labels.singlePage : labels.twoPageSpread
-						}
-						aria-pressed={twoPageSpread}
-						className={cn(
-							touchFitButtonClass,
-							twoPageSpread && "bg-sunken",
-						)}
-					>
-						<Square2StackIcon className="size-4" aria-hidden />
-					</button>
-				) : null}
-					<button
-						type="button"
-						className={touchButtonClass}
-						onClick={onToggleFullscreen}
-						aria-label={isFullscreen ? labels.exitFullSize : labels.fullSize}
-					>
-						{isFullscreen ? (
-							<ArrowsPointingInIcon className="size-4" aria-hidden />
-						) : (
-							<ArrowsPointingOutIcon className="size-4" aria-hidden />
-						)}
-					</button>
+			) : null}
+			{!isMobile ? (
+				<button
+					type="button"
+					onClick={onToggleSpread}
+					aria-label={twoPageSpread ? labels.singlePage : labels.twoPageSpread}
+					aria-pressed={twoPageSpread}
+					className={cn(touchFitButtonClass, twoPageSpread && "bg-sunken")}
+				>
+					<Square2StackIcon className="size-4" aria-hidden />
+				</button>
+			) : null}
+			<button
+				type="button"
+				className={touchButtonClass}
+				onClick={onToggleFullscreen}
+				aria-label={isFullscreen ? labels.exitFullSize : labels.fullSize}
+			>
+				{isFullscreen ? (
+					<ArrowsPointingInIcon className="size-4" aria-hidden />
+				) : (
+					<ArrowsPointingOutIcon className="size-4" aria-hidden />
+				)}
+			</button>
 		</div>
 	);
 }
@@ -479,7 +477,9 @@ function PdfReaderViewport({
 	const hasPageSize =
 		(pageRenderSize.width ?? 0) > 0 || (pageRenderSize.height ?? 0) > 0;
 	const canRenderPages = documentReady && isViewportReady && hasPageSize;
-	const [renderedPages, setRenderedPages] = useState<Set<number>>(() => new Set());
+	const [renderedPages, setRenderedPages] = useState<Set<number>>(
+		() => new Set(),
+	);
 	const [hasDisplayedOnce, setHasDisplayedOnce] = useState(
 		initialDisplayComplete,
 	);
@@ -622,9 +622,7 @@ function PdfReaderViewport({
 									{visiblePages.map((page, index) => (
 										<PdfPageSlot
 											key={
-												twoPageSpread
-													? `spread-slot-${index}`
-													: "single-slot"
+												twoPageSpread ? `spread-slot-${index}` : "single-slot"
 											}
 											page={page}
 											pageRenderSize={pageRenderSize}
@@ -710,10 +708,8 @@ export function WritingPdfViewer({
 			navLabel: t("pageNavLabel"),
 			previousPage: t("previousPage"),
 			nextPage: t("nextPage"),
-			pageOf: (page: number, total: number) =>
-				t("pageOf", { page, total }),
-			pagesRemaining: (count: number) =>
-				t("pagesRemaining", { count }),
+			pageOf: (page: number, total: number) => t("pageOf", { page, total }),
+			pagesRemaining: (count: number) => t("pagesRemaining", { count }),
 		}),
 		[t],
 	);
@@ -868,9 +864,14 @@ export function WritingPdfViewer({
 		numPages,
 		effectiveTwoPageSpread,
 	);
-	const spreadColumns = effectiveTwoPageSpread && pagesToShow.length > 1 ? 2 : 1;
-	const viewportPaddingX = isMobile ? VIEWPORT_PADDING_X_MOBILE : VIEWPORT_PADDING_X;
-	const viewportPaddingY = isMobile ? VIEWPORT_PADDING_Y_MOBILE : VIEWPORT_PADDING_Y;
+	const spreadColumns =
+		effectiveTwoPageSpread && pagesToShow.length > 1 ? 2 : 1;
+	const viewportPaddingX = isMobile
+		? VIEWPORT_PADDING_X_MOBILE
+		: VIEWPORT_PADDING_X;
+	const viewportPaddingY = isMobile
+		? VIEWPORT_PADDING_Y_MOBILE
+		: VIEWPORT_PADDING_Y;
 	const pageRenderSize = useMemo(() => {
 		if (!isViewportReady) {
 			return stablePageRenderSizeRef.current;
@@ -887,9 +888,7 @@ export function WritingPdfViewer({
 			containerWidth: availableWidth,
 			viewportHeight,
 			spreadColumns,
-			chromeHeight: isFullscreen
-				? FULLSCREEN_CHROME_HEIGHT
-				: viewportPaddingY,
+			chromeHeight: isFullscreen ? FULLSCREEN_CHROME_HEIGHT : viewportPaddingY,
 		});
 
 		const hasSize = (next.width ?? 0) > 0 || (next.height ?? 0) > 0;
@@ -898,10 +897,7 @@ export function WritingPdfViewer({
 		}
 
 		const previous = stablePageRenderSizeRef.current;
-		if (
-			previous.width === next.width &&
-			previous.height === next.height
-		) {
+		if (previous.width === next.width && previous.height === next.height) {
 			return previous;
 		}
 
@@ -997,18 +993,19 @@ export function WritingPdfViewer({
 		labels: toolbarLabels,
 	};
 
-	const scrubber = !loadError && numPages > 1 ? (
-		<PdfPageScrubber
-			pageNumber={pageNumber}
-			numPages={numPages}
-			twoPageSpread={effectiveTwoPageSpread}
-			onSelectPage={goToPageNumber}
-			onPrevious={() => goToPage(-1)}
-			onNext={() => goToPage(1)}
-			isMobile={isMobile}
-			labels={scrubberLabels}
-		/>
-	) : null;
+	const scrubber =
+		!loadError && numPages > 1 ? (
+			<PdfPageScrubber
+				pageNumber={pageNumber}
+				numPages={numPages}
+				twoPageSpread={effectiveTwoPageSpread}
+				onSelectPage={goToPageNumber}
+				onPrevious={() => goToPage(-1)}
+				onNext={() => goToPage(1)}
+				isMobile={isMobile}
+				labels={scrubberLabels}
+			/>
+		) : null;
 
 	const viewportProps = pdfSrc
 		? {

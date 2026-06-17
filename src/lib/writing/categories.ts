@@ -25,31 +25,32 @@ export const WRITING_CATEGORY_NAV_KEYS: Record<
 };
 
 /** Map each nav category to API BookGenre values for filtering. */
-export const WRITING_CATEGORY_GENRES: Record<WritingCategorySlug, BookGenre[]> = {
-	literature: [
-		"NOVEL",
-		"SHORT_STORY",
-		"DRAMA",
-		"PHILOSOPHY",
-		"ARTS",
-		"CULTURAL",
-		"CHILDREN",
-		"TRAVEL",
-		"EDUCATIONAL",
-	],
-	history: [
-		"HISTORY",
-		"BIOGRAPHY",
-		"POLITICS",
-		"SOCIOLOGY",
-		"ECONOMICS",
-		"LAW",
-		"SCIENCE",
-		"MEDICINE",
-	],
-	poetry: ["POETRY"],
-	manuscripts: ["FOLKLORE", "RELIGION", "LINGUISTICS", "OTHER"],
-};
+export const WRITING_CATEGORY_GENRES: Record<WritingCategorySlug, BookGenre[]> =
+	{
+		literature: [
+			"NOVEL",
+			"SHORT_STORY",
+			"DRAMA",
+			"PHILOSOPHY",
+			"ARTS",
+			"CULTURAL",
+			"CHILDREN",
+			"TRAVEL",
+			"EDUCATIONAL",
+		],
+		history: [
+			"HISTORY",
+			"BIOGRAPHY",
+			"POLITICS",
+			"SOCIOLOGY",
+			"ECONOMICS",
+			"LAW",
+			"SCIENCE",
+			"MEDICINE",
+		],
+		poetry: ["POETRY"],
+		manuscripts: ["FOLKLORE", "RELIGION", "LINGUISTICS", "OTHER"],
+	};
 
 export function isWritingCategorySlug(
 	value: string,

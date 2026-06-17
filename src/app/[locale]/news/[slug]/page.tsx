@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { NewsPostView } from "@/components/news/news-post-view";
-import { getNewsBySlug } from "@/lib/mock/news";
+import { getNewsBySlug } from "@/lib/api/news";
 
 type NewsPostPageProps = {
 	params: Promise<{ locale: string; slug: string }>;
@@ -22,7 +22,7 @@ export async function generateMetadata({
 	params,
 }: NewsPostPageProps): Promise<Metadata> {
 	const { locale, slug } = await params;
-	const detail = getNewsBySlug(locale, slug);
+	const detail = await getNewsBySlug(locale, slug);
 	if (!detail) notFound();
 
 	return {
@@ -35,7 +35,7 @@ export default async function NewsPostPage({ params }: NewsPostPageProps) {
 	const { locale, slug } = await params;
 	setRequestLocale(locale);
 
-	const detail = getNewsBySlug(locale, slug);
+	const detail = await getNewsBySlug(locale, slug);
 	if (!detail) notFound();
 
 	const t = await getTranslations("News");

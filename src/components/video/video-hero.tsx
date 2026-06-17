@@ -125,10 +125,7 @@ export function VideoHero({
 						</div>
 						<div className="flex gap-3">
 							{stillC ? (
-								<HeroStill
-									src={stillC}
-									className="aspect-[2.4/1] flex-[1.4]"
-								/>
+								<HeroStill src={stillC} className="aspect-[2.4/1] flex-[1.4]" />
 							) : null}
 							{stillD ? (
 								<HeroStill src={stillD} className="aspect-square flex-1" />

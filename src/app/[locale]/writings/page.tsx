@@ -6,9 +6,9 @@ import { WritingHero } from "@/components/writing/writing-hero";
 import { WritingsShell } from "@/components/writing/writings-shell";
 import { getWritingsCarousel } from "@/lib/api/writings";
 import { homeInsetClass } from "@/lib/layout";
+import { cn } from "@/lib/utils";
 import { loadWritingsPageData } from "@/lib/writing/page-data";
 import type { BookGenre } from "@/types/writing";
-import { cn } from "@/lib/utils";
 
 export async function generateMetadata({
 	params,

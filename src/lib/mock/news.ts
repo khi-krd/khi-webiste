@@ -15,6 +15,8 @@ export type NewsItem = {
 	slug: string;
 	title: string;
 	excerpt: string;
+	/** Tiptap HTML from the API — rendered on the detail page when present. */
+	descriptionHtml?: string;
 	category: NewsCategory;
 	publishedAt: string;
 	featured?: boolean;

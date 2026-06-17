@@ -3,6 +3,7 @@ import NextImage from "next/image";
 import { Badge } from "@/components/ui/badge";
 import { DirectionalIcon } from "@/components/ui/directional-icon";
 import { Link } from "@/components/ui/link";
+import { Prose } from "@/components/ui/prose";
 import { newsDetailHref } from "@/lib/content/href";
 import { homeInsetClass } from "@/lib/layout";
 import type { NewsItem } from "@/lib/mock/news";
@@ -114,9 +115,16 @@ export function NewsPostView({
 			</div>
 
 			<div className="mx-auto mt-8 max-w-3xl text-start sm:mt-10">
-				<p className="text-body leading-relaxed text-foreground">
-					{item.excerpt}
-				</p>
+				{item.descriptionHtml ? (
+					<Prose
+						className="text-body leading-relaxed text-foreground"
+						dangerouslySetInnerHTML={{ __html: item.descriptionHtml }}
+					/>
+				) : (
+					<p className="text-body leading-relaxed text-foreground">
+						{item.excerpt}
+					</p>
+				)}
 			</div>
 
 			{previous || next ? (

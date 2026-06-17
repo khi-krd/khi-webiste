@@ -44,7 +44,10 @@ function FooterNavPanel({
 
 					if (item.external) {
 						return (
-							<li key={key} className="border-t border-border/70 first:border-t-0">
+							<li
+								key={key}
+								className="border-t border-border/70 first:border-t-0"
+							>
 								<a
 									href={item.href}
 									target="_blank"
@@ -66,7 +69,10 @@ function FooterNavPanel({
 					}
 
 					return (
-						<li key={key} className="border-t border-border/70 first:border-t-0">
+						<li
+							key={key}
+							className="border-t border-border/70 first:border-t-0"
+						>
 							<Link
 								href={item.href}
 								className={cn(
@@ -157,10 +163,7 @@ export async function Footer() {
 					</section>
 
 					<section className="mt-12 overflow-hidden border border-border bg-border text-foreground shadow-[0_28px_90px_-48px_rgba(26,24,19,0.45)]">
-						<div
-							aria-hidden="true"
-							className="h-0.5 bg-foreground"
-						/>
+						<div aria-hidden="true" className="h-0.5 bg-foreground" />
 
 						<div className="grid gap-px lg:grid-cols-[minmax(0,19rem)_1fr] xl:grid-cols-[minmax(0,22rem)_1fr]">
 							<div className="flex flex-col justify-between gap-8 bg-surface p-8 sm:p-9 lg:p-10">

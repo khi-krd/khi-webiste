@@ -4,15 +4,15 @@ import { NewsBento } from "@/components/news/news-bento";
 import { NewsHero } from "@/components/news/news-hero";
 import { NewsShell } from "@/components/news/news-shell";
 import {
-	NEWS_CATEGORIES,
-	type NewsCategory,
 	filterNews,
-	getNews,
 	getFeaturedNews,
 	getLatestNews,
+	getNews,
 	isValidCategory,
+	NEWS_CATEGORIES,
+	type NewsCategory,
 	paginateNews,
-} from "@/lib/mock/news";
+} from "@/lib/api/news";
 
 export async function generateMetadata({
 	params,
@@ -55,18 +55,15 @@ export default async function NewsPage({
 		NEWS_CATEGORIES.map((key) => [key, t(`categories.${key}`)]),
 	) as Record<NewsCategory, string>;
 
-	const allNews = getNews(locale);
+	const allNews = await getNews(locale, activeQuery);
 	const filtered = filterNews(allNews, {
 		category: activeCategory,
 		query: activeQuery,
 	});
-	const { items, totalPages, currentPage } = paginateNews(
-		filtered,
-		page,
-	);
+	const { items, totalPages, currentPage } = paginateNews(filtered, page);
 
-	const featuredItems = getFeaturedNews(locale);
-	const latestItems = getLatestNews(locale);
+	const featuredItems = await getFeaturedNews(locale);
+	const latestItems = await getLatestNews(locale);
 
 	const sectionTitle = activeCategory
 		? t("sections.filtered", {

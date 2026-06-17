@@ -45,8 +45,7 @@ export async function loadVideoPageData(
 	const [listing, topics] = await Promise.all([
 		getVideoListing(locale, {
 			videoType: activeType,
-			topicId:
-				activeTopicId === SHORT_FILMS_TOPIC_ID ? null : activeTopicId,
+			topicId: activeTopicId === SHORT_FILMS_TOPIC_ID ? null : activeTopicId,
 			excludeTopicId: SHORT_FILMS_TOPIC_ID,
 			memories: activeMemories,
 			query: activeQuery,

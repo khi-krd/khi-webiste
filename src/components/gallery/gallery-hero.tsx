@@ -1,6 +1,6 @@
 import { ArrowRightIcon } from "@heroicons/react/24/outline";
-import { GalleryMarqueeColumn } from "@/components/gallery/gallery-marquee-column";
 import { galleryStripTrayClass } from "@/components/gallery/gallery-album-item";
+import { GalleryMarqueeColumn } from "@/components/gallery/gallery-marquee-column";
 import { DirectionalIcon } from "@/components/ui/directional-icon";
 import { Link } from "@/components/ui/link";
 import type { GalleryHeroColumns } from "@/lib/mock/gallery";

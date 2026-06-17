@@ -8,8 +8,8 @@ import {
 } from "@/components/video/video-poster-card";
 import { getVideoListing } from "@/lib/api/videos";
 import { homeInsetClass } from "@/lib/layout";
-import { cn } from "@/lib/utils";
 import { SHORT_FILMS_TOPIC_ID } from "@/lib/mock/videos";
+import { cn } from "@/lib/utils";
 import { formatDuration } from "@/lib/video/format";
 import { shortFilmDetailHref } from "@/lib/video/resolve";
 import type { ResolvedVideoCard } from "@/types/video";

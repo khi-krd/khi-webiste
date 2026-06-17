@@ -2,11 +2,11 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { setRequestLocale } from "next-intl/server";
 import { ShortFilmDetailView } from "@/components/video/short-film-detail-view";
+import type { VideoPosterCardProps } from "@/components/video/video-poster-card";
 import { getVideoById, getVideoListing } from "@/lib/api/videos";
 import { SHORT_FILMS_TOPIC_ID } from "@/lib/mock/videos";
 import { formatDuration } from "@/lib/video/format";
 import { shortFilmDetailHref } from "@/lib/video/resolve";
-import type { VideoPosterCardProps } from "@/components/video/video-poster-card";
 
 type ShortFilmDetailPageProps = {
 	params: Promise<{ locale: string; id: string }>;

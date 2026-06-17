@@ -1,5 +1,11 @@
 import "server-only";
 import {
+	apiFetch,
+	BULK_FETCH_SIZE,
+	DEFAULT_REVALIDATE,
+} from "@/lib/api/client";
+import { getApiBaseUrl } from "@/lib/api/config";
+import {
 	getDemoWritingById,
 	getDemoWritingSeries,
 } from "@/lib/mock/writing-detail";
@@ -22,7 +28,6 @@ import {
 } from "@/lib/writing/resolve";
 import type { BookGenre } from "@/types/writing";
 import {
-	ApiResponseSchema,
 	type ResolvedSeriesBook,
 	type ResolvedWritingCard,
 	type ResolvedWritingDetail,
@@ -33,7 +38,7 @@ import {
 
 const WRITINGS_ENDPOINT = "/api/v1/writings";
 const WRITINGS_TAG = "writings";
-const WRITINGS_REVALIDATE_SECONDS = 600;
+
 export const WRITINGS_PER_PAGE = 4;
 export const WRITINGS_CAROUSEL_SIZE = 12;
 export const WRITINGS_GRID_PAGE_SIZE = 8;
@@ -67,43 +72,22 @@ export async function getWritingsCarousel(
 async function fetchAllWritingsFromApi(
 	locale: string,
 ): Promise<ResolvedWritingCard[] | null> {
-	const apiBaseUrl = process.env.API_BASE_URL;
-	if (!apiBaseUrl) {
+	const page = await apiFetch(WRITINGS_ENDPOINT, {
+		schema: WritingsPageSchema,
+		tags: [WRITINGS_TAG],
+		revalidate: DEFAULT_REVALIDATE,
+		searchParams: { page: 0, size: BULK_FETCH_SIZE },
+	});
+
+	if (!page?.content.length) {
 		return null;
 	}
 
-	try {
-		const endpoint = new URL(WRITINGS_ENDPOINT, apiBaseUrl);
-		endpoint.searchParams.set("page", "0");
-		endpoint.searchParams.set("size", String(WRITINGS_CAROUSEL_SIZE));
+	const items = page.content
+		.map((writing) => resolveWritingCard(locale, writing))
+		.filter((item): item is ResolvedWritingCard => item != null);
 
-		const response = await fetch(endpoint, {
-			next: {
-				revalidate: WRITINGS_REVALIDATE_SECONDS,
-				tags: [WRITINGS_TAG],
-			},
-		});
-
-		if (!response.ok) {
-			return null;
-		}
-
-		const payload: unknown = await response.json();
-		const parsed = ApiResponseSchema(WritingsPageSchema).safeParse(payload);
-
-		if (!parsed.success) {
-			return null;
-		}
-
-		const { data } = parsed.data;
-		const items = data.content
-			.map((writing) => resolveWritingCard(locale, writing))
-			.filter((item): item is ResolvedWritingCard => item != null);
-
-		return items.length > 0 ? items : null;
-	} catch {
-		return null;
-	}
+	return items.length > 0 ? items : null;
 }
 
 /** Returns the full writings set for client-side filter/sort/paginate. */
@@ -136,60 +120,41 @@ export async function getWritingsPage(
 	page = 1,
 	size = WRITINGS_PER_PAGE,
 ): Promise<WritingsListResult> {
-	const apiBaseUrl = process.env.API_BASE_URL;
 	const currentPage = Math.max(1, page);
 
-	if (!apiBaseUrl) {
+	if (!getApiBaseUrl()) {
 		return getDemoWritingCards(locale, currentPage, size);
 	}
 
-	try {
-		const endpoint = new URL(WRITINGS_ENDPOINT, apiBaseUrl);
-		endpoint.searchParams.set("page", String(currentPage - 1));
-		endpoint.searchParams.set("size", String(size));
+	const data = await apiFetch(WRITINGS_ENDPOINT, {
+		schema: WritingsPageSchema,
+		tags: [WRITINGS_TAG],
+		revalidate: DEFAULT_REVALIDATE,
+		searchParams: { page: currentPage - 1, size },
+	});
 
-		const response = await fetch(endpoint, {
-			next: {
-				revalidate: WRITINGS_REVALIDATE_SECONDS,
-				tags: [WRITINGS_TAG],
-			},
-		});
-
-		if (!response.ok) {
-			return getDemoWritingCards(locale, currentPage, size);
-		}
-
-		const payload: unknown = await response.json();
-		const parsed = ApiResponseSchema(WritingsPageSchema).safeParse(payload);
-
-		if (!parsed.success) {
-			return getDemoWritingCards(locale, currentPage, size);
-		}
-
-		const { data } = parsed.data;
-		const items = data.content
-			.map((writing) => resolveWritingCard(locale, writing))
-			.filter((item): item is ResolvedWritingCard => item != null);
-
-		if (items.length === 0) {
-			return getDemoWritingCards(locale, currentPage, size);
-		}
-
-		return {
-			items,
-			totalPages: Math.max(data.totalPages, 1),
-			totalElements: data.totalElements,
-			currentPage,
-			empty: data.empty,
-		};
-	} catch {
+	if (!data) {
 		return getDemoWritingCards(locale, currentPage, size);
 	}
+
+	const items = data.content
+		.map((writing) => resolveWritingCard(locale, writing))
+		.filter((item): item is ResolvedWritingCard => item != null);
+
+	if (items.length === 0) {
+		return getDemoWritingCards(locale, currentPage, size);
+	}
+
+	return {
+		items,
+		totalPages: Math.max(data.totalPages, 1),
+		totalElements: data.totalElements,
+		currentPage,
+		empty: data.empty,
+	};
 }
 
-export function parseWritingsGenre(
-	value?: string | null,
-): BookGenre | null {
+export function parseWritingsGenre(value?: string | null): BookGenre | null {
 	if (value && isBookGenre(value)) {
 		return value;
 	}
@@ -206,41 +171,26 @@ export async function getWritingById(
 	id: number,
 	labels: WritingDetailLabels,
 ): Promise<ResolvedWritingDetail | null> {
-	const apiBaseUrl = process.env.API_BASE_URL;
-
-	if (!apiBaseUrl) {
+	if (!getApiBaseUrl()) {
 		return getDemoWritingById(locale, id, labels);
 	}
 
-	try {
-		const endpoint = new URL(`${WRITINGS_ENDPOINT}/${id}`, apiBaseUrl);
-		const response = await fetch(endpoint, {
-			next: {
-				revalidate: WRITINGS_REVALIDATE_SECONDS,
-				tags: [WRITINGS_TAG, `writing-${id}`],
-			},
-		});
+	const detail = await apiFetch(`${WRITINGS_ENDPOINT}/${id}`, {
+		schema: WritingSchema,
+		tags: [WRITINGS_TAG, `writing-${id}`],
+		revalidate: DEFAULT_REVALIDATE,
+	});
 
-		if (!response.ok) {
-			return getDemoWritingById(locale, id, labels);
-		}
-
-		const payload: unknown = await response.json();
-		const parsed = ApiResponseSchema(WritingSchema).safeParse(payload);
-
-		if (!parsed.success) {
-			return getDemoWritingById(locale, id, labels);
-		}
-
-		const detail = resolveWritingDetail(locale, parsed.data.data, labels);
-		if (detail?.id === id) {
-			return detail;
-		}
-
-		return getDemoWritingById(locale, id, labels);
-	} catch {
+	if (!detail) {
 		return getDemoWritingById(locale, id, labels);
 	}
+
+	const resolved = resolveWritingDetail(locale, detail, labels);
+	if (resolved?.id === id) {
+		return resolved;
+	}
+
+	return getDemoWritingById(locale, id, labels);
 }
 
 export async function getWritingSeriesBooks(
@@ -248,37 +198,22 @@ export async function getWritingSeriesBooks(
 	seriesId: string,
 	currentId: number,
 ): Promise<ResolvedSeriesBook[]> {
-	const apiBaseUrl = process.env.API_BASE_URL;
-
-	if (!apiBaseUrl) {
+	if (!getApiBaseUrl()) {
 		return getDemoWritingSeries(locale, seriesId, currentId);
 	}
 
-	try {
-		const endpoint = new URL(
-			`${WRITINGS_ENDPOINT}/series/${encodeURIComponent(seriesId)}`,
-			apiBaseUrl,
-		);
-		const response = await fetch(endpoint, {
-			next: {
-				revalidate: WRITINGS_REVALIDATE_SECONDS,
-				tags: [WRITINGS_TAG, `writing-series-${seriesId}`],
-			},
-		});
+	const data = await apiFetch(
+		`${WRITINGS_ENDPOINT}/series/${encodeURIComponent(seriesId)}`,
+		{
+			schema: SeriesResponseSchema,
+			tags: [WRITINGS_TAG, `writing-series-${seriesId}`],
+			revalidate: DEFAULT_REVALIDATE,
+		},
+	);
 
-		if (!response.ok) {
-			return getDemoWritingSeries(locale, seriesId, currentId);
-		}
-
-		const payload: unknown = await response.json();
-		const parsed = ApiResponseSchema(SeriesResponseSchema).safeParse(payload);
-
-		if (!parsed.success) {
-			return getDemoWritingSeries(locale, seriesId, currentId);
-		}
-
-		return resolveSeriesBooks(locale, parsed.data.data.books, currentId);
-	} catch {
+	if (!data) {
 		return getDemoWritingSeries(locale, seriesId, currentId);
 	}
+
+	return resolveSeriesBooks(locale, data.books, currentId);
 }

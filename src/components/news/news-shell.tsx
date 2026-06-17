@@ -1,14 +1,11 @@
+import { NewsCard } from "@/components/home/news-card";
 import { NewsClearFilters } from "@/components/news/news-clear-filters";
 import { NewsFilterBar } from "@/components/news/news-filter-bar";
-import { NewsSidebarPanel } from "@/components/news/news-sidebar-panel";
-import { NewsCard } from "@/components/home/news-card";
-import { Divider } from "@/components/ui/divider";
 import { NewsPagination } from "@/components/news/news-pagination";
+import { NewsSidebarPanel } from "@/components/news/news-sidebar-panel";
+import { Divider } from "@/components/ui/divider";
 import { homeInsetClass } from "@/lib/layout";
-import {
-	type NewsCategory,
-	type NewsItem,
-} from "@/lib/mock/news";
+import type { NewsCategory, NewsItem } from "@/lib/mock/news";
 import { cn } from "@/lib/utils";
 
 type NewsShellProps = {

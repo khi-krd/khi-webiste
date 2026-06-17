@@ -5,18 +5,18 @@ import {
 	MagnifyingGlassIcon,
 	XMarkIcon,
 } from "@heroicons/react/24/outline";
-import { useTranslations } from "next-intl";
 import { useSearchParams } from "next/navigation";
+import { useTranslations } from "next-intl";
 import { useCallback, useEffect, useRef, useState, useTransition } from "react";
-import { useRouter } from "@/i18n/navigation";
 import { Badge } from "@/components/ui/badge";
+import { useRouter } from "@/i18n/navigation";
+import { cn } from "@/lib/utils";
 import type { WritingCategorySlug } from "@/lib/writing/categories";
 import { getGenresForCategory } from "@/lib/writing/categories";
-import { BOOK_GENRES } from "@/lib/writing/genres";
 import type { WritingsSort } from "@/lib/writing/filter";
+import { BOOK_GENRES } from "@/lib/writing/genres";
 import { buildWritingsHref } from "@/lib/writings-url";
 import type { BookGenre } from "@/types/writing";
-import { cn } from "@/lib/utils";
 
 type WritingsFilterBarProps = {
 	categorySlug?: WritingCategorySlug | null;
@@ -73,8 +73,7 @@ export function WritingsFilterBar({
 	const [query, setQuery] = useState(activeQuery ?? "");
 	const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-	const availableGenres =
-		getGenresForCategory(categorySlug) ?? BOOK_GENRES;
+	const availableGenres = getGenresForCategory(categorySlug) ?? BOOK_GENRES;
 
 	const hasActiveGenre = Boolean(activeGenre);
 	const hasActiveQuery = Boolean(activeQuery?.trim());
@@ -86,11 +85,7 @@ export function WritingsFilterBar({
 	}, [activeQuery]);
 
 	const pushFilters = useCallback(
-		(opts: {
-			genre?: BookGenre | null;
-			q?: string;
-			sort?: WritingsSort;
-		}) => {
+		(opts: { genre?: BookGenre | null; q?: string; sort?: WritingsSort }) => {
 			startTransition(() => {
 				router.replace(
 					buildWritingsHref({
@@ -109,7 +104,15 @@ export function WritingsFilterBar({
 				}
 			});
 		},
-		[router, searchParams, categorySlug, activeGenre, query, activeSort, scrollTargetId],
+		[
+			router,
+			searchParams,
+			categorySlug,
+			activeGenre,
+			query,
+			activeSort,
+			scrollTargetId,
+		],
 	);
 
 	const handleGenre = (genre: BookGenre | null) => {
@@ -157,11 +160,7 @@ export function WritingsFilterBar({
 
 	return (
 		<div
-			className={cn(
-				"transition-opacity",
-				isPending && "opacity-80",
-				className,
-			)}
+			className={cn("transition-opacity", isPending && "opacity-80", className)}
 		>
 			<div className="flex flex-wrap items-end justify-between gap-4 border-b border-border pb-4">
 				<button
@@ -297,7 +296,9 @@ export function WritingsFilterBar({
 
 						{hasActiveFilters ? (
 							<div className="mt-4 flex flex-wrap items-center gap-2 border-t border-border pt-4">
-								<span className="text-label text-muted">{t("filter.active")}</span>
+								<span className="text-label text-muted">
+									{t("filter.active")}
+								</span>
 								{activeGenre ? (
 									<Badge variant="outline" size="sm">
 										{genreLabels[activeGenre]}

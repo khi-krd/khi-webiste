@@ -1,10 +1,10 @@
 import { ArrowRightIcon } from "@heroicons/react/24/outline";
 import { getLocale, getTranslations } from "next-intl/server";
 import { WritingRow } from "@/components/home/writing-row";
-import { buildGenreLabels } from "@/components/writing/writing-card";
 import { Container } from "@/components/ui/container";
 import { DirectionalIcon } from "@/components/ui/directional-icon";
 import { Link } from "@/components/ui/link";
+import { buildGenreLabels } from "@/components/writing/writing-card";
 import { getWritingsCarousel } from "@/lib/api/writings";
 import type { BookGenre } from "@/types/writing";
 

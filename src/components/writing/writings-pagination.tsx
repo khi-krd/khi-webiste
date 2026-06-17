@@ -3,11 +3,11 @@
 import { useTransition } from "react";
 import { Pagination } from "@/components/ui/pagination";
 import { useRouter } from "@/i18n/navigation";
-import { buildWritingsHref } from "@/lib/writings-url";
+import { cn } from "@/lib/utils";
 import type { WritingCategorySlug } from "@/lib/writing/categories";
 import type { WritingsSort } from "@/lib/writing/filter";
+import { buildWritingsHref } from "@/lib/writings-url";
 import type { BookGenre } from "@/types/writing";
-import { cn } from "@/lib/utils";
 
 type WritingsPaginationProps = {
 	currentPage: number;

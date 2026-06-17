@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { GalleryPostView } from "@/components/gallery/gallery-post-view";
-import { getGalleryPostBySlug } from "@/lib/mock/gallery";
+import { getGalleryPostBySlug } from "@/lib/api/gallery";
 
 type GalleryPostPageProps = {
 	params: Promise<{ locale: string; slug: string }>;
@@ -12,7 +12,7 @@ export async function generateMetadata({
 	params,
 }: GalleryPostPageProps): Promise<Metadata> {
 	const { locale, slug } = await params;
-	const detail = getGalleryPostBySlug(locale, slug);
+	const detail = await getGalleryPostBySlug(locale, slug);
 	// Thrown HERE (not just in the page) so the 404 status is decided before
 	// the shell starts streaming with a 200.
 	if (!detail) notFound();
@@ -44,7 +44,7 @@ export default async function GalleryPostPage({
 	const { locale, slug } = await params;
 	setRequestLocale(locale);
 
-	const detail = getGalleryPostBySlug(locale, slug);
+	const detail = await getGalleryPostBySlug(locale, slug);
 	if (!detail) notFound();
 
 	const t = await getTranslations("Gallery");

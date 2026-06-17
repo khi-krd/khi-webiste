@@ -1,6 +1,6 @@
 import { Link } from "@/components/ui/link";
-import type { WritingCategorySlug } from "@/lib/writing/categories";
 import { cn } from "@/lib/utils";
+import type { WritingCategorySlug } from "@/lib/writing/categories";
 
 export type WritingCategoryCarouselItem = {
 	slug: WritingCategorySlug;

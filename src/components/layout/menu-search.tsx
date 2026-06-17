@@ -217,10 +217,7 @@ export function MenuSearch({ onBack, onNavigate }: MenuSearchProps) {
 			/>
 
 			<div
-				className={cn(
-					"flex w-full flex-col",
-					isExpanded && "min-h-0 flex-1",
-				)}
+				className={cn("flex w-full flex-col", isExpanded && "min-h-0 flex-1")}
 			>
 				<div className="w-full max-w-xl shrink-0 lg:max-w-2xl">
 					<button
@@ -301,8 +298,7 @@ export function MenuSearch({ onBack, onNavigate }: MenuSearchProps) {
 
 					<div
 						className={cn(
-							isExpanded &&
-								"min-h-0 flex-1 overflow-y-auto overscroll-contain",
+							isExpanded && "min-h-0 flex-1 overflow-y-auto overscroll-contain",
 							isExpanded && scrollbarHiddenClass,
 						)}
 					>

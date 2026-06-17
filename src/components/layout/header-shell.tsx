@@ -1,10 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import {
-	APP_SCROLL_EVENT,
-	type AppScrollDetail,
-} from "@/lib/scroll-events";
+import { APP_SCROLL_EVENT, type AppScrollDetail } from "@/lib/scroll-events";
 import { cn } from "@/lib/utils";
 
 /** Always show the bar when within this distance of the document top. */
@@ -52,9 +49,7 @@ export function HeaderShell({ children }: Props) {
 		<header
 			className={cn(
 				"fixed inset-x-0 top-0 z-50 p-5 transition-transform duration-300 ease-out motion-reduce:transition-none",
-				visible
-					? "translate-y-0"
-					: "pointer-events-none -translate-y-full",
+				visible ? "translate-y-0" : "pointer-events-none -translate-y-full",
 			)}
 		>
 			{children}

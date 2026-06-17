@@ -3,10 +3,8 @@ import { getLocale, getTranslations } from "next-intl/server";
 import { NewsCard } from "@/components/home/news-card";
 import { DirectionalIcon } from "@/components/ui/directional-icon";
 import { Link } from "@/components/ui/link";
-import {
-	getLatestUpdates,
-	type LatestUpdateCategory,
-} from "@/lib/mock/latest-updates";
+import { getLatestUpdates } from "@/lib/api/news";
+import type { LatestUpdateCategory } from "@/lib/mock/latest-updates";
 
 function getCategoryLabel(
 	t: Awaited<ReturnType<typeof getTranslations>>,
@@ -18,17 +16,9 @@ function getCategoryLabel(
 export async function LatestUpdates() {
 	const locale = await getLocale();
 	const t = await getTranslations("LatestUpdates");
-	const items = getLatestUpdates(locale);
+	const items = await getLatestUpdates(locale);
 
-	const [
-		hero,
-		railA,
-		railB,
-		railC,
-		railD,
-		overflowA,
-		overflowB,
-	] = items;
+	const [hero, railA, railB, railC, railD, overflowA, overflowB] = items;
 
 	return (
 		<section

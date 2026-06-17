@@ -1,13 +1,13 @@
 import NextImage from "next/image";
 import {
+	galleryPhotoSurfaceClass,
+	galleryStripTrayClass,
+} from "@/components/gallery/gallery-album-item";
+import {
 	GalleryReveal,
 	GalleryRevealItem,
 } from "@/components/gallery/gallery-motion";
 import { GalleryPagination } from "@/components/gallery/gallery-pagination";
-import {
-	galleryPhotoSurfaceClass,
-	galleryStripTrayClass,
-} from "@/components/gallery/gallery-album-item";
 import { Badge } from "@/components/ui/badge";
 import { Link } from "@/i18n/navigation";
 import { homeInsetClass } from "@/lib/layout";

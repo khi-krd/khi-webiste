@@ -10,7 +10,9 @@ import type {
 
 const EXCERPT_MAX_LENGTH = 120;
 
-function firstNonBlank(...values: (string | null | undefined)[]): string | null {
+function firstNonBlank(
+	...values: (string | null | undefined)[]
+): string | null {
 	for (const value of values) {
 		if (value && value.trim().length > 0) {
 			return value;
@@ -36,7 +38,10 @@ export function resolveContent(
 	return writing.kmrContent ?? writing.ckbContent;
 }
 
-export function resolveCoverUrl(locale: string, writing: Writing): string | null {
+export function resolveCoverUrl(
+	locale: string,
+	writing: Writing,
+): string | null {
 	if (locale === "ckb") {
 		return firstNonBlank(
 			writing.ckbCoverUrl,
@@ -190,11 +195,7 @@ export function resolveWritingDetail(
 		seriesOrder: writing.seriesInfo.seriesOrder,
 		seriesTotalBooks: writing.seriesInfo.totalBooks,
 		isPartOfSeries: isPartOfSeries(writing),
-		tags: resolveBilingualStrings(
-			locale,
-			writing.tags.ckb,
-			writing.tags.kmr,
-		),
+		tags: resolveBilingualStrings(locale, writing.tags.ckb, writing.tags.kmr),
 		keywords: resolveBilingualStrings(
 			locale,
 			writing.keywords.ckb,
@@ -220,8 +221,8 @@ export function resolveSeriesBooks(
 		.map((book) => {
 			const title =
 				locale === "ckb"
-					? book.titleCkb ?? book.titleKmr
-					: book.titleKmr ?? book.titleCkb;
+					? (book.titleCkb ?? book.titleKmr)
+					: (book.titleKmr ?? book.titleCkb);
 			if (!title) {
 				return null;
 			}

@@ -1,7 +1,4 @@
-import {
-	ArrowDownIcon,
-	ArrowRightIcon,
-} from "@heroicons/react/24/outline";
+import { ArrowDownIcon, ArrowRightIcon } from "@heroicons/react/24/outline";
 import NextImage from "next/image";
 import { DirectionalIcon } from "@/components/ui/directional-icon";
 import { Link } from "@/components/ui/link";
@@ -26,7 +23,10 @@ const learnMoreClass =
 
 function WritingHeroBackground({ textureUrl }: { textureUrl?: string | null }) {
 	return (
-		<div aria-hidden className="pointer-events-none absolute inset-0 isolate overflow-hidden">
+		<div
+			aria-hidden
+			className="pointer-events-none absolute inset-0 isolate overflow-hidden"
+		>
 			{/* Base paper wash */}
 			<div className="absolute inset-0 bg-linear-to-b from-sunken/45 via-surface via-45% to-surface" />
 
@@ -102,14 +102,22 @@ export function WritingHero({
 				</h1>
 
 				<div className="mt-2 flex flex-col items-center">
-					<Link href="#writings-content" variant="nav" className={primaryCtaClass}>
+					<Link
+						href="#writings-content"
+						variant="nav"
+						className={primaryCtaClass}
+					>
 						<span className="relative z-1">{cta}</span>
 						<DirectionalIcon
 							icon={ArrowRightIcon}
 							className="relative z-1 size-4"
 						/>
 					</Link>
-					<Link href="#writings-content" variant="nav" className={learnMoreClass}>
+					<Link
+						href="#writings-content"
+						variant="nav"
+						className={learnMoreClass}
+					>
 						{learnMore}
 						<ArrowDownIcon className="size-3.5" aria-hidden />
 					</Link>

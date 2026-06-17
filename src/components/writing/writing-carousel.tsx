@@ -5,8 +5,8 @@ import Autoplay, { type AutoplayType } from "embla-carousel-autoplay";
 import useEmblaCarousel from "embla-carousel-react";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import {
-	type WritingCardProps,
 	WritingCard,
+	type WritingCardProps,
 } from "@/components/writing/writing-card";
 import { cn } from "@/lib/utils";
 

@@ -312,7 +312,9 @@ export function resolveVideoDetail(
 		.filter((member): member is ResolvedVideoCastMember => member != null);
 	const highlights = (video.highlightClips ?? [])
 		.map((highlight) => resolveHighlight(locale, highlight))
-		.filter((highlight): highlight is ResolvedVideoHighlight => highlight != null);
+		.filter(
+			(highlight): highlight is ResolvedVideoHighlight => highlight != null,
+		);
 
 	return {
 		id: video.id,

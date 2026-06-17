@@ -35,16 +35,14 @@ function enrichWriting(base: Writing, locale: string, index: number): Writing {
 			? {
 					...base.ckbContent,
 					description:
-						base.ckbContent.description ??
-						`${descriptions} (${index + 1})`,
+						base.ckbContent.description ?? `${descriptions} (${index + 1})`,
 				}
 			: null,
 		kmrContent: base.kmrContent
 			? {
 					...base.kmrContent,
 					description:
-						base.kmrContent.description ??
-						`${descriptions} (${index + 1})`,
+						base.kmrContent.description ?? `${descriptions} (${index + 1})`,
 				}
 			: null,
 		tags: {
@@ -139,7 +137,9 @@ function getDemoWritings(locale: string): Writing[] {
 	}
 
 	const cards = getAllDemoWritingCards(locale);
-	const writings = cards.map((card, index) => cardToWriting(card, index, locale));
+	const writings = cards.map((card, index) =>
+		cardToWriting(card, index, locale),
+	);
 	demoWritingsCache.set(locale, writings);
 	return writings;
 }

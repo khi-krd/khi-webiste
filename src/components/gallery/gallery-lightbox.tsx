@@ -188,7 +188,10 @@ export function GalleryLightbox({
 						<div className="flex items-center justify-between gap-3">
 							<p className="label font-medium">
 								{frameNo(activeIndex ?? 0)}
-								<span className="text-muted"> / {frameNo(items.length - 1)}</span>
+								<span className="text-muted">
+									{" "}
+									/ {frameNo(items.length - 1)}
+								</span>
 							</p>
 							<button
 								type="button"
@@ -271,9 +274,7 @@ export function GalleryLightbox({
 							</dl>
 						)}
 
-						{showContext && (
-							<p className="label text-muted">{item.context}</p>
-						)}
+						{showContext && <p className="label text-muted">{item.context}</p>}
 
 						<div className="mt-auto flex items-center gap-2 pt-2">
 							<button

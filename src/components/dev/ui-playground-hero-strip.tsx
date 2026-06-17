@@ -9,7 +9,9 @@ export async function UiPlaygroundHeroStrip() {
 			<div>
 				<p className="label mb-3">{t("eyebrow")}</p>
 				<h2 className="text-h2 font-bold tracking-tight">{t("title")}</h2>
-				<p className="mt-4 max-w-2xl text-body text-muted">{t("description")}</p>
+				<p className="mt-4 max-w-2xl text-body text-muted">
+					{t("description")}
+				</p>
 			</div>
 			<div className="grid content-start gap-4">
 				<p className="text-small text-muted">{t("direction")}</p>

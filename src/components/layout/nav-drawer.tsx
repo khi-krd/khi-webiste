@@ -146,24 +146,24 @@ function NavSecondaryPanel({ item, onNavigate }: NavSecondaryPanelProps) {
 				</h3>
 
 				<ul className="flex flex-col">
-				{item.children.map((child) => (
-					<li
-						key={child.key}
-						className="border-b border-primary-foreground/15 last:border-b-0"
-					>
-						<Link
-							href={child.href}
-							variant="nav"
-							onClick={onNavigate}
-							className={cn(
-								"block py-3 text-body text-primary-foreground/80 hover:text-primary-foreground",
-								overlayTextShadow,
-							)}
+					{item.children.map((child) => (
+						<li
+							key={child.key}
+							className="border-b border-primary-foreground/15 last:border-b-0"
 						>
-							{t(child.key)}
-						</Link>
-					</li>
-				))}
+							<Link
+								href={child.href}
+								variant="nav"
+								onClick={onNavigate}
+								className={cn(
+									"block py-3 text-body text-primary-foreground/80 hover:text-primary-foreground",
+									overlayTextShadow,
+								)}
+							>
+								{t(child.key)}
+							</Link>
+						</li>
+					))}
 				</ul>
 			</div>
 		</div>
@@ -201,8 +201,7 @@ export function NavDrawer() {
 
 	const activeItem = NAV_ITEMS.find((item) => item.key === activeKey);
 	const primaryNavItems = NAV_ITEMS;
-	const bgKey =
-		hoveredKey ?? activeKey ?? primaryNavItems[0]?.key ?? "default";
+	const bgKey = hoveredKey ?? activeKey ?? primaryNavItems[0]?.key ?? "default";
 	const bgItem =
 		NAV_ITEMS.find((item) => item.key === bgKey) ?? primaryNavItems[0];
 	const bgSrc = bgItem?.imageSrc ?? NAV_DEFAULT_IMAGE;
@@ -353,93 +352,209 @@ export function NavDrawer() {
 								{...overlayMotion}
 								transition={overlayTransition}
 							>
-						{/* Decorative backgrounds — crossfade on hover / active item. */}
-						<div
-							className="pointer-events-none absolute inset-0 overflow-hidden bg-foreground"
-							aria-hidden
-						>
-							<AnimatePresence>
-								<NavBackground
-									key={bgKey}
-									src={bgSrc}
-									reduceMotion={reduceMotion}
-									priority
-								/>
-							</AnimatePresence>
-							{/* Legibility scrim — stronger where text sits, photos still show through elsewhere. */}
-							<div className="absolute inset-0 bg-foreground/50" />
-							<div className="absolute inset-0 bg-linear-to-r from-foreground/80 from-0% via-foreground/45 via-50% to-transparent to-100% rtl:bg-linear-to-l" />
-							{showMobilePanel && (
-								<div className="absolute inset-0 bg-foreground/30 lg:hidden" />
-							)}
-							<div className="absolute inset-x-0 bottom-0 h-16 bg-linear-to-t from-foreground from-35% via-foreground/80 via-60% to-transparent sm:h-20" />
-						</div>
-
-						<div className="relative z-10 flex min-h-0 flex-1 flex-col">
-							<Container className="max-w-none shrink-0 pt-8 sm:pt-10">
-								<div className="flex justify-end">
-									<button
-										ref={closeRef}
-										type="button"
-										onClick={close}
-										aria-label={t("menuClose")}
-										className="inline-flex min-h-11 min-w-11 items-center justify-center border border-transparent bg-foreground/40 p-2 transition-colors hover:border-primary-foreground/30 hover:bg-foreground/60 focus-visible:border-primary-foreground/40 focus-visible:bg-foreground/60"
-									>
-										<XMarkIcon className="size-6 shrink-0" aria-hidden="true" />
-									</button>
+								{/* Decorative backgrounds — crossfade on hover / active item. */}
+								<div
+									className="pointer-events-none absolute inset-0 overflow-hidden bg-foreground"
+									aria-hidden
+								>
+									<AnimatePresence>
+										<NavBackground
+											key={bgKey}
+											src={bgSrc}
+											reduceMotion={reduceMotion}
+											priority
+										/>
+									</AnimatePresence>
+									{/* Legibility scrim — stronger where text sits, photos still show through elsewhere. */}
+									<div className="absolute inset-0 bg-foreground/50" />
+									<div className="absolute inset-0 bg-linear-to-r from-foreground/80 from-0% via-foreground/45 via-50% to-transparent to-100% rtl:bg-linear-to-l" />
+									{showMobilePanel && (
+										<div className="absolute inset-0 bg-foreground/30 lg:hidden" />
+									)}
+									<div className="absolute inset-x-0 bottom-0 h-16 bg-linear-to-t from-foreground from-35% via-foreground/80 via-60% to-transparent sm:h-20" />
 								</div>
-							</Container>
 
-							<div className="flex min-h-0 flex-1 flex-col overflow-hidden">
-								<AnimatePresence mode="wait">
-									{view === "search" ? (
-										<motion.div
-											key="search"
-											className="flex min-h-0 flex-1 flex-col overflow-hidden"
-											{...contentMotion}
-											transition={{
-												duration: reduceMotion ? 0 : CONTENT_DURATION,
-											}}
-										>
-											<Container className="max-w-none flex min-h-0 flex-1 flex-col pb-8 pt-4 sm:pt-6">
-												<MenuSearch
-													onBack={() => setView("nav")}
-													onNavigate={close}
+								<div className="relative z-10 flex min-h-0 flex-1 flex-col">
+									<Container className="max-w-none shrink-0 pt-8 sm:pt-10">
+										<div className="flex justify-end">
+											<button
+												ref={closeRef}
+												type="button"
+												onClick={close}
+												aria-label={t("menuClose")}
+												className="inline-flex min-h-11 min-w-11 items-center justify-center border border-transparent bg-foreground/40 p-2 transition-colors hover:border-primary-foreground/30 hover:bg-foreground/60 focus-visible:border-primary-foreground/40 focus-visible:bg-foreground/60"
+											>
+												<XMarkIcon
+													className="size-6 shrink-0"
+													aria-hidden="true"
 												/>
-											</Container>
-										</motion.div>
-									) : (
-										<motion.div
-											key="nav"
-											className="flex min-h-0 flex-1 flex-col overflow-x-hidden overflow-y-auto"
-											{...contentMotion}
-											transition={{
-												duration: reduceMotion ? 0 : CONTENT_DURATION,
-											}}
-										>
-											<Container className="max-w-none flex min-h-0 flex-1 pb-8 pt-4 sm:pt-6">
-												<div
-													className={cn(
-														"w-full",
-														isLg &&
-															"flex flex-1 gap-10 xl:gap-14",
-														isLg &&
-															!showDesktopPanel &&
-															"flex flex-1 items-center",
-														isLg && showDesktopPanel && "items-start",
-														!isLg && "relative flex min-h-0 flex-1 flex-col",
-													)}
+											</button>
+										</div>
+									</Container>
+
+									<div className="flex min-h-0 flex-1 flex-col overflow-hidden">
+										<AnimatePresence mode="wait">
+											{view === "search" ? (
+												<motion.div
+													key="search"
+													className="flex min-h-0 flex-1 flex-col overflow-hidden"
+													{...contentMotion}
+													transition={{
+														duration: reduceMotion ? 0 : CONTENT_DURATION,
+													}}
 												>
-													{!isLg ? (
-														<AnimatePresence initial={false}>
-															{!showMobilePanel ? (
-																<motion.div
-																	key="mobile-primary"
-																	className="absolute inset-0 flex items-center"
-																	initial={mobilePrimaryEnter}
-																	animate={{ opacity: 1, x: 0 }}
-																	exit={mobilePrimaryExit}
-																	transition={panelSlideTransition}
+													<Container className="max-w-none flex min-h-0 flex-1 flex-col pb-8 pt-4 sm:pt-6">
+														<MenuSearch
+															onBack={() => setView("nav")}
+															onNavigate={close}
+														/>
+													</Container>
+												</motion.div>
+											) : (
+												<motion.div
+													key="nav"
+													className="flex min-h-0 flex-1 flex-col overflow-x-hidden overflow-y-auto"
+													{...contentMotion}
+													transition={{
+														duration: reduceMotion ? 0 : CONTENT_DURATION,
+													}}
+												>
+													<Container className="max-w-none flex min-h-0 flex-1 pb-8 pt-4 sm:pt-6">
+														<div
+															className={cn(
+																"w-full",
+																isLg && "flex flex-1 gap-10 xl:gap-14",
+																isLg &&
+																	!showDesktopPanel &&
+																	"flex flex-1 items-center",
+																isLg && showDesktopPanel && "items-start",
+																!isLg &&
+																	"relative flex min-h-0 flex-1 flex-col",
+															)}
+														>
+															{!isLg ? (
+																<AnimatePresence initial={false}>
+																	{!showMobilePanel ? (
+																		<motion.div
+																			key="mobile-primary"
+																			className="absolute inset-0 flex items-center"
+																			initial={mobilePrimaryEnter}
+																			animate={{ opacity: 1, x: 0 }}
+																			exit={mobilePrimaryExit}
+																			transition={panelSlideTransition}
+																		>
+																			<nav
+																				aria-label={t("primary")}
+																				className="w-full"
+																			>
+																				<ul className="flex flex-col gap-0.5">
+																					{primaryNavItems.map((item) => {
+																						const isActive =
+																							activeKey === item.key;
+
+																						return (
+																							<li
+																								key={item.key}
+																								className="group"
+																							>
+																								<button
+																									ref={(el) => {
+																										itemTriggerRefs.current[
+																											item.key
+																										] = el;
+																									}}
+																									type="button"
+																									aria-expanded={isActive}
+																									onClick={() =>
+																										activateItem(item.key)
+																									}
+																									onMouseEnter={() => {
+																										if (isLg) {
+																											setHoveredKey(item.key);
+																										}
+																									}}
+																									onMouseLeave={() => {
+																										if (!isLg) return;
+																										setHoveredKey((current) =>
+																											current === item.key
+																												? null
+																												: current,
+																										);
+																									}}
+																									onFocus={() =>
+																										setHoveredKey(item.key)
+																									}
+																									onBlur={() =>
+																										setHoveredKey((current) =>
+																											current === item.key
+																												? null
+																												: current,
+																										)
+																									}
+																									className={cn(
+																										primaryItemClass,
+																										isActive
+																											? "decoration-current opacity-100"
+																											: "opacity-45 focus-visible:decoration-current focus-visible:opacity-100 lg:hover:decoration-current lg:hover:opacity-100",
+																									)}
+																								>
+																									<span
+																										className={
+																											primaryLabelRowClass
+																										}
+																									>
+																										<span>{t(item.key)}</span>
+																										{!isActive && (
+																											<DirectionalIcon
+																												icon={ArrowRightIcon}
+																												className={
+																													primaryItemArrowClass
+																												}
+																											/>
+																										)}
+																									</span>
+																								</button>
+																							</li>
+																						);
+																					})}
+																				</ul>
+																			</nav>
+																		</motion.div>
+																	) : (
+																		activeItem && (
+																			<motion.div
+																				key={`mobile-panel-${activeItem.key}`}
+																				className="absolute inset-0 flex flex-col overflow-y-auto"
+																				initial={panelSlideInitial}
+																				animate={{ opacity: 1, x: 0 }}
+																				exit={panelSlideExit}
+																				transition={panelSlideTransition}
+																			>
+																				<button
+																					type="button"
+																					onClick={goBackMobile}
+																					className="mb-6 inline-flex items-center gap-2 text-small text-primary-foreground/60 transition-colors hover:text-primary-foreground"
+																				>
+																					<DirectionalIcon
+																						icon={ArrowLeftIcon}
+																						className="size-4 shrink-0"
+																					/>
+																					{t("searchBack")}
+																				</button>
+																				<NavSecondaryPanel
+																					item={activeItem}
+																					onNavigate={close}
+																				/>
+																			</motion.div>
+																		)
+																	)}
+																</AnimatePresence>
+															) : (
+																<div
+																	className={cn(
+																		"shrink-0 lg:max-w-[min(100%,22rem)]",
+																		"flex flex-1 items-center self-stretch",
+																	)}
 																>
 																	<nav
 																		aria-label={t("primary")}
@@ -492,7 +607,9 @@ export function NavDrawer() {
 																									: "opacity-45 focus-visible:decoration-current focus-visible:opacity-100 lg:hover:decoration-current lg:hover:opacity-100",
 																							)}
 																						>
-																							<span className={primaryLabelRowClass}>
+																							<span
+																								className={primaryLabelRowClass}
+																							>
 																								<span>{t(item.key)}</span>
 																								{!isActive && (
 																									<DirectionalIcon
@@ -509,159 +626,64 @@ export function NavDrawer() {
 																			})}
 																		</ul>
 																	</nav>
-																</motion.div>
-															) : (
-																activeItem && (
-																	<motion.div
-																		key={`mobile-panel-${activeItem.key}`}
-																		className="absolute inset-0 flex flex-col overflow-y-auto"
-																		initial={panelSlideInitial}
-																		animate={{ opacity: 1, x: 0 }}
-																		exit={panelSlideExit}
-																		transition={panelSlideTransition}
-																	>
-																		<button
-																			type="button"
-																			onClick={goBackMobile}
-																			className="mb-6 inline-flex items-center gap-2 text-small text-primary-foreground/60 transition-colors hover:text-primary-foreground"
+																</div>
+															)}
+
+															{showDesktopPanel && activeItem && (
+																<div className="hidden min-w-0 flex-1 self-start lg:block lg:max-w-md xl:max-w-lg">
+																	<AnimatePresence mode="wait">
+																		<motion.div
+																			key={activeItem.key}
+																			initial={panelSlideInitial}
+																			animate={{ opacity: 1, x: 0 }}
+																			exit={panelSlideExit}
+																			transition={panelSlideTransition}
 																		>
-																			<DirectionalIcon
-																				icon={ArrowLeftIcon}
-																				className="size-4 shrink-0"
+																			<NavSecondaryPanel
+																				item={activeItem}
+																				onNavigate={close}
 																			/>
-																			{t("searchBack")}
-																		</button>
-																		<NavSecondaryPanel
-																			item={activeItem}
-																			onNavigate={close}
-																		/>
-																	</motion.div>
-																)
+																		</motion.div>
+																	</AnimatePresence>
+																</div>
 															)}
-														</AnimatePresence>
-													) : (
-														<div
-															className={cn(
-																"shrink-0 lg:max-w-[min(100%,22rem)]",
-																"flex flex-1 items-center self-stretch",
-															)}
+														</div>
+													</Container>
+												</motion.div>
+											)}
+										</AnimatePresence>
+									</div>
+
+									{view === "nav" && (
+										<footer className="relative z-10 mt-auto shrink-0 border-t border-primary-foreground/20 bg-foreground">
+											<Container className="max-w-none py-4">
+												<div className="flex items-center justify-between gap-4">
+													<LanguageSwitcher
+														variant="group"
+														overlay
+														onLocaleChange={close}
+													/>
+													<div className="flex items-center gap-3">
+														<button
+															type="button"
+															onClick={() => setView("search")}
+															aria-label={t("searchOpen")}
+															className={overlayFooterIconButtonClass}
 														>
-															<nav aria-label={t("primary")} className="w-full">
-																<ul className="flex flex-col gap-0.5">
-																	{primaryNavItems.map((item) => {
-																		const isActive = activeKey === item.key;
-
-																		return (
-																			<li key={item.key} className="group">
-																				<button
-																					ref={(el) => {
-																						itemTriggerRefs.current[item.key] =
-																							el;
-																					}}
-																					type="button"
-																					aria-expanded={isActive}
-																					onClick={() => activateItem(item.key)}
-																					onMouseEnter={() => {
-																						if (isLg) {
-																							setHoveredKey(item.key);
-																						}
-																					}}
-																					onMouseLeave={() => {
-																						if (!isLg) return;
-																						setHoveredKey((current) =>
-																							current === item.key
-																								? null
-																								: current,
-																						);
-																					}}
-																					onFocus={() => setHoveredKey(item.key)}
-																					onBlur={() =>
-																						setHoveredKey((current) =>
-																							current === item.key
-																								? null
-																								: current,
-																						)
-																					}
-																					className={cn(
-																						primaryItemClass,
-																						isActive
-																							? "decoration-current opacity-100"
-																							: "opacity-45 focus-visible:decoration-current focus-visible:opacity-100 lg:hover:decoration-current lg:hover:opacity-100",
-																					)}
-																				>
-																					<span className={primaryLabelRowClass}>
-																						<span>{t(item.key)}</span>
-																						{!isActive && (
-																							<DirectionalIcon
-																								icon={ArrowRightIcon}
-																								className={primaryItemArrowClass}
-																							/>
-																						)}
-																					</span>
-																				</button>
-																			</li>
-																		);
-																	})}
-																</ul>
-															</nav>
-														</div>
-													)}
-
-													{showDesktopPanel && activeItem && (
-														<div className="hidden min-w-0 flex-1 self-start lg:block lg:max-w-md xl:max-w-lg">
-															<AnimatePresence mode="wait">
-																<motion.div
-																	key={activeItem.key}
-																	initial={panelSlideInitial}
-																	animate={{ opacity: 1, x: 0 }}
-																	exit={panelSlideExit}
-																	transition={panelSlideTransition}
-																>
-																	<NavSecondaryPanel
-																		item={activeItem}
-																		onNavigate={close}
-																	/>
-																</motion.div>
-															</AnimatePresence>
-														</div>
-													)}
+															<MagnifyingGlassIcon
+																className="size-5 shrink-0"
+																aria-hidden="true"
+															/>
+															<span className="visually-hidden">
+																{t("searchLabel")}
+															</span>
+														</button>
+													</div>
 												</div>
 											</Container>
-										</motion.div>
+										</footer>
 									)}
-								</AnimatePresence>
-							</div>
-
-							{view === "nav" && (
-								<footer className="relative z-10 mt-auto shrink-0 border-t border-primary-foreground/20 bg-foreground">
-									<Container className="max-w-none py-4">
-										<div className="flex items-center justify-between gap-4">
-											<LanguageSwitcher
-												variant="group"
-												overlay
-												onLocaleChange={close}
-											/>
-											<div className="flex items-center gap-3">
-												<button
-													type="button"
-													onClick={() => setView("search")}
-													aria-label={t("searchOpen")}
-													className={overlayFooterIconButtonClass}
-												>
-													<MagnifyingGlassIcon
-														className="size-5 shrink-0"
-														aria-hidden="true"
-													/>
-													<span className="visually-hidden">
-														{t("searchLabel")}
-													</span>
-												</button>
-											</div>
-										</div>
-									</Container>
-								</footer>
-							)}
-						</div>
+								</div>
 							</motion.div>
 						)}
 					</AnimatePresence>,
