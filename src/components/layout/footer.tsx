@@ -1,4 +1,5 @@
 import { ArrowRightIcon, ArrowUpRightIcon } from "@heroicons/react/24/outline";
+import NextImage from "next/image";
 import { getTranslations } from "next-intl/server";
 import { Logo } from "@/components/layout/logo";
 import { Container } from "@/components/ui/container";
@@ -119,8 +120,20 @@ export async function Footer() {
 		<footer className="relative mt-20 overflow-hidden border-t border-foreground/20">
 			<div
 				aria-hidden="true"
-				className="absolute inset-0 scale-125 bg-[url('/menu/1.jpg')] bg-cover bg-center blur-lg saturate-150 contrast-125"
-			/>
+				className="absolute inset-0 scale-125 saturate-150 contrast-125"
+			>
+				{/* Decorative, heavily blurred and behind dark overlays — a small
+				    low-quality variant is indistinguishable, so request a tiny
+				    width and let next/image serve AVIF/WebP. */}
+				<NextImage
+					src="/menu/1.jpg"
+					alt=""
+					fill
+					quality={40}
+					sizes="640px"
+					className="object-cover blur-lg"
+				/>
+			</div>
 			<div aria-hidden="true" className="absolute inset-0 bg-foreground/60" />
 			<div
 				aria-hidden="true"
