@@ -189,44 +189,6 @@
 	}
 }
 
-/* Boot loader fallback — mirrors inline critical CSS once the bundle loads. */
-html[data-page-loading]:not([data-page-loading="exiting"]) {
-	overflow: hidden;
-}
-
-html[data-page-loading]:not([data-page-loading="exiting"]) #khi-app-shell {
-	visibility: hidden;
-}
-
-html[data-page-loading="exiting"] #khi-app-shell {
-	visibility: visible;
-}
-
-html[data-page-loading="exiting"] #khi-app-header {
-	opacity: 1;
-	filter: none;
-}
-
-html[data-page-loading="exiting"] {
-	overflow: hidden;
-}
-
-@media (prefers-reduced-motion: reduce) {
-	html[data-page-loading]:not([data-page-loading="exiting"]) #khi-app-shell {
-		visibility: visible;
-	}
-
-	html[data-page-loading]:not([data-page-loading="exiting"]) {
-		overflow: auto;
-	}
-
-	html[data-page-loading="exiting"] #khi-app-content {
-		animation: none;
-		filter: none;
-		opacity: 1;
-	}
-}
-
 /* Accessibility: respect users who reduce motion (Motion is in the stack).
    Unlayered + !important so it always wins, neutralizing animation, transition,
    and smooth-scroll globally. */
@@ -651,5 +613,76 @@ html[data-page-loading="exiting"] {
 			animation-play-state: paused;
 		}
 	}
+}
+
+/* ============================================================================
+   SHELL COMPONENT STYLES
+   Folded in from the audio-bar component so the shell ships as ONE
+   render-blocking stylesheet (no extra critical-path CSS request). Kept
+   outside @layer on purpose — these need to win over utilities, matching how
+   the component-scoped sheets behaved before the merge.
+   ========================================================================== */
+
+/* --- Audio player bar range sliders (was audio-player.css) ----------------- *
+   Hairline range sliders, square thumb, token colors. Fill direction follows
+   the document `dir`; Firefox handles RTL natively via ::-moz-range-progress,
+   WebKit needs the gradient flipped. */
+.khi-audio-range {
+	appearance: none;
+	-webkit-appearance: none;
+	height: 16px;
+	background: transparent;
+	cursor: pointer;
+}
+
+.khi-audio-range:focus-visible {
+	outline: 2px solid var(--color-ring);
+	outline-offset: 2px;
+}
+
+.khi-audio-range::-webkit-slider-runnable-track {
+	height: 2px;
+	background: linear-gradient(
+		to right,
+		var(--color-foreground) calc(var(--progress, 0) * 100%),
+		var(--color-border) calc(var(--progress, 0) * 100%)
+	);
+}
+
+[dir="rtl"] .khi-audio-range::-webkit-slider-runnable-track {
+	background: linear-gradient(
+		to left,
+		var(--color-foreground) calc(var(--progress, 0) * 100%),
+		var(--color-border) calc(var(--progress, 0) * 100%)
+	);
+}
+
+.khi-audio-range::-webkit-slider-thumb {
+	-webkit-appearance: none;
+	appearance: none;
+	width: 10px;
+	height: 10px;
+	margin-top: -4px;
+	border: none;
+	border-radius: 0;
+	background: var(--color-foreground);
+}
+
+.khi-audio-range::-moz-range-track {
+	height: 2px;
+	background: var(--color-border);
+}
+
+.khi-audio-range::-moz-range-progress {
+	height: 2px;
+	background: var(--color-foreground);
+}
+
+.khi-audio-range::-moz-range-thumb {
+	width: 10px;
+	height: 10px;
+	border: none;
+	border-radius: 0;
+	background: var(--color-foreground);
 }
 

@@ -20,8 +20,8 @@ import { formatDuration } from "@/lib/audio/format";
 import { waveformBars } from "@/lib/audio/waveform";
 import { homeInsetClass } from "@/lib/layout";
 import { cn } from "@/lib/utils";
-import "./audio-player.css";
 
+// .khi-audio-range styles live in globals.css (shell component styles).
 const SEEK_WAVE_BARS = 64;
 
 const controlButtonClass =

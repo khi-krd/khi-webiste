@@ -1,7 +1,12 @@
 import { audioDetailHref } from "@/lib/audio/resolve";
+import { projectDetailHref } from "@/lib/content/project-href";
 import { videoDetailHref } from "@/lib/video/resolve";
 import type { ContentType, FeaturedItem } from "@/types/content";
 import { TYPE_SEGMENTS } from "@/types/content";
+
+// Re-exported so existing `@/lib/content/href` importers keep working; the
+// definition lives in a zod-free module so client code can use it directly.
+export { projectDetailHref };
 
 function resolveNumericId(id: string, slug: string): number | null {
 	for (const value of [slug, id]) {
@@ -17,19 +22,6 @@ function resolveNumericId(id: string, slug: string): number | null {
 export function newsDetailHref(slug: string): string {
 	return `/news/${slug}`;
 }
-
-/** Locale-relative project card path — maps to the closest live collection page. */
-export function projectDetailHref(slug: string): string {
-	return PROJECT_HREFS[slug] ?? "/about";
-}
-
-const PROJECT_HREFS: Record<string, string> = {
-	"oral-history-archive": "/audio?type=speech",
-	"manuscript-digitization": "/writings/manuscripts",
-	"folk-music-collection": "/audio",
-	"traditional-dress-archive": "/gallery/threads-of-identity",
-	"photographic-heritage": "/gallery/city-of-poets",
-};
 
 /** Locale-relative gallery post path. */
 export function galleryDetailHref(slug: string): string {

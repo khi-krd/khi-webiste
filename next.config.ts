@@ -5,6 +5,11 @@ const mediaHost = process.env.NEXT_PUBLIC_MEDIA_HOST;
 
 const nextConfig: NextConfig = {
 	output: "standalone",
+	// Rewrite barrel imports (e.g. `motion/react`) to direct module paths so only
+	// the icons/animations actually used land in each route's client bundle.
+	experimental: {
+		optimizePackageImports: ["motion", "simple-icons"],
+	},
 	images: {
 		// Serve modern formats; AVIF first (smaller), WebP fallback. Browsers
 		// that support neither still get the original JPEG/PNG.

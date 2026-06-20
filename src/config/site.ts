@@ -1,5 +1,5 @@
 import type { Locale } from "@/i18n/routing";
-import { projectDetailHref } from "@/lib/content/href";
+import { projectDetailHref } from "@/lib/content/project-href";
 
 /**
  * Site-wide static configuration. Plain data only (NO JSX) so it can be imported

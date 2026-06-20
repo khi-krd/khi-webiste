@@ -1,23 +1,17 @@
 "use client";
 
 import { ArrowLeftIcon } from "@heroicons/react/24/outline";
-import { zodResolver } from "@hookform/resolvers/zod";
 import { useReducedMotion } from "motion/react";
 import { useTranslations } from "next-intl";
-import { useEffect, useMemo, useState } from "react";
-import { useForm } from "react-hook-form";
-import { z } from "zod";
+import { type FormEvent, useEffect, useMemo, useState } from "react";
 import { DirectionalIcon } from "@/components/ui/directional-icon";
 import { Input } from "@/components/ui/input";
 import { Link } from "@/components/ui/link";
 import { NAV_ITEMS, SEARCH_SUGGESTION_KEYS } from "@/config/site";
 import { cn } from "@/lib/utils";
 
-const searchSchema = z.object({
-	q: z.string().min(2),
-});
-
-type SearchFormValues = z.infer<typeof searchSchema>;
+/** Min characters before we filter the catalog or flag a too-short query. */
+const MIN_QUERY_LENGTH = 2;
 
 type SearchResult = {
 	id: string;
@@ -146,20 +140,13 @@ export function MenuSearch({ onBack, onNavigate }: MenuSearchProps) {
 	const reduceMotion = useReducedMotion();
 	const [isExpanded, setIsExpanded] = useState(false);
 
-	const {
-		register,
-		handleSubmit,
-		watch,
-		formState: { errors, isSubmitted },
-	} = useForm<SearchFormValues>({
-		resolver: zodResolver(searchSchema),
-		defaultValues: { q: "" },
-	});
+	const [query, setQuery] = useState("");
+	const [submitted, setSubmitted] = useState(false);
 
-	const query = watch("q") ?? "";
 	const trimmedQuery = query.trim();
 	const hasQuery = trimmedQuery.length > 0;
-	const isSearching = trimmedQuery.length >= 2;
+	const isSearching = trimmedQuery.length >= MIN_QUERY_LENGTH;
+	const showError = submitted && trimmedQuery.length < MIN_QUERY_LENGTH;
 
 	const searchIndex = useMemo(() => buildSearchIndex(t), [t]);
 
@@ -204,7 +191,9 @@ export function MenuSearch({ onBack, onNavigate }: MenuSearchProps) {
 		!reduceMotion && "transition-[flex-grow] duration-400 ease-out",
 	);
 
-	function onSubmit(_values: SearchFormValues) {
+	function onSubmit(event: FormEvent<HTMLFormElement>) {
+		event.preventDefault();
+		setSubmitted(true);
 		// TODO(search): replace with API-driven search when endpoint exists.
 	}
 
@@ -241,15 +230,13 @@ export function MenuSearch({ onBack, onNavigate }: MenuSearchProps) {
 						{t("searchLabel")}
 					</h2>
 
-					<form
-						onSubmit={handleSubmit(onSubmit)}
-						className="flex w-full flex-col gap-3"
-					>
+					<form onSubmit={onSubmit} className="flex w-full flex-col gap-3">
 						<label htmlFor="menu-search-input" className="visually-hidden">
 							{t("searchLabel")}
 						</label>
 						<Input
 							id="menu-search-input"
+							name="q"
 							type="search"
 							variant="overlay"
 							fieldSize="lg"
@@ -257,13 +244,12 @@ export function MenuSearch({ onBack, onNavigate }: MenuSearchProps) {
 							autoComplete="off"
 							spellCheck={false}
 							placeholder={t("searchPlaceholder")}
-							aria-invalid={isSubmitted && errors.q ? true : undefined}
-							aria-describedby={
-								isSubmitted && errors.q ? "menu-search-error" : undefined
-							}
-							{...register("q")}
+							value={query}
+							onChange={(event) => setQuery(event.target.value)}
+							aria-invalid={showError ? true : undefined}
+							aria-describedby={showError ? "menu-search-error" : undefined}
 						/>
-						{isSubmitted && errors.q && (
+						{showError && (
 							<p
 								id="menu-search-error"
 								role="alert"
