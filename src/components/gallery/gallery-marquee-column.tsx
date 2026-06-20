@@ -35,6 +35,10 @@ function MarqueeCard({
 					aspectRatio={item.aspect}
 					sizes="(max-width: 1023px) 50vw, 25vw"
 					priority={priority}
+					// Next 16's next/image emits the preload + loading=eager for
+					// `priority`, but not fetchpriority=high — set it explicitly so the
+					// LCP candidate (and its preload) carries the high-priority hint.
+					fetchPriority={priority ? "high" : undefined}
 					loading={eager && !priority ? "eager" : undefined}
 					imageClassName={cn(
 						"transition-[filter,transform] duration-[1.1s]",
