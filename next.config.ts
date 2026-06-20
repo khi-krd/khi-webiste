@@ -4,6 +4,7 @@ import createNextIntlPlugin from "next-intl/plugin";
 const mediaHost = process.env.NEXT_PUBLIC_MEDIA_HOST;
 
 const nextConfig: NextConfig = {
+	output: "standalone",
 	images: {
 		// Serve modern formats; AVIF first (smaller), WebP fallback. Browsers
 		// that support neither still get the original JPEG/PNG.

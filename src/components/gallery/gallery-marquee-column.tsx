@@ -102,13 +102,19 @@ export function GalleryMarqueeColumn({
 		"--marquee-duration": `${durationSeconds}s`,
 	} as CSSProperties;
 
+	// A reverse (down) track starts at translateY(-50%), so the *duplicate* copy
+	// is what's visible at load; an up track shows the original. Put priority
+	// (fetchpriority=high + preload) on whichever copy is the on-screen LCP
+	// candidate at t=0 so the visible element — not its off-screen twin — carries
+	// the hint.
+	const visibleCopyIsDuplicate = direction === "down";
 	const renderList = (hidden: boolean) => (
 		<ul className="flex flex-col" aria-hidden={hidden || undefined}>
 			{items.map((item, index) => (
 				<li key={`${hidden ? "dup" : "orig"}-${item.id}`} className="pb-2">
 					<MarqueeCard
 						item={item}
-						priority={!hidden && index === 0}
+						priority={index === 0 && hidden === visibleCopyIsDuplicate}
 						eager={index === 0}
 					/>
 				</li>
