@@ -6,7 +6,7 @@ import {
 	XMarkIcon,
 } from "@heroicons/react/24/outline";
 import NextImage from "next/image";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useRef, useState } from "react";
 import {
 	formatAspectRatio,
 	formatFileSizeBytes,
@@ -14,6 +14,7 @@ import {
 	type GalleryLightboxItem,
 } from "@/components/gallery/gallery-album-item";
 import { DirectionalIcon } from "@/components/ui/directional-icon";
+import { useScrollLock } from "@/lib/use-scroll-lock";
 
 export type { GalleryLightboxItem };
 
@@ -110,14 +111,7 @@ export function GalleryLightbox({
 		[activeIndex, items.length, onActiveIndexChange],
 	);
 
-	useEffect(() => {
-		if (activeIndex === null) return;
-		const previous = document.body.style.overflow;
-		document.body.style.overflow = "hidden";
-		return () => {
-			document.body.style.overflow = previous;
-		};
-	}, [activeIndex]);
+	useScrollLock(activeIndex !== null);
 
 	const onDialogKeyDown = (event: React.KeyboardEvent<HTMLDialogElement>) => {
 		const rtl = document.documentElement.dir === "rtl";

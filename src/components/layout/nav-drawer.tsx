@@ -25,6 +25,7 @@ import { Container } from "@/components/ui/container";
 import { DirectionalIcon } from "@/components/ui/directional-icon";
 import { Link } from "@/components/ui/link";
 import { NAV_DEFAULT_IMAGE, NAV_ITEMS, type NavItem } from "@/config/site";
+import { useScrollLock } from "@/lib/use-scroll-lock";
 import { cn } from "@/lib/utils";
 
 const overlayFooterIconButtonClass =
@@ -213,14 +214,7 @@ export function NavDrawer() {
 		setHoveredKey(null);
 	}, []);
 
-	useEffect(() => {
-		if (!open) return;
-		const previous = document.body.style.overflow;
-		document.body.style.overflow = "hidden";
-		return () => {
-			document.body.style.overflow = previous;
-		};
-	}, [open]);
+	useScrollLock(open);
 
 	useEffect(() => {
 		if (open) {

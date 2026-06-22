@@ -12,6 +12,7 @@ import {
 } from "react";
 import { createPortal } from "react-dom";
 import { Container } from "@/components/ui/container";
+import { useScrollLock } from "@/lib/use-scroll-lock";
 
 const VideoPlayer = dynamic(
 	() => import("@/components/ui/video-player").then((mod) => mod.VideoPlayer),
@@ -82,19 +83,15 @@ export function AboutIntroVideoModal({
 		[onClose],
 	);
 
+	useScrollLock(open);
+
 	useEffect(() => {
 		if (open) {
 			triggerRef.current = document.activeElement as HTMLElement | null;
-			document.body.style.overflow = "hidden";
 			requestAnimationFrame(() => closeRef.current?.focus());
 		} else {
-			document.body.style.overflow = "";
 			triggerRef.current?.focus();
 		}
-
-		return () => {
-			document.body.style.overflow = "";
-		};
 	}, [open]);
 
 	const overlayMotion = reduceMotion

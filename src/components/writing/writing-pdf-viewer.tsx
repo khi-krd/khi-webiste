@@ -27,6 +27,7 @@ import { ErrorState } from "@/components/ui/error-state";
 import { Spinner } from "@/components/ui/spinner";
 import { PdfPageScrubber } from "@/components/writing/writing-pdf-page-scrubber";
 import { useIsMobile } from "@/lib/use-is-mobile";
+import { useScrollLock } from "@/lib/use-scroll-lock";
 import { cn } from "@/lib/utils";
 import { getPdfFileOffers, pickDefaultPdfOffer } from "@/lib/writing/pdf-offer";
 import {
@@ -736,16 +737,7 @@ export function WritingPdfViewer({
 		stablePageRenderSizeRef.current = {};
 	}, [defaultOffer]);
 
-	useEffect(() => {
-		if (!isFullscreen) {
-			return;
-		}
-		const previous = document.body.style.overflow;
-		document.body.style.overflow = "hidden";
-		return () => {
-			document.body.style.overflow = previous;
-		};
-	}, [isFullscreen]);
+	useScrollLock(isFullscreen);
 
 	const selectOffer = useCallback((offer: WritingFileOffer) => {
 		setActiveOffer(offer);

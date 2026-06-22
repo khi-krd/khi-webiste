@@ -517,6 +517,41 @@
 	}
 }
 
+@layer components {
+	/* Top navigation progress — hairline, accent-tinted, transform-only (no
+	   layout work). Pinned across the inline axis via start-0/end-0 utilities;
+	   grows from the LEADING edge. transform-origin has no logical keyword, so we
+	   flip it for RTL the same way .skeleton/.draw-border do. */
+	.route-progress {
+		background-color: var(--color-accent);
+		transform-origin: left;
+		transform: scaleX(0);
+		opacity: 0;
+		transition:
+			transform 0.2s ease-out,
+			opacity 0.2s ease-out;
+	}
+	:where([dir="rtl"]) .route-progress {
+		transform-origin: right;
+	}
+	/* Pending: creep toward 90% while waiting for the route to commit. */
+	.route-progress[data-active] {
+		opacity: 1;
+		transform: scaleX(0.9);
+		transition:
+			transform 8s cubic-bezier(0.1, 0.8, 0.2, 1),
+			opacity 0.1s ease-out;
+	}
+	/* Commit: snap to full, then fade out. */
+	.route-progress[data-finishing] {
+		opacity: 0;
+		transform: scaleX(1);
+		transition:
+			transform 0.2s ease-out,
+			opacity 0.25s ease-out;
+	}
+}
+
 /* --- Visually hidden (sr-only) -------------------------------------------
    Standard clip/position technique — content stays in the accessibility tree
    (NOT display:none). The `-focusable` variant reverts to normal flow when it
