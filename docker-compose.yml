@@ -11,3 +11,13 @@ services:
       API_BASE_URL: ${API_BASE_URL}
       USE_MOCK_DATA: ${USE_MOCK_DATA:-false}
     restart: unless-stopped
+    networks:
+      - dokploy-network
+    labels:
+      - traefik.enable=true
+      - traefik.docker.network=dokploy-network
+      - traefik.http.services.web.loadbalancer.server.port=3000
+
+networks:
+  dokploy-network:
+    external: true
