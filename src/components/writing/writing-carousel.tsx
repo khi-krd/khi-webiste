@@ -124,7 +124,7 @@ export function WritingCarousel({
 			) : (
 				<div className="px-6 pb-8 pt-2 sm:px-10 sm:pb-10 sm:pt-4">
 					<div
-						className="overflow-hidden"
+						className="touch-pan-y overflow-hidden"
 						ref={emblaRef}
 						data-lenis-prevent-horizontal
 						data-lenis-prevent-touch

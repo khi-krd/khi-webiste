@@ -87,7 +87,7 @@ export function AboutTeamShowcase({
 		<AboutSection bordered className={className} aria-label={sectionLabel}>
 			<AboutShell>
 				<div
-					className="overflow-hidden"
+					className="touch-pan-y overflow-hidden"
 					ref={emblaRef}
 					data-lenis-prevent-horizontal
 					data-lenis-prevent-touch

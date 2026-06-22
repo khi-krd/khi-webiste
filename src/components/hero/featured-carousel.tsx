@@ -135,7 +135,7 @@ export function FeaturedCarousel({
 
 	return (
 		<div className="relative">
-			<div className="overflow-hidden" ref={emblaRef}>
+			<div className="touch-pan-y overflow-hidden" ref={emblaRef}>
 				<ul className="flex" aria-live={isAutoPlaying ? "off" : "polite"}>
 					{slides.map((slide, index) => (
 						<li

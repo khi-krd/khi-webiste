@@ -67,7 +67,7 @@ export function ProjectsShowcase({
 			</header>
 
 			<div
-				className="overflow-hidden ps-6 sm:ps-8"
+				className="touch-pan-y overflow-hidden ps-6 sm:ps-8"
 				ref={emblaRef}
 				data-lenis-prevent-horizontal
 				data-lenis-prevent-touch

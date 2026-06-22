@@ -106,7 +106,7 @@ export function ServicesNavCarousel({
 		<div className={cn("mt-10 sm:mt-12 lg:mt-14", className)}>
 			<section aria-roledescription="carousel" aria-label={navLabel}>
 				<div
-					className="-mx-6 overflow-hidden sm:-mx-8"
+					className="-mx-6 touch-pan-y overflow-hidden sm:-mx-8"
 					ref={emblaRef}
 					data-lenis-prevent-horizontal
 					data-lenis-prevent-touch
