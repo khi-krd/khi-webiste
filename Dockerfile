@@ -32,8 +32,14 @@ COPY --from=builder /app/public ./public
 RUN mkdir .next && chown nextjs:nodejs .next
 COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
 COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
-
-RUN corepack enable pnpm && pnpm add sharp
+# Standalone tracing omits sharp; install the alpine/musl binary in isolation so npm
+# does not re-resolve the standalone package.json dependency tree.
+RUN mkdir /tmp/sharp-install && cd /tmp/sharp-install \
+    && npm init -y \
+    && npm install sharp \
+    && rm -rf /app/node_modules/sharp /app/node_modules/@img \
+    && cp -r node_modules/. /app/node_modules/ \
+    && chown -R nextjs:nodejs /app/node_modules/sharp /app/node_modules/@img
 
 USER nextjs
 EXPOSE 3000
