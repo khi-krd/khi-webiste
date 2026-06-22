@@ -686,3 +686,17 @@
 	background: var(--color-foreground);
 }
 
+/* ==========================================================================
+   Offscreen paint culling
+   --------------------------------------------------------------------------
+   Skip layout/paint for below-the-fold homepage sections until they near the
+   viewport — cuts main-thread work on weak mobile GPUs. Content stays in the
+   DOM (crawlable; no SEO impact). `auto` in contain-intrinsic-size remembers
+   the real size after first render, so the px value is only an initial estimate
+   to keep the scrollbar stable. Per-section estimate via `--cv-intrinsic`.
+   ========================================================================== */
+.cv-auto {
+	content-visibility: auto;
+	contain-intrinsic-size: auto var(--cv-intrinsic, 800px);
+}
+

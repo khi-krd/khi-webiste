@@ -9,7 +9,7 @@ export async function ImageCollectionSection() {
 
 	return (
 		<section
-			className="w-full overflow-hidden border-t border-border bg-background"
+			className="cv-auto w-full overflow-hidden border-t border-border bg-background [--cv-intrinsic:800px]"
 			aria-labelledby="image-collection-heading"
 			aria-roledescription="carousel"
 		>

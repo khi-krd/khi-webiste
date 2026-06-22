@@ -1,7 +1,3 @@
-import {
-	DEMO_VIDEO_TOPICS_EN,
-	withEnglishVideoOverlay,
-} from "@/lib/mock/videos-en";
 import type { Video, VideoTopic } from "@/types/video";
 
 /**
@@ -1033,10 +1029,9 @@ const RAW_VIDEOS: Video[] = [
 ];
 
 export function getAllDemoVideos(): Video[] {
-	return RAW_VIDEOS.map(withEnglishVideoOverlay);
+	return [...RAW_VIDEOS];
 }
 
 export function getDemoVideoById(id: number): Video | null {
-	const video = RAW_VIDEOS.find((item) => item.id === id);
-	return video ? withEnglishVideoOverlay(video) : null;
+	return RAW_VIDEOS.find((item) => item.id === id) ?? null;
 }

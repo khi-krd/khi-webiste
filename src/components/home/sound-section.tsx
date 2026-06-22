@@ -24,7 +24,7 @@ export async function SoundSection({
 		<section
 			aria-labelledby="sound-heading"
 			className={cn(
-				"relative w-full overflow-hidden border-t border-border",
+				"cv-auto relative w-full overflow-hidden border-t border-border [--cv-intrinsic:900px]",
 				compact ? "min-h-112 sm:min-h-144" : "min-h-svh",
 				className,
 			)}

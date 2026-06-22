@@ -37,9 +37,6 @@ export function resolveVideoContent(
 	locale: string,
 	video: Video,
 ): VideoContent | null {
-	if (locale === "en") {
-		return video.enContent ?? video.kmrContent ?? video.ckbContent;
-	}
 	if (locale === "ckb") {
 		return video.ckbContent ?? video.kmrContent;
 	}
@@ -68,13 +65,6 @@ export function resolveVideoTopicName(
 	locale: string,
 	video: Video,
 ): string | null {
-	if (locale === "en") {
-		return firstNonBlank(
-			video.topicNameEn,
-			video.topicNameKmr,
-			video.topicNameCkb,
-		);
-	}
 	if (locale === "ckb") {
 		return firstNonBlank(video.topicNameCkb, video.topicNameKmr);
 	}
@@ -85,14 +75,7 @@ function resolveBilingualStrings(
 	locale: string,
 	ckb: string[],
 	kmr: string[],
-	en?: string[],
 ): string[] {
-	if (locale === "en") {
-		if (en && en.length > 0) {
-			return en;
-		}
-		return kmr.length > 0 ? kmr : ckb;
-	}
 	if (locale === "ckb") {
 		return ckb.length > 0 ? ckb : kmr;
 	}
@@ -277,17 +260,11 @@ export function resolveVideoCard(
 				? (video.videoClipItems?.length ?? 0)
 				: null,
 		year: publishmentYear(video),
-		tags: resolveBilingualStrings(
-			locale,
-			video.tagsCkb,
-			video.tagsKmr,
-			video.tagsEn,
-		),
+		tags: resolveBilingualStrings(locale, video.tagsCkb, video.tagsKmr),
 		keywords: resolveBilingualStrings(
 			locale,
 			video.keywordsCkb,
 			video.keywordsKmr,
-			video.keywordsEn,
 		),
 		createdAt: video.createdAt,
 	};
@@ -339,17 +316,11 @@ export function resolveVideoDetail(
 		clips,
 		cast,
 		highlights,
-		tags: resolveBilingualStrings(
-			locale,
-			video.tagsCkb,
-			video.tagsKmr,
-			video.tagsEn,
-		),
+		tags: resolveBilingualStrings(locale, video.tagsCkb, video.tagsKmr),
 		keywords: resolveBilingualStrings(
 			locale,
 			video.keywordsCkb,
 			video.keywordsKmr,
-			video.keywordsEn,
 		),
 		createdAt: video.createdAt,
 		updatedAt: video.updatedAt,

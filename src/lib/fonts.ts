@@ -12,7 +12,7 @@ export const vazirmatn = Vazirmatn({
 });
 
 /**
- * ku/en (Latin) body family.
+ * ku (Latin) body family.
  */
 export const archivo = localFont({
 	src: [
@@ -47,7 +47,7 @@ export const archivo = localFont({
 });
 
 /**
- * ku/en (Latin) heading family.
+ * ku (Latin) heading family.
  */
 export const clashDisplay = localFont({
 	src: [

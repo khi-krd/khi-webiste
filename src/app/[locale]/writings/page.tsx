@@ -88,7 +88,7 @@ export default async function WritingsPage({
 						cta={t("page.hero.cta")}
 						learnMore={t("page.hero.learnMore")}
 						textureUrl={heroTexture}
-						showEmphasisItalic={locale === "ku" || locale === "en"}
+						showEmphasisItalic={locale === "ku"}
 					/>
 
 					<WritingCarousel

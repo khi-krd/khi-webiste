@@ -69,14 +69,9 @@ export function VideoCard({
 								sizes={
 									variant === "featured"
 										? "(max-width: 1024px) 100vw, 58vw"
-										: "(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 28vw"
+										: "(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 46vw"
 								}
-								className={cn(
-									"object-cover brightness-[0.78] contrast-[1.1] saturate-[0.65]",
-									"transition-[filter] duration-[1.35s]",
-									imageEase,
-									"group-fine:brightness-[0.88] group-fine:saturate-[0.8] motion-reduce:transition-none",
-								)}
+								className="object-cover brightness-[0.78] contrast-[1.1] saturate-[0.65]"
 							/>
 						) : (
 							<div

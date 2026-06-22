@@ -44,12 +44,7 @@ export function ProjectCard({ item, className }: ProjectCardProps) {
 							alt={item.image.alt ?? item.title}
 							fill
 							sizes="(max-width: 640px) 86vw, (max-width: 1024px) 58vw, 46vw"
-							className={cn(
-								"object-cover brightness-[0.82] contrast-[1.08] saturate-[0.7]",
-								"transition-[filter] duration-[1.35s]",
-								imageEase,
-								"group-fine:brightness-[0.92] group-fine:saturate-[0.82] motion-reduce:transition-none",
-							)}
+							className="object-cover brightness-[0.82] contrast-[1.08] saturate-[0.7]"
 						/>
 					</div>
 				</div>

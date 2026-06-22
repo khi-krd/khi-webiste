@@ -10,7 +10,7 @@ export async function ProjectsSection() {
 
 	return (
 		<section
-			className="w-full overflow-hidden border-t border-border bg-background py-12 sm:py-16 lg:py-20"
+			className="cv-auto w-full overflow-hidden border-t border-border bg-background py-12 [--cv-intrinsic:800px] sm:py-16 lg:py-20"
 			aria-labelledby="projects-heading"
 			aria-roledescription="carousel"
 		>

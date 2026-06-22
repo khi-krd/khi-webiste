@@ -67,7 +67,7 @@ export default async function VideosPage({
 				description={t("page.hero.description")}
 				cta={t("page.hero.cta")}
 				covers={heroCovers}
-				showEmphasisItalic={locale === "ku" || locale === "en"}
+				showEmphasisItalic={locale === "ku"}
 			/>
 
 			<VideoShortFilmsPromo />

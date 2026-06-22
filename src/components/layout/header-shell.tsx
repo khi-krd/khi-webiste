@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { APP_SCROLL_EVENT, type AppScrollDetail } from "@/lib/scroll-events";
 import { cn } from "@/lib/utils";
 
 /** Always show the bar when within this distance of the document top. */
@@ -10,6 +9,9 @@ const AT_TOP_THRESHOLD = 32;
 /** Do not hide until the user has scrolled past the hero/header band. */
 const HIDE_AFTER_THRESHOLD = 96;
 
+/** Ignore sub-pixel jitter so the bar doesn't flicker on tiny movements. */
+const SCROLL_DELTA = 4;
+
 type Props = {
 	children: React.ReactNode;
 };
@@ -17,32 +19,47 @@ type Props = {
 /**
  * Fixed header that hides while scrolling down and reappears when the user
  * scrolls up from anywhere on the page (not only at the document top).
+ *
+ * Reads native `scroll` events (rAF-throttled, passive) so it stays decoupled
+ * from the smooth-scroll provider and adds no per-frame main-thread cost.
  */
 export function HeaderShell({ children }: Props) {
 	const [visible, setVisible] = useState(true);
 
 	useEffect(() => {
-		const onScroll = (event: Event) => {
-			const { scroll, direction } = (event as CustomEvent<AppScrollDetail>)
-				.detail;
+		let lastScrollY = Math.max(0, window.scrollY);
+		let ticking = false;
 
-			if (scroll <= AT_TOP_THRESHOLD) {
+		const update = () => {
+			ticking = false;
+			const current = Math.max(0, window.scrollY);
+
+			if (current <= AT_TOP_THRESHOLD) {
 				setVisible(true);
+				lastScrollY = current;
 				return;
 			}
 
-			if (direction === -1) {
-				setVisible(true);
-				return;
-			}
+			const delta = current - lastScrollY;
+			if (Math.abs(delta) < SCROLL_DELTA) return;
 
-			if (direction === 1 && scroll > HIDE_AFTER_THRESHOLD) {
+			if (delta < 0) {
+				setVisible(true);
+			} else if (current > HIDE_AFTER_THRESHOLD) {
 				setVisible(false);
 			}
+
+			lastScrollY = current;
 		};
 
-		window.addEventListener(APP_SCROLL_EVENT, onScroll);
-		return () => window.removeEventListener(APP_SCROLL_EVENT, onScroll);
+		const onScroll = () => {
+			if (ticking) return;
+			ticking = true;
+			window.requestAnimationFrame(update);
+		};
+
+		window.addEventListener("scroll", onScroll, { passive: true });
+		return () => window.removeEventListener("scroll", onScroll);
 	}, []);
 
 	return (

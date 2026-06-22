@@ -22,7 +22,7 @@ export async function LatestUpdates() {
 
 	return (
 		<section
-			className="w-full bg-background py-12 sm:py-16 lg:py-20"
+			className="cv-auto w-full bg-background py-12 [--cv-intrinsic:1600px] sm:py-16 lg:py-20"
 			aria-labelledby="latest-updates-heading"
 		>
 			<header className="mb-8 px-6 sm:mb-10 sm:px-8">

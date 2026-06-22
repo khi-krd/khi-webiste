@@ -218,12 +218,10 @@ export const FOOTER_SOCIAL_LINKS: FooterLink[] = [
 export const LOCALE_LABELS: Record<Locale, string> = {
 	ckb: "کوردیی ناوەندی",
 	ku: "Kurmancî",
-	en: "English",
 };
 
-/** Compact locale codes for grouped toggle UI (CKB · KU · EN). */
+/** Compact locale codes for grouped toggle UI (CKB · KU). */
 export const LOCALE_SHORT_LABELS: Record<Locale, string> = {
 	ckb: "CKB",
 	ku: "KU",
-	en: "EN",
 };

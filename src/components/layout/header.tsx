@@ -37,13 +37,14 @@ export async function Header() {
 				<Logo />
 
 				<div className="flex items-center gap-3">
-					<div className="flex items-center">
+					{/* Services + Donate CTAs — hidden on mobile (logo + hamburger only);
+					    both remain reachable inside the drawer. Shown from `sm` up. */}
+					<div className="hidden items-center sm:flex">
 						{/* Services — secondary CTA: LIGHT fill (sunken), equal size to Donate.
-					    Hidden on the smallest screens to keep the mobile bar to CTA + menu.
 					    TODO(services): placeholder label + route. */}
 						<Link
 							href={SERVICES_HREF}
-							className={`${ctaBase} hidden bg-sunken text-foreground hover:bg-border sm:inline-flex`}
+							className={`${ctaBase} inline-flex bg-sunken text-foreground hover:bg-border`}
 						>
 							{t("services")}
 						</Link>

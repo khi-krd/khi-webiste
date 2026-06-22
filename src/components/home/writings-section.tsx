@@ -38,7 +38,7 @@ export async function WritingsSection() {
 
 	return (
 		<section
-			className="w-full border-t border-border bg-background py-12 sm:py-16 lg:py-20"
+			className="cv-auto w-full border-t border-border bg-background py-12 [--cv-intrinsic:1800px] sm:py-16 lg:py-20"
 			aria-labelledby="writings-heading"
 		>
 			<Container className="lg:grid lg:grid-cols-[minmax(0,1fr)_minmax(0,1.65fr)] lg:items-start lg:gap-20 xl:gap-24">

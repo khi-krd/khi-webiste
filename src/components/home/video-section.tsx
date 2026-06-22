@@ -33,7 +33,7 @@ export async function VideoSection() {
 
 	return (
 		<section
-			className="flex w-full flex-col overflow-hidden border-t border-border bg-background"
+			className="cv-auto flex w-full flex-col overflow-hidden border-t border-border bg-background [--cv-intrinsic:1200px]"
 			aria-labelledby="video-heading"
 		>
 			<header className="shrink-0 px-6 pt-12 pb-8 sm:px-8 sm:pt-16 sm:pb-10 lg:pt-20">

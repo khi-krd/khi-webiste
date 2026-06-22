@@ -38,6 +38,20 @@ const titleClass: Record<NewsCardVariant, string> = {
 	wide: "text-h2 sm:text-h3",
 };
 
+/**
+ * `sizes` per variant, matching the real rendered column width in the home +
+ * news grids. Critical for mobile: the `small` rail is 2-up (~45vw), not 100vw —
+ * a wrong value here makes the browser fetch the full-width image variant.
+ */
+const sizesByVariant: Record<NewsCardVariant, string> = {
+	featured: "(max-width: 1024px) 100vw, 58vw",
+	tall: "(max-width: 1024px) 100vw, 58vw",
+	square: "(max-width: 640px) 100vw, (max-width: 1280px) 50vw, 33vw",
+	small: "(max-width: 640px) 45vw, (max-width: 1024px) 25vw, 18vw",
+	medium: "(max-width: 640px) 100vw, 50vw",
+	wide: "(max-width: 1024px) 100vw, 58vw",
+};
+
 export function NewsCard({
 	item,
 	variant,
@@ -62,17 +76,13 @@ export function NewsCard({
 		>
 			<div className="absolute inset-0 isolate">
 				<div className="absolute inset-0 overflow-hidden">
-					<div className="absolute -inset-[5%] origin-center transition-transform duration-[1.35s] ease-[cubic-bezier(0.25,0.46,0.45,0.94)] will-change-transform group-hover:scale-[1.06] motion-reduce:transition-none motion-reduce:duration-0 motion-reduce:group-hover:scale-100">
+					<div className="absolute -inset-[5%] origin-center transition-transform duration-[1.35s] ease-[cubic-bezier(0.25,0.46,0.45,0.94)] group-hover:scale-[1.06] motion-reduce:transition-none motion-reduce:duration-0 motion-reduce:group-hover:scale-100">
 						<NextImage
 							src={item.image.url}
 							alt={item.image.alt ?? item.title}
 							fill
-							sizes={
-								isFeatured
-									? "(max-width: 1024px) 100vw, 58vw"
-									: "(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 20vw"
-							}
-							className="object-cover brightness-[0.78] contrast-[1.1] saturate-[0.65] transition-[filter] duration-[1.35s] ease-[cubic-bezier(0.25,0.46,0.45,0.94)] group-hover:brightness-[0.88] group-hover:saturate-[0.8] motion-reduce:transition-none"
+							sizes={sizesByVariant[variant]}
+							className="object-cover brightness-[0.78] contrast-[1.1] saturate-[0.65]"
 						/>
 					</div>
 				</div>
