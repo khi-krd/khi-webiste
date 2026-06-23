@@ -1,5 +1,10 @@
 import { ArrowLeftIcon, ArrowRightIcon } from "@heroicons/react/24/outline";
 import NextImage from "next/image";
+import {
+	ScrollReveal,
+	ScrollRevealBlock,
+	ScrollRevealItem,
+} from "@/components/motion/scroll-reveal";
 import { Badge } from "@/components/ui/badge";
 import { DirectionalIcon } from "@/components/ui/directional-icon";
 import { Link } from "@/components/ui/link";
@@ -74,77 +79,87 @@ export function NewsPostView({
 }: NewsPostViewProps) {
 	return (
 		<article className={cn(homeInsetClass, "pb-16 sm:pb-20")}>
-			<header className="border-b border-border pb-8 sm:pb-10">
-				<Link
-					href="/news"
-					variant="nav"
-					className="label inline-flex items-center gap-2 font-medium text-muted no-underline"
-				>
-					<DirectionalIcon icon={ArrowLeftIcon} className="size-3.5" />
-					{backLabel}
-				</Link>
+			<ScrollReveal>
+				<ScrollRevealItem>
+					<header className="border-b border-border pb-8 sm:pb-10">
+						<Link
+							href="/news"
+							variant="nav"
+							className="label inline-flex items-center gap-2 font-medium text-muted no-underline"
+						>
+							<DirectionalIcon icon={ArrowLeftIcon} className="size-3.5" />
+							{backLabel}
+						</Link>
 
-				<div className="mt-6 flex flex-wrap items-center gap-3">
-					<Badge variant="outline" size="sm">
-						{categoryLabel}
-					</Badge>
-					<p className="text-small text-muted">{dateLabel}</p>
-					{readTimeLabel ? (
-						<p className="text-small text-muted">{readTimeLabel}</p>
-					) : null}
-				</div>
+						<div className="mt-6 flex flex-wrap items-center gap-3">
+							<Badge variant="outline" size="sm">
+								{categoryLabel}
+							</Badge>
+							<p className="text-small text-muted">{dateLabel}</p>
+							{readTimeLabel ? (
+								<p className="text-small text-muted">{readTimeLabel}</p>
+							) : null}
+						</div>
 
-				<h1 className="mt-5 max-w-4xl font-heading text-display font-bold leading-[1.05] text-balance">
-					{item.title}
-				</h1>
+						<h1 className="mt-5 max-w-4xl font-heading text-display font-bold leading-[1.05] text-balance">
+							{item.title}
+						</h1>
 
-				{authorLabel ? (
-					<p className="mt-4 text-body text-muted">{authorLabel}</p>
-				) : null}
-			</header>
+						{authorLabel ? (
+							<p className="mt-4 text-body text-muted">{authorLabel}</p>
+						) : null}
+					</header>
+				</ScrollRevealItem>
 
-			<div className="relative mt-8 aspect-[16/9] overflow-hidden border border-border bg-sunken sm:mt-10">
-				<NextImage
-					src={item.image.url}
-					alt={item.image.alt ?? item.title}
-					fill
-					sizes="(max-width: 1024px) 100vw, 960px"
-					className="object-cover"
-					priority
-				/>
-			</div>
+				<ScrollRevealItem>
+					<div className="relative mt-8 aspect-[16/9] overflow-hidden border border-border bg-sunken sm:mt-10">
+						<NextImage
+							src={item.image.url}
+							alt={item.image.alt ?? item.title}
+							fill
+							sizes="(max-width: 1024px) 100vw, 960px"
+							className="object-cover"
+							priority
+						/>
+					</div>
+				</ScrollRevealItem>
 
-			<div className="mx-auto mt-8 max-w-3xl text-start sm:mt-10">
-				{item.descriptionHtml ? (
-					<Prose
-						className="text-body leading-relaxed text-foreground"
-						dangerouslySetInnerHTML={{ __html: item.descriptionHtml }}
-					/>
-				) : (
-					<p className="text-body leading-relaxed text-foreground">
-						{item.excerpt}
-					</p>
-				)}
-			</div>
+				<ScrollRevealItem>
+					<div className="mx-auto mt-8 max-w-3xl text-start sm:mt-10">
+						{item.descriptionHtml ? (
+							<Prose
+								className="text-body leading-relaxed text-foreground"
+								dangerouslySetInnerHTML={{ __html: item.descriptionHtml }}
+							/>
+						) : (
+							<p className="text-body leading-relaxed text-foreground">
+								{item.excerpt}
+							</p>
+						)}
+					</div>
+				</ScrollRevealItem>
+			</ScrollReveal>
 
 			{previous || next ? (
-				<nav
-					aria-label={navLabel}
-					className="mt-12 grid border-t border-border sm:mt-16 sm:grid-cols-2"
-				>
-					{previous ? (
-						<AdjacentLink
-							item={previous}
-							label={previousLabel}
-							direction="previous"
-						/>
-					) : (
-						<div className="hidden sm:block" />
-					)}
-					{next ? (
-						<AdjacentLink item={next} label={nextLabel} direction="next" />
-					) : null}
-				</nav>
+				<ScrollRevealBlock>
+					<nav
+						aria-label={navLabel}
+						className="mt-12 grid border-t border-border sm:mt-16 sm:grid-cols-2"
+					>
+						{previous ? (
+							<AdjacentLink
+								item={previous}
+								label={previousLabel}
+								direction="previous"
+							/>
+						) : (
+							<div className="hidden sm:block" />
+						)}
+						{next ? (
+							<AdjacentLink item={next} label={nextLabel} direction="next" />
+						) : null}
+					</nav>
+				</ScrollRevealBlock>
 			) : null}
 		</article>
 	);

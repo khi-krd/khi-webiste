@@ -13,6 +13,10 @@ import {
 	type AudioTracklistLabels,
 } from "@/components/audio/audio-tracklist";
 import { AudioWaveform } from "@/components/audio/audio-waveform";
+import {
+	ScrollReveal,
+	ScrollRevealItem,
+} from "@/components/motion/scroll-reveal";
 import { Badge } from "@/components/ui/badge";
 import { DirectionalIcon } from "@/components/ui/directional-icon";
 import { Link } from "@/components/ui/link";
@@ -123,20 +127,24 @@ export async function AudioPostView({ detail, locale }: AudioPostViewProps) {
 	return (
 		<article>
 			<div className={cn("pt-30 pb-10 sm:pt-34 lg:pb-12", homeInsetClass)}>
-				<Link
-					href="/audio"
-					className="group inline-flex w-fit items-center gap-2 no-underline"
-				>
-					<DirectionalIcon
-						icon={ArrowLeftIcon}
-						className="size-4 text-muted transition-colors group-fine:text-foreground"
-					/>
-					<span className="label font-medium transition-colors group-fine:text-foreground">
-						{t("post.back")}
-					</span>
-				</Link>
+				<ScrollReveal>
+					<ScrollRevealItem>
+						<Link
+							href="/audio"
+							className="group inline-flex w-fit items-center gap-2 no-underline"
+						>
+							<DirectionalIcon
+								icon={ArrowLeftIcon}
+								className="size-4 text-muted transition-colors group-fine:text-foreground"
+							/>
+							<span className="label font-medium transition-colors group-fine:text-foreground">
+								{t("post.back")}
+							</span>
+						</Link>
+					</ScrollRevealItem>
 
-				<div className="mt-10 grid gap-10 lg:grid-cols-[minmax(0,20rem)_minmax(0,1fr)] lg:items-start lg:gap-14 xl:grid-cols-[minmax(0,24rem)_minmax(0,1fr)] xl:gap-20">
+					<ScrollRevealItem>
+						<div className="mt-10 grid gap-10 lg:grid-cols-[minmax(0,20rem)_minmax(0,1fr)] lg:items-start lg:gap-14 xl:grid-cols-[minmax(0,24rem)_minmax(0,1fr)] xl:gap-20">
 					{/* cover column — Album-of-Memories records read as a framed,
 				    aged photograph: sunken mat around a sepia-tinted cover.
 				    Everything else stays flush and untinted. */}
@@ -254,21 +262,27 @@ export async function AudioPostView({ detail, locale }: AudioPostViewProps) {
 						</dl>
 					</div>
 				</div>
+					</ScrollRevealItem>
 
-				{stats.length > 0 ? (
-					<AudioStatsStrip stats={stats} className="mt-12 lg:mt-16" />
-				) : null}
+					{stats.length > 0 ? (
+						<ScrollRevealItem>
+							<AudioStatsStrip stats={stats} className="mt-12 lg:mt-16" />
+						</ScrollRevealItem>
+					) : null}
 
-				<AudioTracklist
-					fileRows={detail.fileRows}
-					queue={detail.queue}
-					labels={tracklistLabels}
-					className="mt-12 lg:mt-16"
-				/>
+					<ScrollRevealItem>
+						<AudioTracklist
+							fileRows={detail.fileRows}
+							queue={detail.queue}
+							labels={tracklistLabels}
+							className="mt-12 lg:mt-16"
+						/>
+					</ScrollRevealItem>
 
-				{detail.brochures.length > 0 ? (
-					<div className="mt-12 lg:mt-16">
-						<AudioBrochures
+					{detail.brochures.length > 0 ? (
+						<ScrollRevealItem>
+							<div className="mt-12 lg:mt-16">
+								<AudioBrochures
 							title={t("brochures.title")}
 							items={detail.brochures}
 							openLabel={t("brochures.open")}
@@ -286,12 +300,14 @@ export async function AudioPostView({ detail, locale }: AudioPostViewProps) {
 								embedUrl: t("brochures.metadata.embedUrl"),
 							}}
 						/>
-					</div>
-				) : null}
+							</div>
+						</ScrollRevealItem>
+					) : null}
 
-				{detail.attachments.length > 0 ? (
-					<div className="mt-12 lg:mt-16">
-						<AudioAttachments
+					{detail.attachments.length > 0 ? (
+						<ScrollRevealItem>
+							<div className="mt-12 lg:mt-16">
+								<AudioAttachments
 							title={t("attachments.title")}
 							attachments={detail.attachments}
 							untitledLabel={t("attachments.untitled")}
@@ -304,11 +320,13 @@ export async function AudioPostView({ detail, locale }: AudioPostViewProps) {
 								OTHER: t("attachments.types.OTHER"),
 							}}
 						/>
-					</div>
-				) : null}
+							</div>
+						</ScrollRevealItem>
+					) : null}
 
-				{detail.tags.length > 0 || detail.keywords.length > 0 ? (
-					<div className="mt-12 space-y-6 border-t border-border pt-8 lg:mt-16">
+					{detail.tags.length > 0 || detail.keywords.length > 0 ? (
+						<ScrollRevealItem>
+							<div className="mt-12 space-y-6 border-t border-border pt-8 lg:mt-16">
 						{detail.tags.length > 0 ? (
 							<div>
 								<p className="label font-medium">{t("post.tags")}</p>
@@ -333,23 +351,27 @@ export async function AudioPostView({ detail, locale }: AudioPostViewProps) {
 								</div>
 							</div>
 						) : null}
-					</div>
-				) : null}
+							</div>
+						</ScrollRevealItem>
+					) : null}
 
-				<footer className="mt-12 flex flex-wrap items-center justify-between gap-4 border-t border-border pt-6 lg:mt-16">
-					<p className="text-label text-muted">
-						{t("post.published")}: {formatDate(locale, detail.createdAt)}
-						{detail.updatedAt !== detail.createdAt ? (
-							<>
-								{" · "}
-								{t("post.updated")}: {formatDate(locale, detail.updatedAt)}
-							</>
-						) : null}
-					</p>
-					<Link href="/audio" className="label font-medium no-underline">
-						{t("post.back")}
-					</Link>
-				</footer>
+					<ScrollRevealItem>
+						<footer className="mt-12 flex flex-wrap items-center justify-between gap-4 border-t border-border pt-6 lg:mt-16">
+							<p className="text-label text-muted">
+								{t("post.published")}: {formatDate(locale, detail.createdAt)}
+								{detail.updatedAt !== detail.createdAt ? (
+									<>
+										{" · "}
+										{t("post.updated")}: {formatDate(locale, detail.updatedAt)}
+									</>
+								) : null}
+							</p>
+							<Link href="/audio" className="label font-medium no-underline">
+								{t("post.back")}
+							</Link>
+						</footer>
+					</ScrollRevealItem>
+				</ScrollReveal>
 			</div>
 		</article>
 	);

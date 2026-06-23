@@ -1,4 +1,9 @@
 import { NewsCard } from "@/components/home/news-card";
+import {
+	ScrollReveal,
+	ScrollRevealBlock,
+	ScrollRevealItem,
+} from "@/components/motion/scroll-reveal";
 import { NewsClearFilters } from "@/components/news/news-clear-filters";
 import { NewsFilterBar } from "@/components/news/news-filter-bar";
 import { NewsPagination } from "@/components/news/news-pagination";
@@ -61,19 +66,21 @@ export function NewsShell({
 			)}
 			aria-labelledby="news-grid-heading"
 		>
-			<header className={cn(homeInsetClass, "mb-8 sm:mb-10")}>
-				<div className="max-w-2xl text-start">
-					<h2
-						id="news-grid-heading"
-						className="font-heading text-h1 font-bold leading-[1.1] text-balance"
-					>
-						{sectionTitle}
-					</h2>
-					{sectionDescription ? (
-						<p className="mt-3 text-body text-muted">{sectionDescription}</p>
-					) : null}
-				</div>
-			</header>
+			<ScrollRevealBlock className={cn(homeInsetClass, "mb-8 sm:mb-10")}>
+				<header>
+					<div className="max-w-2xl text-start">
+						<h2
+							id="news-grid-heading"
+							className="font-heading text-h1 font-bold leading-[1.1] text-balance"
+						>
+							{sectionTitle}
+						</h2>
+						{sectionDescription ? (
+							<p className="mt-3 text-body text-muted">{sectionDescription}</p>
+						) : null}
+					</div>
+				</header>
+			</ScrollRevealBlock>
 
 			<div
 				className={cn(
@@ -99,17 +106,18 @@ export function NewsShell({
 							) : null}
 						</div>
 					) : (
-						<div className="grid grid-cols-1 gap-3 sm:grid-cols-2 sm:gap-4 xl:grid-cols-3">
+						<ScrollReveal className="grid grid-cols-1 gap-3 sm:grid-cols-2 sm:gap-4 xl:grid-cols-3">
 							{items.map((item) => (
-								<NewsCard
-									key={item.id}
-									item={item}
-									variant="square"
-									categoryLabel={categoryLabels[item.category]}
-									className="min-h-64 sm:min-h-72"
-								/>
+								<ScrollRevealItem key={item.id}>
+									<NewsCard
+										item={item}
+										variant="square"
+										categoryLabel={categoryLabels[item.category]}
+										className="min-h-64 sm:min-h-72"
+									/>
+								</ScrollRevealItem>
 							))}
-						</div>
+						</ScrollReveal>
 					)}
 
 					{!isEmpty && totalPages > 1 ? (

@@ -1,5 +1,10 @@
 import { ArrowRightIcon } from "@heroicons/react/24/outline";
 import NextImage from "next/image";
+import {
+	ScrollReveal,
+	ScrollRevealBlock,
+	ScrollRevealItem,
+} from "@/components/motion/scroll-reveal";
 import { DirectionalIcon } from "@/components/ui/directional-icon";
 import { Link } from "@/components/ui/link";
 import { cn } from "@/lib/utils";
@@ -65,48 +70,62 @@ export function AudioHero({
 			/>
 
 			<div className="relative z-1 grid items-center gap-10 px-6 py-10 sm:px-10 sm:py-12 lg:grid-cols-[minmax(0,1fr)_auto] lg:gap-16 lg:px-14 lg:py-14">
-				<div className="max-w-2xl text-start">
-					<p className="label font-medium text-muted">
-						<span aria-hidden="true" className="me-2">
-							{"//"}
-						</span>
-						{eyebrow}
-					</p>
-
-					<h1 id="audio-hero-heading" className="mt-4 text-balance">
-						<span className="block font-heading text-[clamp(1.75rem,3.6vw,2.75rem)] font-bold leading-[1.12] text-foreground">
-							{title}
-						</span>
-						{titleEmphasis ? (
-							<span
-								className={cn(
-									"mt-1.5 block font-heading text-[clamp(1.25rem,2.2vw,1.75rem)] font-medium leading-[1.25] text-muted",
-									showEmphasisItalic && "italic",
-								)}
-							>
-								{titleEmphasis}
+				<ScrollReveal className="max-w-2xl text-start">
+					<ScrollRevealItem>
+						<p className="label font-medium text-muted">
+							<span aria-hidden="true" className="me-2">
+								{"//"}
 							</span>
-						) : null}
-					</h1>
+							{eyebrow}
+						</p>
+					</ScrollRevealItem>
+
+					<ScrollRevealItem>
+						<h1 id="audio-hero-heading" className="mt-4 text-balance">
+							<span className="block font-heading text-[clamp(1.75rem,3.6vw,2.75rem)] font-bold leading-[1.12] text-foreground">
+								{title}
+							</span>
+							{titleEmphasis ? (
+								<span
+									className={cn(
+										"mt-1.5 block font-heading text-[clamp(1.25rem,2.2vw,1.75rem)] font-medium leading-[1.25] text-muted",
+										showEmphasisItalic && "italic",
+									)}
+								>
+									{titleEmphasis}
+								</span>
+							) : null}
+						</h1>
+					</ScrollRevealItem>
 
 					{description ? (
-						<p className="mt-5 max-w-lg text-body leading-relaxed text-foreground/80">
-							{description}
-						</p>
+						<ScrollRevealItem>
+							<p className="mt-5 max-w-lg text-body leading-relaxed text-foreground/80">
+								{description}
+							</p>
+						</ScrollRevealItem>
 					) : null}
 
-					<Link href="#audio-content" variant="nav" className={primaryCtaClass}>
-						<span className="relative z-1">{cta}</span>
-						<DirectionalIcon
-							icon={ArrowRightIcon}
-							className="relative z-1 size-4"
-						/>
-					</Link>
-				</div>
+					<ScrollRevealItem>
+						<Link
+							href="#audio-content"
+							variant="nav"
+							className={primaryCtaClass}
+						>
+							<span className="relative z-1">{cta}</span>
+							<DirectionalIcon
+								icon={ArrowRightIcon}
+								className="relative z-1 size-4"
+							/>
+						</Link>
+					</ScrollRevealItem>
+				</ScrollReveal>
 
-				{/* record shelf — staggered heights, hairline frames, no effects */}
 				{coverA ? (
-					<div aria-hidden className="hidden items-end gap-3 lg:flex lg:gap-4">
+					<ScrollRevealBlock
+						aria-hidden
+						className="hidden items-end gap-3 lg:flex lg:gap-4"
+					>
 						{coverB ? (
 							<HeroCover src={coverB} sizeClass="size-28 xl:size-32" />
 						) : null}
@@ -114,7 +133,7 @@ export function AudioHero({
 						{coverC ? (
 							<HeroCover src={coverC} sizeClass="size-24 xl:size-28" />
 						) : null}
-					</div>
+					</ScrollRevealBlock>
 				) : null}
 			</div>
 		</header>

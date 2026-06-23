@@ -2,6 +2,11 @@ import { getTranslations } from "next-intl/server";
 import { AudioCard, type AudioCardProps } from "@/components/audio/audio-card";
 import { AudioFilterBar } from "@/components/audio/audio-filter-bar";
 import { AudioPagination } from "@/components/audio/audio-pagination";
+import {
+	ScrollReveal,
+	ScrollRevealBlock,
+	ScrollRevealItem,
+} from "@/components/motion/scroll-reveal";
 import { formatDuration } from "@/lib/audio/format";
 import { soundTypeLabel } from "@/lib/audio/sound-types";
 import { homeInsetClass } from "@/lib/layout";
@@ -85,12 +90,14 @@ export async function AudioShell({
 			aria-labelledby="audio-grid-heading"
 		>
 			<div className={homeInsetClass}>
-				<h2
-					id="audio-grid-heading"
-					className="font-heading text-display font-bold leading-[1.05] text-balance"
-				>
-					{title}
-				</h2>
+				<ScrollRevealBlock>
+					<h2
+						id="audio-grid-heading"
+						className="font-heading text-display font-bold leading-[1.05] text-balance"
+					>
+						{title}
+					</h2>
+				</ScrollRevealBlock>
 
 				<AudioFilterBar
 					soundTypes={soundTypes}
@@ -109,11 +116,13 @@ export async function AudioShell({
 						<p className="text-body text-muted">{noResultsMessage}</p>
 					</div>
 				) : (
-					<div className="mt-8 grid grid-cols-2 gap-3 sm:mt-10 sm:gap-4 lg:grid-cols-3 xl:grid-cols-4">
+					<ScrollReveal className="mt-8 grid grid-cols-2 gap-3 sm:mt-10 sm:gap-4 lg:grid-cols-3 xl:grid-cols-4">
 						{cardProps.map((card) => (
-							<AudioCard key={card.id} {...card} />
+							<ScrollRevealItem key={card.id}>
+								<AudioCard {...card} />
+							</ScrollRevealItem>
 						))}
-					</div>
+					</ScrollReveal>
 				)}
 
 				{!isEmpty && totalPages > 1 ? (

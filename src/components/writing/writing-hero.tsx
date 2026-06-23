@@ -1,5 +1,9 @@
 import { ArrowDownIcon, ArrowRightIcon } from "@heroicons/react/24/outline";
 import NextImage from "next/image";
+import {
+	ScrollReveal,
+	ScrollRevealItem,
+} from "@/components/motion/scroll-reveal";
 import { DirectionalIcon } from "@/components/ui/directional-icon";
 import { Link } from "@/components/ui/link";
 import { cn } from "@/lib/utils";
@@ -75,53 +79,61 @@ export function WritingHero({
 			<WritingHeroBackground textureUrl={textureUrl} />
 
 			<div className="relative z-1 px-6 pt-5 pb-8 text-center sm:px-10 sm:pt-6 sm:pb-9 lg:px-14 lg:pt-7 lg:pb-10">
-				<p className="label font-medium text-muted">
-					<span aria-hidden="true" className="me-2">
-						{"//"}
-					</span>
-					{eyebrow}
-				</p>
+				<ScrollReveal className="mx-auto max-w-4xl">
+					<ScrollRevealItem>
+						<p className="label font-medium text-muted">
+							<span aria-hidden="true" className="me-2">
+								{"//"}
+							</span>
+							{eyebrow}
+						</p>
+					</ScrollRevealItem>
 
-				<h1
-					id="writings-hero-heading"
-					className="mx-auto mt-3 max-w-4xl text-balance"
-				>
-					<span className="block font-heading text-[clamp(1.5rem,3.2vw,2.25rem)] font-medium leading-[1.2] text-foreground/80">
-						{title}
-					</span>
-					{titleEmphasis ? (
-						<span
-							className={cn(
-								"mt-2 block font-heading text-[clamp(1.875rem,4.8vw,3.25rem)] font-bold leading-[1.08] tracking-[-0.02em] text-foreground",
-								showEmphasisItalic && "font-semibold italic",
-							)}
+					<ScrollRevealItem>
+						<h1
+							id="writings-hero-heading"
+							className="mx-auto mt-3 max-w-4xl text-balance"
 						>
-							{titleEmphasis}
-						</span>
-					) : null}
-				</h1>
+							<span className="block font-heading text-[clamp(1.5rem,3.2vw,2.25rem)] font-medium leading-[1.2] text-foreground/80">
+								{title}
+							</span>
+							{titleEmphasis ? (
+								<span
+									className={cn(
+										"mt-2 block font-heading text-[clamp(1.875rem,4.8vw,3.25rem)] font-bold leading-[1.08] tracking-[-0.02em] text-foreground",
+										showEmphasisItalic && "font-semibold italic",
+									)}
+								>
+									{titleEmphasis}
+								</span>
+							) : null}
+						</h1>
+					</ScrollRevealItem>
 
-				<div className="mt-2 flex flex-col items-center">
-					<Link
-						href="#writings-content"
-						variant="nav"
-						className={primaryCtaClass}
-					>
-						<span className="relative z-1">{cta}</span>
-						<DirectionalIcon
-							icon={ArrowRightIcon}
-							className="relative z-1 size-4"
-						/>
-					</Link>
-					<Link
-						href="#writings-content"
-						variant="nav"
-						className={learnMoreClass}
-					>
-						{learnMore}
-						<ArrowDownIcon className="size-3.5" aria-hidden />
-					</Link>
-				</div>
+					<ScrollRevealItem>
+						<div className="mt-2 flex flex-col items-center">
+							<Link
+								href="#writings-content"
+								variant="nav"
+								className={primaryCtaClass}
+							>
+								<span className="relative z-1">{cta}</span>
+								<DirectionalIcon
+									icon={ArrowRightIcon}
+									className="relative z-1 size-4"
+								/>
+							</Link>
+							<Link
+								href="#writings-content"
+								variant="nav"
+								className={learnMoreClass}
+							>
+								{learnMore}
+								<ArrowDownIcon className="size-3.5" aria-hidden />
+							</Link>
+						</div>
+					</ScrollRevealItem>
+				</ScrollReveal>
 			</div>
 		</header>
 	);

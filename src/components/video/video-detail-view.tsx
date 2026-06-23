@@ -1,5 +1,9 @@
 import { ArrowLeftIcon } from "@heroicons/react/24/outline";
 import { getTranslations } from "next-intl/server";
+import {
+	ScrollReveal,
+	ScrollRevealItem,
+} from "@/components/motion/scroll-reveal";
 import { Badge } from "@/components/ui/badge";
 import { DirectionalIcon } from "@/components/ui/directional-icon";
 import { Link } from "@/components/ui/link";
@@ -84,68 +88,75 @@ export async function VideoDetailView({
 	return (
 		<article>
 			<div className={cn("pt-30 pb-10 sm:pt-34 lg:pb-12", homeInsetClass)}>
-				<div className="mx-auto max-w-5xl">
-					<Link
-						href="/videos"
-						className="group inline-flex w-fit items-center gap-2 no-underline"
-					>
-						<DirectionalIcon
-							icon={ArrowLeftIcon}
-							className="size-4 text-muted transition-colors group-fine:text-foreground"
+				<ScrollReveal className="mx-auto max-w-5xl">
+					<ScrollRevealItem>
+						<Link
+							href="/videos"
+							className="group inline-flex w-fit items-center gap-2 no-underline"
+						>
+							<DirectionalIcon
+								icon={ArrowLeftIcon}
+								className="size-4 text-muted transition-colors group-fine:text-foreground"
+							/>
+							<span className="label font-medium transition-colors group-fine:text-foreground">
+								{t("detail.back")}
+							</span>
+						</Link>
+					</ScrollRevealItem>
+
+					<ScrollRevealItem>
+						<VideoPlayerFrame
+							className="mt-8"
+							videoType={detail.videoType}
+							playerKind={detail.playerKind}
+							playableSrc={detail.playableSrc}
+							title={detail.title}
+							poster={detail.coverUrl}
+							clips={detail.clips}
+							clipLabels={{
+								title: t("detail.clips"),
+								play: t("detail.playClip"),
+								nowPlaying: t("detail.nowPlaying"),
+							}}
+							noSourceLabel={t("detail.noSource")}
 						/>
-						<span className="label font-medium transition-colors group-fine:text-foreground">
-							{t("detail.back")}
-						</span>
-					</Link>
+					</ScrollRevealItem>
 
-					<VideoPlayerFrame
-						className="mt-8"
-						videoType={detail.videoType}
-						playerKind={detail.playerKind}
-						playableSrc={detail.playableSrc}
-						title={detail.title}
-						poster={detail.coverUrl}
-						clips={detail.clips}
-						clipLabels={{
-							title: t("detail.clips"),
-							play: t("detail.playClip"),
-							nowPlaying: t("detail.nowPlaying"),
-						}}
-						noSourceLabel={t("detail.noSource")}
-					/>
-
-					<div className="mt-8 flex flex-wrap items-center gap-2">
-						<Badge variant="outline" size="sm">
-							{t(`typeBadge.${detail.videoType}`)}
-						</Badge>
-						{detail.topicName ? (
-							<Badge variant="subtle" size="sm">
-								{detail.topicName}
-							</Badge>
-						) : null}
-						{detail.albumOfMemories ? (
+					<ScrollRevealItem>
+						<div className="mt-8 flex flex-wrap items-center gap-2">
 							<Badge variant="outline" size="sm">
-								{t("card.memoriesBadge")}
+								{t(`typeBadge.${detail.videoType}`)}
 							</Badge>
+							{detail.topicName ? (
+								<Badge variant="subtle" size="sm">
+									{detail.topicName}
+								</Badge>
+							) : null}
+							{detail.albumOfMemories ? (
+								<Badge variant="outline" size="sm">
+									{t("card.memoriesBadge")}
+								</Badge>
+							) : null}
+						</div>
+
+						<h1 className="mt-5 font-heading text-h1 font-bold leading-tight text-balance">
+							{detail.title}
+						</h1>
+
+						{credits ? (
+							<p className="mt-3 text-lead text-foreground/80">{credits}</p>
 						) : null}
-					</div>
 
-					<h1 className="mt-5 font-heading text-h1 font-bold leading-tight text-balance">
-						{detail.title}
-					</h1>
-
-					{credits ? (
-						<p className="mt-3 text-lead text-foreground/80">{credits}</p>
-					) : null}
-
-					{detail.description ? (
-						<p className="mt-5 max-w-prose text-body leading-relaxed text-foreground/90">
-							{detail.description}
-						</p>
-					) : null}
+						{detail.description ? (
+							<p className="mt-5 max-w-prose text-body leading-relaxed text-foreground/90">
+								{detail.description}
+							</p>
+						) : null}
+					</ScrollRevealItem>
 
 					{hasMeta ? (
-						<dl className="mt-10 grid grid-cols-1 gap-x-8 border-t border-border sm:grid-cols-2 [&>*]:border-b [&>*]:border-border">
+						<ScrollRevealItem>
+							<dl className="mt-10 grid grid-cols-1 gap-x-8 border-t border-border sm:grid-cols-2 [&>*]:border-b [&>*]:border-border">
 							{detail.director ? (
 								<MetaCell label={t("detail.director")}>
 									{detail.director}
@@ -197,52 +208,58 @@ export async function VideoDetailView({
 								</MetaCell>
 							) : null}
 						</dl>
+						</ScrollRevealItem>
 					) : null}
 
 					{detail.tags.length > 0 || detail.keywords.length > 0 ? (
-						<div className="mt-12 space-y-6 border-t border-border pt-8">
-							{detail.tags.length > 0 ? (
-								<div>
-									<p className="label font-medium">{t("detail.tags")}</p>
-									<div className="mt-3 flex flex-wrap gap-2">
-										{detail.tags.map((tag) => (
-											<Badge key={tag} variant="outline" size="sm">
-												{tag}
-											</Badge>
-										))}
+						<ScrollRevealItem>
+							<div className="mt-12 space-y-6 border-t border-border pt-8">
+								{detail.tags.length > 0 ? (
+									<div>
+										<p className="label font-medium">{t("detail.tags")}</p>
+										<div className="mt-3 flex flex-wrap gap-2">
+											{detail.tags.map((tag) => (
+												<Badge key={tag} variant="outline" size="sm">
+													{tag}
+												</Badge>
+											))}
+										</div>
 									</div>
-								</div>
-							) : null}
-							{detail.keywords.length > 0 ? (
-								<div>
-									<p className="label font-medium">{t("detail.keywords")}</p>
-									<div className="mt-3 flex flex-wrap gap-2">
-										{detail.keywords.map((keyword) => (
-											<Badge key={keyword} variant="subtle" size="sm">
-												{keyword}
-											</Badge>
-										))}
+								) : null}
+								{detail.keywords.length > 0 ? (
+									<div>
+										<p className="label font-medium">{t("detail.keywords")}</p>
+										<div className="mt-3 flex flex-wrap gap-2">
+											{detail.keywords.map((keyword) => (
+												<Badge key={keyword} variant="subtle" size="sm">
+													{keyword}
+												</Badge>
+											))}
+										</div>
 									</div>
-								</div>
-							) : null}
-						</div>
+								) : null}
+							</div>
+						</ScrollRevealItem>
 					) : null}
 
-					<footer className="mt-12 flex flex-wrap items-center justify-between gap-4 border-t border-border pt-6">
-						<p className="text-label text-muted">
-							{t("detail.published")}: {formatDate(locale, detail.createdAt)}
-							{detail.updatedAt !== detail.createdAt ? (
-								<>
-									{" · "}
-									{t("detail.updated")}: {formatDate(locale, detail.updatedAt)}
-								</>
-							) : null}
-						</p>
-						<Link href="/videos" className="label font-medium no-underline">
-							{t("detail.back")}
-						</Link>
-					</footer>
-				</div>
+					<ScrollRevealItem>
+						<footer className="mt-12 flex flex-wrap items-center justify-between gap-4 border-t border-border pt-6">
+							<p className="text-label text-muted">
+								{t("detail.published")}: {formatDate(locale, detail.createdAt)}
+								{detail.updatedAt !== detail.createdAt ? (
+									<>
+										{" · "}
+										{t("detail.updated")}:{" "}
+										{formatDate(locale, detail.updatedAt)}
+									</>
+								) : null}
+							</p>
+							<Link href="/videos" className="label font-medium no-underline">
+								{t("detail.back")}
+							</Link>
+						</footer>
+					</ScrollRevealItem>
+				</ScrollReveal>
 			</div>
 		</article>
 	);

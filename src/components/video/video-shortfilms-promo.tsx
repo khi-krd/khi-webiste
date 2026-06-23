@@ -1,5 +1,10 @@
 import { ArrowRightIcon } from "@heroicons/react/24/outline";
 import { getLocale, getTranslations } from "next-intl/server";
+import {
+	ScrollReveal,
+	ScrollRevealBlock,
+	ScrollRevealItem,
+} from "@/components/motion/scroll-reveal";
 import { DirectionalIcon } from "@/components/ui/directional-icon";
 import { Link } from "@/components/ui/link";
 import {
@@ -54,45 +59,50 @@ export async function VideoShortFilmsPromo() {
 			aria-labelledby="shortfilms-promo-heading"
 		>
 			<div className={homeInsetClass}>
-				<div className="flex flex-col gap-6 sm:flex-row sm:items-end sm:justify-between">
-					<div className="max-w-xl">
-						<p className="text-label font-medium text-primary-foreground/60">
-							{t("shortfilms.hero.eyebrow")}
-						</p>
-						<h2
-							id="shortfilms-promo-heading"
-							className="mt-2 font-heading text-h2 font-bold leading-tight text-balance sm:text-h1"
-						>
-							{t("shortfilms.promo.title")}
-						</h2>
-						<p className="mt-3 text-body text-primary-foreground/75">
-							{t("shortfilms.promo.description")}
-						</p>
-						<p className="mt-4 text-label text-primary-foreground/55">
-							{t("shortfilms.promo.count", {
-								count: totalCount,
-								formatted: String(totalCount),
-							})}
-						</p>
+				<ScrollRevealBlock>
+					<div className="flex flex-col gap-6 sm:flex-row sm:items-end sm:justify-between">
+						<div className="max-w-xl">
+							<p className="text-label font-medium text-primary-foreground/60">
+								{t("shortfilms.hero.eyebrow")}
+							</p>
+							<h2
+								id="shortfilms-promo-heading"
+								className="mt-2 font-heading text-h2 font-bold leading-tight text-balance sm:text-h1"
+							>
+								{t("shortfilms.promo.title")}
+							</h2>
+							<p className="mt-3 text-body text-primary-foreground/75">
+								{t("shortfilms.promo.description")}
+							</p>
+							<p className="mt-4 text-label text-primary-foreground/55">
+								{t("shortfilms.promo.count", {
+									count: totalCount,
+									formatted: String(totalCount),
+								})}
+							</p>
+						</div>
+
+						<Link href="/videos/shortfilms" variant="nav" className={ctaClass}>
+							<span>{t("shortfilms.promo.cta")}</span>
+							<DirectionalIcon icon={ArrowRightIcon} className="size-4" />
+						</Link>
 					</div>
+				</ScrollRevealBlock>
 
-					<Link href="/videos/shortfilms" variant="nav" className={ctaClass}>
-						<span>{t("shortfilms.promo.cta")}</span>
-						<DirectionalIcon icon={ArrowRightIcon} className="size-4" />
-					</Link>
-				</div>
-
-				<div
+				<ScrollReveal
 					className={cn(
 						"mt-8 flex gap-3 overflow-x-auto pb-2 sm:mt-10 sm:gap-4",
 					)}
 				>
 					{posters.map((card) => (
-						<div key={card.id} className="w-36 shrink-0 sm:w-40 lg:w-44">
+						<ScrollRevealItem
+							key={card.id}
+							className="w-36 shrink-0 sm:w-40 lg:w-44"
+						>
 							<VideoPosterCard {...card} />
-						</div>
+						</ScrollRevealItem>
 					))}
-				</div>
+				</ScrollReveal>
 			</div>
 		</section>
 	);

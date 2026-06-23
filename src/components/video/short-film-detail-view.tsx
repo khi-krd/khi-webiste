@@ -1,6 +1,10 @@
 import { ArrowLeftIcon, BookmarkIcon } from "@heroicons/react/24/outline";
 import NextImage from "next/image";
 import { getTranslations } from "next-intl/server";
+import {
+	ScrollReveal,
+	ScrollRevealItem,
+} from "@/components/motion/scroll-reveal";
 import { DirectionalIcon } from "@/components/ui/directional-icon";
 import { Link } from "@/components/ui/link";
 import { VideoPlayerFrame } from "@/components/video/video-player-frame";
@@ -173,8 +177,9 @@ export async function ShortFilmDetailView({
 			/>
 
 			<div className={cn(homeInsetClass, "py-10 sm:py-14")}>
-				<div className="grid gap-10 lg:grid-cols-[minmax(0,1fr)_minmax(0,22rem)] lg:gap-16">
-					<div>
+				<ScrollReveal className="grid gap-10 lg:grid-cols-[minmax(0,1fr)_minmax(0,22rem)] lg:gap-16">
+					<ScrollRevealItem>
+						<div>
 						<h2 className="font-heading text-h3 font-bold">
 							{t("shortfilms.detail.description")}
 						</h2>
@@ -207,9 +212,11 @@ export async function ShortFilmDetailView({
 							/>
 						</dl>
 					</div>
+					</ScrollRevealItem>
 
 					{detail.cast.length > 0 ? (
-						<div>
+						<ScrollRevealItem>
+							<div>
 							<h2 className="font-heading text-h3 font-bold">
 								{t("shortfilms.detail.cast")}
 							</h2>
@@ -219,11 +226,14 @@ export async function ShortFilmDetailView({
 								))}
 							</div>
 						</div>
+						</ScrollRevealItem>
 					) : null}
-				</div>
+				</ScrollReveal>
 
 				{detail.highlights.length > 0 ? (
-					<section className="mt-12 border-t border-primary-foreground/20 pt-12 sm:mt-16">
+					<ScrollReveal>
+						<ScrollRevealItem>
+							<section className="mt-12 border-t border-primary-foreground/20 pt-12 sm:mt-16">
 						<h2 className="font-heading text-h3 font-bold">
 							{t("shortfilms.detail.selectedClips")}
 						</h2>
@@ -233,10 +243,14 @@ export async function ShortFilmDetailView({
 							))}
 						</div>
 					</section>
+						</ScrollRevealItem>
+					</ScrollReveal>
 				) : null}
 
 				{relatedShortFilms.length > 0 ? (
-					<section className="mt-12 border-t border-primary-foreground/20 pt-12 sm:mt-16">
+					<ScrollReveal>
+						<ScrollRevealItem>
+							<section className="mt-12 border-t border-primary-foreground/20 pt-12 sm:mt-16">
 						<h2 className="font-heading text-h3 font-bold">
 							{t("shortfilms.detail.related")}
 						</h2>
@@ -248,6 +262,8 @@ export async function ShortFilmDetailView({
 							))}
 						</div>
 					</section>
+						</ScrollRevealItem>
+					</ScrollReveal>
 				) : null}
 			</div>
 		</article>

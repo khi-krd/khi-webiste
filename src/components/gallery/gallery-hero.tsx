@@ -1,6 +1,10 @@
 import { ArrowRightIcon } from "@heroicons/react/24/outline";
 import { galleryStripTrayClass } from "@/components/gallery/gallery-album-item";
 import { GalleryMarqueeColumn } from "@/components/gallery/gallery-marquee-column";
+import {
+	ScrollReveal,
+	ScrollRevealItem,
+} from "@/components/motion/scroll-reveal";
 import { DirectionalIcon } from "@/components/ui/directional-icon";
 import { Link } from "@/components/ui/link";
 import type { GalleryHeroColumns } from "@/lib/mock/gallery";
@@ -30,28 +34,34 @@ export function GalleryHero({
 			<div className="relative z-10 grid min-h-svh grid-cols-1 grid-rows-[auto_minmax(32rem,1fr)] lg:grid-cols-[minmax(0,5fr)_minmax(0,6fr)] lg:grid-rows-1">
 				<div className="flex flex-col px-6 pt-30 pb-8 sm:px-8 sm:pt-34 lg:pb-10">
 					<div className="flex flex-1 flex-col justify-center py-8 lg:py-10">
-						<div className="max-w-xl">
-							<p className="label font-medium">
-								<span aria-hidden="true" className="me-2">
-									{"//"}
-								</span>
-								{eyebrow}
-							</p>
-							<h1 id="gallery-hero-heading" className="display-title mt-4">
-								{title}
-							</h1>
-							<Link
-								href="#gallery-content"
-								variant="nav"
-								className={galleryCtaClass}
-							>
-								<span className="relative z-1">{cta}</span>
-								<DirectionalIcon
-									icon={ArrowRightIcon}
-									className="relative z-1 size-4"
-								/>
-							</Link>
-						</div>
+						<ScrollReveal className="max-w-xl">
+							<ScrollRevealItem>
+								<p className="label font-medium">
+									<span aria-hidden="true" className="me-2">
+										{"//"}
+									</span>
+									{eyebrow}
+								</p>
+							</ScrollRevealItem>
+							<ScrollRevealItem>
+								<h1 id="gallery-hero-heading" className="display-title mt-4">
+									{title}
+								</h1>
+							</ScrollRevealItem>
+							<ScrollRevealItem>
+								<Link
+									href="#gallery-content"
+									variant="nav"
+									className={galleryCtaClass}
+								>
+									<span className="relative z-1">{cta}</span>
+									<DirectionalIcon
+										icon={ArrowRightIcon}
+										className="relative z-1 size-4"
+									/>
+								</Link>
+							</ScrollRevealItem>
+						</ScrollReveal>
 					</div>
 				</div>
 

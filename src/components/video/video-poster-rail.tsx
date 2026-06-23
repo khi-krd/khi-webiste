@@ -1,4 +1,9 @@
 import { ArrowRightIcon } from "@heroicons/react/24/outline";
+import {
+	ScrollReveal,
+	ScrollRevealBlock,
+	ScrollRevealItem,
+} from "@/components/motion/scroll-reveal";
 import { DirectionalIcon } from "@/components/ui/directional-icon";
 import { Link } from "@/components/ui/link";
 import {
@@ -34,7 +39,7 @@ export function VideoPosterRail({
 }: VideoPosterRailProps) {
 	return (
 		<section id={id} className={cn("w-full", className)}>
-			<div
+			<ScrollRevealBlock
 				className={cn(homeInsetClass, "flex items-end justify-between gap-4")}
 			>
 				<h2
@@ -63,7 +68,7 @@ export function VideoPosterRail({
 						/>
 					</Link>
 				) : null}
-			</div>
+			</ScrollRevealBlock>
 
 			{cards.length === 0 ? (
 				emptyLabel ? (
@@ -74,18 +79,21 @@ export function VideoPosterRail({
 					</div>
 				) : null
 			) : (
-				<div
+				<ScrollReveal
 					className={cn(
 						homeInsetClass,
 						"mt-5 flex gap-3 overflow-x-auto pb-3 sm:gap-4",
 					)}
 				>
 					{cards.map((card) => (
-						<div key={card.id} className={cn("shrink-0", cardWidthClass)}>
+						<ScrollRevealItem
+							key={card.id}
+							className={cn("shrink-0", cardWidthClass)}
+						>
 							<VideoPosterCard {...card} />
-						</div>
+						</ScrollRevealItem>
 					))}
-				</div>
+				</ScrollReveal>
 			)}
 		</section>
 	);

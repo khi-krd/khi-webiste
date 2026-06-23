@@ -9,6 +9,9 @@ import {
 	homeSectionContentClass,
 	homeSectionHeaderClass,
 } from "@/components/contact/contact-shell";
+import {
+	ScrollRevealBlock,
+} from "@/components/motion/scroll-reveal";
 import { Button } from "@/components/ui/button";
 import { Field } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
@@ -91,30 +94,33 @@ export function ContactForm({ copy, className }: ContactFormProps) {
 
 	return (
 		<HomeSection className={className} aria-labelledby="contact-form-heading">
-			<header className={homeSectionHeaderClass}>
-				<div className="max-w-2xl text-start">
-					{copy.eyebrow ? (
-						<p className="label font-medium">{copy.eyebrow}</p>
-					) : null}
-					<h2
-						id="contact-form-heading"
-						className={cn(
-							"font-heading text-h1 font-bold leading-[1.1] text-balance",
-							copy.eyebrow ? "mt-2" : undefined,
-						)}
-					>
-						{copy.heading}
-					</h2>
-					{copy.description ? (
-						<p className="mt-3 text-body leading-relaxed text-muted">
-							{copy.description}
-						</p>
-					) : null}
-				</div>
-			</header>
+			<ScrollRevealBlock className={homeSectionHeaderClass}>
+				<header>
+					<div className="max-w-2xl text-start">
+						{copy.eyebrow ? (
+							<p className="label font-medium">{copy.eyebrow}</p>
+						) : null}
+						<h2
+							id="contact-form-heading"
+							className={cn(
+								"font-heading text-h1 font-bold leading-[1.1] text-balance",
+								copy.eyebrow ? "mt-2" : undefined,
+							)}
+						>
+							{copy.heading}
+						</h2>
+						{copy.description ? (
+							<p className="mt-3 text-body leading-relaxed text-muted">
+								{copy.description}
+							</p>
+						) : null}
+					</div>
+				</header>
+			</ScrollRevealBlock>
 
 			<div className={homeSectionContentClass}>
-				<div className="border border-border bg-surface p-6 sm:p-8 lg:p-10">
+				<ScrollRevealBlock>
+					<div className="border border-border bg-surface p-6 sm:p-8 lg:p-10">
 					{submitted ? (
 						<div
 							role="status"
@@ -221,7 +227,8 @@ export function ContactForm({ copy, className }: ContactFormProps) {
 							</div>
 						</form>
 					)}
-				</div>
+					</div>
+				</ScrollRevealBlock>
 			</div>
 		</HomeSection>
 	);

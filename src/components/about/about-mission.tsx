@@ -1,4 +1,8 @@
 import { AboutSection, AboutShell } from "@/components/about/about-shell";
+import {
+	ScrollReveal,
+	ScrollRevealItem,
+} from "@/components/motion/scroll-reveal";
 import { cn } from "@/lib/utils";
 
 type AboutMissionProps = {
@@ -12,21 +16,22 @@ export function AboutMission({ paragraphs, className }: AboutMissionProps) {
 			className={cn("pt-10 pb-8 sm:pt-12 sm:pb-10 lg:pt-14", className)}
 		>
 			<AboutShell prose>
-				<div className="space-y-5 sm:space-y-6">
+				<ScrollReveal className="flex flex-col gap-5 sm:gap-6">
 					{paragraphs.map((text, index) => (
-						<p
-							key={text.slice(0, 40)}
-							className={cn(
-								"leading-relaxed",
-								index === 0
-									? "text-lead text-foreground"
-									: "text-body text-foreground/90",
-							)}
-						>
-							{text}
-						</p>
+						<ScrollRevealItem key={text.slice(0, 40)}>
+							<p
+								className={cn(
+									"leading-relaxed",
+									index === 0
+										? "text-lead text-foreground"
+										: "text-body text-foreground/90",
+								)}
+							>
+								{text}
+							</p>
+						</ScrollRevealItem>
 					))}
-				</div>
+				</ScrollReveal>
 			</AboutShell>
 		</AboutSection>
 	);

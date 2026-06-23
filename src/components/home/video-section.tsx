@@ -4,6 +4,11 @@ import {
 	type HomeVideoCardItem,
 	VideoCard,
 } from "@/components/home/video-card";
+import {
+	ScrollReveal,
+	ScrollRevealBlock,
+	ScrollRevealItem,
+} from "@/components/motion/scroll-reveal";
 import { DirectionalIcon } from "@/components/ui/directional-icon";
 import { Link } from "@/components/ui/link";
 import { getVideoListing } from "@/lib/api/videos";
@@ -36,43 +41,45 @@ export async function VideoSection() {
 			className="cv-auto flex w-full flex-col overflow-hidden border-t border-border bg-background [--cv-intrinsic:1200px]"
 			aria-labelledby="video-heading"
 		>
-			<header className="shrink-0 px-6 pt-12 pb-8 sm:px-8 sm:pt-16 sm:pb-10 lg:pt-20">
-				<div className="flex flex-col gap-5 sm:flex-row sm:items-end sm:justify-between sm:gap-8">
-					<div className="max-w-2xl text-start">
-						<p className="label font-medium">{t("eyebrow")}</p>
-						<h2
-							id="video-heading"
-							className="mt-2 font-heading text-h1 font-bold leading-[1.1] text-balance"
-						>
-							{t("title")}
-						</h2>
-						<p className="mt-3 text-body text-muted">{t("description")}</p>
-					</div>
+			<ScrollRevealBlock className="shrink-0 px-6 pt-12 pb-8 sm:px-8 sm:pt-16 sm:pb-10 lg:pt-20">
+				<header>
+					<div className="flex flex-col gap-5 sm:flex-row sm:items-end sm:justify-between sm:gap-8">
+						<div className="max-w-2xl text-start">
+							<p className="label font-medium">{t("eyebrow")}</p>
+							<h2
+								id="video-heading"
+								className="mt-2 font-heading text-h1 font-bold leading-[1.1] text-balance"
+							>
+								{t("title")}
+							</h2>
+							<p className="mt-3 text-body text-muted">{t("description")}</p>
+						</div>
 
-					<Link href="/videos" variant="nav" className={viewAllClass}>
-						<span className="relative z-1">{t("viewAll")}</span>
-						<DirectionalIcon
-							icon={ArrowRightIcon}
-							className="relative z-1 size-4"
-						/>
-					</Link>
-				</div>
-			</header>
+						<Link href="/videos" variant="nav" className={viewAllClass}>
+							<span className="relative z-1">{t("viewAll")}</span>
+							<DirectionalIcon
+								icon={ArrowRightIcon}
+								className="relative z-1 size-4"
+							/>
+						</Link>
+					</div>
+				</header>
+			</ScrollRevealBlock>
 
 			<div className="px-6 pb-12 sm:px-8 sm:pb-16 lg:pb-20">
-				<div className="grid grid-cols-1 gap-3 sm:grid-cols-2 sm:gap-4 lg:grid-cols-12 lg:grid-rows-[minmax(28rem,1fr)_minmax(16rem,0.55fr)] lg:gap-4 lg:min-h-[min(100svh,56rem)]">
+				<ScrollReveal className="grid grid-cols-1 gap-3 sm:grid-cols-2 sm:gap-4 lg:grid-cols-12 lg:grid-rows-[minmax(28rem,1fr)_minmax(16rem,0.55fr)] lg:gap-4 lg:min-h-[min(100svh,56rem)]">
 					{featured ? (
-						<div className="relative aspect-video min-h-0 sm:col-span-2 lg:col-span-7 lg:row-start-1 lg:aspect-auto lg:h-full">
+						<ScrollRevealItem className="relative aspect-video min-h-0 sm:col-span-2 lg:col-span-7 lg:row-start-1 lg:aspect-auto lg:h-full">
 							<VideoCard
 								item={toItem(featured)}
 								categoryLabel={categoryLabel(featured)}
 								variant="featured"
 								fill
 							/>
-						</div>
+						</ScrollRevealItem>
 					) : null}
 
-					<div className="grid grid-cols-1 gap-3 sm:col-span-2 sm:grid-cols-2 sm:gap-4 lg:col-span-5 lg:col-start-8 lg:row-start-1 lg:h-full lg:grid-cols-1 lg:grid-rows-2 lg:gap-4">
+					<ScrollRevealItem className="grid grid-cols-1 gap-3 sm:col-span-2 sm:grid-cols-2 sm:gap-4 lg:col-span-5 lg:col-start-8 lg:row-start-1 lg:h-full lg:grid-cols-1 lg:grid-rows-2 lg:gap-4">
 						{second ? (
 							<div className="relative aspect-video min-h-0 lg:aspect-auto lg:h-full">
 								<VideoCard
@@ -91,28 +98,28 @@ export async function VideoSection() {
 								/>
 							</div>
 						) : null}
-					</div>
+					</ScrollRevealItem>
 
 					{fourth ? (
-						<div className="relative aspect-video min-h-0 lg:col-span-6 lg:row-start-2 lg:aspect-auto lg:h-full">
+						<ScrollRevealItem className="relative aspect-video min-h-0 lg:col-span-6 lg:row-start-2 lg:aspect-auto lg:h-full">
 							<VideoCard
 								item={toItem(fourth)}
 								categoryLabel={categoryLabel(fourth)}
 								fill
 							/>
-						</div>
+						</ScrollRevealItem>
 					) : null}
 
 					{fifth ? (
-						<div className="relative aspect-video min-h-0 lg:col-span-6 lg:col-start-7 lg:row-start-2 lg:aspect-auto lg:h-full">
+						<ScrollRevealItem className="relative aspect-video min-h-0 lg:col-span-6 lg:col-start-7 lg:row-start-2 lg:aspect-auto lg:h-full">
 							<VideoCard
 								item={toItem(fifth)}
 								categoryLabel={categoryLabel(fifth)}
 								fill
 							/>
-						</div>
+						</ScrollRevealItem>
 					) : null}
-				</div>
+				</ScrollReveal>
 			</div>
 		</section>
 	);

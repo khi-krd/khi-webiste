@@ -1,5 +1,8 @@
 import { ArrowLeftIcon } from "@heroicons/react/24/outline";
 import NextImage from "next/image";
+import {
+	ScrollRevealBlock,
+} from "@/components/motion/scroll-reveal";
 import { Badge } from "@/components/ui/badge";
 import { DirectionalIcon } from "@/components/ui/directional-icon";
 import { Link } from "@/components/ui/link";
@@ -92,7 +95,9 @@ export function WritingPostView({
 
 	return (
 		<article>
-			<div className={cn("pt-30 pb-10 sm:pt-34 lg:pb-12", homeInsetClass)}>
+			<ScrollRevealBlock
+				className={cn("pt-30 pb-10 sm:pt-34 lg:pb-12", homeInsetClass)}
+			>
 				<Link
 					href="/writings"
 					className="group inline-flex w-fit items-center gap-2 no-underline"
@@ -233,15 +238,16 @@ export function WritingPostView({
 						) : null}
 					</dl>
 				) : null}
-			</div>
+			</ScrollRevealBlock>
 
-			<section
-				className={cn(
-					"border-t border-border bg-sunken/40 py-12 sm:py-16",
-					homeInsetClass,
-				)}
-				aria-labelledby="writing-preview-heading"
-			>
+			<ScrollRevealBlock>
+				<section
+					className={cn(
+						"border-t border-border bg-sunken/40 py-12 sm:py-16",
+						homeInsetClass,
+					)}
+					aria-labelledby="writing-preview-heading"
+				>
 				<h2
 					id="writing-preview-heading"
 					className="font-heading text-h2 font-bold"
@@ -257,15 +263,17 @@ export function WritingPostView({
 					/>
 				</div>
 			</section>
+			</ScrollRevealBlock>
 
 			{seriesBooks.length > 0 ? (
-				<section
-					className={cn(
-						"border-t border-border py-12 sm:py-16",
-						homeInsetClass,
-					)}
-					aria-labelledby="writing-series-heading"
-				>
+				<ScrollRevealBlock>
+					<section
+						className={cn(
+							"border-t border-border py-12 sm:py-16",
+							homeInsetClass,
+						)}
+						aria-labelledby="writing-series-heading"
+					>
 					<h2
 						id="writing-series-heading"
 						className="font-heading text-h2 font-bold"
@@ -304,21 +312,24 @@ export function WritingPostView({
 						))}
 					</ol>
 				</section>
+				</ScrollRevealBlock>
 			) : null}
 
-			<footer
-				className={cn(
-					"border-t border-border py-8 text-small text-muted sm:py-10",
-					homeInsetClass,
-				)}
-			>
-				<p>
-					{publishedLabel}: {formatDate(locale, detail.createdAt)}
-				</p>
-				<p className="mt-1">
-					{updatedLabel}: {formatDate(locale, detail.updatedAt)}
-				</p>
-			</footer>
+			<ScrollRevealBlock>
+				<footer
+					className={cn(
+						"border-t border-border py-8 text-small text-muted sm:py-10",
+						homeInsetClass,
+					)}
+				>
+					<p>
+						{publishedLabel}: {formatDate(locale, detail.createdAt)}
+					</p>
+					<p className="mt-1">
+						{updatedLabel}: {formatDate(locale, detail.updatedAt)}
+					</p>
+				</footer>
+			</ScrollRevealBlock>
 		</article>
 	);
 }

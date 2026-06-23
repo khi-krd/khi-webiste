@@ -1,3 +1,4 @@
+import { ScrollRevealBlock } from "@/components/motion/scroll-reveal";
 import { NewsSidebarCard } from "@/components/news/news-sidebar-card";
 import type { NewsCategory, NewsItem } from "@/lib/mock/news";
 import { cn } from "@/lib/utils";
@@ -22,13 +23,15 @@ export function NewsSidebarPanel({
 			<h3 className="font-heading text-h3 font-bold">{title}</h3>
 
 			<ul className="mt-4 flex flex-col gap-3">
-				{items.map((item) => (
+				{items.map((item, index) => (
 					<li key={item.id}>
-						<NewsSidebarCard
-							item={item}
-							categoryLabel={categoryLabels[item.category]}
-							locale={locale}
-						/>
+						<ScrollRevealBlock delay={Math.min(index * 0.08, 0.32)}>
+							<NewsSidebarCard
+								item={item}
+								categoryLabel={categoryLabels[item.category]}
+								locale={locale}
+							/>
+						</ScrollRevealBlock>
 					</li>
 				))}
 			</ul>

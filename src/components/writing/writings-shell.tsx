@@ -1,4 +1,9 @@
 import {
+	ScrollReveal,
+	ScrollRevealBlock,
+	ScrollRevealItem,
+} from "@/components/motion/scroll-reveal";
+import {
 	WritingCategoryCarousel,
 	type WritingCategoryCarouselItem,
 } from "@/components/writing/writing-category-carousel";
@@ -67,12 +72,14 @@ export function WritingsShell({
 			aria-labelledby="writings-grid-heading"
 		>
 			<div className={homeInsetClass}>
-				<h2
-					id="writings-grid-heading"
-					className="font-heading text-display font-bold leading-[1.05] text-balance"
-				>
-					{title}
-				</h2>
+				<ScrollRevealBlock>
+					<h2
+						id="writings-grid-heading"
+						className="font-heading text-display font-bold leading-[1.05] text-balance"
+					>
+						{title}
+					</h2>
+				</ScrollRevealBlock>
 
 				<WritingCategoryCarousel
 					items={categoryCarouselItems}
@@ -97,11 +104,13 @@ export function WritingsShell({
 						<p className="text-body text-muted">{noResultsMessage}</p>
 					</div>
 				) : (
-					<div className="mt-8 grid grid-cols-1 gap-3 sm:grid-cols-2 sm:gap-4 lg:grid-cols-3 xl:grid-cols-4 sm:mt-10">
+					<ScrollReveal className="mt-8 grid grid-cols-1 gap-3 sm:grid-cols-2 sm:gap-4 lg:grid-cols-3 xl:grid-cols-4 sm:mt-10">
 						{cards.map((card) => (
-							<WritingGridCard key={card.id} {...card} />
+							<ScrollRevealItem key={card.id}>
+								<WritingGridCard {...card} />
+							</ScrollRevealItem>
 						))}
-					</div>
+					</ScrollReveal>
 				)}
 
 				{!isEmpty && totalPages > 1 ? (

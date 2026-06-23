@@ -6,6 +6,11 @@ import { useCallback, useEffect, useState } from "react";
 import { AboutSection, AboutShell } from "@/components/about/about-shell";
 import { AboutTeamPhoto } from "@/components/about/about-team-photo";
 import { SectionRuleHeading } from "@/components/about/section-rule-heading";
+import {
+	ScrollReveal,
+	ScrollRevealBlock,
+	ScrollRevealItem,
+} from "@/components/motion/scroll-reveal";
 import type { OfficeTeam } from "@/lib/mock/about";
 import { cn } from "@/lib/utils";
 
@@ -28,17 +33,17 @@ type AboutTeamShowcaseProps = {
 
 function TeamGrid({ members }: { members: OfficeTeamWithCopy["members"] }) {
 	return (
-		<ul className="mt-6 grid grid-cols-2 gap-x-2.5 gap-y-7 sm:mt-8 sm:grid-cols-3 sm:gap-x-3 sm:gap-y-8 lg:grid-cols-4 lg:gap-x-3.5 lg:gap-y-9">
+		<ScrollReveal className="mt-6 grid grid-cols-2 gap-x-2.5 gap-y-7 sm:mt-8 sm:grid-cols-3 sm:gap-x-3 sm:gap-y-8 lg:grid-cols-4 lg:gap-x-3.5 lg:gap-y-9">
 			{members.map((member) => (
-				<li key={member.id}>
+				<ScrollRevealItem key={member.id}>
 					<AboutTeamPhoto
 						member={member}
 						name={member.name}
 						role={member.role}
 					/>
-				</li>
+				</ScrollRevealItem>
 			))}
-		</ul>
+		</ScrollReveal>
 	);
 }
 
@@ -86,29 +91,31 @@ export function AboutTeamShowcase({
 	return (
 		<AboutSection bordered className={className} aria-label={sectionLabel}>
 			<AboutShell>
-				<div
-					className="touch-pan-y overflow-hidden"
-					ref={emblaRef}
-					data-lenis-prevent-horizontal
-					data-lenis-prevent-touch
-				>
-					<ul className="flex touch-pan-y">
-						{offices.map((office) => (
-							<li
-								key={office.id}
-								role="group"
-								aria-roledescription="slide"
-								className="min-w-0 shrink-0 grow-0 basis-full"
-							>
-								<SectionRuleHeading
-									id={`team-${office.id}-heading`}
-									title={officeLabels[office.id]}
-								/>
-								<TeamGrid members={office.members} />
-							</li>
-						))}
-					</ul>
-				</div>
+				<ScrollRevealBlock>
+					<div
+						className="touch-pan-y overflow-hidden"
+						ref={emblaRef}
+						data-lenis-prevent-horizontal
+						data-lenis-prevent-touch
+					>
+						<ul className="flex touch-pan-y">
+							{offices.map((office) => (
+								<li
+									key={office.id}
+									role="group"
+									aria-roledescription="slide"
+									className="min-w-0 shrink-0 grow-0 basis-full"
+								>
+									<SectionRuleHeading
+										id={`team-${office.id}-heading`}
+										title={officeLabels[office.id]}
+									/>
+									<TeamGrid members={office.members} />
+								</li>
+							))}
+						</ul>
+					</div>
+				</ScrollRevealBlock>
 
 				<div
 					className="mt-8 flex justify-center gap-2 sm:mt-9"

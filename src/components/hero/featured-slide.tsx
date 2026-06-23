@@ -1,6 +1,5 @@
-import { ChevronRightIcon } from "@heroicons/react/24/outline";
 import Image from "next/image";
-import { DirectionalIcon } from "@/components/ui/directional-icon";
+import { FeaturedSlideContent } from "@/components/hero/featured-slide-content";
 import { Link } from "@/i18n/navigation";
 import { cn } from "@/lib/utils";
 import type { HeroSlide } from "@/types/content";
@@ -75,23 +74,12 @@ export function FeaturedSlide({
 			</div>
 
 			<div className="absolute inset-x-0 bottom-0 z-10 px-6 pb-14 sm:px-10 sm:pb-16 lg:px-14 lg:pb-20">
-				<div className="max-w-4xl text-start text-white">
-					<p className="hero-slide-eyebrow">{slide.typeLabel}</p>
-
-					<h2 className="hero-slide-title mt-3">{slide.title}</h2>
-
-					<p className="hero-slide-description mt-5 max-w-xl">
-						{slide.description}
-					</p>
-
-					<p className="hero-slide-cta mt-8 inline-flex items-center gap-2.5">
-						<span>{slide.actionLabel}</span>
-						<DirectionalIcon
-							icon={ChevronRightIcon}
-							className="size-5 shrink-0 opacity-90"
-						/>
-					</p>
-				</div>
+				<FeaturedSlideContent
+					typeLabel={slide.typeLabel}
+					title={slide.title}
+					description={slide.description}
+					actionLabel={slide.actionLabel}
+				/>
 			</div>
 		</Link>
 	);

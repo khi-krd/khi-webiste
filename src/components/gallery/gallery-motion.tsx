@@ -2,6 +2,7 @@
 
 import { motion, useReducedMotion } from "motion/react";
 import type { CSSProperties, ReactNode } from "react";
+import { PAGE_TRANSITION_DELAY } from "@/components/motion/scroll-reveal";
 
 const revealEase = [0.22, 1, 0.36, 1] as const;
 
@@ -35,7 +36,10 @@ export function GalleryReveal({ children, className }: GalleryMotionProps) {
 			variants={{
 				hidden: {},
 				visible: {
-					transition: { staggerChildren: 0.09, delayChildren: 0.05 },
+					transition: {
+						staggerChildren: 0.09,
+						delayChildren: PAGE_TRANSITION_DELAY,
+					},
 				},
 			}}
 		>

@@ -26,6 +26,7 @@ export function RouteProgress() {
 	// the locale — key the commit on BOTH or the bar would hang on language change.
 	const committedKey = useRef(`${locale}:${pathname}`);
 	const finishTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+	const pendingStart = useRef(false);
 
 	// START on navigation intent.
 	useEffect(() => {
@@ -34,7 +35,14 @@ export function RouteProgress() {
 				clearTimeout(finishTimer.current);
 				finishTimer.current = null;
 			}
-			setStatus("active");
+			// pushState can run during React's commit phase (e.g. next-intl /
+			// Motion useInsertionEffect) — defer so we don't schedule updates there.
+			if (pendingStart.current) return;
+			pendingStart.current = true;
+			queueMicrotask(() => {
+				pendingStart.current = false;
+				setStatus("active");
+			});
 		};
 
 		const isModifiedClick = (event: MouseEvent) =>

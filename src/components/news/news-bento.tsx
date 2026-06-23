@@ -1,4 +1,9 @@
 import { NewsCard } from "@/components/home/news-card";
+import {
+	ScrollReveal,
+	ScrollRevealBlock,
+	ScrollRevealItem,
+} from "@/components/motion/scroll-reveal";
 import { NewsEditorialCard } from "@/components/news/news-editorial-card";
 import { getBentoNews, type NewsCategory } from "@/lib/api/news";
 import { homeInsetClass } from "@/lib/layout";
@@ -27,52 +32,59 @@ export async function NewsBento({
 			)}
 			aria-labelledby="news-bento-heading"
 		>
-			<header className={cn(homeInsetClass, "mb-8 sm:mb-10")}>
-				<h2
-					id="news-bento-heading"
-					className="font-heading text-h1 font-bold leading-[1.1] text-balance"
-				>
-					{spotlightLabel}
-				</h2>
-			</header>
+			<ScrollRevealBlock className={cn(homeInsetClass, "mb-8 sm:mb-10")}>
+				<header>
+					<h2
+						id="news-bento-heading"
+						className="font-heading text-h1 font-bold leading-[1.1] text-balance"
+					>
+						{spotlightLabel}
+					</h2>
+				</header>
+			</ScrollRevealBlock>
 
 			<div className={homeInsetClass}>
-				{/* Row 1–2: same mosaic as homepage Latest Updates */}
-				<div className="grid grid-cols-1 gap-3 sm:grid-cols-2 sm:gap-4 lg:grid-cols-12 lg:grid-rows-[minmax(18rem,1fr)_minmax(18rem,1fr)] lg:gap-4">
-					<NewsCard
-						item={hero}
-						variant="featured"
-						categoryLabel={categoryLabels[hero.category]}
-						className="sm:col-span-2 lg:col-span-7 lg:row-span-2"
-					/>
+				<ScrollReveal className="grid grid-cols-1 gap-3 sm:grid-cols-2 sm:gap-4 lg:grid-cols-12 lg:grid-rows-[minmax(18rem,1fr)_minmax(18rem,1fr)] lg:gap-4">
+					<ScrollRevealItem className="sm:col-span-2 lg:col-span-7 lg:row-span-2">
+						<NewsCard
+							item={hero}
+							variant="featured"
+							categoryLabel={categoryLabels[hero.category]}
+							className="h-full"
+						/>
+					</ScrollRevealItem>
 
-					<div className="grid grid-cols-2 gap-3 sm:gap-4 lg:col-span-5 lg:row-span-2 lg:grid-rows-2">
-						{rail.map((item) => (
-							<NewsCard
-								key={item.id}
-								item={item}
-								variant="small"
-								categoryLabel={categoryLabels[item.category]}
-							/>
-						))}
-					</div>
-				</div>
+					<ScrollRevealItem className="lg:col-span-5 lg:row-span-2">
+						<ScrollReveal className="grid h-full grid-cols-2 gap-3 sm:gap-4 lg:grid-rows-2">
+							{rail.map((item) => (
+								<ScrollRevealItem key={item.id}>
+									<NewsCard
+										item={item}
+										variant="small"
+										categoryLabel={categoryLabels[item.category]}
+									/>
+								</ScrollRevealItem>
+							))}
+						</ScrollReveal>
+					</ScrollRevealItem>
+				</ScrollReveal>
 
-				{/* Row 3: editorial accent + wide */}
-				<div className="mt-3 grid grid-cols-1 gap-3 sm:mt-4 sm:grid-cols-2 sm:gap-4 lg:grid-cols-12 lg:gap-4">
-					<NewsEditorialCard
-						item={editorial}
-						categoryLabel={categoryLabels[editorial.category]}
-						className="sm:col-span-2 lg:col-span-5"
-					/>
+				<ScrollReveal className="mt-3 grid grid-cols-1 gap-3 sm:mt-4 sm:grid-cols-2 sm:gap-4 lg:grid-cols-12 lg:gap-4">
+					<ScrollRevealItem className="sm:col-span-2 lg:col-span-5">
+						<NewsEditorialCard
+							item={editorial}
+							categoryLabel={categoryLabels[editorial.category]}
+						/>
+					</ScrollRevealItem>
 
-					<NewsCard
-						item={wide}
-						variant="wide"
-						categoryLabel={categoryLabels[wide.category]}
-						className="sm:col-span-2 lg:col-span-7"
-					/>
-				</div>
+					<ScrollRevealItem className="sm:col-span-2 lg:col-span-7">
+						<NewsCard
+							item={wide}
+							variant="wide"
+							categoryLabel={categoryLabels[wide.category]}
+						/>
+					</ScrollRevealItem>
+				</ScrollReveal>
 			</div>
 		</section>
 	);

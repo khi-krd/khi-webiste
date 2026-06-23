@@ -4,6 +4,11 @@ import {
 	homeSectionContentClass,
 	homeSectionHeaderClass,
 } from "@/components/donate/donate-shell";
+import {
+	ScrollReveal,
+	ScrollRevealBlock,
+	ScrollRevealItem,
+} from "@/components/motion/scroll-reveal";
 import { DirectionalIcon } from "@/components/ui/directional-icon";
 import { Link } from "@/components/ui/link";
 import { cn } from "@/lib/utils";
@@ -31,41 +36,47 @@ export function DonateParticipation({
 			className="bg-sunken/30"
 			aria-labelledby="donate-participate-heading"
 		>
-			<header className={homeSectionHeaderClass}>
-				<div className="max-w-2xl text-start">
-					<h2
-						id="donate-participate-heading"
-						className="font-heading text-h1 font-bold leading-[1.1] text-balance"
-					>
-						{heading}
-					</h2>
-				</div>
-			</header>
+			<ScrollRevealBlock className={homeSectionHeaderClass}>
+				<header>
+					<div className="max-w-2xl text-start">
+						<h2
+							id="donate-participate-heading"
+							className="font-heading text-h1 font-bold leading-[1.1] text-balance"
+						>
+							{heading}
+						</h2>
+					</div>
+				</header>
+			</ScrollRevealBlock>
 
 			<div className={homeSectionContentClass}>
-				<div className="grid grid-cols-1 gap-3 sm:grid-cols-2 sm:gap-4">
-					<PathCard
-						label={archive.label}
-						body={archive.body}
-						cta={archive.cta}
-						href="#archive-form"
-					/>
-					<PathCard
-						label={financial.label}
-						body={financial.body}
-						cta={financial.cta}
-						href="#financial-form"
-					/>
-				</div>
+				<ScrollReveal className="grid grid-cols-1 gap-3 sm:grid-cols-2 sm:gap-4">
+					<ScrollRevealItem>
+						<PathCard
+							label={archive.label}
+							body={archive.body}
+							cta={archive.cta}
+							href="#archive-form"
+						/>
+					</ScrollRevealItem>
+					<ScrollRevealItem>
+						<PathCard
+							label={financial.label}
+							body={financial.body}
+							cta={financial.cta}
+							href="#financial-form"
+						/>
+					</ScrollRevealItem>
+				</ScrollReveal>
 
-				<div className="mt-8 border border-border bg-background p-6 sm:mt-10 sm:p-8">
+				<ScrollRevealBlock className="mt-8 border border-border bg-background p-6 sm:mt-10 sm:p-8">
 					<p className="max-w-3xl text-body leading-relaxed text-foreground">
 						{body}
 					</p>
 					<p className="mt-4 max-w-3xl border-inline-start-2 border-border-strong ps-4 font-heading text-h3 font-semibold leading-snug text-foreground">
 						{closing}
 					</p>
-				</div>
+				</ScrollRevealBlock>
 			</div>
 		</HomeSection>
 	);

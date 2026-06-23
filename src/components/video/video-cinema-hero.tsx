@@ -1,6 +1,10 @@
 import { ChevronRightIcon } from "@heroicons/react/24/outline";
 import { PlayIcon } from "@heroicons/react/24/solid";
 import NextImage from "next/image";
+import {
+	ScrollReveal,
+	ScrollRevealItem,
+} from "@/components/motion/scroll-reveal";
 import { DirectionalIcon } from "@/components/ui/directional-icon";
 import { Link } from "@/components/ui/link";
 import { cn } from "@/lib/utils";
@@ -78,35 +82,43 @@ export function VideoCinemaHero({
 			/>
 
 			<div className="relative z-10 flex min-h-[inherit] flex-col justify-end p-6 sm:p-10 lg:p-14">
-				<div className="max-w-2xl text-start">
-					<p className="text-label font-medium text-primary-foreground/70">
-						<span aria-hidden="true" className="me-2">
-							{"//"}
-						</span>
-						{eyebrow}
-					</p>
+				<ScrollReveal className="max-w-2xl text-start">
+					<ScrollRevealItem>
+						<p className="text-label font-medium text-primary-foreground/70">
+							<span aria-hidden="true" className="me-2">
+								{"//"}
+							</span>
+							{eyebrow}
+						</p>
+					</ScrollRevealItem>
 
-					<h1 className="mt-3 font-heading text-display font-bold leading-[1.05] text-balance text-primary-foreground">
-						{title}
-					</h1>
+					<ScrollRevealItem>
+						<h1 className="mt-3 font-heading text-display font-bold leading-[1.05] text-balance text-primary-foreground">
+							{title}
+						</h1>
+					</ScrollRevealItem>
 
 					{description ? (
-						<p className="mt-4 max-w-xl text-body leading-relaxed text-primary-foreground/85 line-clamp-3">
-							{description}
-						</p>
+						<ScrollRevealItem>
+							<p className="mt-4 max-w-xl text-body leading-relaxed text-primary-foreground/85 line-clamp-3">
+								{description}
+							</p>
+						</ScrollRevealItem>
 					) : null}
 
-					<div className="mt-7 flex flex-wrap items-center gap-3">
-						<Link href={detailHref} variant="nav" className={watchNowClass}>
-							<span>{watchNowLabel}</span>
-							<PlayIcon className="size-4" aria-hidden />
-						</Link>
-						<Link href={detailHref} variant="nav" className={detailsClass}>
-							<span>{detailsLabel}</span>
-							<DirectionalIcon icon={ChevronRightIcon} className="size-4" />
-						</Link>
-					</div>
-				</div>
+					<ScrollRevealItem>
+						<div className="mt-7 flex flex-wrap items-center gap-3">
+							<Link href={detailHref} variant="nav" className={watchNowClass}>
+								<span>{watchNowLabel}</span>
+								<PlayIcon className="size-4" aria-hidden />
+							</Link>
+							<Link href={detailHref} variant="nav" className={detailsClass}>
+								<span>{detailsLabel}</span>
+								<DirectionalIcon icon={ChevronRightIcon} className="size-4" />
+							</Link>
+						</div>
+					</ScrollRevealItem>
+				</ScrollReveal>
 			</div>
 		</section>
 	);

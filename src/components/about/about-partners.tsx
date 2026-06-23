@@ -1,6 +1,11 @@
 import { AboutSection, AboutShell } from "@/components/about/about-shell";
 import { PartnerCard } from "@/components/about/partner-card";
 import { SectionRuleHeading } from "@/components/about/section-rule-heading";
+import {
+	ScrollReveal,
+	ScrollRevealBlock,
+	ScrollRevealItem,
+} from "@/components/motion/scroll-reveal";
 import type { PartnerItem } from "@/lib/mock/about";
 
 type PartnerCopy = {
@@ -30,23 +35,26 @@ export function AboutPartners({
 			aria-labelledby="partners-heading"
 		>
 			<AboutShell>
-				<SectionRuleHeading id="partners-heading" title={sectionTitle} />
+				<ScrollRevealBlock>
+					<SectionRuleHeading id="partners-heading" title={sectionTitle} />
+				</ScrollRevealBlock>
 
-				<div className="mt-6 grid gap-3 sm:mt-8 sm:grid-cols-2 sm:gap-4 lg:gap-5">
+				<ScrollReveal className="mt-6 grid gap-3 sm:mt-8 sm:grid-cols-2 sm:gap-4 lg:gap-5">
 					{partners.map((partner) => {
 						const copy = getPartnerCopy(partner.id);
 						return (
-							<PartnerCard
-								key={partner.id}
-								item={partner}
-								eyebrow={copy.eyebrow}
-								title={copy.title}
-								description={copy.description}
-								cta={copy.cta}
-							/>
+							<ScrollRevealItem key={partner.id}>
+								<PartnerCard
+									item={partner}
+									eyebrow={copy.eyebrow}
+									title={copy.title}
+									description={copy.description}
+									cta={copy.cta}
+								/>
+							</ScrollRevealItem>
 						);
 					})}
-				</div>
+				</ScrollReveal>
 			</AboutShell>
 		</AboutSection>
 	);

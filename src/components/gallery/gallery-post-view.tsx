@@ -1,6 +1,9 @@
 import { ArrowLeftIcon, ArrowRightIcon } from "@heroicons/react/24/outline";
 import { GalleryAlbum } from "@/components/gallery/gallery-album";
 import type { GalleryAlbumMetadataLabels } from "@/components/gallery/gallery-album-item";
+import {
+	ScrollRevealBlock,
+} from "@/components/motion/scroll-reveal";
 import { Badge } from "@/components/ui/badge";
 import { DirectionalIcon } from "@/components/ui/directional-icon";
 import { Link } from "@/i18n/navigation";
@@ -115,8 +118,9 @@ export function GalleryPostView({
 
 	return (
 		<article>
-			{/* Header — clears the fixed site header (page removes it with -mt). */}
-			<div className={cn("pt-30 pb-10 sm:pt-34 lg:pb-12", homeInsetClass)}>
+			<ScrollRevealBlock
+				className={cn("pt-30 pb-10 sm:pt-34 lg:pb-12", homeInsetClass)}
+			>
 				<Link
 					href="/gallery"
 					className="group inline-flex w-fit items-center gap-2 no-underline"
@@ -149,15 +153,12 @@ export function GalleryPostView({
 				</p>
 				<h1 className="display-title mt-4 max-w-4xl">{post.title}</h1>
 
-				{/* Tiptap HTML from the API — .prose carries the editorial rhythm
-				    and mirrors in RTL via logical properties. */}
 				<div
 					className="prose mt-6 max-w-xl [&>p]:text-muted"
 					// biome-ignore lint/security/noDangerouslySetInnerHtml: API returns server-processed Tiptap HTML
 					dangerouslySetInnerHTML={{ __html: post.descriptionHtml }}
 				/>
 
-				{/* Catalog record — hairline-ruled credit cells. */}
 				{hasCredits && (
 					<dl className="mt-10 grid border-y border-border sm:grid-cols-2 lg:grid-cols-3">
 						{post.location && (
@@ -187,40 +188,43 @@ export function GalleryPostView({
 						)}
 					</dl>
 				)}
-			</div>
+			</ScrollRevealBlock>
 
-			<GalleryAlbum
-				items={albumImages}
-				postTitle={post.title}
-				photosLabel={photosLabel}
-				closeLabel={closeLabel}
-				previousLabel={lightboxPreviousLabel}
-				nextLabel={lightboxNextLabel}
-				metadataLabels={metadataLabels}
-			/>
+			<ScrollRevealBlock>
+				<GalleryAlbum
+					items={albumImages}
+					postTitle={post.title}
+					photosLabel={photosLabel}
+					closeLabel={closeLabel}
+					previousLabel={lightboxPreviousLabel}
+					nextLabel={lightboxNextLabel}
+					metadataLabels={metadataLabels}
+				/>
+			</ScrollRevealBlock>
 
-			{/* Between collections. */}
 			{(previous || next) && (
-				<nav
-					aria-label={navLabel}
-					className={cn(
-						"mt-0 grid border-t border-border sm:grid-cols-2",
-						homeInsetClass,
-					)}
-				>
-					{previous ? (
-						<AdjacentLink
-							post={previous}
-							label={previousLabel}
-							direction="previous"
-						/>
-					) : (
-						<div aria-hidden="true" />
-					)}
-					{next ? (
-						<AdjacentLink post={next} label={nextLabel} direction="next" />
-					) : null}
-				</nav>
+				<ScrollRevealBlock>
+					<nav
+						aria-label={navLabel}
+						className={cn(
+							"mt-0 grid border-t border-border sm:grid-cols-2",
+							homeInsetClass,
+						)}
+					>
+						{previous ? (
+							<AdjacentLink
+								post={previous}
+								label={previousLabel}
+								direction="previous"
+							/>
+						) : (
+							<div aria-hidden="true" />
+						)}
+						{next ? (
+							<AdjacentLink post={next} label={nextLabel} direction="next" />
+						) : null}
+					</nav>
+				</ScrollRevealBlock>
 			)}
 		</article>
 	);

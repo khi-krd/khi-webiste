@@ -1,4 +1,9 @@
 import { getTranslations } from "next-intl/server";
+import {
+	ScrollReveal,
+	ScrollRevealBlock,
+	ScrollRevealItem,
+} from "@/components/motion/scroll-reveal";
 import { VideoCard, type VideoCardProps } from "@/components/video/video-card";
 import { VideoFilterBar } from "@/components/video/video-filter-bar";
 import { VideoPagination } from "@/components/video/video-pagination";
@@ -90,12 +95,14 @@ export async function VideoShell({
 			aria-labelledby="videos-grid-heading"
 		>
 			<div className={homeInsetClass}>
-				<h2
-					id="videos-grid-heading"
-					className="font-heading text-h1 font-bold leading-[1.08] text-balance sm:text-display"
-				>
-					{title}
-				</h2>
+				<ScrollRevealBlock>
+					<h2
+						id="videos-grid-heading"
+						className="font-heading text-h1 font-bold leading-[1.08] text-balance sm:text-display"
+					>
+						{title}
+					</h2>
+				</ScrollRevealBlock>
 
 				{showFilters ? (
 					<VideoFilterBar
@@ -117,22 +124,24 @@ export async function VideoShell({
 				) : (
 					<>
 						{leadCard ? (
-							<div className="mt-8 sm:mt-10">
+							<ScrollRevealBlock className="mt-8 sm:mt-10">
 								<VideoCard {...leadCard} variant="featured" />
-							</div>
+							</ScrollRevealBlock>
 						) : null}
 
 						{gridModels.length > 0 ? (
-							<div
+							<ScrollReveal
 								className={cn(
 									"grid grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-5 lg:grid-cols-3 lg:gap-6",
 									leadCard ? "mt-4 sm:mt-5" : "mt-8 sm:mt-10",
 								)}
 							>
 								{gridModels.map((card) => (
-									<VideoCard key={card.id} {...card} />
+									<ScrollRevealItem key={card.id}>
+										<VideoCard {...card} />
+									</ScrollRevealItem>
 								))}
-							</div>
+							</ScrollReveal>
 						) : null}
 					</>
 				)}

@@ -1,6 +1,11 @@
 import { ArrowRightIcon } from "@heroicons/react/24/outline";
 import { getLocale, getTranslations } from "next-intl/server";
 import { WritingRow } from "@/components/home/writing-row";
+import {
+	ScrollReveal,
+	ScrollRevealBlock,
+	ScrollRevealItem,
+} from "@/components/motion/scroll-reveal";
 import { Container } from "@/components/ui/container";
 import { DirectionalIcon } from "@/components/ui/directional-icon";
 import { Link } from "@/components/ui/link";
@@ -42,35 +47,39 @@ export async function WritingsSection() {
 			aria-labelledby="writings-heading"
 		>
 			<Container className="lg:grid lg:grid-cols-[minmax(0,1fr)_minmax(0,1.65fr)] lg:items-start lg:gap-20 xl:gap-24">
-				<header className="text-start lg:sticky lg:top-32 lg:self-start">
-					<p className="label font-medium">{t("eyebrow")}</p>
-					<h2
-						id="writings-heading"
-						className="mt-3 font-heading text-h2 font-bold leading-[1.15] text-balance"
-					>
-						{t("title")}
-					</h2>
-					<p className="mt-4 max-w-md text-body leading-relaxed text-muted">
-						{t("description")}
-					</p>
-					<Link
-						href="/writings"
-						variant="nav"
-						className={`${viewAllClass} mt-8`}
-					>
-						<span className="relative z-1">{t("viewAll")}</span>
-						<DirectionalIcon
-							icon={ArrowRightIcon}
-							className="relative z-1 size-4"
-						/>
-					</Link>
-				</header>
+				<ScrollRevealBlock className="text-start lg:sticky lg:top-32 lg:self-start">
+					<header>
+						<p className="label font-medium">{t("eyebrow")}</p>
+						<h2
+							id="writings-heading"
+							className="mt-3 font-heading text-h2 font-bold leading-[1.15] text-balance"
+						>
+							{t("title")}
+						</h2>
+						<p className="mt-4 max-w-md text-body leading-relaxed text-muted">
+							{t("description")}
+						</p>
+						<Link
+							href="/writings"
+							variant="nav"
+							className={`${viewAllClass} mt-8`}
+						>
+							<span className="relative z-1">{t("viewAll")}</span>
+							<DirectionalIcon
+								icon={ArrowRightIcon}
+								className="relative z-1 size-4"
+							/>
+						</Link>
+					</header>
+				</ScrollRevealBlock>
 
-				<div className="mt-12 lg:mt-0">
+				<ScrollReveal className="mt-12 lg:mt-0">
 					{rows.map((item, index) => (
-						<WritingRow key={item.id} item={item} index={index} />
+						<ScrollRevealItem key={item.id}>
+							<WritingRow item={item} index={index} />
+						</ScrollRevealItem>
 					))}
-				</div>
+				</ScrollReveal>
 			</Container>
 		</section>
 	);

@@ -4,6 +4,7 @@
 import { ArrowRightIcon } from "@heroicons/react/24/outline";
 import useEmblaCarousel from "embla-carousel-react";
 import { ProjectCard } from "@/components/home/project-card";
+import { ScrollRevealBlock } from "@/components/motion/scroll-reveal";
 import { DirectionalIcon } from "@/components/ui/directional-icon";
 import { Link } from "@/components/ui/link";
 import type { ProjectItem } from "@/lib/mock/projects";
@@ -43,28 +44,30 @@ export function ProjectsShowcase({
 
 	return (
 		<div>
-			<header className="mb-8 px-6 sm:mb-10 sm:px-8">
-				<div className="flex flex-col gap-5 sm:flex-row sm:items-end sm:justify-between sm:gap-8">
-					<div className="max-w-2xl text-start">
-						<p className="label font-medium">{copy.eyebrow}</p>
-						<h2
-							id="projects-heading"
-							className="mt-2 font-heading text-h1 font-bold leading-[1.1] text-balance"
-						>
-							{copy.title}
-						</h2>
-						<p className="mt-3 text-body text-muted">{copy.description}</p>
-					</div>
+			<ScrollRevealBlock className="mb-8 px-6 sm:mb-10 sm:px-8">
+				<header>
+					<div className="flex flex-col gap-5 sm:flex-row sm:items-end sm:justify-between sm:gap-8">
+						<div className="max-w-2xl text-start">
+							<p className="label font-medium">{copy.eyebrow}</p>
+							<h2
+								id="projects-heading"
+								className="mt-2 font-heading text-h1 font-bold leading-[1.1] text-balance"
+							>
+								{copy.title}
+							</h2>
+							<p className="mt-3 text-body text-muted">{copy.description}</p>
+						</div>
 
-					<Link href="/about" variant="nav" className={viewAllClass}>
-						<span className="relative z-1">{copy.viewAll}</span>
-						<DirectionalIcon
-							icon={ArrowRightIcon}
-							className="relative z-1 size-4"
-						/>
-					</Link>
-				</div>
-			</header>
+						<Link href="/about" variant="nav" className={viewAllClass}>
+							<span className="relative z-1">{copy.viewAll}</span>
+							<DirectionalIcon
+								icon={ArrowRightIcon}
+								className="relative z-1 size-4"
+							/>
+						</Link>
+					</div>
+				</header>
+			</ScrollRevealBlock>
 
 			<div
 				className="touch-pan-y overflow-hidden ps-6 sm:ps-8"
@@ -72,18 +75,20 @@ export function ProjectsShowcase({
 				data-lenis-prevent-horizontal
 				data-lenis-prevent-touch
 			>
-				<ul className="flex touch-pan-y">
-					{projects.map((project) => (
-						<li
-							key={project.id}
-							role="group"
-							aria-roledescription="slide"
-							className={slideClass}
-						>
-							<ProjectCard item={project} />
-						</li>
-					))}
-				</ul>
+				<ScrollRevealBlock>
+					<ul className="flex touch-pan-y">
+						{projects.map((project) => (
+							<li
+								key={project.id}
+								role="group"
+								aria-roledescription="slide"
+								className={slideClass}
+							>
+								<ProjectCard item={project} />
+							</li>
+						))}
+					</ul>
+				</ScrollRevealBlock>
 			</div>
 		</div>
 	);

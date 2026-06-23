@@ -4,11 +4,11 @@
 import Autoplay, { type AutoplayType } from "embla-carousel-autoplay";
 import useEmblaCarousel from "embla-carousel-react";
 import { useCallback, useEffect, useMemo, useState } from "react";
+import { ScrollRevealBlock } from "@/components/motion/scroll-reveal";
 import {
 	WritingCard,
 	type WritingCardProps,
 } from "@/components/writing/writing-card";
-import { cn } from "@/lib/utils";
 
 const AUTOPLAY_DELAY_MS = 4500;
 
@@ -129,18 +129,20 @@ export function WritingCarousel({
 						data-lenis-prevent-horizontal
 						data-lenis-prevent-touch
 					>
-						<ul className="flex touch-pan-y">
-							{cards.map((card) => (
-								<li
-									key={card.id}
-									role="group"
-									aria-roledescription="slide"
-									className={slideClass}
-								>
-									<WritingCard {...card} />
-								</li>
-							))}
-						</ul>
+						<ScrollRevealBlock>
+							<ul className="flex touch-pan-y">
+								{cards.map((card) => (
+									<li
+										key={card.id}
+										role="group"
+										aria-roledescription="slide"
+										className={slideClass}
+									>
+										<WritingCard {...card} />
+									</li>
+								))}
+							</ul>
+						</ScrollRevealBlock>
 					</div>
 
 					{hasMultipleSlides ? (

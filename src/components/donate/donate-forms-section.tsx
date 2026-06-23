@@ -6,6 +6,11 @@ import {
 	homeSectionContentClass,
 	homeSectionHeaderClass,
 } from "@/components/donate/donate-shell";
+import {
+	ScrollReveal,
+	ScrollRevealBlock,
+	ScrollRevealItem,
+} from "@/components/motion/scroll-reveal";
 
 type DonateFormsSectionProps = {
 	eyebrow: string;
@@ -24,24 +29,30 @@ export function DonateFormsSection({
 }: DonateFormsSectionProps) {
 	return (
 		<HomeSection aria-labelledby="donate-forms-heading">
-			<header className={homeSectionHeaderClass}>
-				<div className="max-w-2xl text-start">
-					<p className="label font-medium">{eyebrow}</p>
-					<h2
-						id="donate-forms-heading"
-						className="mt-2 font-heading text-h1 font-bold leading-[1.1] text-balance"
-					>
-						{heading}
-					</h2>
-					<p className="mt-3 text-body text-muted">{description}</p>
-				</div>
-			</header>
+			<ScrollRevealBlock className={homeSectionHeaderClass}>
+				<header>
+					<div className="max-w-2xl text-start">
+						<p className="label font-medium">{eyebrow}</p>
+						<h2
+							id="donate-forms-heading"
+							className="mt-2 font-heading text-h1 font-bold leading-[1.1] text-balance"
+						>
+							{heading}
+						</h2>
+						<p className="mt-3 text-body text-muted">{description}</p>
+					</div>
+				</header>
+			</ScrollRevealBlock>
 
 			<div className={homeSectionContentClass}>
-				<div className="flex flex-col gap-10 sm:gap-12">
-					<DonateArchiveForm copy={archiveCopy} />
-					<DonateFinancialForm copy={financialCopy} />
-				</div>
+				<ScrollReveal className="flex flex-col gap-10 sm:gap-12">
+					<ScrollRevealItem>
+						<DonateArchiveForm copy={archiveCopy} />
+					</ScrollRevealItem>
+					<ScrollRevealItem>
+						<DonateFinancialForm copy={financialCopy} />
+					</ScrollRevealItem>
+				</ScrollReveal>
 			</div>
 		</HomeSection>
 	);

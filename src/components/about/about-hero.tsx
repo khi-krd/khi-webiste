@@ -4,6 +4,7 @@ import { PlayIcon } from "@heroicons/react/24/solid";
 import NextImage from "next/image";
 import { useState } from "react";
 import { AboutIntroVideoModal } from "@/components/about/about-intro-video-modal";
+import { ScrollRevealBlock } from "@/components/motion/scroll-reveal";
 import { cn } from "@/lib/utils";
 
 type AboutHeroProps = {
@@ -80,7 +81,7 @@ export function AboutHero({
 					/>
 				</div>
 
-				<div
+				<ScrollRevealBlock
 					className={cn(
 						"relative z-10 flex flex-col items-center justify-center px-4 sm:px-6 lg:px-10",
 						heightClass,
@@ -108,7 +109,7 @@ export function AboutHero({
 							aria-hidden
 						/>
 					</button>
-				</div>
+				</ScrollRevealBlock>
 			</section>
 
 			<AboutIntroVideoModal

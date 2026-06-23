@@ -16,6 +16,11 @@ import { motion, useReducedMotion } from "motion/react";
  * stay stable across navigations.
  */
 
+import {
+	PAGE_TRANSITION_DELAY,
+	PAGE_TRANSITION_DURATION,
+} from "@/components/motion/scroll-reveal";
+
 const EASE = [0.22, 1, 0.36, 1] as const; // house easing
 
 export default function Template({ children }: { children: React.ReactNode }) {
@@ -27,7 +32,11 @@ export default function Template({ children }: { children: React.ReactNode }) {
 		<motion.div
 			initial={{ opacity: 0, y: 8 }}
 			animate={{ opacity: 1, y: 0 }}
-			transition={{ duration: 0.28, ease: EASE }}
+			transition={{
+				duration: PAGE_TRANSITION_DURATION,
+				ease: EASE,
+				delay: PAGE_TRANSITION_DELAY,
+			}}
 		>
 			{children}
 		</motion.div>

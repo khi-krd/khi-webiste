@@ -1,5 +1,10 @@
 import NextImage from "next/image";
 import { AudioPlayButton } from "@/components/audio/audio-play-button";
+import {
+	ScrollReveal,
+	ScrollRevealBlock,
+	ScrollRevealItem,
+} from "@/components/motion/scroll-reveal";
 import { Link } from "@/components/ui/link";
 import { formatDuration } from "@/lib/audio/format";
 import { audioDetailHref } from "@/lib/audio/resolve";
@@ -75,7 +80,7 @@ export function AudioMemoriesStrip({
 		>
 			<div className={homeInsetClass}>
 				<div className="border border-border bg-surface">
-					<div className="flex flex-wrap items-baseline justify-between gap-3 border-b border-border px-5 py-5 sm:px-6">
+					<ScrollRevealBlock className="flex flex-wrap items-baseline justify-between gap-3 border-b border-border px-5 py-5 sm:px-6">
 						<h2
 							id="audio-memories-heading"
 							className="font-heading text-h2 font-bold"
@@ -83,13 +88,15 @@ export function AudioMemoriesStrip({
 							{title}
 						</h2>
 						<p className="max-w-md text-small text-muted">{description}</p>
-					</div>
+					</ScrollRevealBlock>
 
-					<div className="flex snap-x snap-mandatory gap-4 overflow-x-auto px-5 py-6 sm:gap-5 sm:px-6">
+					<ScrollReveal className="flex snap-x snap-mandatory gap-4 overflow-x-auto px-5 py-6 sm:gap-5 sm:px-6">
 						{items.map((item) => (
-							<MemoriesCard key={item.id} item={item} />
+							<ScrollRevealItem key={item.id}>
+								<MemoriesCard item={item} />
+							</ScrollRevealItem>
 						))}
-					</div>
+					</ScrollReveal>
 				</div>
 			</div>
 		</section>

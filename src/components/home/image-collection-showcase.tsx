@@ -9,6 +9,11 @@ import {
 	useEffect,
 	useState,
 } from "react";
+import {
+	ScrollReveal,
+	ScrollRevealBlock,
+	ScrollRevealItem,
+} from "@/components/motion/scroll-reveal";
 import { DirectionalIcon } from "@/components/ui/directional-icon";
 import { Link } from "@/components/ui/link";
 import { galleryDetailHref } from "@/lib/content/href";
@@ -65,11 +70,10 @@ function ImageCollectionPanel({
 			onFocus={onHover}
 			onBlur={onLeavePanel}
 			className={cn(
-				"group relative h-full min-h-0 min-w-0 overflow-hidden bg-background no-underline",
+				"group relative block h-full w-full min-h-0 min-w-0 overflow-hidden bg-background no-underline",
 				"transition-[flex-grow,flex-basis] duration-700 motion-reduce:transition-none",
 				panelEase,
-				isFocused ? "flex-[2]" : "flex-1",
-				"max-lg:flex-none max-lg:min-h-32",
+				"max-lg:min-h-32",
 				isFocused && "max-lg:min-h-80 sm:max-lg:min-h-[26rem]",
 			)}
 		>
@@ -192,46 +196,57 @@ export function ImageCollectionShowcase({
 
 	return (
 		<div>
-			<header className="shrink-0 px-6 pt-12 pb-8 sm:px-8 sm:pt-16 sm:pb-10 lg:pt-20">
-				<div className="flex flex-col gap-5 sm:flex-row sm:items-end sm:justify-between sm:gap-8">
-					<div className="max-w-2xl text-start">
-						<p className="label font-medium">{copy.eyebrow}</p>
-						<h2
-							id="image-collection-heading"
-							className="mt-2 font-heading text-h1 font-bold leading-[1.1] text-balance"
-						>
-							{copy.title}
-						</h2>
-						<p className="mt-3 text-body text-muted">{copy.description}</p>
-					</div>
+			<ScrollRevealBlock className="shrink-0 px-6 pt-12 pb-8 sm:px-8 sm:pt-16 sm:pb-10 lg:pt-20">
+				<header>
+					<div className="flex flex-col gap-5 sm:flex-row sm:items-end sm:justify-between sm:gap-8">
+						<div className="max-w-2xl text-start">
+							<p className="label font-medium">{copy.eyebrow}</p>
+							<h2
+								id="image-collection-heading"
+								className="mt-2 font-heading text-h1 font-bold leading-[1.1] text-balance"
+							>
+								{copy.title}
+							</h2>
+							<p className="mt-3 text-body text-muted">{copy.description}</p>
+						</div>
 
-					<Link href="/gallery" variant="nav" className={viewAllClass}>
-						<span className="relative z-1">{copy.viewAll}</span>
-						<DirectionalIcon
-							icon={ArrowRightIcon}
-							className="relative z-1 size-4"
-						/>
-					</Link>
-				</div>
-			</header>
+						<Link href="/gallery" variant="nav" className={viewAllClass}>
+							<span className="relative z-1">{copy.viewAll}</span>
+							<DirectionalIcon
+								icon={ArrowRightIcon}
+								className="relative z-1 size-4"
+							/>
+						</Link>
+					</div>
+				</header>
+			</ScrollRevealBlock>
 
 			<div className="px-6 sm:px-8">
-				<div
+				<ScrollReveal
 					className="flex flex-col items-stretch gap-4 sm:gap-5 lg:h-[min(82vh,52rem)] lg:flex-row lg:gap-px lg:bg-border"
 					aria-live="polite"
 				>
 					{items.map((item, index) => (
-						<ImageCollectionPanel
+						<ScrollRevealItem
 							key={item.id}
-							item={item}
-							displayNumber={index + 1}
-							isFocused={index === focusedIndex}
-							isAutoActive={index === activeIndex}
-							onHover={() => setHoveredIndex(index)}
-							onLeavePanel={handlePanelLeave}
-						/>
+							className={cn(
+								"min-h-0 min-w-0 transition-[flex-grow,flex-basis] duration-700 motion-reduce:transition-none",
+								panelEase,
+								index === focusedIndex ? "flex-[2]" : "flex-1",
+								"max-lg:flex-none",
+							)}
+						>
+							<ImageCollectionPanel
+								item={item}
+								displayNumber={index + 1}
+								isFocused={index === focusedIndex}
+								isAutoActive={index === activeIndex}
+								onHover={() => setHoveredIndex(index)}
+								onLeavePanel={handlePanelLeave}
+							/>
+						</ScrollRevealItem>
 					))}
-				</div>
+				</ScrollReveal>
 			</div>
 		</div>
 	);

@@ -11,6 +11,11 @@ import {
 	homeSectionContentClass,
 	homeSectionHeaderClass,
 } from "@/components/donate/donate-shell";
+import {
+	ScrollReveal,
+	ScrollRevealBlock,
+	ScrollRevealItem,
+} from "@/components/motion/scroll-reveal";
 import { Button } from "@/components/ui/button";
 import { DirectionalIcon } from "@/components/ui/directional-icon";
 import { Link } from "@/components/ui/link";
@@ -45,37 +50,39 @@ export function DonateClosing({
 			className="border-t border-border bg-foreground text-primary-foreground"
 			aria-labelledby="donate-closing-heading"
 		>
-			<header className={homeSectionHeaderClass}>
-				<div className="max-w-2xl text-start">
-					<p className="label font-medium text-primary-foreground/65">
-						{supporters.eyebrow}
-					</p>
-					<h2
-						id="donate-closing-heading"
-						className="mt-2 font-heading text-h1 font-bold leading-[1.1] text-balance"
-					>
-						{heading}
-					</h2>
-					<p className="mt-3 text-body leading-relaxed text-primary-foreground/82">
-						{supporters.description}
-					</p>
-					<Link
-						href={supporters.image.href}
-						variant="nav"
-						className={supportersCtaClass}
-					>
-						<span className="relative z-1">{supporters.cta}</span>
-						<DirectionalIcon
-							icon={ArrowRightIcon}
-							className="relative z-1 size-4"
-						/>
-					</Link>
-				</div>
-			</header>
+			<ScrollRevealBlock className={homeSectionHeaderClass}>
+				<header>
+					<div className="max-w-2xl text-start">
+						<p className="label font-medium text-primary-foreground/65">
+							{supporters.eyebrow}
+						</p>
+						<h2
+							id="donate-closing-heading"
+							className="mt-2 font-heading text-h1 font-bold leading-[1.1] text-balance"
+						>
+							{heading}
+						</h2>
+						<p className="mt-3 text-body leading-relaxed text-primary-foreground/82">
+							{supporters.description}
+						</p>
+						<Link
+							href={supporters.image.href}
+							variant="nav"
+							className={supportersCtaClass}
+						>
+							<span className="relative z-1">{supporters.cta}</span>
+							<DirectionalIcon
+								icon={ArrowRightIcon}
+								className="relative z-1 size-4"
+							/>
+						</Link>
+					</div>
+				</header>
+			</ScrollRevealBlock>
 
 			<div className={homeSectionContentClass}>
-				<div className="grid gap-3 sm:grid-cols-2 sm:gap-4 lg:grid-cols-3 lg:gap-4">
-					<div className="relative min-h-52 overflow-hidden border border-primary-foreground/20 sm:min-h-56 lg:col-span-1">
+				<ScrollReveal className="grid gap-3 sm:grid-cols-2 sm:gap-4 lg:grid-cols-3 lg:gap-4">
+					<ScrollRevealItem className="relative min-h-52 overflow-hidden border border-primary-foreground/20 sm:min-h-56 lg:col-span-1">
 						<NextImage
 							src={supporters.image.url}
 							alt=""
@@ -92,21 +99,25 @@ export function DonateClosing({
 								{supporters.title}
 							</p>
 						</div>
-					</div>
+					</ScrollRevealItem>
 
-					<PaymentRegisterBlock
-						label={fibCopy.label}
-						value={payment.fibAccount}
-						copyLabel={fibCopy.copy}
-						copiedLabel={fibCopy.copied}
-					/>
-					<PaymentRegisterBlock
-						label={fastpayCopy.label}
-						value={payment.fastpayNumber}
-						copyLabel={fastpayCopy.copy}
-						copiedLabel={fastpayCopy.copied}
-					/>
-				</div>
+					<ScrollRevealItem>
+						<PaymentRegisterBlock
+							label={fibCopy.label}
+							value={payment.fibAccount}
+							copyLabel={fibCopy.copy}
+							copiedLabel={fibCopy.copied}
+						/>
+					</ScrollRevealItem>
+					<ScrollRevealItem>
+						<PaymentRegisterBlock
+							label={fastpayCopy.label}
+							value={payment.fastpayNumber}
+							copyLabel={fastpayCopy.copy}
+							copiedLabel={fastpayCopy.copied}
+						/>
+					</ScrollRevealItem>
+				</ScrollReveal>
 			</div>
 		</HomeSection>
 	);
