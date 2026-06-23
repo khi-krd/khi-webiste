@@ -25,9 +25,9 @@ function resolveProjectContent(
 	project: Project,
 ): ProjectContent | null {
 	if (locale === "ckb") {
-		return project.ckbContent ?? project.kmrContent;
+		return project.ckbContent ?? project.kmrContent ?? null;
 	}
-	return project.kmrContent ?? project.ckbContent;
+	return project.kmrContent ?? project.ckbContent ?? null;
 }
 
 export function resolveProjectItem(

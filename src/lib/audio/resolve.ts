@@ -34,9 +34,9 @@ export function resolveAudioContent(
 	track: SoundTrack,
 ): SoundContent | null {
 	if (locale === "ckb") {
-		return track.ckbContent ?? track.kmrContent;
+		return track.ckbContent ?? track.kmrContent ?? null;
 	}
-	return track.kmrContent ?? track.ckbContent;
+	return track.kmrContent ?? track.ckbContent ?? null;
 }
 
 export function resolveAudioCoverUrl(
@@ -130,13 +130,13 @@ export function resolveAudioCard(
 		subtitle: subtitle === content.title ? null : subtitle,
 		excerpt: description ? truncate(description, EXCERPT_MAX_LENGTH) : "",
 		coverUrl: resolveAudioCoverUrl(locale, track),
-		hoverCoverUrl: track.hoverCoverUrl,
+		hoverCoverUrl: track.hoverCoverUrl ?? null,
 		soundType: track.soundType,
 		trackState: track.trackState,
 		albumOfMemories: track.albumOfMemories,
-		topicId: track.topicId,
+		topicId: track.topicId ?? null,
 		topicName: resolveAudioTopicName(locale, track),
-		totalDurationSeconds: track.totalDurationSeconds,
+		totalDurationSeconds: track.totalDurationSeconds ?? null,
 		totalTracks:
 			track.totalTracks ??
 			(track.trackState === "MULTI" ? track.files.length : null),
@@ -212,7 +212,7 @@ export function resolveAudioDetail(
 		title: trackTitle,
 		description: content.description?.trim() ?? "",
 		coverUrl: resolveAudioCoverUrl(locale, track),
-		hoverCoverUrl: track.hoverCoverUrl,
+		hoverCoverUrl: track.hoverCoverUrl ?? null,
 		soundType: track.soundType,
 		trackState: track.trackState,
 		albumOfMemories: track.albumOfMemories,

@@ -33,9 +33,9 @@ export function resolveContent(
 	writing: Writing,
 ): WritingContent | null {
 	if (locale === "ckb") {
-		return writing.ckbContent ?? writing.kmrContent;
+		return writing.ckbContent ?? writing.kmrContent ?? null;
 	}
-	return writing.kmrContent ?? writing.ckbContent;
+	return writing.kmrContent ?? writing.ckbContent ?? null;
 }
 
 export function resolveCoverUrl(
@@ -87,10 +87,10 @@ export function resolveWritingCard(
 		writer: content.writer?.trim() ?? "",
 		excerpt: description ? truncate(description, EXCERPT_MAX_LENGTH) : "",
 		coverUrl: resolveCoverUrl(locale, writing),
-		hoverCoverUrl: writing.hoverCoverUrl,
+		hoverCoverUrl: writing.hoverCoverUrl ?? null,
 		genres: writing.bookGenres,
 		freeTextGenre: content.genre,
-		topicName: resolveTopicName(locale, writing.topic),
+		topicName: resolveTopicName(locale, writing.topic ?? null),
 		seriesName: writing.seriesInfo.seriesName?.trim() || null,
 		publishedByInstitute: writing.publishedByInstitute,
 		seriesOrderLabel: String(Math.round(seriesOrder)).padStart(2, "0"),
@@ -185,10 +185,10 @@ export function resolveWritingDetail(
 		writer: content.writer?.trim() ?? "",
 		description,
 		coverUrl: resolveCoverUrl(locale, writing),
-		hoverCoverUrl: writing.hoverCoverUrl,
+		hoverCoverUrl: writing.hoverCoverUrl ?? null,
 		genres: writing.bookGenres,
 		freeTextGenre: content.genre,
-		topicName: resolveTopicName(locale, writing.topic),
+		topicName: resolveTopicName(locale, writing.topic ?? null),
 		publishedByInstitute: writing.publishedByInstitute,
 		seriesName: writing.seriesInfo.seriesName?.trim() || null,
 		seriesId: writing.seriesInfo.seriesId,

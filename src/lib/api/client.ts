@@ -1,17 +1,32 @@
 import "server-only";
 import type { z } from "zod";
 import { getApiBaseUrl } from "@/lib/api/config";
-import { ApiResponseSchema } from "@/types/writing";
 
 export const DEFAULT_REVALIDATE = 600;
 export const DEFAULT_PAGE_SIZE = 20;
 export const BULK_FETCH_SIZE = 200;
+
+/** Unwrap `{ success, data }` envelopes; pass through raw Spring pages and DTOs. */
+export function unwrapApiPayload(payload: unknown): unknown | null {
+	if (!payload || typeof payload !== "object") {
+		return payload;
+	}
+
+	const record = payload as Record<string, unknown>;
+	if ("success" in record && "data" in record) {
+		return record.success === true ? record.data : null;
+	}
+
+	return payload;
+}
 
 type ApiFetchOptions<T extends z.ZodType> = {
 	schema: T;
 	tags?: string[];
 	revalidate?: number;
 	searchParams?: Record<string, string | number | undefined>;
+	/** Bypass the Next.js data cache (required for large news list payloads). */
+	noStore?: boolean;
 };
 
 export async function apiFetch<T extends z.ZodType>(
@@ -21,6 +36,7 @@ export async function apiFetch<T extends z.ZodType>(
 		tags = [],
 		revalidate = DEFAULT_REVALIDATE,
 		searchParams,
+		noStore = false,
 	}: ApiFetchOptions<T>,
 ): Promise<z.infer<T> | null> {
 	const apiBaseUrl = getApiBaseUrl();
@@ -38,28 +54,31 @@ export async function apiFetch<T extends z.ZodType>(
 			}
 		}
 
-		const response = await fetch(endpoint, {
-			next: { revalidate, tags },
-		});
+		const response = await fetch(
+			endpoint,
+			noStore
+				? { cache: "no-store" }
+				: {
+						next: { revalidate, tags },
+					},
+		);
 
 		if (!response.ok) {
 			return null;
 		}
 
 		const payload: unknown = await response.json();
-		const envelopeSchema = ApiResponseSchema(schema);
-		const parsed = envelopeSchema.safeParse(payload);
+		const data = unwrapApiPayload(payload);
+		if (data == null) {
+			return null;
+		}
 
+		const parsed = schema.safeParse(data);
 		if (!parsed.success) {
 			return null;
 		}
 
-		const envelope = parsed.data as {
-			success: boolean;
-			message: string;
-			data: z.infer<T>;
-		};
-		return envelope.data;
+		return parsed.data;
 	} catch {
 		return null;
 	}

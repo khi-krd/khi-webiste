@@ -14,4 +14,3 @@ coverage
 *.pem
 npm-debug.log*
 .pnpm-debug.log*
-PUBLIC-API

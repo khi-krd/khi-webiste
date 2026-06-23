@@ -1,5 +1,5 @@
 import "server-only";
-import { apiFetchRaw, DEFAULT_REVALIDATE } from "@/lib/api/client";
+import { apiFetchRaw, DEFAULT_REVALIDATE, unwrapApiPayload } from "@/lib/api/client";
 import { getApiBaseUrl } from "@/lib/api/config";
 import { getDemoFeaturedItems } from "@/lib/mock/featured";
 import {
@@ -181,11 +181,12 @@ export async function getFeaturedItems(
 			searchParams: { locale },
 		});
 
-		if (!payload) {
+		const unwrapped = unwrapApiPayload(payload);
+		if (!unwrapped) {
 			return getDemoFeaturedItems(locale);
 		}
 
-		const rawItems = normalizeItems(payload);
+		const rawItems = normalizeItems(unwrapped);
 		const remappedItems = rawItems.map((item) => remapFeaturedItem(item));
 		const parsed = FeaturedItemsSchema.safeParse(remappedItems);
 

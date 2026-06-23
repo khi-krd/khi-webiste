@@ -31,9 +31,9 @@ function truncate(text: string, maxLength: number): string {
 
 function resolveNewsContent(locale: string, news: News): NewsContent | null {
 	if (locale === "ckb") {
-		return news.ckbContent ?? news.kmrContent;
+		return news.ckbContent ?? news.kmrContent ?? null;
 	}
-	return news.kmrContent ?? news.ckbContent;
+	return news.kmrContent ?? news.ckbContent ?? null;
 }
 
 function resolveCategoryName(locale: string, news: News): string | null {

@@ -6,6 +6,7 @@ import {
 } from "@/lib/api/client";
 import { getApiBaseUrl } from "@/lib/api/config";
 import type { LatestUpdateItem } from "@/lib/mock/latest-updates";
+import { getLatestUpdates as getMockLatestUpdates } from "@/lib/mock/latest-updates";
 import {
 	filterNews as filterNewsItems,
 	getBentoNews as getMockBentoNews,
@@ -28,6 +29,7 @@ import { NewsPageSchema, NewsSchema } from "@/types/news";
 
 const NEWS_ENDPOINT = "/api/v1/news";
 const NEWS_TAG = "news";
+const NEWS_FETCH_SIZE = 20;
 
 export {
 	isValidCategory,
@@ -47,6 +49,7 @@ async function fetchNewsPage(
 		tags: [NEWS_TAG],
 		revalidate: DEFAULT_REVALIDATE,
 		searchParams,
+		noStore: true,
 	});
 
 	return page?.content.length ? page.content : null;
@@ -57,7 +60,8 @@ async function fetchNewsSearch(query: string): Promise<News[] | null> {
 		schema: NewsPageSchema,
 		tags: [NEWS_TAG],
 		revalidate: DEFAULT_REVALIDATE,
-		searchParams: { q: query, page: 0, size: BULK_FETCH_SIZE },
+		searchParams: { q: query, page: 0, size: NEWS_FETCH_SIZE },
+		noStore: true,
 	});
 
 	return page?.content.length ? page.content : null;
@@ -73,7 +77,7 @@ async function getAllNewsRecords(
 
 	const raw = query?.trim()
 		? await fetchNewsSearch(query.trim())
-		: await fetchNewsPage({ page: 0, size: BULK_FETCH_SIZE });
+		: await fetchNewsPage({ page: 0, size: NEWS_FETCH_SIZE });
 
 	if (!raw) {
 		return getMockNews(locale);
@@ -111,6 +115,7 @@ export async function getNewsBySlug(
 			schema: NewsSchema,
 			tags: [NEWS_TAG, `news-${numericId}`],
 			revalidate: DEFAULT_REVALIDATE,
+			noStore: true,
 		});
 
 		if (detail) {
@@ -185,9 +190,32 @@ function toLatestUpdateItem(item: NewsItem): LatestUpdateItem {
 	};
 }
 
+const LATEST_UPDATES_COUNT = 8;
+
 export async function getLatestUpdates(
 	locale: string,
 ): Promise<LatestUpdateItem[]> {
-	const items = await getAllNewsRecords(locale);
-	return items.slice(0, 8).map(toLatestUpdateItem);
+	if (!getApiBaseUrl()) {
+		return getMockLatestUpdates(locale);
+	}
+
+	const raw = await fetchNewsPage({ page: 0, size: LATEST_UPDATES_COUNT });
+	const apiItems = raw
+		? resolveNewsItems(locale, raw)
+				.slice(0, LATEST_UPDATES_COUNT)
+				.map(toLatestUpdateItem)
+		: [];
+
+	if (apiItems.length >= LATEST_UPDATES_COUNT) {
+		return apiItems;
+	}
+
+	if (apiItems.length === 0) {
+		return getMockLatestUpdates(locale);
+	}
+
+	return [...apiItems, ...getMockLatestUpdates(locale)].slice(
+		0,
+		LATEST_UPDATES_COUNT,
+	);
 }

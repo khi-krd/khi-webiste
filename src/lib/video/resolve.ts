@@ -38,9 +38,9 @@ export function resolveVideoContent(
 	video: Video,
 ): VideoContent | null {
 	if (locale === "ckb") {
-		return video.ckbContent ?? video.kmrContent;
+		return video.ckbContent ?? video.kmrContent ?? null;
 	}
-	return video.kmrContent ?? video.ckbContent;
+	return video.kmrContent ?? video.ckbContent ?? null;
 }
 
 export function resolveVideoCoverUrl(
@@ -249,10 +249,10 @@ export function resolveVideoCard(
 		subtitle: firstNonBlank(content.director),
 		excerpt: description ? truncate(description, EXCERPT_MAX_LENGTH) : "",
 		coverUrl: resolveVideoCoverUrl(locale, video),
-		hoverCoverUrl: video.hoverCoverUrl,
+		hoverCoverUrl: video.hoverCoverUrl ?? null,
 		videoType: video.videoType,
 		albumOfMemories: video.albumOfMemories,
-		topicId: video.topicId,
+		topicId: video.topicId ?? null,
 		topicName: resolveVideoTopicName(locale, video),
 		durationSeconds: video.durationSeconds ?? totalClipDuration(video),
 		clipCount:
@@ -300,17 +300,17 @@ export function resolveVideoDetail(
 		coverUrl: resolveVideoCoverUrl(locale, video),
 		videoType: video.videoType,
 		albumOfMemories: video.albumOfMemories,
-		topicId: video.topicId,
+		topicId: video.topicId ?? null,
 		topicName: resolveVideoTopicName(locale, video),
 		director: firstNonBlank(content.director),
 		producer: firstNonBlank(content.producer),
 		location: firstNonBlank(content.location),
 		contentLanguages: video.contentLanguages,
-		durationSeconds: video.durationSeconds ?? totalClipDuration(video),
+		durationSeconds: video.durationSeconds ?? totalClipDuration(video) ?? null,
 		resolution: firstNonBlank(video.resolution),
 		fileFormat: firstNonBlank(video.fileFormat),
 		publishmentDate: firstNonBlank(video.publishmentDate),
-		fileSizeMb: video.fileSizeMb,
+		fileSizeMb: video.fileSizeMb ?? null,
 		playerKind,
 		playableSrc,
 		clips,

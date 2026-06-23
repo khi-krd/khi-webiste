@@ -33,9 +33,9 @@ function resolveCollectionContent(
 	collection: ImageCollection,
 ): ImageCollection["ckbContent"] {
 	if (locale === "ckb") {
-		return collection.ckbContent ?? collection.kmrContent;
+		return collection.ckbContent ?? collection.kmrContent ?? null;
 	}
-	return collection.kmrContent ?? collection.ckbContent;
+	return collection.kmrContent ?? collection.ckbContent ?? null;
 }
 
 function resolveCoverUrl(

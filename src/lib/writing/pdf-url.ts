@@ -1,4 +1,5 @@
 const DEMO_PDF_PATH = "/writings/java-foundations.pdf";
+const DEFAULT_S3_MEDIA_HOST = "s3-khiwebsite.s3.us-east-1.amazonaws.com";
 
 /** Locale-relative demo PDF used by mock writings (same-origin, no CORS). */
 export const WRITING_DEMO_PDF_URL = DEMO_PDF_PATH;
@@ -9,6 +10,7 @@ function getAllowedPdfHosts(): Set<string> {
 	if (mediaHost) {
 		hosts.add(mediaHost);
 	}
+	hosts.add(DEFAULT_S3_MEDIA_HOST);
 	const apiBaseUrl = process.env.API_BASE_URL;
 	if (apiBaseUrl) {
 		try {

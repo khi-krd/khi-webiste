@@ -5,7 +5,12 @@ import {
 	CoverMediaTypeSchema,
 } from "@/types/news";
 
-export const ProjectStatusSchema = z.enum(["ACTIVE", "COMPLETED", "ARCHIVED"]);
+export const ProjectStatusSchema = z.enum([
+	"ACTIVE",
+	"ONGOING",
+	"COMPLETED",
+	"ARCHIVED",
+]);
 
 export const ProjectContentSchema = z.object({
 	title: z.string().nullable(),
@@ -26,8 +31,8 @@ export const ProjectSchema = z.object({
 	status: ProjectStatusSchema.nullable().optional(),
 	projectDate: z.string().nullable(),
 	contentLanguages: z.array(ContentLanguageSchema),
-	ckbContent: ProjectContentSchema.nullable(),
-	kmrContent: ProjectContentSchema.nullable(),
+	ckbContent: ProjectContentSchema.nullish(),
+	kmrContent: ProjectContentSchema.nullish(),
 	tagsCkb: z.array(z.string()).optional(),
 	tagsKmr: z.array(z.string()).optional(),
 	keywordsCkb: z.array(z.string()).optional(),
