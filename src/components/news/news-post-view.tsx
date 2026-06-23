@@ -8,7 +8,7 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { DirectionalIcon } from "@/components/ui/directional-icon";
 import { Link } from "@/components/ui/link";
-import { Prose } from "@/components/ui/prose";
+import { RichText } from "@/components/ui/rich-text";
 import { newsDetailHref } from "@/lib/content/href";
 import { homeInsetClass } from "@/lib/layout";
 import type { NewsItem } from "@/lib/mock/news";
@@ -126,10 +126,10 @@ export function NewsPostView({
 
 				<ScrollRevealItem>
 					<div className="mx-auto mt-8 max-w-3xl text-start sm:mt-10">
-						{item.descriptionHtml ? (
-							<Prose
+						{item.description ? (
+							<RichText
+								content={item.description}
 								className="text-body leading-relaxed text-foreground"
-								dangerouslySetInnerHTML={{ __html: item.descriptionHtml }}
 							/>
 						) : (
 							<p className="text-body leading-relaxed text-foreground">

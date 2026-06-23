@@ -362,8 +362,8 @@ export type GalleryPost = {
 	id: string;
 	collectionType: GalleryCollectionType;
 	title: string;
-	/** Tiptap HTML, already processed server-side — render directly. */
-	descriptionHtml: string;
+	/** Markdown or legacy HTML — render via RichText. */
+	description: string;
 	location?: string;
 	collectedBy?: string;
 	/** Localized topic name (topicNameCkb / topicNameKmr). */
@@ -524,7 +524,7 @@ const POSTS_BASE: GalleryPostBase[] = [
    description, location, collectedBy) plus the language's tag set. */
 type GalleryPostCopy = {
 	title: string;
-	descriptionHtml: string;
+	description: string;
 	location?: string;
 	collectedBy?: string;
 	tags: string[];
@@ -533,7 +533,7 @@ type GalleryPostCopy = {
 const POSTS_EN: Record<string, GalleryPostCopy> = {
 	"the-mountain-keeps-us": {
 		title: "The Mountain Keeps Us",
-		descriptionHtml:
+		description:
 			"<p>Landscapes and lives along the high passes — herding routes, spring pastures, and the villages that hold to the slopes.</p><p>Photographed across three springs, from the first thaw to the last move of the flocks.</p>",
 		location: "Hawraman range, Kurdistan",
 		collectedBy: "Dr. Shilan Hassan",
@@ -541,7 +541,7 @@ const POSTS_EN: Record<string, GalleryPostCopy> = {
 	},
 	"threads-of-identity": {
 		title: "Threads of Identity",
-		descriptionHtml:
+		description:
 			"<p>Regional dress from Hawraman to Botan, photographed piece by piece — pattern, weave, and the hands that still make them.</p>",
 		location: "Hawraman to Botan",
 		collectedBy: "Dilan Mohammed",
@@ -549,7 +549,7 @@ const POSTS_EN: Record<string, GalleryPostCopy> = {
 	},
 	"made-by-hand": {
 		title: "Made by Hand",
-		descriptionHtml:
+		description:
 			"<p>Coppersmiths, weavers, and instrument makers at work — craft traditions documented in the workshops where they survive.</p>",
 		location: "Sulaymaniyah bazaar",
 		collectedBy: "Kamal Aziz",
@@ -557,7 +557,7 @@ const POSTS_EN: Record<string, GalleryPostCopy> = {
 	},
 	"city-of-poets": {
 		title: "City of Poets",
-		descriptionHtml:
+		description:
 			"<p>Street scenes and teahouse evenings in Sulaymaniyah — the everyday rhythm of a city that keeps its memory in verse.</p><p>A sequential photo story, told in the order the day unfolds.</p>",
 		location: "Sulaymaniyah",
 		collectedBy: "Narin Ali",
@@ -565,7 +565,7 @@ const POSTS_EN: Record<string, GalleryPostCopy> = {
 	},
 	"the-radio-years": {
 		title: "The Radio Years",
-		descriptionHtml:
+		description:
 			"<p>Studios, transmitters, and the voices behind them — portraits from the era when the airwaves carried Kurdish song across borders.</p>",
 		location: "Baghdad & Yerevan studios",
 		collectedBy: "Hawar Salih",
@@ -573,7 +573,7 @@ const POSTS_EN: Record<string, GalleryPostCopy> = {
 	},
 	"festivals-of-the-plain": {
 		title: "Festivals of the Plain",
-		descriptionHtml:
+		description:
 			"<p>Newroz gatherings, harvest dances, and wedding processions — celebration photographed from inside the circle.</p>",
 		location: "Sharazor plain",
 		collectedBy: "Rojin Karim",
@@ -581,7 +581,7 @@ const POSTS_EN: Record<string, GalleryPostCopy> = {
 	},
 	"doors-of-the-old-quarter": {
 		title: "Doors of the Old Quarter",
-		descriptionHtml:
+		description:
 			"<p>Carved wood, worn thresholds, and courtyard gates — a study of the entrances that hold a neighborhood's history.</p>",
 		location: "Old quarter, Sulaymaniyah",
 		collectedBy: "Avin Taha",
@@ -589,7 +589,7 @@ const POSTS_EN: Record<string, GalleryPostCopy> = {
 	},
 	"bread-and-salt": {
 		title: "Bread and Salt",
-		descriptionHtml:
+		description:
 			"<p>Tandoor mornings, mountain kitchens, and the long table — hospitality as it is practiced, not performed.</p>",
 		location: "Across Kurdistan",
 		collectedBy: "KHI field team",
@@ -600,7 +600,7 @@ const POSTS_EN: Record<string, GalleryPostCopy> = {
 const POSTS_CKB: Record<string, GalleryPostCopy> = {
 	"the-mountain-keeps-us": {
 		title: "چیا ئێمەی دەپارێزێت",
-		descriptionHtml:
+		description:
 			"<p>دیمەن و ژیان لە ڕێگا بەرزەکاندا — ڕێچکەی شوانکارە، لەوەڕگای بەهار و ئەو گوندانەی بە بناری چیاوە لکاون.</p><p>لە ماوەی سێ بەهاردا وێنەگیراون، لە یەکەم توانەوەی بەفرەوە تا دوایین کۆچی مەڕەکان.</p>",
 		location: "زنجیرە چیای هەورامان، کوردستان",
 		collectedBy: "د. شیلان حەسەن",
@@ -608,7 +608,7 @@ const POSTS_CKB: Record<string, GalleryPostCopy> = {
 	},
 	"threads-of-identity": {
 		title: "ڕیشاڵەکانی ناسنامە",
-		descriptionHtml:
+		description:
 			"<p>جلوبەرگی ناوچەیی لە هەورامانەوە تا بۆتان، پارچە بە پارچە وێنەگیراون — نەخش، چنین و ئەو دەستانەی هێشتا دروستیان دەکەن.</p>",
 		location: "لە هەورامانەوە بۆ بۆتان",
 		collectedBy: "دیلان محەمەد",
@@ -616,7 +616,7 @@ const POSTS_CKB: Record<string, GalleryPostCopy> = {
 	},
 	"made-by-hand": {
 		title: "بە دەست دروستکراو",
-		descriptionHtml:
+		description:
 			"<p>مسگەر و چنەر و ئامێرسازەکان لە کاتی کارکردندا — نەریتی پیشەیی لەو کارگانەدا تۆمارکراون کە تێیاندا ماونەتەوە.</p>",
 		location: "بازاڕی سلێمانی",
 		collectedBy: "کەمال عەزیز",
@@ -624,7 +624,7 @@ const POSTS_CKB: Record<string, GalleryPostCopy> = {
 	},
 	"city-of-poets": {
 		title: "شاری شاعیران",
-		descriptionHtml:
+		description:
 			"<p>دیمەنی شەقام و ئێوارانی چایخانەکان لە سلێمانی — ڕیتمی ڕۆژانەی شارێک کە یادەوەری خۆی بە شیعر دەپارێزێت.</p><p>چیرۆکێکی وێنەیی زنجیرەیی، بەو ڕیزبەندییە گێڕدراوەتەوە کە ڕۆژەکە تێیدا تێدەپەڕێت.</p>",
 		location: "سلێمانی",
 		collectedBy: "نارین عەلی",
@@ -632,7 +632,7 @@ const POSTS_CKB: Record<string, GalleryPostCopy> = {
 	},
 	"the-radio-years": {
 		title: "ساڵانی ڕادیۆ",
-		descriptionHtml:
+		description:
 			"<p>ستودیۆ و وەرگرەکان و ئەو دەنگانەی لە پشتیانەوە بوون — وێنەی ئەو سەردەمەی شەپۆلەکان گۆرانی کوردییان بەسەر سنوورەکاندا دەگەیاند.</p>",
 		location: "ستودیۆکانی بەغدا و یەریڤان",
 		collectedBy: "هاوار ساڵح",
@@ -640,7 +640,7 @@ const POSTS_CKB: Record<string, GalleryPostCopy> = {
 	},
 	"festivals-of-the-plain": {
 		title: "جەژنەکانی دەشت",
-		descriptionHtml:
+		description:
 			"<p>کۆبوونەوەکانی نەورۆز، هەڵپەڕکێی دروێنە و کاروانی بووکگوازی — ئاهەنگ لە ناو بازنەکەوە وێنەگیراوە.</p>",
 		location: "دەشتی شارەزوور",
 		collectedBy: "ڕۆژین کەریم",
@@ -648,7 +648,7 @@ const POSTS_CKB: Record<string, GalleryPostCopy> = {
 	},
 	"doors-of-the-old-quarter": {
 		title: "دەرگاکانی گەڕەکی کۆن",
-		descriptionHtml:
+		description:
 			"<p>داری نەخشێنراو، بەردەرگای کۆن و دەروازەی حەوشەکان — لێکۆڵینەوەیەک لەو دەرگایانەی مێژووی گەڕەکێک هەڵدەگرن.</p>",
 		location: "گەڕەکی کۆنی سلێمانی",
 		collectedBy: "ئاڤین تەها",
@@ -656,7 +656,7 @@ const POSTS_CKB: Record<string, GalleryPostCopy> = {
 	},
 	"bread-and-salt": {
 		title: "نان و خوێ",
-		descriptionHtml:
+		description:
 			"<p>بەیانییانی تەنوور، چێشتخانەی شاخ و سفرە درێژەکان — میوانداری وەک خۆی، نەک وەک نمایش.</p>",
 		location: "سەرانسەری کوردستان",
 		collectedBy: "تیمی مەیدانی ئینستیتوت",
@@ -667,7 +667,7 @@ const POSTS_CKB: Record<string, GalleryPostCopy> = {
 const POSTS_KU: Record<string, GalleryPostCopy> = {
 	"the-mountain-keeps-us": {
 		title: "Çiya me diparêze",
-		descriptionHtml:
+		description:
 			"<p>Dîmen û jiyan li ser rêyên bilind — rêçikên şivaniyê, mêrgên biharê û gundên ku xwe bi çiyan ve girtine.</p><p>Di sê biharan de hatine wênekirin, ji heliyana yekem a berfê heta koça dawî ya keriyan.</p>",
 		location: "Zincîreçiyayên Hewramanê, Kurdistanê",
 		collectedBy: "Dr. Şîlan Hesen",
@@ -675,7 +675,7 @@ const POSTS_KU: Record<string, GalleryPostCopy> = {
 	},
 	"threads-of-identity": {
 		title: "Tayên nasnameyê",
-		descriptionHtml:
+		description:
 			"<p>Cilên herêmî ji Hewramanê heta Botanê, perçe bi perçe hatine wênekirin — nexş, honandin û destên ku hîn jî wan çêdikin.</p>",
 		location: "Ji Hewramanê heta Botanê",
 		collectedBy: "Dîlan Mihemed",
@@ -683,7 +683,7 @@ const POSTS_KU: Record<string, GalleryPostCopy> = {
 	},
 	"made-by-hand": {
 		title: "Bi dest çêkirî",
-		descriptionHtml:
+		description:
 			"<p>Misger, honandkar û amûrsaz di dema xebatê de — kevneşopiyên pîşeyî li atolyeyên ku lê dijîn hatine tomarkirin.</p>",
 		location: "Bazara Silêmaniyê",
 		collectedBy: "Kemal Ezîz",
@@ -691,7 +691,7 @@ const POSTS_KU: Record<string, GalleryPostCopy> = {
 	},
 	"city-of-poets": {
 		title: "Bajarê helbestvanan",
-		descriptionHtml:
+		description:
 			"<p>Dîmenên kolanan û êvarên çayxaneyan li Silêmaniyê — rîtma rojane ya bajarekî ku bîra xwe bi helbestê diparêze.</p><p>Çîrokeke wêneyî ya rêzdar, bi rêza ku roj tê de derbas dibe hatiye vegotin.</p>",
 		location: "Silêmanî",
 		collectedBy: "Narîn Elî",
@@ -699,7 +699,7 @@ const POSTS_KU: Record<string, GalleryPostCopy> = {
 	},
 	"the-radio-years": {
 		title: "Salên radyoyê",
-		descriptionHtml:
+		description:
 			"<p>Studyo, veguhêzer û dengên li pişt wan — portreyên serdema ku pêlên radyoyê strana kurdî derbasî ser sînoran dikirin.</p>",
 		location: "Studyoyên Bexda û Yêrêvanê",
 		collectedBy: "Hawar Salih",
@@ -707,7 +707,7 @@ const POSTS_KU: Record<string, GalleryPostCopy> = {
 	},
 	"festivals-of-the-plain": {
 		title: "Cejnên deştê",
-		descriptionHtml:
+		description:
 			"<p>Civînên Newrozê, govendên dirûnê û karwanên bûkaniyê — şahî ji nava gerê hatiye wênekirin.</p>",
 		location: "Deşta Şarezûr",
 		collectedBy: "Rojîn Kerîm",
@@ -715,7 +715,7 @@ const POSTS_KU: Record<string, GalleryPostCopy> = {
 	},
 	"doors-of-the-old-quarter": {
 		title: "Deriyên taxa kevn",
-		descriptionHtml:
+		description:
 			"<p>Darê neqişandî, şêmûgên kevn û deriyên hewşan — lêkolînek li ser wan deriyên ku dîroka taxekê dihewînin.</p>",
 		location: "Taxa kevn, Silêmanî",
 		collectedBy: "Avîn Teha",
@@ -723,7 +723,7 @@ const POSTS_KU: Record<string, GalleryPostCopy> = {
 	},
 	"bread-and-salt": {
 		title: "Nan û xwê",
-		descriptionHtml:
+		description:
 			"<p>Sibehên tenûrê, metbexên çiyê û sifreya dirêj — mêvandarî wek ku tê jiyîn, ne wek pêşandan.</p>",
 		location: "Li seranserê Kurdistanê",
 		collectedBy: "Tîma meydanî ya KHI",
@@ -801,7 +801,7 @@ export function getGalleryPosts(locale: string): GalleryPost[] {
 			publishmentDate: base.publishmentDate,
 			topicName: base.topicKey ? topicNames[base.topicKey] : undefined,
 			title: text.title,
-			descriptionHtml: text.descriptionHtml,
+			description: text.description,
 			location: text.location,
 			collectedBy: text.collectedBy,
 			tags: text.tags,

@@ -14,6 +14,7 @@ export { Input, type InputProps } from "./input";
 export { Link } from "./link";
 export { Pagination } from "./pagination";
 export { Prose } from "./prose";
+export { RichText } from "./rich-text";
 export { Section } from "./section";
 export { Select, type SelectProps } from "./select";
 export { Skeleton, SkeletonText } from "./skeleton";

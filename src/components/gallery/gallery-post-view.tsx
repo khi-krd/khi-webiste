@@ -1,11 +1,10 @@
 import { ArrowLeftIcon, ArrowRightIcon } from "@heroicons/react/24/outline";
 import { GalleryAlbum } from "@/components/gallery/gallery-album";
 import type { GalleryAlbumMetadataLabels } from "@/components/gallery/gallery-album-item";
-import {
-	ScrollRevealBlock,
-} from "@/components/motion/scroll-reveal";
+import { ScrollRevealBlock } from "@/components/motion/scroll-reveal";
 import { Badge } from "@/components/ui/badge";
 import { DirectionalIcon } from "@/components/ui/directional-icon";
+import { RichText } from "@/components/ui/rich-text";
 import { Link } from "@/i18n/navigation";
 import { homeInsetClass } from "@/lib/layout";
 import type { GalleryPost, GalleryPostDetail } from "@/lib/mock/gallery";
@@ -153,10 +152,9 @@ export function GalleryPostView({
 				</p>
 				<h1 className="display-title mt-4 max-w-4xl">{post.title}</h1>
 
-				<div
-					className="prose mt-6 max-w-xl [&>p]:text-muted"
-					// biome-ignore lint/security/noDangerouslySetInnerHtml: API returns server-processed Tiptap HTML
-					dangerouslySetInnerHTML={{ __html: post.descriptionHtml }}
+				<RichText
+					content={post.description}
+					className="mt-6 max-w-xl [&>p]:text-muted"
 				/>
 
 				{hasCredits && (

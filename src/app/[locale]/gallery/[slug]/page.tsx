@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { GalleryPostView } from "@/components/gallery/gallery-post-view";
 import { getGalleryPostBySlug } from "@/lib/api/gallery";
+import { plainTextFromRichContent } from "@/lib/rich-text";
 
 type GalleryPostPageProps = {
 	params: Promise<{ locale: string; slug: string }>;
@@ -19,11 +20,7 @@ export async function generateMetadata({
 
 	return {
 		title: detail.post.title,
-		// descriptionHtml is Tiptap HTML — strip tags for the meta description.
-		description: detail.post.descriptionHtml
-			.replace(/<[^>]+>/g, " ")
-			.replace(/\s+/g, " ")
-			.trim(),
+		description: plainTextFromRichContent(detail.post.description),
 	};
 }
 

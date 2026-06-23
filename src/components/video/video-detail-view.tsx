@@ -7,6 +7,7 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { DirectionalIcon } from "@/components/ui/directional-icon";
 import { Link } from "@/components/ui/link";
+import { RichText } from "@/components/ui/rich-text";
 import { VideoPlayerFrame } from "@/components/video/video-player-frame";
 import { homeInsetClass } from "@/lib/layout";
 import { cn } from "@/lib/utils";
@@ -148,66 +149,67 @@ export async function VideoDetailView({
 						) : null}
 
 						{detail.description ? (
-							<p className="mt-5 max-w-prose text-body leading-relaxed text-foreground/90">
-								{detail.description}
-							</p>
+							<RichText
+								content={detail.description}
+								className="mt-5 max-w-prose text-body leading-relaxed text-foreground/90"
+							/>
 						) : null}
 					</ScrollRevealItem>
 
 					{hasMeta ? (
 						<ScrollRevealItem>
 							<dl className="mt-10 grid grid-cols-1 gap-x-8 border-t border-border sm:grid-cols-2 [&>*]:border-b [&>*]:border-border">
-							{detail.director ? (
-								<MetaCell label={t("detail.director")}>
-									{detail.director}
-								</MetaCell>
-							) : null}
-							{detail.producer ? (
-								<MetaCell label={t("detail.producer")}>
-									{detail.producer}
-								</MetaCell>
-							) : null}
-							{detail.location ? (
-								<MetaCell label={t("detail.location")}>
-									{detail.location}
-								</MetaCell>
-							) : null}
-							{detail.topicName ? (
-								<MetaCell label={t("detail.topic")}>
-									{detail.topicName}
-								</MetaCell>
-							) : null}
-							{durationLabel ? (
-								<MetaCell label={t("detail.duration")} ltr>
-									{durationLabel}
-								</MetaCell>
-							) : null}
-							{detail.resolution ? (
-								<MetaCell label={t("detail.resolution")} ltr>
-									{detail.resolution}
-								</MetaCell>
-							) : null}
-							{detail.fileFormat ? (
-								<MetaCell label={t("detail.fileFormat")} ltr>
-									{detail.fileFormat.toUpperCase()}
-								</MetaCell>
-							) : null}
-							{publishedDateLabel ? (
-								<MetaCell label={t("detail.publishmentDate")}>
-									{publishedDateLabel}
-								</MetaCell>
-							) : null}
-							{fileSizeLabel ? (
-								<MetaCell label={t("detail.fileSize")} ltr>
-									{fileSizeLabel}
-								</MetaCell>
-							) : null}
-							{languageLabels.length > 0 ? (
-								<MetaCell label={t("detail.languagesLabel")}>
-									{languageLabels.join(" · ")}
-								</MetaCell>
-							) : null}
-						</dl>
+								{detail.director ? (
+									<MetaCell label={t("detail.director")}>
+										{detail.director}
+									</MetaCell>
+								) : null}
+								{detail.producer ? (
+									<MetaCell label={t("detail.producer")}>
+										{detail.producer}
+									</MetaCell>
+								) : null}
+								{detail.location ? (
+									<MetaCell label={t("detail.location")}>
+										{detail.location}
+									</MetaCell>
+								) : null}
+								{detail.topicName ? (
+									<MetaCell label={t("detail.topic")}>
+										{detail.topicName}
+									</MetaCell>
+								) : null}
+								{durationLabel ? (
+									<MetaCell label={t("detail.duration")} ltr>
+										{durationLabel}
+									</MetaCell>
+								) : null}
+								{detail.resolution ? (
+									<MetaCell label={t("detail.resolution")} ltr>
+										{detail.resolution}
+									</MetaCell>
+								) : null}
+								{detail.fileFormat ? (
+									<MetaCell label={t("detail.fileFormat")} ltr>
+										{detail.fileFormat.toUpperCase()}
+									</MetaCell>
+								) : null}
+								{publishedDateLabel ? (
+									<MetaCell label={t("detail.publishmentDate")}>
+										{publishedDateLabel}
+									</MetaCell>
+								) : null}
+								{fileSizeLabel ? (
+									<MetaCell label={t("detail.fileSize")} ltr>
+										{fileSizeLabel}
+									</MetaCell>
+								) : null}
+								{languageLabels.length > 0 ? (
+									<MetaCell label={t("detail.languagesLabel")}>
+										{languageLabels.join(" · ")}
+									</MetaCell>
+								) : null}
+							</dl>
 						</ScrollRevealItem>
 					) : null}
 

@@ -24,6 +24,8 @@ export const ServicesPageSchema = z.object({
 	pageable: PageableSchema.optional(),
 	totalElements: z.number(),
 	totalPages: z.number(),
+	number: z.number().optional(),
+	size: z.number().optional(),
 	last: z.boolean().optional(),
 	first: z.boolean().optional(),
 	numberOfElements: z.number().optional(),

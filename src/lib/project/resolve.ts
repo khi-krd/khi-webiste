@@ -1,5 +1,6 @@
 import type { ImageCollectionItem } from "@/lib/mock/image-collection";
 import type { ProjectItem } from "@/lib/mock/projects";
+import { plainTextFromRichContent } from "@/lib/rich-text";
 import type { Project, ProjectContent } from "@/types/project";
 
 function firstNonBlank(
@@ -11,13 +12,6 @@ function firstNonBlank(
 		}
 	}
 	return null;
-}
-
-function stripHtml(html: string): string {
-	return html
-		.replace(/<[^>]+>/g, " ")
-		.replace(/\s+/g, " ")
-		.trim();
 }
 
 function resolveProjectContent(
@@ -46,7 +40,7 @@ export function resolveProjectItem(
 			content?.location,
 			project.projectTypeKmr,
 			project.projectTypeCkb,
-		) ?? stripHtml(description).slice(0, 80);
+		) ?? plainTextFromRichContent(description).slice(0, 80);
 
 	const cover = firstNonBlank(project.coverUrl, project.coverThumbnailUrl);
 

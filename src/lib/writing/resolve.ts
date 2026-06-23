@@ -1,7 +1,9 @@
+import { plainTextFromRichContent } from "@/lib/rich-text";
 import type {
 	ResolvedSeriesBook,
 	ResolvedWritingCard,
 	ResolvedWritingDetail,
+	SeriesInfo,
 	TopicInfo,
 	Writing,
 	WritingContent,
@@ -9,6 +11,15 @@ import type {
 } from "@/types/writing";
 
 const EXCERPT_MAX_LENGTH = 120;
+
+const EMPTY_SERIES: SeriesInfo = {
+	seriesId: null,
+	seriesName: null,
+	seriesOrder: null,
+	parentBookId: null,
+	totalBooks: null,
+	isParent: false,
+};
 
 function firstNonBlank(
 	...values: (string | null | undefined)[]
@@ -69,6 +80,37 @@ export function resolveTopicName(
 	return firstNonBlank(topic.nameKmr, topic.nameCkb);
 }
 
+function resolveWritingTopicName(
+	locale: string,
+	writing: Writing,
+): string | null {
+	const fromTopic = resolveTopicName(locale, writing.topic ?? null);
+	if (fromTopic) {
+		return fromTopic;
+	}
+	if (locale === "ckb") {
+		return firstNonBlank(writing.topicNameCkb, writing.topicNameKmr);
+	}
+	return firstNonBlank(writing.topicNameKmr, writing.topicNameCkb);
+}
+
+function resolveWritingSeriesInfo(writing: Writing): SeriesInfo {
+	if (writing.seriesInfo) {
+		return writing.seriesInfo;
+	}
+	if (writing.series) {
+		return {
+			seriesId: writing.series.seriesId,
+			seriesName: writing.series.seriesName,
+			seriesOrder: writing.series.seriesOrder,
+			parentBookId: writing.series.parentBookId ?? null,
+			totalBooks: writing.series.totalBooks,
+			isParent: writing.series.isParent ?? false,
+		};
+	}
+	return EMPTY_SERIES;
+}
+
 export function resolveWritingCard(
 	locale: string,
 	writing: Writing,
@@ -78,20 +120,23 @@ export function resolveWritingCard(
 		return null;
 	}
 
-	const seriesOrder = writing.seriesInfo.seriesOrder ?? 1;
+	const seriesInfo = resolveWritingSeriesInfo(writing);
+	const seriesOrder = seriesInfo.seriesOrder ?? 1;
 	const description = content.description?.trim() ?? "";
 
 	return {
 		id: writing.id,
 		title: content.title,
 		writer: content.writer?.trim() ?? "",
-		excerpt: description ? truncate(description, EXCERPT_MAX_LENGTH) : "",
+		excerpt: description
+			? truncate(plainTextFromRichContent(description), EXCERPT_MAX_LENGTH)
+			: "",
 		coverUrl: resolveCoverUrl(locale, writing),
 		hoverCoverUrl: writing.hoverCoverUrl ?? null,
 		genres: writing.bookGenres,
 		freeTextGenre: content.genre,
-		topicName: resolveTopicName(locale, writing.topic ?? null),
-		seriesName: writing.seriesInfo.seriesName?.trim() || null,
+		topicName: resolveWritingTopicName(locale, writing),
+		seriesName: seriesInfo.seriesName?.trim() || null,
 		publishedByInstitute: writing.publishedByInstitute,
 		seriesOrderLabel: String(Math.round(seriesOrder)).padStart(2, "0"),
 		fileUrl: content.fileUrl,
@@ -129,7 +174,7 @@ function resolveBilingualStrings(
 }
 
 function isPartOfSeries(writing: Writing): boolean {
-	const { seriesId, totalBooks } = writing.seriesInfo;
+	const { seriesId, totalBooks } = resolveWritingSeriesInfo(writing);
 	return Boolean(seriesId && (totalBooks == null || totalBooks > 1));
 }
 
@@ -147,6 +192,7 @@ export function resolveWritingDetail(
 	}
 
 	const description = content.description?.trim() ?? "";
+	const seriesInfo = resolveWritingSeriesInfo(writing);
 	const fileOffers: WritingFileOffer[] = [];
 
 	if (writing.ckbContent?.fileUrl || writing.contentLanguages.includes("CKB")) {
@@ -188,12 +234,12 @@ export function resolveWritingDetail(
 		hoverCoverUrl: writing.hoverCoverUrl ?? null,
 		genres: writing.bookGenres,
 		freeTextGenre: content.genre,
-		topicName: resolveTopicName(locale, writing.topic ?? null),
+		topicName: resolveWritingTopicName(locale, writing),
 		publishedByInstitute: writing.publishedByInstitute,
-		seriesName: writing.seriesInfo.seriesName?.trim() || null,
-		seriesId: writing.seriesInfo.seriesId,
-		seriesOrder: writing.seriesInfo.seriesOrder,
-		seriesTotalBooks: writing.seriesInfo.totalBooks,
+		seriesName: seriesInfo.seriesName?.trim() || null,
+		seriesId: seriesInfo.seriesId,
+		seriesOrder: seriesInfo.seriesOrder,
+		seriesTotalBooks: seriesInfo.totalBooks,
 		isPartOfSeries: isPartOfSeries(writing),
 		tags: resolveBilingualStrings(locale, writing.tags.ckb, writing.tags.kmr),
 		keywords: resolveBilingualStrings(

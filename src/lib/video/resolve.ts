@@ -1,5 +1,6 @@
 import { parseYouTubeVideoId } from "@/components/ui/video-player/video-source";
 import { SHORT_FILMS_TOPIC_ID } from "@/lib/mock/videos";
+import { plainTextFromRichContent } from "@/lib/rich-text";
 import type {
 	ResolvedVideoCard,
 	ResolvedVideoCastMember,
@@ -247,7 +248,9 @@ export function resolveVideoCard(
 		id: video.id,
 		title: content.title,
 		subtitle: firstNonBlank(content.director),
-		excerpt: description ? truncate(description, EXCERPT_MAX_LENGTH) : "",
+		excerpt: description
+			? truncate(plainTextFromRichContent(description), EXCERPT_MAX_LENGTH)
+			: "",
 		coverUrl: resolveVideoCoverUrl(locale, video),
 		hoverCoverUrl: video.hoverCoverUrl ?? null,
 		videoType: video.videoType,

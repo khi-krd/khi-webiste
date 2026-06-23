@@ -169,7 +169,7 @@ export function resolveGalleryPost(
 		id: String(collection.id),
 		collectionType: mapCollectionType(collection.collectionType),
 		title,
-		descriptionHtml: description,
+		description,
 		location: content?.location?.trim() || undefined,
 		collectedBy: content?.collectedBy?.trim() || undefined,
 		topicName: resolveTopicName(locale, collection),

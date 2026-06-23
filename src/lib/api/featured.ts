@@ -1,5 +1,9 @@
 import "server-only";
-import { apiFetchRaw, DEFAULT_REVALIDATE, unwrapApiPayload } from "@/lib/api/client";
+import {
+	apiFetchRaw,
+	DEFAULT_REVALIDATE,
+	unwrapApiPayload,
+} from "@/lib/api/client";
 import { getApiBaseUrl } from "@/lib/api/config";
 import { getDemoFeaturedItems } from "@/lib/mock/featured";
 import {

@@ -7,6 +7,7 @@ import {
 } from "@/components/motion/scroll-reveal";
 import { DirectionalIcon } from "@/components/ui/directional-icon";
 import { Link } from "@/components/ui/link";
+import { RichText } from "@/components/ui/rich-text";
 import { cn } from "@/lib/utils";
 
 type VideoHeroProps = {
@@ -107,9 +108,10 @@ export function VideoHero({
 
 					{description ? (
 						<ScrollRevealItem>
-							<p className="mt-5 max-w-lg text-body leading-relaxed text-foreground/80">
-								{description}
-							</p>
+							<RichText
+								content={description}
+								className="mt-5 max-w-lg text-body leading-relaxed text-foreground/80"
+							/>
 						</ScrollRevealItem>
 					) : null}
 

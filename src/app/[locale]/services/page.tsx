@@ -4,8 +4,8 @@ import { ServicesBottomCards } from "@/components/services/services-bottom-cards
 import { ServicesHero } from "@/components/services/services-hero";
 import { ServicesShell } from "@/components/services/services-shell";
 import { VisuallyHidden } from "@/components/ui/visually-hidden";
+import { getServiceSections, getServicesLayout } from "@/lib/api/services";
 import {
-	getServices,
 	getServicesBottomCards,
 	getServicesHeroMedia,
 } from "@/lib/mock/services";
@@ -33,7 +33,8 @@ export default async function ServicesPage({
 	setRequestLocale(locale);
 
 	const t = await getTranslations("Services");
-	const services = getServices(locale);
+	const services = getServicesLayout(locale);
+	const apiSections = await getServiceSections(locale);
 	const bottomCards = getServicesBottomCards(locale);
 	const direction = locale === "ckb" ? "rtl" : "ltr";
 
@@ -42,11 +43,14 @@ export default async function ServicesPage({
 		title: t(`items.${service.id}.title`),
 	}));
 
-	const sections = services.map((service) => ({
-		service,
-		title: t(`items.${service.id}.title`),
-		body: t(`items.${service.id}.body`),
-	}));
+	const sections = services.map((service) => {
+		const apiSection = apiSections.find((section) => section.id === service.id);
+		return {
+			service,
+			title: apiSection?.title ?? t(`items.${service.id}.title`),
+			body: apiSection?.body ?? t(`items.${service.id}.body`),
+		};
+	});
 
 	const heroNavItems = services.map((service) => ({
 		service,

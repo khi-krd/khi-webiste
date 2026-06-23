@@ -1,5 +1,6 @@
 import { aboutProseClass } from "@/components/about/about-shell";
 import { SectionRuleHeading } from "@/components/about/section-rule-heading";
+import { RichText } from "@/components/ui/rich-text";
 import { cn } from "@/lib/utils";
 
 type ServiceSectionProseProps = {
@@ -20,9 +21,10 @@ export function ServiceSectionProse({
 	return (
 		<div className={className}>
 			<SectionRuleHeading id={`${id}-heading`} title={title} />
-			<div className={cn(aboutProseClass, "mt-5 sm:mt-6", bodyClassName)}>
-				<p className="text-body leading-relaxed text-foreground">{body}</p>
-			</div>
+			<RichText
+				content={body}
+				className={cn(aboutProseClass, "mt-5 sm:mt-6", bodyClassName)}
+			/>
 		</div>
 	);
 }

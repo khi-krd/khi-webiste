@@ -1,3 +1,4 @@
+import { plainTextFromRichContent } from "@/lib/rich-text";
 import type {
 	PlayerTrackPayload,
 	ResolvedAudioCard,
@@ -128,7 +129,9 @@ export function resolveAudioCard(
 		title: content.title,
 		// albumName often repeats the resolved title for MULTI records
 		subtitle: subtitle === content.title ? null : subtitle,
-		excerpt: description ? truncate(description, EXCERPT_MAX_LENGTH) : "",
+		excerpt: description
+			? truncate(plainTextFromRichContent(description), EXCERPT_MAX_LENGTH)
+			: "",
 		coverUrl: resolveAudioCoverUrl(locale, track),
 		hoverCoverUrl: track.hoverCoverUrl ?? null,
 		soundType: track.soundType,
@@ -217,7 +220,7 @@ export function resolveAudioDetail(
 		trackState: track.trackState,
 		albumOfMemories: track.albumOfMemories,
 		topicName: resolveAudioTopicName(locale, track),
-		reader: track.reader,
+		reader: track.reader ?? null,
 		directors: track.directors,
 		locations: track.locations,
 		terms: track.terms,

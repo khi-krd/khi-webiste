@@ -150,7 +150,7 @@ export async function getWritingsPage(
 		totalPages: Math.max(data.totalPages, 1),
 		totalElements: data.totalElements,
 		currentPage,
-		empty: data.empty,
+		empty: data.empty ?? items.length === 0,
 	};
 }
 

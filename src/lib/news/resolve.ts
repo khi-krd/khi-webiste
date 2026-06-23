@@ -1,5 +1,6 @@
 import type { NewsCategory, NewsItem } from "@/lib/mock/news";
 import { NEWS_CATEGORIES } from "@/lib/mock/news";
+import { plainTextFromRichContent } from "@/lib/rich-text";
 import type { News, NewsContent } from "@/types/news";
 
 const EXCERPT_MAX_LENGTH = 160;
@@ -13,13 +14,6 @@ function firstNonBlank(
 		}
 	}
 	return null;
-}
-
-function stripHtml(html: string): string {
-	return html
-		.replace(/<[^>]+>/g, " ")
-		.replace(/\s+/g, " ")
-		.trim();
 }
 
 function truncate(text: string, maxLength: number): string {
@@ -92,8 +86,10 @@ export function resolveNewsItem(locale: string, news: News): NewsItem | null {
 		return null;
 	}
 
-	const descriptionHtml = content?.description?.trim() || undefined;
-	const plainDescription = descriptionHtml ? stripHtml(descriptionHtml) : "";
+	const description = content?.description?.trim() || undefined;
+	const plainDescription = description
+		? plainTextFromRichContent(description)
+		: "";
 	const excerpt = plainDescription
 		? truncate(plainDescription, EXCERPT_MAX_LENGTH)
 		: "";
@@ -108,7 +104,7 @@ export function resolveNewsItem(locale: string, news: News): NewsItem | null {
 		slug: String(news.id),
 		title,
 		excerpt,
-		descriptionHtml,
+		description,
 		category: mapCategory(locale, news),
 		publishedAt:
 			news.datePublished ?? news.createdAt ?? new Date().toISOString(),

@@ -7,6 +7,7 @@ import {
 } from "@/components/motion/scroll-reveal";
 import { DirectionalIcon } from "@/components/ui/directional-icon";
 import { Link } from "@/components/ui/link";
+import { RichText } from "@/components/ui/rich-text";
 import { VideoPlayerFrame } from "@/components/video/video-player-frame";
 import {
 	VideoPosterCard,
@@ -180,52 +181,53 @@ export async function ShortFilmDetailView({
 				<ScrollReveal className="grid gap-10 lg:grid-cols-[minmax(0,1fr)_minmax(0,22rem)] lg:gap-16">
 					<ScrollRevealItem>
 						<div>
-						<h2 className="font-heading text-h3 font-bold">
-							{t("shortfilms.detail.description")}
-						</h2>
-						{detail.description ? (
-							<p className="mt-4 text-body leading-relaxed text-primary-foreground/85">
-								{detail.description}
-							</p>
-						) : null}
+							<h2 className="font-heading text-h3 font-bold">
+								{t("shortfilms.detail.description")}
+							</h2>
+							{detail.description ? (
+								<RichText
+									content={detail.description}
+									className="mt-4 text-body leading-relaxed text-primary-foreground/85"
+								/>
+							) : null}
 
-						<dl className="mt-8 grid grid-cols-2 gap-6 border-t border-primary-foreground/20 pt-8 sm:grid-cols-4">
-							{durationLabel ? (
+							<dl className="mt-8 grid grid-cols-2 gap-6 border-t border-primary-foreground/20 pt-8 sm:grid-cols-4">
+								{durationLabel ? (
+									<MetaStat
+										label={t("shortfilms.detail.duration")}
+										value={durationLabel}
+									/>
+								) : null}
+								{releaseDateLabel ? (
+									<MetaStat
+										label={t("shortfilms.detail.releaseDate")}
+										value={releaseDateLabel}
+									/>
+								) : null}
 								<MetaStat
-									label={t("shortfilms.detail.duration")}
-									value={durationLabel}
+									label={t("shortfilms.detail.genre")}
+									value={genreLabel}
 								/>
-							) : null}
-							{releaseDateLabel ? (
 								<MetaStat
-									label={t("shortfilms.detail.releaseDate")}
-									value={releaseDateLabel}
+									label={t("shortfilms.detail.director")}
+									value={directorLabel}
 								/>
-							) : null}
-							<MetaStat
-								label={t("shortfilms.detail.genre")}
-								value={genreLabel}
-							/>
-							<MetaStat
-								label={t("shortfilms.detail.director")}
-								value={directorLabel}
-							/>
-						</dl>
-					</div>
+							</dl>
+						</div>
 					</ScrollRevealItem>
 
 					{detail.cast.length > 0 ? (
 						<ScrollRevealItem>
 							<div>
-							<h2 className="font-heading text-h3 font-bold">
-								{t("shortfilms.detail.cast")}
-							</h2>
-							<div className="mt-5 flex gap-4 overflow-x-auto pb-2">
-								{detail.cast.map((member) => (
-									<CastCard key={member.name} member={member} />
-								))}
+								<h2 className="font-heading text-h3 font-bold">
+									{t("shortfilms.detail.cast")}
+								</h2>
+								<div className="mt-5 flex gap-4 overflow-x-auto pb-2">
+									{detail.cast.map((member) => (
+										<CastCard key={member.name} member={member} />
+									))}
+								</div>
 							</div>
-						</div>
 						</ScrollRevealItem>
 					) : null}
 				</ScrollReveal>
@@ -234,15 +236,18 @@ export async function ShortFilmDetailView({
 					<ScrollReveal>
 						<ScrollRevealItem>
 							<section className="mt-12 border-t border-primary-foreground/20 pt-12 sm:mt-16">
-						<h2 className="font-heading text-h3 font-bold">
-							{t("shortfilms.detail.selectedClips")}
-						</h2>
-						<div className="mt-5 flex gap-4 overflow-x-auto pb-2">
-							{detail.highlights.map((highlight) => (
-								<HighlightCard key={highlight.title} highlight={highlight} />
-							))}
-						</div>
-					</section>
+								<h2 className="font-heading text-h3 font-bold">
+									{t("shortfilms.detail.selectedClips")}
+								</h2>
+								<div className="mt-5 flex gap-4 overflow-x-auto pb-2">
+									{detail.highlights.map((highlight) => (
+										<HighlightCard
+											key={highlight.title}
+											highlight={highlight}
+										/>
+									))}
+								</div>
+							</section>
 						</ScrollRevealItem>
 					</ScrollReveal>
 				) : null}
@@ -251,17 +256,20 @@ export async function ShortFilmDetailView({
 					<ScrollReveal>
 						<ScrollRevealItem>
 							<section className="mt-12 border-t border-primary-foreground/20 pt-12 sm:mt-16">
-						<h2 className="font-heading text-h3 font-bold">
-							{t("shortfilms.detail.related")}
-						</h2>
-						<div className="mt-5 flex gap-3 overflow-x-auto pb-2 sm:gap-4">
-							{relatedShortFilms.map((card) => (
-								<div key={card.id} className="w-36 shrink-0 sm:w-40 lg:w-44">
-									<VideoPosterCard {...card} />
+								<h2 className="font-heading text-h3 font-bold">
+									{t("shortfilms.detail.related")}
+								</h2>
+								<div className="mt-5 flex gap-3 overflow-x-auto pb-2 sm:gap-4">
+									{relatedShortFilms.map((card) => (
+										<div
+											key={card.id}
+											className="w-36 shrink-0 sm:w-40 lg:w-44"
+										>
+											<VideoPosterCard {...card} />
+										</div>
+									))}
 								</div>
-							))}
-						</div>
-					</section>
+							</section>
 						</ScrollRevealItem>
 					</ScrollReveal>
 				) : null}

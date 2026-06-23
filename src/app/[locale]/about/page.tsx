@@ -6,12 +6,14 @@ import { AboutMission } from "@/components/about/about-mission";
 import { AboutPartners } from "@/components/about/about-partners";
 import { AboutTeamShowcase } from "@/components/about/about-team-showcase";
 import { VisuallyHidden } from "@/components/ui/visually-hidden";
+import { getPrimaryAboutPage, resolveAboutContent } from "@/lib/api/about";
 import {
 	getAboutFounder,
 	getAboutHeroMedia,
 	getAboutOffices,
 	getAboutPartners,
 } from "@/lib/mock/about";
+import { plainTextFromRichContent } from "@/lib/rich-text";
 
 export async function generateMetadata({
 	params,
@@ -20,10 +22,17 @@ export async function generateMetadata({
 }): Promise<Metadata> {
 	const { locale } = await params;
 	const t = await getTranslations({ locale, namespace: "About" });
+	const aboutPage = await getPrimaryAboutPage(locale);
+	const aboutContent = aboutPage
+		? resolveAboutContent(locale, aboutPage)
+		: null;
 
 	return {
-		title: t("pageTitle"),
-		description: t("metaDescription"),
+		title: aboutContent?.title ?? t("pageTitle"),
+		description:
+			aboutContent?.metaDescription ??
+			plainTextFromRichContent(aboutContent?.body) ??
+			t("metaDescription"),
 	};
 }
 
@@ -36,6 +45,10 @@ export default async function AboutPage({
 	setRequestLocale(locale);
 
 	const t = await getTranslations("About");
+	const aboutPage = await getPrimaryAboutPage(locale);
+	const aboutContent = aboutPage
+		? resolveAboutContent(locale, aboutPage)
+		: null;
 	const heroMedia = getAboutHeroMedia();
 	const founder = getAboutFounder(locale);
 	const offices = getAboutOffices(locale);
@@ -67,13 +80,18 @@ export default async function AboutPage({
 			<AboutHero
 				poster={heroMedia.poster}
 				videoSrc={heroMedia.videoSrc}
-				title={t("heroTitle")}
+				title={aboutContent?.title ?? t("heroTitle")}
 				playLabel={t("heroPlayLabel")}
 				closeLabel={t("videoCloseLabel")}
 			/>
 
 			<AboutMission
-				paragraphs={[t("mission.p1"), t("mission.p2"), t("mission.p3")]}
+				body={aboutContent?.body?.trim() || undefined}
+				paragraphs={
+					aboutContent?.body?.trim()
+						? undefined
+						: [t("mission.p1"), t("mission.p2"), t("mission.p3")]
+				}
 			/>
 
 			<AboutFounder

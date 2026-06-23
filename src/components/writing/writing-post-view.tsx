@@ -1,11 +1,10 @@
 import { ArrowLeftIcon } from "@heroicons/react/24/outline";
 import NextImage from "next/image";
-import {
-	ScrollRevealBlock,
-} from "@/components/motion/scroll-reveal";
+import { ScrollRevealBlock } from "@/components/motion/scroll-reveal";
 import { Badge } from "@/components/ui/badge";
 import { DirectionalIcon } from "@/components/ui/directional-icon";
 import { Link } from "@/components/ui/link";
+import { RichText } from "@/components/ui/rich-text";
 import { buildGenreLabels } from "@/components/writing/writing-card";
 import { WritingPdfPreview } from "@/components/writing/writing-pdf-preview";
 import { homeInsetClass } from "@/lib/layout";
@@ -178,11 +177,10 @@ export function WritingPostView({
 						) : null}
 
 						{detail.description ? (
-							<div className="prose mt-8 max-w-2xl">
-								{detail.description.split(/\n\n+/).map((paragraph) => (
-									<p key={paragraph.slice(0, 32)}>{paragraph}</p>
-								))}
-							</div>
+							<RichText
+								content={detail.description}
+								className="mt-8 max-w-2xl"
+							/>
 						) : null}
 					</div>
 				</div>
@@ -248,21 +246,21 @@ export function WritingPostView({
 					)}
 					aria-labelledby="writing-preview-heading"
 				>
-				<h2
-					id="writing-preview-heading"
-					className="font-heading text-h2 font-bold"
-				>
-					{previewTitle}
-				</h2>
-				<div className="mt-6">
-					<WritingPdfPreview
-						fileOffers={detail.fileOffers}
-						locale={locale}
-						title={previewTitle}
-						coverUrl={detail.coverUrl}
-					/>
-				</div>
-			</section>
+					<h2
+						id="writing-preview-heading"
+						className="font-heading text-h2 font-bold"
+					>
+						{previewTitle}
+					</h2>
+					<div className="mt-6">
+						<WritingPdfPreview
+							fileOffers={detail.fileOffers}
+							locale={locale}
+							title={previewTitle}
+							coverUrl={detail.coverUrl}
+						/>
+					</div>
+				</section>
 			</ScrollRevealBlock>
 
 			{seriesBooks.length > 0 ? (
@@ -274,44 +272,44 @@ export function WritingPostView({
 						)}
 						aria-labelledby="writing-series-heading"
 					>
-					<h2
-						id="writing-series-heading"
-						className="font-heading text-h2 font-bold"
-					>
-						{seriesLabel}
-					</h2>
-					<ol className="mt-6 divide-y divide-border border border-border">
-						{seriesBooks.map((book) => (
-							<li key={book.id}>
-								{book.isCurrent ? (
-									<div className="flex items-center justify-between gap-4 bg-sunken px-5 py-4 sm:px-6">
-										<span className="font-heading text-body font-semibold">
-											{String(Math.round(book.seriesOrder)).padStart(2, "0")}.{" "}
-											{book.title}
-										</span>
-										<Badge variant="outline" size="sm">
-											{seriesVolumeLabel(
-												Math.round(book.seriesOrder),
-												detail.seriesTotalBooks,
-											)}
-										</Badge>
-									</div>
-								) : (
-									<Link
-										href={`/writings/${book.id}`}
-										variant="nav"
-										className="flex items-center justify-between gap-4 px-5 py-4 no-underline transition-colors fine-hover:bg-sunken sm:px-6"
-									>
-										<span className="font-heading text-body font-medium text-foreground">
-											{String(Math.round(book.seriesOrder)).padStart(2, "0")}.{" "}
-											{book.title}
-										</span>
-									</Link>
-								)}
-							</li>
-						))}
-					</ol>
-				</section>
+						<h2
+							id="writing-series-heading"
+							className="font-heading text-h2 font-bold"
+						>
+							{seriesLabel}
+						</h2>
+						<ol className="mt-6 divide-y divide-border border border-border">
+							{seriesBooks.map((book) => (
+								<li key={book.id}>
+									{book.isCurrent ? (
+										<div className="flex items-center justify-between gap-4 bg-sunken px-5 py-4 sm:px-6">
+											<span className="font-heading text-body font-semibold">
+												{String(Math.round(book.seriesOrder)).padStart(2, "0")}.{" "}
+												{book.title}
+											</span>
+											<Badge variant="outline" size="sm">
+												{seriesVolumeLabel(
+													Math.round(book.seriesOrder),
+													detail.seriesTotalBooks,
+												)}
+											</Badge>
+										</div>
+									) : (
+										<Link
+											href={`/writings/${book.id}`}
+											variant="nav"
+											className="flex items-center justify-between gap-4 px-5 py-4 no-underline transition-colors fine-hover:bg-sunken sm:px-6"
+										>
+											<span className="font-heading text-body font-medium text-foreground">
+												{String(Math.round(book.seriesOrder)).padStart(2, "0")}.{" "}
+												{book.title}
+											</span>
+										</Link>
+									)}
+								</li>
+							))}
+						</ol>
+					</section>
 				</ScrollRevealBlock>
 			) : null}
 

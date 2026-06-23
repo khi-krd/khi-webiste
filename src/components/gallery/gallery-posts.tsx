@@ -9,6 +9,7 @@ import {
 } from "@/components/gallery/gallery-motion";
 import { GalleryPagination } from "@/components/gallery/gallery-pagination";
 import { Badge } from "@/components/ui/badge";
+import { RichText } from "@/components/ui/rich-text";
 import { Link } from "@/i18n/navigation";
 import { homeInsetClass } from "@/lib/layout";
 import type { GalleryPost } from "@/lib/mock/gallery";
@@ -73,10 +74,10 @@ function PostRow({
 							{post.title}
 						</Link>
 					</h3>
-					<div
-						className="mt-5 line-clamp-3 max-w-md text-small leading-relaxed text-muted [&_p+p]:mt-2"
-						// biome-ignore lint/security/noDangerouslySetInnerHtml: API returns server-processed Tiptap HTML
-						dangerouslySetInnerHTML={{ __html: post.descriptionHtml }}
+					<RichText
+						content={post.description}
+						compact
+						className="mt-5 line-clamp-3 max-w-md text-muted"
 					/>
 				</GalleryRevealItem>
 

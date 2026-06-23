@@ -76,7 +76,7 @@ export function getDemoFeaturedItems(locale: string): FeaturedItem[] {
 			type: "gallery",
 			slug: galleryPost.id,
 			title: galleryPost.title,
-			description: galleryPost.descriptionHtml
+			description: galleryPost.description
 				.replace(/<[^>]+>/g, " ")
 				.replace(/\s+/g, " ")
 				.trim(),

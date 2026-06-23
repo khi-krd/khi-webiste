@@ -60,9 +60,9 @@ export const SeriesInfoSchema = z.object({
 	seriesId: z.string().nullable(),
 	seriesName: z.string().nullable(),
 	seriesOrder: z.number().nullable(),
-	parentBookId: z.number().nullable(),
+	parentBookId: z.number().nullable().optional(),
 	totalBooks: z.number().int().nullable(),
-	isParent: z.boolean(),
+	isParent: z.boolean().optional(),
 });
 
 export const BilingualSetSchema = z.object({
@@ -78,12 +78,16 @@ export const WritingSchema = z.object({
 	hoverCoverUrl: z.string().nullish(),
 	ckbContent: WritingContentSchema.nullish(),
 	kmrContent: WritingContentSchema.nullish(),
+	topicId: z.number().nullish(),
+	topicNameCkb: z.string().nullish(),
+	topicNameKmr: z.string().nullish(),
 	topic: TopicInfoSchema.nullish(),
 	bookGenres: z.array(BookGenreSchema),
 	publishedByInstitute: z.boolean(),
 	tags: BilingualSetSchema,
 	keywords: BilingualSetSchema,
-	seriesInfo: SeriesInfoSchema,
+	series: SeriesInfoSchema.nullish(),
+	seriesInfo: SeriesInfoSchema.nullish(),
 	createdAt: z.string(),
 	updatedAt: z.string(),
 });
@@ -100,13 +104,15 @@ export const PageableSchema = z.object({
 
 export const WritingsPageSchema = z.object({
 	content: z.array(WritingSchema),
-	pageable: PageableSchema,
+	pageable: PageableSchema.optional(),
 	totalElements: z.number(),
 	totalPages: z.number(),
-	last: z.boolean(),
-	first: z.boolean(),
-	numberOfElements: z.number(),
-	empty: z.boolean(),
+	number: z.number().optional(),
+	size: z.number().optional(),
+	last: z.boolean().optional(),
+	first: z.boolean().optional(),
+	numberOfElements: z.number().optional(),
+	empty: z.boolean().optional(),
 });
 
 export type WritingsPage = z.infer<typeof WritingsPageSchema>;

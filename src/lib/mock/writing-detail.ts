@@ -162,7 +162,7 @@ export function getDemoWritingSeries(
 	currentId: number,
 ): ResolvedSeriesBook[] {
 	const books = getDemoWritings(locale).filter(
-		(w) => w.seriesInfo.seriesId === seriesId,
+		(w) => w.seriesInfo?.seriesId === seriesId,
 	);
 
 	if (books.length <= 1) {
@@ -175,7 +175,7 @@ export function getDemoWritingSeries(
 			id: book.id,
 			titleCkb: book.ckbContent?.title ?? null,
 			titleKmr: book.kmrContent?.title ?? null,
-			seriesOrder: book.seriesInfo.seriesOrder,
+			seriesOrder: book.seriesInfo?.seriesOrder ?? null,
 		})),
 		currentId,
 	);

@@ -7,6 +7,7 @@ import {
 } from "@/components/motion/scroll-reveal";
 import { DirectionalIcon } from "@/components/ui/directional-icon";
 import { Link } from "@/components/ui/link";
+import { RichText } from "@/components/ui/rich-text";
 import { cn } from "@/lib/utils";
 import { shortFilmDetailHref } from "@/lib/video/resolve";
 
@@ -100,9 +101,10 @@ export function VideoCinemaHero({
 
 					{description ? (
 						<ScrollRevealItem>
-							<p className="mt-4 max-w-xl text-body leading-relaxed text-primary-foreground/85 line-clamp-3">
-								{description}
-							</p>
+							<RichText
+								content={description}
+								className="mt-4 line-clamp-3 max-w-xl text-body leading-relaxed text-primary-foreground/85"
+							/>
 						</ScrollRevealItem>
 					) : null}
 

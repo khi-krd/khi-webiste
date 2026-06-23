@@ -84,9 +84,9 @@ export const SoundTrackSchema = z.object({
 	contentLanguages: z.array(z.enum(["CKB", "KMR"])),
 	ckbContent: SoundContentSchema.nullish(),
 	kmrContent: SoundContentSchema.nullish(),
-	locations: z.array(z.string()),
-	reader: z.string().nullable(),
-	directors: z.array(z.string()),
+	locations: z.array(z.string()).optional().default([]),
+	reader: z.string().nullable().optional(),
+	directors: z.array(z.string()).optional().default([]),
 	terms: z.string().nullable(),
 	thisProjectOfInstitute: z.boolean(),
 	tags: BilingualSetSchema,
@@ -115,13 +115,15 @@ export type SoundTopic = z.infer<typeof SoundTopicSchema>;
 
 export const SoundTracksPageSchema = z.object({
 	content: z.array(SoundTrackSchema),
-	pageable: PageableSchema,
+	pageable: PageableSchema.optional(),
 	totalElements: z.number(),
 	totalPages: z.number(),
-	last: z.boolean(),
-	first: z.boolean(),
-	numberOfElements: z.number(),
-	empty: z.boolean(),
+	number: z.number().optional(),
+	size: z.number().optional(),
+	last: z.boolean().optional(),
+	first: z.boolean().optional(),
+	numberOfElements: z.number().optional(),
+	empty: z.boolean().optional(),
 });
 
 export type SoundTracksPage = z.infer<typeof SoundTracksPageSchema>;
