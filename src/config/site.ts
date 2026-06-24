@@ -1,5 +1,4 @@
 import type { Locale } from "@/i18n/routing";
-import { projectDetailHref } from "@/lib/content/project-href";
 
 /**
  * Site-wide static configuration. Plain data only (NO JSX) so it can be imported
@@ -52,25 +51,25 @@ export const NAV_ITEMS: NavItem[] = [
 	},
 	{
 		key: "projects",
-		href: "/about",
+		href: "/projects",
 		descriptionKey: "projectsDescription",
 		imageSrc: MENU_IMAGE("1.jpg"),
 		children: [
 			{
 				key: "projectsSubOralHistory",
-				href: projectDetailHref("oral-history-archive"),
+				href: "/projects/1",
 			},
 			{
 				key: "projectsSubManuscripts",
-				href: projectDetailHref("manuscript-digitization"),
+				href: "/projects/2",
 			},
 			{
 				key: "projectsSubFolkMusic",
-				href: projectDetailHref("folk-music-collection"),
+				href: "/projects/3",
 			},
 			{
 				key: "projectsSubDress",
-				href: projectDetailHref("traditional-dress-archive"),
+				href: "/projects/4",
 			},
 		],
 	},
@@ -184,6 +183,7 @@ export const FOOTER_COLUMNS: FooterColumn[] = [
 		titleKey: "collections",
 		links: [
 			{ labelKey: "news", href: "/news" },
+			{ labelKey: "projects", href: "/projects" },
 			{ labelKey: "sound", href: "/audio" },
 			{ labelKey: "video", href: "/videos" },
 			{ labelKey: "shortFilms", href: "/videos/shortfilms" },

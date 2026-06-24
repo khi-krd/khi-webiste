@@ -7,7 +7,7 @@
 		"primary": "Sereke",
 		"services": "Xizmet",
 		"donate": "Bexşîn",
-		"news": "Gotar",
+		"news": "Nûçeyên",
 		"projects": "Proje",
 		"sound": "Deng",
 		"video": "Vîdyo",
@@ -22,7 +22,7 @@
 		"searchResults": "Encam",
 		"searchNoResults": "Tu encam nehatin dîtin",
 		"secondaryLinkPrefix": "Lêkolîn",
-		"newsDescription": "Gotarên lêkolînê li ser çand, dîrok, ziman û civaka Kurd.",
+		"newsDescription": "Nûçeyên lêkolînê li ser çand, dîrok, ziman û civaka Kurd.",
 		"newsSubCulture": "Çand",
 		"newsSubHistory": "Dîrok",
 		"newsSubLanguage": "Ziman",
@@ -80,7 +80,8 @@
 		"video": "Vîdyo",
 		"shortFilms": "Kurtefîlm",
 		"gallery": "Galerî",
-		"news": "Gotar",
+		"news": "Nûçeyên",
+		"projects": "Proje",
 		"services": "Xizmet",
 		"donate": "Bexşîn",
 		"about": "Derbar",
@@ -100,8 +101,8 @@
 	"LatestUpdates": {
 		"eyebrow": "Nûçe",
 		"title": "Nûvekirina Dawî",
-		"description": "Gotar, lêkolîn û çîrok li ser çand, dîrok, ziman û mîrateya Kurdî.",
-		"viewAll": "Hemû gotaran bibîne",
+		"description": "Nûçe, lêkolîn û çîrok li ser çand, dîrok, ziman û mîrateya Kurdî.",
+		"viewAll": "Hemû nûçeyan bibîne",
 		"byAuthor": "Ji aliyê {author}",
 		"categories": {
 			"culture": "Çand",
@@ -112,19 +113,19 @@
 		}
 	},
 	"News": {
-		"pageTitle": "Gotar",
-		"metaDescription": "Lêkolîn, gotar û çîrok li ser çand, dîrok, ziman, mîrat û civaka Kurdî ji Enstîtûya Mîrateya Kurdî.",
+		"pageTitle": "Nûçeyên",
+		"metaDescription": "Lêkolîn, nûçe û çîrok li ser çand, dîrok, ziman, mîrat û civaka Kurdî ji Enstîtûya Mîrateya Kurdî.",
 		"hero": {
-			"eyebrow": "Gotar",
+			"eyebrow": "Nûçeyên",
 			"title": "Lêkolînên me yên dawî bibîne",
-			"description": "Gotar, raporên qeyadan û dîtina arşîvê ji herêmên Kurdî — bi lêgerîn û li gorî mijarê."
+			"description": "Nûçe, raporên qeyadan û dîtina arşîvê ji herêmên Kurdî — bi lêgerîn û li gorî mijarê."
 		},
 		"search": {
-			"placeholder": "Gotaran bigere…",
+			"placeholder": "Nûçeyan bigere…",
 			"submit": "Bibîne",
-			"label": "Lêgerîna gotaran",
+			"label": "Lêgerîna nûçeyan",
 			"clear": "Lêgerînê paqij bike",
-			"noResults": "Ti gotar bi lêgerîna we re li hev nayên. Peyvek din biceribîne an filtreyan paqij bike."
+			"noResults": "Ti nûçe bi lêgerîna we re li hev nayên. Peyvek din biceribîne an filtreyan paqij bike."
 		},
 		"filter": {
 			"all": "Hemû",
@@ -134,8 +135,8 @@
 		},
 		"sections": {
 			"spotlight": "Nûçeyên taybet",
-			"allNews": "Hemû gotar",
-			"filtered": "Gotarên {category}",
+			"allNews": "Hemû nûçe",
+			"filtered": "Nûçeyên {category}",
 			"browseDescription": "Arşîva tevahî bigere — li gorî mijarê filtir bike an bi peyvekê bigere."
 		},
 		"sidebar": {
@@ -154,14 +155,16 @@
 		"post": {
 			"back": "Vegere nûçeyan",
 			"byAuthor": "Ji aliyê {author}",
-			"navLabel": "Gotarên têkildar",
+			"tags": "Tag",
+			"gallery": "Medya & galerî",
+			"navLabel": "Nûçeyên têkildar",
 			"previous": "Berê",
 			"next": "Piştî"
 		},
 		"pagination": {
-			"label": "Rûpelkirina gotaran",
-			"featuredLabel": "Rûpelkirina gotarên taybet",
-			"latestLabel": "Rûpelkirina gotarên dawîtirîn",
+			"label": "Rûpelkirina nûçeyan",
+			"featuredLabel": "Rûpelkirina nûçeyên taybet",
+			"latestLabel": "Rûpelkirina nûçeyên dawîtirîn",
 			"previous": "Berê",
 			"next": "Paş"
 		}
@@ -171,6 +174,55 @@
 		"title": "Destpêkên arşîvê û xebata hevpar a parastinê.",
 		"description": "Bernameyên dirêjdem destnivîs, dîroka devkî, stran, cil û wêne ji herêmên Kurdî dîjîtal dikin.",
 		"viewAll": "Hemû bibîne"
+	},
+	"ProjectsPage": {
+		"pageTitle": "Projeyên",
+		"metaDescription": "Bernameyên dirêjdem ên Enstîtuya Mîrateya Kurdî ji bo parastin, dîjîtalîzekirin û guncawkirina mîrata kurdî.",
+		"hero": {
+			"eyebrow": "Bernameyên parastinê",
+			"title": "Projeyên",
+			"titleEmphasis": "Xebatên dirêjdem ên ku mîratê diparêzin.",
+			"description": "Ji tomarkirina dengê heta dîjîtalîzekirina destnivîsan — her proje beşek ji arşîveke giştî ye ji bo nifşên pêşerojê.",
+			"cta": "Projeyan bigere",
+			"count": "{count, plural, one {# proje} other {# proje}}"
+		},
+		"filters": {
+			"years": "Sal",
+			"tags": "Etîket",
+			"allYears": "Hemû"
+		},
+		"grid": {
+			"eyebrow": "Katalog",
+			"title": "Hemû projeyan",
+			"description": "Projeyên bi şêweyekî stûnî hatine rêzkirin — her kartekeke şêwazek cuda ye, lê hemû ji bo hûragahiyan amade ne.",
+			"preview": "Pêşdîtin",
+			"count": "{count, plural, one {# encam} other {# encam}}",
+			"noResults": "Ji bo vê fîltreê tu proje nehat dîtin."
+		},
+		"pagination": {
+			"label": "Rûpelkirina projeyan",
+			"previous": "Berê",
+			"next": "Paş"
+		},
+		"detail": {
+			"back": "Vegere projeyan",
+			"location": "Cih",
+			"type": "Cure",
+			"status": "Rewş",
+			"date": "Dîrok",
+			"tags": "Etîket",
+			"content": "Naverok",
+			"gallery": "Medya & galerî",
+			"navLabel": "Projeyên din",
+			"previous": "Projeya berê",
+			"next": "Projeya paşê",
+			"statusValues": {
+				"ACTIVE": "Çalak",
+				"ONGOING": "Domdar",
+				"COMPLETED": "Qediya",
+				"ARCHIVED": "Arşîvkirî"
+			}
+		}
 	},
 	"Gallery": {
 		"pageTitle": "Galerî",
@@ -656,7 +708,7 @@
 			"song": "Stran",
 			"audio": "Deng",
 			"video": "Vîdyo",
-			"article": "Gotar",
+			"article": "Nûçe",
 			"gallery": "Galerî",
 			"archive": "Arşîv"
 		},

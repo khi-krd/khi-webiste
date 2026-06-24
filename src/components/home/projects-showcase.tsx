@@ -58,7 +58,7 @@ export function ProjectsShowcase({
 							<p className="mt-3 text-body text-muted">{copy.description}</p>
 						</div>
 
-						<Link href="/about" variant="nav" className={viewAllClass}>
+						<Link href="/projects" variant="nav" className={viewAllClass}>
 							<span className="relative z-1">{copy.viewAll}</span>
 							<DirectionalIcon
 								icon={ArrowRightIcon}

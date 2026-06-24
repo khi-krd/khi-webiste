@@ -1,5 +1,6 @@
 import type { NewsCategory, NewsItem } from "@/lib/mock/news";
 import { NEWS_CATEGORIES } from "@/lib/mock/news";
+import { parseMediaGallery, parseMediaKind } from "@/lib/project/media";
 import { plainTextFromRichContent } from "@/lib/rich-text";
 import type { News, NewsContent } from "@/types/news";
 
@@ -99,6 +100,11 @@ export function resolveNewsItem(locale: string, news: News): NewsItem | null {
 			? firstNonBlank(news.coverUrl, news.coverThumbnailUrl)
 			: firstNonBlank(news.coverUrl, news.coverThumbnailUrl);
 
+	const tags =
+		locale === "ckb"
+			? (news.tags?.ckb ?? news.tags?.kmr ?? [])
+			: (news.tags?.kmr ?? news.tags?.ckb ?? []);
+
 	return {
 		id: String(news.id),
 		slug: String(news.id),
@@ -108,6 +114,11 @@ export function resolveNewsItem(locale: string, news: News): NewsItem | null {
 		category: mapCategory(locale, news),
 		publishedAt:
 			news.datePublished ?? news.createdAt ?? new Date().toISOString(),
+		coverMediaType: parseMediaKind(news.coverMediaType),
+		coverUrl: coverUrl ?? "/menu/1.jpg",
+		coverThumbnailUrl: news.coverThumbnailUrl ?? null,
+		mediaGallery: parseMediaGallery(news.mediaGallery, locale),
+		tags,
 		image: {
 			url: coverUrl ?? "/menu/1.jpg",
 			alt: title,

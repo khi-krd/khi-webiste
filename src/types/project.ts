@@ -12,6 +12,8 @@ export const ProjectStatusSchema = z.enum([
 	"ARCHIVED",
 ]);
 
+export type ProjectStatus = z.infer<typeof ProjectStatusSchema>;
+
 export const ProjectContentSchema = z.object({
 	title: z.string().nullable(),
 	description: z.string().nullable(),

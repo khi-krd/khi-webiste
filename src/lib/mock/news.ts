@@ -1,4 +1,6 @@
 import type { LatestUpdateCategory } from "@/lib/mock/latest-updates";
+import { getNewsBody } from "@/lib/mock/news-body";
+import type { MediaItem, MediaKind } from "@/types/media";
 
 export type NewsCategory = LatestUpdateCategory;
 
@@ -26,6 +28,11 @@ export type NewsItem = {
 		url: string;
 		alt?: string;
 	};
+	coverMediaType?: MediaKind | null;
+	coverUrl?: string;
+	coverThumbnailUrl?: string | null;
+	mediaGallery?: MediaItem[];
+	tags?: string[];
 };
 
 type LocaleCopy = NewsItem[];
@@ -348,20 +355,31 @@ const CKB_ITEMS: LocaleCopy = EN_ITEMS.map((item, i) => ({
 	][i],
 }));
 
-function withNewsImages(items: LocaleCopy): LocaleCopy {
-	return items.map((item, index) => ({
-		...item,
-		image: {
-			...item.image,
-			url: `/news/${(index % 10) + 1}.jpg`,
-		},
-	}));
+function withNewsImages(items: LocaleCopy, locale: string): LocaleCopy {
+	return items.map((item, index) => {
+		const imageUrl = `/news/${(index % 10) + 1}.jpg`;
+		const body = getNewsBody(locale, item.slug, {
+			title: item.title,
+			excerpt: item.excerpt,
+			imageUrl,
+		});
+
+		return {
+			...item,
+			...body,
+			coverUrl: imageUrl,
+			image: {
+				...item.image,
+				url: imageUrl,
+			},
+		};
+	});
 }
 
 const LOCALE_ITEMS: Record<string, LocaleCopy> = {
-	en: withNewsImages(EN_ITEMS),
-	ku: withNewsImages(KU_ITEMS),
-	ckb: withNewsImages(CKB_ITEMS),
+	en: withNewsImages(EN_ITEMS, "en"),
+	ku: withNewsImages(KU_ITEMS, "ku"),
+	ckb: withNewsImages(CKB_ITEMS, "ckb"),
 };
 
 export const NEWS_PER_PAGE = 10;

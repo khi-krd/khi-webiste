@@ -41,7 +41,7 @@ export default async function NewsPostPage({ params }: NewsPostPageProps) {
 	const t = await getTranslations("News");
 
 	return (
-		<main className="-mt-26 sm:-mt-30">
+		<main className="-mt-26 bg-background sm:-mt-30">
 			<NewsPostView
 				item={detail.item}
 				categoryLabel={t(`categories.${detail.item.category}`)}
@@ -57,6 +57,8 @@ export default async function NewsPostPage({ params }: NewsPostPageProps) {
 						? t("readTime", { minutes: detail.item.readTime })
 						: undefined
 				}
+				tagsLabel={t("post.tags")}
+				galleryLabel={t("post.gallery")}
 				previous={detail.previous}
 				next={detail.next}
 				navLabel={t("post.navLabel")}

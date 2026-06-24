@@ -1,17 +1,18 @@
+import { NewsMediaGallery } from "@/components/news/news-media-gallery";
+import { ProjectCoverMedia } from "@/components/projects/project-cover-media";
 import { ArrowLeftIcon, ArrowRightIcon } from "@heroicons/react/24/outline";
-import NextImage from "next/image";
 import {
 	ScrollReveal,
 	ScrollRevealBlock,
-	ScrollRevealItem,
 } from "@/components/motion/scroll-reveal";
 import { Badge } from "@/components/ui/badge";
 import { DirectionalIcon } from "@/components/ui/directional-icon";
-import { Link } from "@/components/ui/link";
 import { RichText } from "@/components/ui/rich-text";
+import { Link } from "@/i18n/navigation";
 import { newsDetailHref } from "@/lib/content/href";
 import { homeInsetClass } from "@/lib/layout";
 import type { NewsItem } from "@/lib/mock/news";
+import { isRichTextEmpty } from "@/lib/rich-text";
 import { cn } from "@/lib/utils";
 
 type NewsPostViewProps = {
@@ -21,6 +22,8 @@ type NewsPostViewProps = {
 	backLabel: string;
 	authorLabel?: string;
 	readTimeLabel?: string;
+	tagsLabel: string;
+	galleryLabel: string;
 	previous: NewsItem | null;
 	next: NewsItem | null;
 	navLabel: string;
@@ -42,7 +45,6 @@ function AdjacentLink({
 	return (
 		<Link
 			href={newsDetailHref(item.slug)}
-			variant="nav"
 			className={cn(
 				"group flex flex-col gap-3 py-8 no-underline sm:py-10",
 				isNext &&
@@ -64,6 +66,11 @@ function AdjacentLink({
 	);
 }
 
+/**
+ * Blog-style news article — cover beside a long-form rich-text body,
+ * tags strip, optional media gallery, prev/next navigation.
+ * Mirrors {@link ProjectDetailView} layout flow.
+ */
 export function NewsPostView({
 	item,
 	categoryLabel,
@@ -71,81 +78,123 @@ export function NewsPostView({
 	backLabel,
 	authorLabel,
 	readTimeLabel,
+	tagsLabel,
+	galleryLabel,
 	previous,
 	next,
 	navLabel,
 	previousLabel,
 	nextLabel,
 }: NewsPostViewProps) {
+	const coverUrl = item.coverUrl ?? item.image.url;
+	const coverKind = item.coverMediaType ?? "IMAGE";
+	const mediaGallery = item.mediaGallery ?? [];
+	const tags = item.tags ?? [];
+	const bodyContent = item.description
+		? !isRichTextEmpty(item.description)
+			? item.description
+			: null
+		: item.excerpt;
+
 	return (
 		<article className={cn(homeInsetClass, "pb-16 sm:pb-20")}>
-			<ScrollReveal>
-				<ScrollRevealItem>
-					<header className="border-b border-border pb-8 sm:pb-10">
-						<Link
-							href="/news"
-							variant="nav"
-							className="label inline-flex items-center gap-2 font-medium text-muted no-underline"
-						>
-							<DirectionalIcon icon={ArrowLeftIcon} className="size-3.5" />
-							{backLabel}
-						</Link>
+			<ScrollRevealBlock className="pt-30 sm:pt-34">
+				<Link
+					href="/news"
+					className="group inline-flex w-fit items-center gap-2 no-underline"
+				>
+					<DirectionalIcon
+						icon={ArrowLeftIcon}
+						className="size-4 text-muted transition-colors group-fine:text-foreground"
+					/>
+					<span className="label font-medium transition-colors group-fine:text-foreground">
+						{backLabel}
+					</span>
+				</Link>
 
-						<div className="mt-6 flex flex-wrap items-center gap-3">
+				<div className="mt-10 grid gap-10 lg:grid-cols-[minmax(0,22rem)_minmax(0,1fr)] lg:items-start lg:gap-14 xl:grid-cols-[minmax(0,26rem)_minmax(0,1fr)] xl:gap-20">
+					<div className="min-w-0 lg:sticky lg:top-32 lg:self-start">
+						<div className="overflow-hidden border border-border bg-sunken">
+							<ProjectCoverMedia
+								url={coverUrl}
+								alt={item.image.alt ?? item.title}
+								kind={coverKind}
+								posterUrl={item.coverThumbnailUrl ?? item.image.url}
+								priority
+								className={cn(
+									coverKind === "IMAGE"
+										? "aspect-[4/5] w-full"
+										: "min-h-64 w-full sm:min-h-80",
+								)}
+								sizes="(max-width: 1024px) 100vw, 26rem"
+								imageClassName="brightness-[0.94] saturate-[0.9]"
+							/>
+						</div>
+					</div>
+
+					<div className="min-w-0">
+						<div className="flex flex-wrap items-center gap-2">
 							<Badge variant="outline" size="sm">
 								{categoryLabel}
 							</Badge>
-							<p className="text-small text-muted">{dateLabel}</p>
+							<time className="text-small text-muted">{dateLabel}</time>
 							{readTimeLabel ? (
-								<p className="text-small text-muted">{readTimeLabel}</p>
+								<span className="text-small text-muted">{readTimeLabel}</span>
 							) : null}
 						</div>
 
-						<h1 className="mt-5 max-w-4xl font-heading text-display font-bold leading-[1.05] text-balance">
-							{item.title}
-						</h1>
+						<h1 className="display-title mt-5 text-balance">{item.title}</h1>
 
 						{authorLabel ? (
-							<p className="mt-4 text-body text-muted">{authorLabel}</p>
+							<p className="mt-3 text-lead text-muted">{authorLabel}</p>
 						) : null}
-					</header>
-				</ScrollRevealItem>
 
-				<ScrollRevealItem>
-					<div className="relative mt-8 aspect-[16/9] overflow-hidden border border-border bg-sunken sm:mt-10">
-						<NextImage
-							src={item.image.url}
-							alt={item.image.alt ?? item.title}
-							fill
-							sizes="(max-width: 1024px) 100vw, 960px"
-							className="object-cover"
-							priority
-						/>
+						{bodyContent ? (
+							<div className="project-article-body mt-8 border-t border-border pt-8 sm:mt-10 sm:pt-10">
+								{item.description ? (
+									<RichText content={item.description} />
+								) : (
+									<p className="text-body leading-relaxed text-foreground">
+										{item.excerpt}
+									</p>
+								)}
+							</div>
+						) : null}
 					</div>
-				</ScrollRevealItem>
+				</div>
+			</ScrollRevealBlock>
 
-				<ScrollRevealItem>
-					<div className="mx-auto mt-8 max-w-3xl text-start sm:mt-10">
-						{item.description ? (
-							<RichText
-								content={item.description}
-								className="text-body leading-relaxed text-foreground"
-							/>
-						) : (
-							<p className="text-body leading-relaxed text-foreground">
-								{item.excerpt}
-							</p>
-						)}
-					</div>
-				</ScrollRevealItem>
-			</ScrollReveal>
+			{(tags.length > 0 || mediaGallery.length > 0) && (
+				<ScrollReveal className="mt-12 border-t border-border sm:mt-16">
+					{tags.length > 0 && (
+						<div className="border-b border-border py-6">
+							<p className="label font-medium">{tagsLabel}</p>
+							<ul className="mt-3 flex flex-wrap gap-2">
+								{tags.map((tag) => (
+									<li key={tag}>
+										<Badge variant="outline" size="sm">
+											{tag}
+										</Badge>
+									</li>
+								))}
+							</ul>
+						</div>
+					)}
 
-			{previous || next ? (
-				<ScrollRevealBlock>
-					<nav
-						aria-label={navLabel}
-						className="mt-12 grid border-t border-border sm:mt-16 sm:grid-cols-2"
-					>
+					<NewsMediaGallery
+						items={mediaGallery}
+						title={galleryLabel}
+						articleTitle={item.title}
+					/>
+				</ScrollReveal>
+			)}
+
+			{(previous || next) && (
+				<nav
+					aria-label={navLabel}
+					className="mt-12 border-t border-border sm:mt-16"
+				>
+					<div className="grid sm:grid-cols-2">
 						{previous ? (
 							<AdjacentLink
 								item={previous}
@@ -153,14 +202,14 @@ export function NewsPostView({
 								direction="previous"
 							/>
 						) : (
-							<div className="hidden sm:block" />
+							<div aria-hidden className="hidden sm:block" />
 						)}
 						{next ? (
 							<AdjacentLink item={next} label={nextLabel} direction="next" />
 						) : null}
-					</nav>
-				</ScrollRevealBlock>
-			) : null}
+					</div>
+				</nav>
+			)}
 		</article>
 	);
 }

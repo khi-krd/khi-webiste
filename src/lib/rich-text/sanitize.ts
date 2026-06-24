@@ -22,6 +22,8 @@ const ALLOWED_TAGS = [
 	"img",
 	"video",
 	"audio",
+	"figure",
+	"figcaption",
 	"hr",
 	"table",
 	"thead",
