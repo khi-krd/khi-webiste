@@ -14,9 +14,27 @@ const liftEase = "ease-[cubic-bezier(0.22,1,0.36,1)]";
 type ProjectCardProps = {
 	item: ProjectItem;
 	className?: string;
+	variant?: "default" | "carousel";
 };
 
-export function ProjectCard({ item, className }: ProjectCardProps) {
+const imageShellClass = {
+	default:
+		"relative aspect-[4/5] min-h-[22rem] w-full sm:min-h-[24rem] lg:min-h-[26rem]",
+	carousel:
+		"relative aspect-[4/5] w-full min-h-[20rem] sm:min-h-[23rem] lg:min-h-[25rem]",
+} as const;
+
+const imageSizes = {
+	default: "(max-width: 640px) 86vw, (max-width: 1024px) 58vw, 46vw",
+	carousel:
+		"(max-width: 640px) 88vw, (max-width: 768px) 60vw, (max-width: 1024px) 46vw, 36vw",
+} as const;
+
+export function ProjectCard({
+	item,
+	className,
+	variant = "default",
+}: ProjectCardProps) {
 	const href = projectDetailHref(item.slug);
 
 	return (
@@ -25,11 +43,12 @@ export function ProjectCard({ item, className }: ProjectCardProps) {
 			variant="nav"
 			className={cn(
 				"group relative block h-full w-full overflow-hidden border border-border bg-surface no-underline",
+				variant === "carousel" && "[touch-action:pan-y_pinch-zoom]",
 				className,
 			)}
 			aria-label={item.title}
 		>
-			<div className="relative aspect-[4/5] min-h-[22rem] w-full sm:min-h-[24rem] lg:min-h-[26rem]">
+			<div className={imageShellClass[variant]}>
 				<div className="absolute inset-0 overflow-hidden">
 					<div
 						className={cn(
@@ -43,7 +62,7 @@ export function ProjectCard({ item, className }: ProjectCardProps) {
 							src={item.image.url}
 							alt={item.image.alt ?? item.title}
 							fill
-							sizes="(max-width: 640px) 86vw, (max-width: 1024px) 58vw, 46vw"
+							sizes={imageSizes[variant]}
 							className="object-cover brightness-[0.82] contrast-[1.08] saturate-[0.7]"
 						/>
 					</div>
