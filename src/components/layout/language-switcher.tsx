@@ -48,7 +48,7 @@ export function LanguageSwitcher({
 				role="group"
 				aria-label={t("label")}
 				className={cn(
-					"inline-flex",
+					"inline-flex overflow-hidden rounded-md",
 					overlay
 						? "border border-primary-foreground/25"
 						: "border border-border-strong",

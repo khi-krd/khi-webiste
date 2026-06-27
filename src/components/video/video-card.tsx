@@ -66,7 +66,7 @@ function PlayMark({ large = false }: { large?: boolean }) {
 		>
 			<span
 				className={cn(
-					"inline-flex items-center justify-center rounded-full bg-foreground/65 text-primary-foreground ring-1 ring-primary-foreground/30 backdrop-blur-[2px] transition-[transform,background-color,opacity] duration-300 group-fine:bg-foreground/80 group-fine:opacity-100 motion-reduce:transition-none motion-reduce:group-fine:scale-100",
+					"inline-flex items-center justify-center rounded-pill bg-foreground/65 text-primary-foreground ring-1 ring-primary-foreground/30 backdrop-blur-[2px] transition-[transform,background-color,opacity] duration-300 group-fine:bg-foreground/80 group-fine:opacity-100 motion-reduce:transition-none motion-reduce:group-fine:scale-100",
 					large ? "size-16" : "size-12",
 					"opacity-0 scale-90 group-fine:scale-100 sm:opacity-80",
 				)}

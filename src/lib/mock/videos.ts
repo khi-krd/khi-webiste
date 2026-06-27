@@ -858,7 +858,7 @@ const RAW_VIDEOS: Video[] = [
 			{
 				titleCkb: "ڕێگای کۆچ",
 				titleKmr: "Rêya koçê",
-				thumbnailUrl: "/writings.jpg",
+				thumbnailUrl: "/writings.png",
 				url: SAMPLE_MP4,
 			},
 			{

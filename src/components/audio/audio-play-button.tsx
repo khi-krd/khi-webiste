@@ -65,7 +65,7 @@ export function AudioPlayButton({
 			aria-label={`${actionLabel} — ${target.title}`}
 			aria-pressed={isPlaying}
 			className={cn(
-				"inline-flex shrink-0 items-center justify-center focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring",
+				"inline-flex shrink-0 items-center justify-center rounded-md focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring",
 				sizeClasses[size],
 				className,
 			)}

@@ -12,7 +12,7 @@ const sharedClass =
 	"w-full appearance-none disabled:opacity-50 disabled:pointer-events-none text-start";
 
 const defaultClass =
-	"border border-border-strong bg-surface text-body text-foreground aria-[invalid]:border-foreground";
+	"rounded-md border border-border-strong bg-surface text-body text-foreground aria-[invalid]:border-foreground";
 
 const sizes: Record<Size, string> = {
 	md: "px-3 py-2 pe-9",

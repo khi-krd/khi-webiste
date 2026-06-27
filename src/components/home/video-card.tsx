@@ -111,7 +111,7 @@ export function VideoCard({
 				>
 					<span
 						className={cn(
-							"inline-flex size-14 items-center justify-center rounded-full bg-foreground/70 text-white backdrop-blur-[2px]",
+							"inline-flex size-14 items-center justify-center rounded-pill bg-foreground/70 text-white backdrop-blur-[2px]",
 							"transition-[transform,background-color,opacity] duration-300",
 							"opacity-80 group-fine:scale-110 group-fine:bg-foreground/85 group-fine:opacity-100",
 							"motion-reduce:transition-none motion-reduce:group-fine:scale-100",

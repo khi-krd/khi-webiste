@@ -16,10 +16,10 @@ const sharedClass =
 	"w-full disabled:opacity-50 disabled:pointer-events-none text-start";
 
 const defaultClass =
-	" border border-border-strong bg-surface text-body text-foreground placeholder:text-muted aria-[invalid]:border-foreground";
+	"rounded-md border border-border-strong bg-surface text-body text-foreground placeholder:text-muted aria-[invalid]:border-foreground";
 
 const overlayClass =
-	"rounded-none border border-primary-foreground/30 bg-transparent text-primary-foreground shadow-none placeholder:text-primary-foreground/40 focus-visible:border-primary-foreground/70 focus-visible:outline-none aria-[invalid]:border-primary-foreground";
+	"rounded-md border border-primary-foreground/30 bg-transparent text-primary-foreground shadow-none placeholder:text-primary-foreground/40 focus-visible:border-primary-foreground/70 focus-visible:outline-none aria-[invalid]:border-primary-foreground";
 
 const defaultSizes: Record<Size, string> = {
 	md: "px-3 py-2",

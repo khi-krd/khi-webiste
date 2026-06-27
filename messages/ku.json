@@ -700,6 +700,7 @@
 		"emptyDescription": "Niha tu madeya hilbijartî nehatîye dîtin. Ji kerema xwe paşê dîsa serdan bike.",
 		"previous": "Slide-a berê",
 		"next": "Slide-a paş",
+		"pagination": "Veguhastina slide-an",
 		"play": "Xebitandina guhartina bixweber",
 		"pause": "Rawestandina guhartina bixweber",
 		"slideLabel": "{current} ji {total}",

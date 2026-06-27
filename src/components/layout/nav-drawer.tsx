@@ -29,7 +29,7 @@ import { useScrollLock } from "@/lib/use-scroll-lock";
 import { cn } from "@/lib/utils";
 
 const overlayFooterIconButtonClass =
-	"inline-flex min-h-11 min-w-11 items-center justify-center border border-primary-foreground/25 bg-primary-foreground/5 transition-colors hover:border-primary-foreground/30 hover:bg-primary-foreground/10 focus-visible:border-primary-foreground/40";
+	"inline-flex min-h-11 min-w-11 items-center justify-center rounded-md border border-primary-foreground/25 bg-primary-foreground/5 transition-colors hover:border-primary-foreground/30 hover:bg-primary-foreground/10 focus-visible:border-primary-foreground/40";
 
 const FOCUSABLE =
 	'a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])';
@@ -325,7 +325,7 @@ export function NavDrawer() {
 				aria-controls={overlayId}
 				aria-label={open ? t("menuClose") : t("menuOpen")}
 				onClick={() => (open ? close() : setOpen(true))}
-				className="inline-flex h-11 w-11 items-center justify-center bg-sunken text-foreground transition-colors hover:bg-border"
+				className="inline-flex h-11 w-11 items-center justify-center rounded-md bg-sunken text-foreground transition-colors hover:bg-border"
 			>
 				<Bars3Icon className="size-5 stroke-2" aria-hidden="true" />
 			</button>
@@ -376,7 +376,7 @@ export function NavDrawer() {
 												type="button"
 												onClick={close}
 												aria-label={t("menuClose")}
-												className="inline-flex min-h-11 min-w-11 items-center justify-center border border-transparent bg-foreground/40 p-2 transition-colors hover:border-primary-foreground/30 hover:bg-foreground/60 focus-visible:border-primary-foreground/40 focus-visible:bg-foreground/60"
+												className="inline-flex min-h-11 min-w-11 items-center justify-center rounded-md border border-transparent bg-foreground/40 p-2 transition-colors hover:border-primary-foreground/30 hover:bg-foreground/60 focus-visible:border-primary-foreground/40 focus-visible:bg-foreground/60"
 											>
 												<XMarkIcon
 													className="size-6 shrink-0"

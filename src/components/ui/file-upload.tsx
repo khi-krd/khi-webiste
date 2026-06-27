@@ -73,14 +73,14 @@ export const FileUpload = forwardRef<HTMLInputElement, FileUploadProps>(
 				<label
 					htmlFor={id}
 					className={cn(
-						"flex min-h-24 cursor-pointer items-center gap-3 border border-dashed border-border-strong bg-surface px-4 py-4 text-start transition-colors",
+						"flex min-h-24 cursor-pointer items-center gap-3 rounded-md border border-dashed border-border-strong bg-surface px-4 py-4 text-start transition-colors",
 						"peer-focus-visible:outline peer-focus-visible:outline-2 peer-focus-visible:outline-offset-2 peer-focus-visible:outline-ring",
 						"peer-disabled:pointer-events-none peer-disabled:opacity-50",
 						"peer-aria-[invalid=true]:border-foreground",
 						"fine-hover:bg-sunken/30",
 					)}
 				>
-					<span className="inline-flex size-10 shrink-0 items-center justify-center border border-border bg-background">
+					<span className="inline-flex size-10 shrink-0 items-center justify-center rounded-md border border-border bg-background">
 						<ArrowUpTrayIcon className="size-5 text-muted" aria-hidden />
 					</span>
 					<span

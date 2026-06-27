@@ -14,6 +14,7 @@ import { RouteProgress } from "@/components/layout/route-progress";
 import { LenisProvider } from "@/components/providers/lenis-provider";
 import { routing } from "@/i18n/routing";
 import { archivo, clashDisplay, vazirmatn } from "@/lib/fonts";
+import { getBorderRadiusHtmlAttrs } from "@/lib/theme/border-radius";
 import { cn } from "@/lib/utils";
 import "../globals.css";
 
@@ -74,6 +75,7 @@ export default async function LocaleLayout({ children, params }: Props) {
 			lang={locale}
 			dir={getDir(locale)}
 			data-script={isLatin ? "latin" : "arabic"}
+			{...getBorderRadiusHtmlAttrs()}
 			className={
 				isLatin
 					? `${archivo.variable} ${clashDisplay.variable}`

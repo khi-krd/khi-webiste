@@ -40,7 +40,7 @@ export function Skeleton({
 	return (
 		<div
 			aria-hidden
-			className={cn("skeleton", circle && "rounded-full", className)}
+			className={cn("skeleton", circle && "rounded-pill", className)}
 			style={
 				aspectRatio ? { aspectRatio: ratioValue(aspectRatio), ...style } : style
 			}

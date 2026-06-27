@@ -162,8 +162,7 @@ export async function FeaturedHero({
 					direction={direction}
 					height={slideHeight}
 					labels={{
-						previous: t("previous"),
-						next: t("next"),
+						pagination: t("pagination"),
 					}}
 				/>
 			</section>
@@ -213,8 +212,7 @@ export async function FeaturedHero({
 				direction={direction}
 				height={slideHeight}
 				labels={{
-					previous: t("previous"),
-					next: t("next"),
+					pagination: t("pagination"),
 				}}
 			/>
 		</section>

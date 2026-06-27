@@ -25,7 +25,7 @@ import { cn } from "@/lib/utils";
 const SEEK_WAVE_BARS = 64;
 
 const controlButtonClass =
-	"inline-flex size-9 shrink-0 items-center justify-center text-foreground transition-colors fine-hover:bg-sunken focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring";
+	"inline-flex size-9 shrink-0 items-center justify-center rounded-md text-foreground transition-colors fine-hover:bg-sunken focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring";
 
 /**
  * Persistent SoundCloud-style bottom bar. Renders nothing until a queue is

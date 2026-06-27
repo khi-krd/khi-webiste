@@ -45,6 +45,7 @@
 	display: block;
 	margin-inline: auto;
 	border: 1px solid var(--color-border);
+	border-radius: var(--radius-md);
 	background: var(--color-background);
 	box-shadow: 0 1px 2px rgb(26 24 19 / 6%);
 }
@@ -82,7 +83,7 @@
 
 .writing-pdf-scrubber__range::-webkit-slider-runnable-track {
 	height: 4px;
-	border-radius: 9999px;
+	border-radius: var(--radius-full);
 	background: var(--color-border-strong);
 }
 
@@ -92,7 +93,7 @@
 	height: 1.375rem;
 	margin-top: -0.5625rem;
 	border: 2px solid var(--color-background);
-	border-radius: 9999px;
+	border-radius: var(--radius-full);
 	background: var(--color-foreground);
 	box-shadow: 0 1px 3px rgb(26 24 19 / 18%);
 }
@@ -100,7 +101,7 @@
 .writing-pdf-scrubber__range::-moz-range-track {
 	height: 4px;
 	border: 0;
-	border-radius: 9999px;
+	border-radius: var(--radius-full);
 	background: var(--color-border-strong);
 }
 
@@ -108,7 +109,7 @@
 	width: 1.375rem;
 	height: 1.375rem;
 	border: 2px solid var(--color-background);
-	border-radius: 9999px;
+	border-radius: var(--radius-full);
 	background: var(--color-foreground);
 	box-shadow: 0 1px 3px rgb(26 24 19 / 18%);
 }
@@ -135,7 +136,7 @@
 	height: 4px;
 	padding: 0;
 	border: 0;
-	border-radius: 9999px;
+	border-radius: var(--radius-full);
 	background: var(--color-border-strong);
 	transition:
 		width 150ms ease,

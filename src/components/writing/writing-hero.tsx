@@ -68,7 +68,7 @@ export function WritingHero({
 	titleEmphasis,
 	cta,
 	learnMore,
-	textureUrl = "/writings.jpg",
+	textureUrl = "/writings.png",
 	showEmphasisItalic = false,
 }: WritingHeroProps) {
 	return (

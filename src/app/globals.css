@@ -99,13 +99,12 @@
 	--text-small: 0.875rem; /* 14px — captions, meta                 */
 	--text-label: 0.75rem; /* 12px — quiet labels / eyebrows        */
 
-	/* Radius — SQUARE editorial/archive identity. Everything hard-cornered:
-	   buttons, inputs, cards, badges, media — no exceptions. --radius-lg is kept
-	   DEFINED BUT UNUSED, reserved as a single future soft exception if ever
-	   wanted; do not apply it. */
-	--radius-sm: 0; /* hard corners */
-	--radius-md: 0; /* hard corners */
-	--radius-lg: 0.5rem; /* reserved — intentionally unused */
+	/* Radius — default square. Toggle via NEXT_PUBLIC_ENABLE_BORDER_RADIUS on
+	   <html data-corners> + NEXT_PUBLIC_BORDER_RADIUS size preset. */
+	--radius-sm: 0;
+	--radius-md: 0;
+	--radius-lg: 0;
+	--radius-full: 0;
 }
 
 /* ----------------------------------------------------------------------------
@@ -124,6 +123,61 @@
 
 	/* Hairline border width — borders carry the design, so default to 1px. */
 	--border-hairline: 1px;
+}
+
+/* --- Border-radius env toggle (NEXT_PUBLIC_ENABLE_BORDER_RADIUS) ------------
+   Square is the default. When enabled, size presets set --radius-* tokens on
+   <html data-corners="rounded" data-radius-size="…">. Components consume
+   tokens via rounded-* utilities or var(--radius-*). */
+html[data-corners="square"] {
+	--radius-sm: 0;
+	--radius-md: 0;
+	--radius-lg: 0;
+	--radius-full: 0;
+}
+
+html[data-corners="rounded"][data-radius-size="s"] {
+	--radius-sm: 0.125rem;
+	--radius-md: 0.25rem;
+	--radius-lg: 0.375rem;
+	--radius-full: 9999px;
+}
+
+html[data-corners="rounded"][data-radius-size="m"] {
+	--radius-sm: 0.25rem;
+	--radius-md: 0.375rem;
+	--radius-lg: 0.5rem;
+	--radius-full: 9999px;
+}
+
+html[data-corners="rounded"][data-radius-size="l"] {
+	--radius-sm: 0.375rem;
+	--radius-md: 0.5rem;
+	--radius-lg: 0.75rem;
+	--radius-full: 9999px;
+}
+
+html[data-corners="rounded"][data-radius-size="xl"] {
+	--radius-sm: 0.5rem;
+	--radius-md: 0.75rem;
+	--radius-lg: 1rem;
+	--radius-full: 9999px;
+}
+
+/* Interactive surfaces — any full-box `border` utility (not border-t/b/s alone) */
+html[data-corners="rounded"] :where(.border) {
+	border-radius: var(--radius-md);
+}
+
+/* Drawn-border icon tiles (project cards, gallery marquee) */
+html[data-corners="rounded"] :where(.draw-border-host) {
+	border-radius: var(--radius-md);
+}
+
+/* Filled primary controls without a hairline (play, hero CTAs, pager current) */
+html[data-corners="rounded"]
+	:where(button.bg-primary, a.bg-primary, span.bg-primary) {
+	border-radius: var(--radius-md);
 }
 
 /* ----------------------------------------------------------------------------
@@ -330,6 +384,8 @@
 	stroke: currentColor;
 	stroke-width: var(--draw-border-stroke);
 	vector-effect: non-scaling-stroke;
+	rx: var(--radius-md);
+	ry: var(--radius-md);
 	stroke-dasharray: 100; /* full normalized perimeter */
 	stroke-dashoffset: 100; /* hidden at rest */
 	transition: stroke-dashoffset 0.5s cubic-bezier(0.65, 0, 0.35, 1);
@@ -528,9 +584,9 @@
 @layer components {
 	/* Spinner: a thin ring (hairline) with one border-strong arc that rotates.
 	   Width comes from a Tailwind border-* utility per size; color/animation here.
-	   Circular is acceptable for a loading glyph even in a square design language. */
+	   Circular when --radius-full is set; square when disabled. */
 	.spinner {
-		border-radius: 9999px;
+		border-radius: var(--radius-full);
 		border-style: solid;
 		border-color: var(--color-border);
 		border-top-color: var(--color-border-strong);
@@ -538,8 +594,7 @@
 	}
 
 	/* Skeleton: flat sunken block with a lighter (surface) highlight sweeping
-	   across. Square corners by default (match the squared elements they stand
-	   in for); callers add rounded-full for circles. */
+	   across. Square by default; callers add .rounded-pill for circles. */
 	.skeleton {
 		background-color: var(--color-sunken);
 		background-image: linear-gradient(
@@ -555,6 +610,11 @@
 	/* Sweep follows the reading direction. */
 	:where([dir="rtl"]) .skeleton {
 		animation-direction: reverse;
+	}
+
+	/* Token-driven pill/circle — square when border radius is disabled. */
+	.rounded-pill {
+		border-radius: var(--radius-full);
 	}
 }
 
@@ -752,7 +812,7 @@
 	height: 10px;
 	margin-top: -4px;
 	border: none;
-	border-radius: 0;
+	border-radius: var(--radius-sm);
 	background: var(--color-foreground);
 }
 
@@ -770,7 +830,7 @@
 	width: 10px;
 	height: 10px;
 	border: none;
-	border-radius: 0;
+	border-radius: var(--radius-sm);
 	background: var(--color-foreground);
 }
 

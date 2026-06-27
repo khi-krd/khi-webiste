@@ -97,7 +97,7 @@ export function AboutHero({
 						aria-haspopup="dialog"
 						aria-label={playLabel}
 						className={cn(
-							"mt-8 inline-flex size-14 items-center justify-center rounded-full bg-foreground/70 text-white backdrop-blur-[2px] sm:mt-9 sm:size-16",
+							"mt-8 inline-flex size-14 items-center justify-center rounded-pill bg-foreground/70 text-white backdrop-blur-[2px] sm:mt-9 sm:size-16",
 							"transition-[transform,background-color,opacity] duration-300",
 							"opacity-90 fine-hover:scale-110 fine-hover:bg-foreground/85 fine-hover:opacity-100",
 							"focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white",

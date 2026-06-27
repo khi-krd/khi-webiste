@@ -46,7 +46,7 @@ export const ABOUT_STILLS = [
 	"/about/475203467_1007002848126180_7383496220452921499_n.jpg",
 ] as const;
 
-export const WRITINGS_STILL = "/writings.jpg";
+export const WRITINGS_STILL = "/writings.png";
 
 export const ALL_PUBLIC_STILLS = [
 	...MENU_STILLS,

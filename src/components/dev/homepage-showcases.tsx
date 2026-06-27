@@ -161,8 +161,7 @@ export function FeaturedCarouselShowcase() {
 				direction={direction}
 				height="playground"
 				labels={{
-					previous: tHero("previous"),
-					next: tHero("next"),
+					pagination: tHero("pagination"),
 				}}
 			/>
 		</ShowcaseCard>

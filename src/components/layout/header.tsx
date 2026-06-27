@@ -31,7 +31,7 @@ export async function Header() {
 		<HeaderShell>
 			<div
 				aria-hidden="true"
-				className="absolute inset-x-5 top-5 h-16 bg-background/70 backdrop-blur-[48px] sm:h-20"
+				className="absolute inset-x-5 top-5 h-16 rounded-md bg-background/70 backdrop-blur-[48px] sm:h-20"
 			/>
 			<Container className="relative flex h-16 max-w-none items-center justify-between gap-4 px-8 sm:h-20 sm:px-10">
 				<Logo />
@@ -39,7 +39,7 @@ export async function Header() {
 				<div className="flex items-center gap-3">
 					{/* Services + Donate CTAs — hidden on mobile (logo + hamburger only);
 					    both remain reachable inside the drawer. Shown from `sm` up. */}
-					<div className="hidden items-center sm:flex">
+					<div className="hidden overflow-hidden rounded-md sm:inline-flex">
 						{/* Services — secondary CTA: LIGHT fill (sunken), equal size to Donate.
 					    TODO(services): placeholder label + route. */}
 						<Link

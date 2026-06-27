@@ -2,7 +2,7 @@ import { WRITING_DEMO_PDF_URL } from "@/lib/writing/pdf-url";
 import type { BookGenre, ResolvedWritingCard } from "@/types/writing";
 
 const DEMO_COVERS = [
-	"/writings.jpg",
+	"/writings.png",
 	"/menu/1.jpg",
 	"/menu/5.jpg",
 	"/menu/6.jpg",

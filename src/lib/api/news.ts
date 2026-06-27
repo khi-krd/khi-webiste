@@ -49,7 +49,6 @@ async function fetchNewsPage(
 		tags: [NEWS_TAG],
 		revalidate: DEFAULT_REVALIDATE,
 		searchParams,
-		noStore: true,
 	});
 
 	return page?.content.length ? page.content : null;
@@ -61,7 +60,6 @@ async function fetchNewsSearch(query: string): Promise<News[] | null> {
 		tags: [NEWS_TAG],
 		revalidate: DEFAULT_REVALIDATE,
 		searchParams: { q: query, page: 0, size: NEWS_FETCH_SIZE },
-		noStore: true,
 	});
 
 	return page?.content.length ? page.content : null;
@@ -115,7 +113,6 @@ export async function getNewsBySlug(
 			schema: NewsSchema,
 			tags: [NEWS_TAG, `news-${numericId}`],
 			revalidate: DEFAULT_REVALIDATE,
-			noStore: true,
 		});
 
 		if (detail) {

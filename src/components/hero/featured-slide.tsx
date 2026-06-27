@@ -4,9 +4,9 @@ import { Link } from "@/i18n/navigation";
 import { cn } from "@/lib/utils";
 import type { HeroSlide } from "@/types/content";
 
-type FeaturedSlideHeight = "viewport" | "playground";
+export type FeaturedSlideHeight = "viewport" | "playground";
 
-const heightClass: Record<FeaturedSlideHeight, string> = {
+export const featuredSlideHeightClass: Record<FeaturedSlideHeight, string> = {
 	viewport: "h-svh",
 	playground: "h-112 sm:h-144",
 };
@@ -32,7 +32,7 @@ export function FeaturedSlide({
 			aria-label={`${slide.actionLabel}: ${slide.title}`}
 			className={cn(
 				"group relative block w-full overflow-hidden",
-				heightClass[height],
+				featuredSlideHeightClass[height],
 				className,
 			)}
 		>

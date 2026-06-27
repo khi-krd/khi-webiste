@@ -69,7 +69,7 @@ export default async function WritingsPage({
 	}));
 
 	const heroTexture =
-		items.find((item) => item.coverUrl)?.coverUrl ?? "/writings.jpg";
+		items.find((item) => item.coverUrl)?.coverUrl ?? "/writings.png";
 
 	const direction = locale === "ckb" ? "rtl" : "ltr";
 

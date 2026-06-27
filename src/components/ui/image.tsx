@@ -58,7 +58,7 @@ export function Image({
 }: ImageProps) {
 	const fit = objectFit === "contain" ? "object-contain" : "object-cover";
 	// Square corners everywhere (radius tokens are 0); frame is a hairline.
-	const frame = framed ? "border border-border" : undefined;
+	const frame = framed ? "rounded-md border border-border" : undefined;
 
 	if (aspectRatio) {
 		return (
