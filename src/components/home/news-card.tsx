@@ -91,8 +91,8 @@ export function NewsCard({
 					className={cn(
 						"pointer-events-none absolute inset-0 z-1 transition-opacity duration-500 ease-out motion-reduce:transition-none",
 						isFeatured
-							? "bg-foreground/40 group-hover:bg-foreground/50"
-							: "bg-foreground/30 group-hover:bg-foreground/45",
+							? "bg-foreground/28 group-hover:bg-foreground/38"
+							: "bg-foreground/20 group-hover:bg-foreground/32",
 					)}
 					aria-hidden
 				/>
@@ -100,8 +100,8 @@ export function NewsCard({
 					className={cn(
 						"pointer-events-none absolute inset-0 z-1 bg-linear-to-t from-foreground transition-opacity duration-500 ease-out motion-reduce:transition-none",
 						isFeatured
-							? "from-0% via-foreground/85 via-30% to-transparent to-65% group-hover:via-foreground/90"
-							: "from-0% via-foreground/75 via-35% to-transparent to-70% group-hover:via-foreground/85",
+							? "from-0% via-foreground/68 via-30% to-transparent to-65% group-hover:via-foreground/76"
+							: "from-0% via-foreground/58 via-35% to-transparent to-70% group-hover:via-foreground/68",
 					)}
 					aria-hidden
 				/>
