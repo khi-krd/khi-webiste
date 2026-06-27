@@ -223,7 +223,7 @@ export function MenuSearch({ onBack, onNavigate }: MenuSearchProps) {
 
 					<h2
 						className={cn(
-							"mb-6 font-heading text-[clamp(2rem,3.5vw+0.5rem,3rem)] font-bold leading-tight text-primary-foreground",
+							"mb-6 font-heading text-[clamp(1.75rem,2.75vw+0.4rem,2.5rem)] font-bold leading-tight text-primary-foreground",
 							overlayTextShadow,
 						)}
 					>

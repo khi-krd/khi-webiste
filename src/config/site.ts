@@ -216,7 +216,7 @@ export const FOOTER_SOCIAL_LINKS: FooterLink[] = [
  * duplicated across the per-locale message files.
  */
 export const LOCALE_LABELS: Record<Locale, string> = {
-	ckb: "کوردیی ناوەندی",
+	ckb: "سۆرانی",
 	ku: "Kurmancî",
 };
 

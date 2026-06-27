@@ -1,7 +1,7 @@
 "use client";
 
+import { motion, useReducedMotion } from "motion/react";
 import { useEffect, useState } from "react";
-import { cn } from "@/lib/utils";
 
 /** Always show the bar when within this distance of the document top. */
 const AT_TOP_THRESHOLD = 32;
@@ -12,19 +12,29 @@ const HIDE_AFTER_THRESHOLD = 96;
 /** Ignore sub-pixel jitter so the bar doesn't flicker on tiny movements. */
 const SCROLL_DELTA = 4;
 
+const INTRO_DURATION = 0.6;
+const SCROLL_DURATION = 0.3;
+
 type Props = {
 	children: React.ReactNode;
 };
 
 /**
- * Fixed header that hides while scrolling down and reappears when the user
- * scrolls up from anywhere on the page (not only at the document top).
- *
- * Reads native `scroll` events (rAF-throttled, passive) so it stays decoupled
- * from the smooth-scroll provider and adds no per-frame main-thread cost.
+ * Fixed header that slides down on first paint, then hides while scrolling down
+ * and reappears when the user scrolls up.
  */
 export function HeaderShell({ children }: Props) {
-	const [visible, setVisible] = useState(true);
+	const reduceMotion = useReducedMotion();
+	const [scrollVisible, setScrollVisible] = useState(true);
+	const [introRevealed, setIntroRevealed] = useState(false);
+	const [introDone, setIntroDone] = useState(false);
+
+	useEffect(() => {
+		const id = requestAnimationFrame(() => {
+			requestAnimationFrame(() => setIntroRevealed(true));
+		});
+		return () => cancelAnimationFrame(id);
+	}, []);
 
 	useEffect(() => {
 		let lastScrollY = Math.max(0, window.scrollY);
@@ -35,7 +45,7 @@ export function HeaderShell({ children }: Props) {
 			const current = Math.max(0, window.scrollY);
 
 			if (current <= AT_TOP_THRESHOLD) {
-				setVisible(true);
+				setScrollVisible(true);
 				lastScrollY = current;
 				return;
 			}
@@ -44,9 +54,9 @@ export function HeaderShell({ children }: Props) {
 			if (Math.abs(delta) < SCROLL_DELTA) return;
 
 			if (delta < 0) {
-				setVisible(true);
+				setScrollVisible(true);
 			} else if (current > HIDE_AFTER_THRESHOLD) {
-				setVisible(false);
+				setScrollVisible(false);
 			}
 
 			lastScrollY = current;
@@ -62,14 +72,31 @@ export function HeaderShell({ children }: Props) {
 		return () => window.removeEventListener("scroll", onScroll);
 	}, []);
 
+	const isVisible = introRevealed && scrollVisible;
+
 	return (
-		<header
-			className={cn(
-				"fixed inset-x-0 top-0 z-50 p-5 transition-transform duration-300 ease-out motion-reduce:transition-none",
-				visible ? "translate-y-0" : "pointer-events-none -translate-y-full",
-			)}
+		<motion.header
+			className="fixed inset-x-0 top-0 z-50 p-5"
+			initial={reduceMotion ? false : { y: "-100%" }}
+			animate={{ y: isVisible || reduceMotion ? 0 : "-100%" }}
+			transition={
+				reduceMotion
+					? { duration: 0 }
+					: {
+							duration: introDone ? SCROLL_DURATION : INTRO_DURATION,
+							ease: introDone
+								? "easeOut"
+								: ([0.22, 1, 0.36, 1] as const),
+						}
+			}
+			onAnimationComplete={() => {
+				if (introRevealed && !introDone) {
+					setIntroDone(true);
+				}
+			}}
+			style={{ pointerEvents: isVisible ? undefined : "none" }}
 		>
 			{children}
-		</header>
+		</motion.header>
 	);
 }

@@ -12,9 +12,9 @@ import Image from "next/image";
 import { useLocale, useTranslations } from "next-intl";
 import {
 	type KeyboardEvent as ReactKeyboardEvent,
+	type RefObject,
 	useCallback,
 	useEffect,
-	useId,
 	useRef,
 	useState,
 } from "react";
@@ -23,13 +23,18 @@ import { LanguageSwitcher } from "@/components/layout/language-switcher";
 import { MenuSearch } from "@/components/layout/menu-search";
 import { Container } from "@/components/ui/container";
 import { DirectionalIcon } from "@/components/ui/directional-icon";
+import { DrawnBorder } from "@/components/ui/drawn-border";
 import { Link } from "@/components/ui/link";
 import { NAV_DEFAULT_IMAGE, NAV_ITEMS, type NavItem } from "@/config/site";
 import { useScrollLock } from "@/lib/use-scroll-lock";
 import { cn } from "@/lib/utils";
 
+const NAV_DRAWER_ID = "site-nav-drawer";
+
+export { NAV_DRAWER_ID };
+
 const overlayFooterIconButtonClass =
-	"inline-flex min-h-11 min-w-11 items-center justify-center rounded-md border border-primary-foreground/25 bg-primary-foreground/5 transition-colors hover:border-primary-foreground/30 hover:bg-primary-foreground/10 focus-visible:border-primary-foreground/40";
+	"draw-border-host relative isolate inline-flex min-h-11 min-w-11 items-center justify-center overflow-hidden rounded-md border border-primary-foreground/20 bg-primary-foreground/8 text-primary-foreground backdrop-blur-sm transition-colors fine-hover:border-primary-foreground/35 fine-hover:bg-primary-foreground/14";
 
 const FOCUSABLE =
 	'a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])';
@@ -60,13 +65,13 @@ function useIsLg() {
 
 /** Harvard-style underline — block-end rule on active/hover only, not a full-width box. */
 const primaryItemClass =
-	"group w-full py-1.5 text-start font-heading text-[clamp(2.75rem,4.5vw+0.75rem,4.5rem)] font-bold leading-[1.05] underline decoration-transparent decoration-2 underline-offset-[0.18em] transition-[opacity,text-decoration-color] duration-200 [text-shadow:0_1px_3px_color-mix(in_oklch,var(--color-foreground)_80%,transparent),0_0_2.5rem_color-mix(in_oklch,var(--color-foreground)_50%,transparent)]";
+	"group w-full py-1 text-start font-heading text-[clamp(2rem,3vw+0.4rem,3.125rem)] font-bold leading-[1.08] underline decoration-transparent decoration-2 underline-offset-[0.18em] transition-[opacity,text-decoration-color] duration-200 [text-shadow:0_1px_3px_color-mix(in_oklch,var(--color-foreground)_80%,transparent),0_0_2.5rem_color-mix(in_oklch,var(--color-foreground)_50%,transparent)]";
 
 /** Sits inline-end of the label — not stretched across the column (DirectionalIcon flips in RTL). */
-const primaryLabelRowClass = "inline-flex max-w-full items-center gap-3";
+const primaryLabelRowClass = "inline-flex max-w-full items-center gap-2.5";
 
 const primaryItemArrowClass =
-	"size-6 shrink-0 opacity-0 transition-opacity group-focus-visible:opacity-100 lg:group-hover:opacity-100";
+	"size-5 shrink-0 opacity-0 transition-opacity group-focus-visible:opacity-100 lg:group-hover:opacity-100";
 
 /** Keeps overlay copy readable when background photos run bright. */
 const overlayTextShadow =
@@ -124,7 +129,7 @@ function NavSecondaryPanel({ item, onNavigate }: NavSecondaryPanelProps) {
 				variant="nav"
 				onClick={onNavigate}
 				className={cn(
-					"mb-5 inline-flex items-center gap-2 font-heading text-h2 font-bold text-primary-foreground hover:text-primary-foreground",
+					"mb-4 inline-flex items-center gap-2 font-heading text-h3 font-bold text-primary-foreground hover:text-primary-foreground",
 					overlayTextShadow,
 				)}
 			>
@@ -134,15 +139,15 @@ function NavSecondaryPanel({ item, onNavigate }: NavSecondaryPanelProps) {
 			{/* Section description — wired from Nav.{item}Description */}
 			<p
 				className={cn(
-					"mb-8 max-w-md text-body leading-relaxed text-primary-foreground/65",
+					"mb-6 max-w-md text-small leading-relaxed text-primary-foreground/65",
 					overlayTextShadow,
 				)}
 			>
 				{t(item.descriptionKey)}
 			</p>
 
-			<div className="border-t border-primary-foreground/30 pt-6">
-				<h3 className="mb-3 text-small font-medium text-primary-foreground/80">
+			<div className="border-t border-primary-foreground/30 pt-5">
+				<h3 className="mb-2.5 text-label font-medium uppercase tracking-[0.08em] text-primary-foreground/80">
 					{t("secondaryLinkPrefix")}
 				</h3>
 
@@ -157,7 +162,7 @@ function NavSecondaryPanel({ item, onNavigate }: NavSecondaryPanelProps) {
 								variant="nav"
 								onClick={onNavigate}
 								className={cn(
-									"block py-3 text-body text-primary-foreground/80 hover:text-primary-foreground",
+									"block py-2.5 text-small text-primary-foreground/80 hover:text-primary-foreground",
 									overlayTextShadow,
 								)}
 							>
@@ -171,26 +176,43 @@ function NavSecondaryPanel({ item, onNavigate }: NavSecondaryPanelProps) {
 	);
 }
 
+type NavView = "nav" | "search";
+
+type NavDrawerProps = {
+	open: boolean;
+	onOpenChange: (open: boolean) => void;
+	view: NavView;
+	onViewChange: (view: NavView) => void;
+	/** When true, only the overlay portal is rendered (trigger lives in the header). */
+	hideTrigger?: boolean;
+	/** Focus target after close when `hideTrigger` is set. */
+	triggerRef?: RefObject<HTMLButtonElement | null>;
+};
+
 /**
  * Primary-nav overlay: hamburger trigger plus the full-screen Harvard-style
- * menu it opens. Owns open state, hover background, secondary panel drill,
- * in-menu search, focus trap, scroll lock, and keyboard listeners.
+ * menu it opens. Hover background, secondary panel drill, in-menu search,
+ * focus trap, scroll lock, and keyboard listeners.
  */
-export function NavDrawer() {
+export function NavDrawer({
+	open,
+	onOpenChange,
+	view,
+	onViewChange,
+	hideTrigger = false,
+	triggerRef: externalTriggerRef,
+}: NavDrawerProps) {
 	const t = useTranslations("Nav");
 	const locale = useLocale();
 	const dir = locale === "ckb" ? "rtl" : "ltr";
 	const reduceMotion = useReducedMotion();
 	const isLg = useIsLg();
-
-	const [open, setOpen] = useState(false);
-	const [view, setView] = useState<"nav" | "search">("nav");
 	const [hoveredKey, setHoveredKey] = useState<string | null>(null);
 	const [activeKey, setActiveKey] = useState<string | null>(null);
 
-	const overlayId = useId();
 	const [overlayMounted, setOverlayMounted] = useState(false);
-	const triggerRef = useRef<HTMLButtonElement>(null);
+	const internalTriggerRef = useRef<HTMLButtonElement>(null);
+	const triggerRef = externalTriggerRef ?? internalTriggerRef;
 	const closeRef = useRef<HTMLButtonElement>(null);
 	const panelRef = useRef<HTMLDivElement>(null);
 
@@ -208,11 +230,11 @@ export function NavDrawer() {
 	const bgSrc = bgItem?.imageSrc ?? NAV_DEFAULT_IMAGE;
 
 	const close = useCallback(() => {
-		setOpen(false);
-		setView("nav");
+		onOpenChange(false);
+		onViewChange("nav");
 		setActiveKey(null);
 		setHoveredKey(null);
-	}, []);
+	}, [onOpenChange, onViewChange]);
 
 	useScrollLock(open);
 
@@ -221,12 +243,12 @@ export function NavDrawer() {
 			wasOpen.current = true;
 			requestAnimationFrame(() => closeRef.current?.focus());
 		} else if (wasOpen.current) {
-			setView("nav");
+			onViewChange("nav");
 			setActiveKey(null);
 			setHoveredKey(null);
 			triggerRef.current?.focus();
 		}
-	}, [open]);
+	}, [open, onViewChange]);
 
 	function onKeyDown(event: ReactKeyboardEvent<HTMLDivElement>) {
 		if (event.key === "Escape") {
@@ -318,17 +340,23 @@ export function NavDrawer() {
 
 	return (
 		<>
-			<button
-				ref={triggerRef}
-				type="button"
-				aria-expanded={open}
-				aria-controls={overlayId}
-				aria-label={open ? t("menuClose") : t("menuOpen")}
-				onClick={() => (open ? close() : setOpen(true))}
-				className="inline-flex h-11 w-11 items-center justify-center rounded-md bg-sunken text-foreground transition-colors hover:bg-border"
-			>
-				<Bars3Icon className="size-5 stroke-2" aria-hidden="true" />
-			</button>
+			{!hideTrigger && (
+				<button
+					ref={internalTriggerRef}
+					type="button"
+					aria-expanded={open}
+					aria-controls={NAV_DRAWER_ID}
+					aria-label={open ? t("menuClose") : t("menuOpen")}
+					onClick={() => (open ? close() : onOpenChange(true))}
+					className="draw-border-host relative isolate inline-flex size-11 items-center justify-center overflow-hidden rounded-md bg-sunken text-foreground transition-colors fine-hover:bg-border"
+				>
+					<DrawnBorder />
+					<Bars3Icon
+						className="relative z-1 size-5 stroke-[1.75]"
+						aria-hidden="true"
+					/>
+				</button>
+			)}
 
 			{overlayMounted &&
 				createPortal(
@@ -337,7 +365,7 @@ export function NavDrawer() {
 							<motion.div
 								key="overlay"
 								ref={panelRef}
-								id={overlayId}
+								id={NAV_DRAWER_ID}
 								role="dialog"
 								aria-modal="true"
 								aria-label={t("menuTitle")}
@@ -399,7 +427,7 @@ export function NavDrawer() {
 												>
 													<Container className="max-w-none flex min-h-0 flex-1 flex-col pb-8 pt-4 sm:pt-6">
 														<MenuSearch
-															onBack={() => setView("nav")}
+															onBack={() => onViewChange("nav")}
 															onNavigate={close}
 														/>
 													</Container>
@@ -649,30 +677,29 @@ export function NavDrawer() {
 									</div>
 
 									{view === "nav" && (
-										<footer className="relative z-10 mt-auto shrink-0 border-t border-primary-foreground/20 bg-foreground">
+										<footer className="relative z-10 mt-auto shrink-0 border-t border-primary-foreground/15 bg-foreground/90 backdrop-blur-md">
 											<Container className="max-w-none py-4">
 												<div className="flex items-center justify-between gap-4">
 													<LanguageSwitcher
-														variant="group"
+														variant="dropdown"
 														overlay
 														onLocaleChange={close}
 													/>
-													<div className="flex items-center gap-3">
-														<button
-															type="button"
-															onClick={() => setView("search")}
-															aria-label={t("searchOpen")}
-															className={overlayFooterIconButtonClass}
-														>
-															<MagnifyingGlassIcon
-																className="size-5 shrink-0"
-																aria-hidden="true"
-															/>
-															<span className="visually-hidden">
-																{t("searchLabel")}
-															</span>
-														</button>
-													</div>
+													<button
+														type="button"
+														onClick={() => onViewChange("search")}
+														aria-label={t("searchOpen")}
+														className={overlayFooterIconButtonClass}
+													>
+														<DrawnBorder />
+														<MagnifyingGlassIcon
+															className="relative z-1 size-5 shrink-0"
+															aria-hidden="true"
+														/>
+														<span className="visually-hidden">
+															{t("searchLabel")}
+														</span>
+													</button>
 												</div>
 											</Container>
 										</footer>

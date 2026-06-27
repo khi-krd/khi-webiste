@@ -1,13 +1,12 @@
+import Image from "next/image";
 import { getTranslations } from "next-intl/server";
 import { Link } from "@/i18n/navigation";
 
 /**
- * Brand wordmark — links to the locale home. Server Component.
+ * Brand mark — links to the locale home. Server Component.
  *
- * TODO(logo): PLACEHOLDER inline-SVG wordmark ("KHI"). Swap for the real
- * institute mark when the asset is ready; keep the accessible label (Nav.brandAlt)
- * and the link-to-home behaviour. The mark is `currentColor` so it inherits the
- * foreground ink token — no hardcoded color. Square by design (no rounding).
+ * Shows logo.png with the institute name in the active locale (Sorani on ckb,
+ * Kurmanji on ku).
  */
 export async function Logo() {
 	const t = await getTranslations("Nav");
@@ -16,20 +15,19 @@ export async function Logo() {
 		<Link
 			href="/"
 			aria-label={t("brandAlt")}
-			className="inline-flex items-center text-foreground"
+			className="inline-flex min-w-0 items-center gap-2.5 text-foreground sm:gap-3"
 		>
-			{/* Decorative: the link's aria-label carries the accessible name. */}
-			{/* viewBox is tightened to the glyph box so the wordmark sits flush to the
-			    leading edge in BOTH directions; overflow-visible guards subpixel bleed. */}
-			<svg
-				viewBox="0 0 44 24"
-				className="h-7 w-auto overflow-visible sm:h-8"
-				fill="black"
-				aria-hidden="true"
-				focusable="false"
-			>
-				<image href="/next.svg" width="44" height="24" />
-			</svg>
+			<Image
+				src="/logo.png"
+				alt=""
+				width={40}
+				height={40}
+				className="size-9 shrink-0 sm:size-10"
+				priority
+			/>
+			<span className="hidden truncate font-heading text-small font-bold leading-tight sm:inline sm:text-body">
+				{t("brandAlt")}
+			</span>
 		</Link>
 	);
 }
