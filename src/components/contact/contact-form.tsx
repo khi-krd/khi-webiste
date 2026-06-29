@@ -18,6 +18,7 @@ import {
 	type ContactFormValues,
 	createContactFormSchema,
 } from "@/lib/schemas/contact-form";
+import { submitContactFormAction } from "@/lib/actions/contact";
 import { cn } from "@/lib/utils";
 
 type ContactFormCopy = {
@@ -48,16 +49,19 @@ type ContactFormCopy = {
 		emailInvalid: string;
 		subjectRequired: string;
 		messageRequired: string;
+		submitFailed: string;
 	};
 };
 
 type ContactFormProps = {
+	locale: string;
 	copy: ContactFormCopy;
 	className?: string;
 };
 
-export function ContactForm({ copy, className }: ContactFormProps) {
+export function ContactForm({ locale, copy, className }: ContactFormProps) {
 	const [submitted, setSubmitted] = useState(false);
+	const [submitError, setSubmitError] = useState<string | null>(null);
 
 	const schema = useMemo(
 		() =>
@@ -85,8 +89,13 @@ export function ContactForm({ copy, className }: ContactFormProps) {
 		},
 	});
 
-	const onSubmit = handleSubmit(async () => {
-		await new Promise((resolve) => setTimeout(resolve, 400));
+	const onSubmit = handleSubmit(async (values) => {
+		setSubmitError(null);
+		const result = await submitContactFormAction(locale, values);
+		if (!result.success) {
+			setSubmitError(copy.errors.submitFailed);
+			return;
+		}
 		setSubmitted(true);
 	});
 
@@ -214,6 +223,11 @@ export function ContactForm({ copy, className }: ContactFormProps) {
 									</Field>
 								</div>
 								<div className="sm:col-span-2">
+									{submitError ? (
+										<p role="alert" className="mb-4 text-small text-foreground">
+											{submitError}
+										</p>
+									) : null}
 									<Button
 										type="submit"
 										variant="primary"

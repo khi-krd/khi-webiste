@@ -10,6 +10,7 @@ import {
 } from "@/components/contact/contact-shell";
 import { ScrollRevealBlock } from "@/components/motion/scroll-reveal";
 import type { ContactOffice, OfficeId } from "@/lib/mock/contact";
+import type { ResolvedContactOffice } from "@/lib/contact/resolve";
 
 type OfficeCopyBundle = Record<
 	OfficeId,
@@ -22,7 +23,7 @@ type OfficeCopyBundle = Record<
 >;
 
 type ContactExperienceProps = {
-	offices: ContactOffice[];
+	offices: ResolvedContactOffice[];
 	officeCopy: OfficeCopyBundle;
 	officesEyebrow: string;
 	officesHeading: string;
@@ -90,7 +91,19 @@ export function ContactExperience({
 					<div className="overflow-hidden border border-border bg-surface">
 						<div className="grid lg:grid-cols-2">
 							{offices.map((office, index) => {
-								const copy = officeCopy[office.id];
+								const localized = office.localizedCopy;
+								const fallback = officeCopy[office.id];
+								const copy = localized?.address
+									? {
+											name: localized.name,
+											nameLatin: localized.nameLatin,
+											subtitle: localized.subtitle,
+											address: localized.address,
+										}
+									: fallback;
+								if (!copy) {
+									return null;
+								}
 								return (
 									<ContactOfficeCard
 										key={office.id}

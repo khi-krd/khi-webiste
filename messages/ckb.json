@@ -22,6 +22,9 @@
 		"searchErrorMinLength": "لانیکەم ٢ پیت بنووسە",
 		"searchResults": "ئەنجامەکان",
 		"searchNoResults": "هیچ ئەنجامێک نەدۆزرایەوە",
+		"searchLoading": "گەڕان…",
+		"searchNavFallback": "لە مێنیو",
+		"searchContentUnavailable": "گەڕان لە ناوەڕۆکی ئەرشیڤ لە ئێستادا بەردەست نییە. دەتوانیت ناونیشانەکانی مێنیو بگەڕێیت.",
 		"searchScopeLabel": "بواری گەڕان",
 		"searchScopeMain": "گشتی",
 		"searchScopeArchive": "ئەرشیڤ",
@@ -1411,7 +1414,8 @@
 				"fullNameRequired": "تکایە ناوی تەواوت بنووسە.",
 				"emailInvalid": "تکایە ناونیشانی ئیمەیڵێکی دروست بنووسە.",
 				"subjectRequired": "تکایە بابەتێک بنووسە (لانیکەم ٣ پیت).",
-				"messageRequired": "تکایە پەیامێک بنووسە (لانیکەم ١٠ پیت)."
+				"messageRequired": "تکایە پەیامێک بنووسە (لانیکەم ١٠ پیت).",
+				"submitFailed": "ناردنی پەیام سەرکەوتوو نەبوو. تکایە دووبارە هەوڵ بدەرەوە."
 			}
 		}
 	},
@@ -1517,7 +1521,8 @@
 					"contactRequired": "تکایە ژمارەی پەیوەندی بنووسە.",
 					"materialTypeRequired": "تکایە جۆری کەرەستە هەڵبژێرە.",
 					"fileTooLarge": "قەبارەی فایل زۆر گەورەیە (زۆرترین ١٠ مێگابایت).",
-					"fileInvalidType": "جۆری فایل پەسند نەکراوە."
+					"fileInvalidType": "جۆری فایل پەسند نەکراوە.",
+					"submitFailed": "ناردنی زانیارییەکان سەرکەوتوو نەبوو. تکایە دووبارە هەوڵ بدەرەوە."
 				}
 			},
 			"financial": {
@@ -1563,7 +1568,8 @@
 					"amountRequired": "تکایە بڕی پارە بنووسە.",
 					"amountInvalid": "تکایە بڕێکی دروست بنووسە.",
 					"donorNameRequired": "تکایە ناوی بەخشەر بنووسە.",
-					"paymentMethodRequired": "تکایە ڕێگەی پارەدان هەڵبژێرە."
+					"paymentMethodRequired": "تکایە ڕێگەی پارەدان هەڵبژێرە.",
+					"submitFailed": "تۆمارکردنی بەخشین سەرکەوتوو نەبوو. تکایە دووبارە هەوڵ بدەرەوە."
 				}
 			}
 		},

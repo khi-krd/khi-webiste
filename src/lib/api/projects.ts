@@ -24,7 +24,7 @@ import {
 	resolveProjectItem,
 	resolveProjectItems,
 } from "@/lib/project/resolve";
-import { ProjectsPageSchema } from "@/types/project";
+import { ProjectsPageSchema, ProjectSchema } from "@/types/project";
 
 const PROJECTS_ENDPOINT = "/api/v1/projects/getAll";
 const PROJECTS_TAG = "projects";
@@ -142,6 +142,27 @@ export async function getProjectById(
 ): Promise<ProjectDetail | null> {
 	if (!getApiBaseUrl()) {
 		return getMockProjectById(locale, id);
+	}
+
+	const detail = await apiFetch(`/api/v1/projects/${encodeURIComponent(id)}`, {
+		schema: ProjectSchema,
+		tags: [PROJECTS_TAG, `project-${id}`],
+		revalidate: DEFAULT_REVALIDATE,
+	});
+
+	if (detail) {
+		const item = resolveProjectListItem(locale, detail);
+		if (item) {
+			const items = await getAllProjectRecords(locale);
+			const index = items.findIndex(
+				(entry) => entry.id === item.id || entry.slug === item.slug,
+			);
+			return {
+				...item,
+				previous: index > 0 ? items[index] : null,
+				next: index >= 0 && index < items.length - 1 ? items[index + 1] : null,
+			};
+		}
 	}
 
 	const items = await getAllProjectRecords(locale);

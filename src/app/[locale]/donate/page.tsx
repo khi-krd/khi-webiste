@@ -8,12 +8,14 @@ import { DonateTypesGrid } from "@/components/donate/donate-types-grid";
 import { VisuallyHidden } from "@/components/ui/visually-hidden";
 import {
 	getAmountPresets,
-	getDonateHeroMedia,
-	getDonatePaymentDetails,
-	getDonateTypeItems,
 	getSupportersImage,
 	MATERIAL_TYPE_IDS,
 } from "@/lib/mock/donate";
+import {
+	getDonateHeroMediaFromApi,
+	getDonatePaymentDetailsFromApi,
+	getDonateTypeItemsFromApi,
+} from "@/lib/api/donations";
 
 export async function generateMetadata({
 	params,
@@ -38,9 +40,11 @@ export default async function DonatePage({
 	setRequestLocale(locale);
 
 	const t = await getTranslations("Donate");
-	const heroMedia = getDonateHeroMedia();
-	const typeItems = getDonateTypeItems();
-	const payment = getDonatePaymentDetails();
+	const [heroMedia, typeItems, payment] = await Promise.all([
+		getDonateHeroMediaFromApi(),
+		getDonateTypeItemsFromApi(),
+		getDonatePaymentDetailsFromApi(),
+	]);
 	const supportersImage = getSupportersImage();
 	const amountPresets = getAmountPresets();
 
@@ -125,6 +129,7 @@ export default async function DonatePage({
 						),
 						fileTooLarge: t("forms.archive.errors.fileTooLarge"),
 						fileInvalidType: t("forms.archive.errors.fileInvalidType"),
+						submitFailed: t("forms.archive.errors.submitFailed"),
 					},
 				}}
 				financialCopy={{
@@ -175,6 +180,7 @@ export default async function DonatePage({
 						paymentMethodRequired: t(
 							"forms.financial.errors.paymentMethodRequired",
 						),
+						submitFailed: t("forms.financial.errors.submitFailed"),
 					},
 				}}
 			/>

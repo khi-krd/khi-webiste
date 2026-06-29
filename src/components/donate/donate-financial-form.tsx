@@ -17,6 +17,7 @@ import {
 	createDonateFinancialFormSchema,
 	type DonateFinancialFormValues,
 } from "@/lib/schemas/donate-financial-form";
+import { submitFinancialDonationAction } from "@/lib/actions/donations";
 import { cn } from "@/lib/utils";
 
 type CurrencyOption = { id: CurrencyId; label: string };
@@ -52,6 +53,7 @@ type DonateFinancialFormCopy = {
 		amountInvalid: string;
 		donorNameRequired: string;
 		paymentMethodRequired: string;
+		submitFailed: string;
 	};
 };
 
@@ -65,6 +67,7 @@ export function DonateFinancialForm({
 	className,
 }: DonateFinancialFormProps) {
 	const [submitted, setSubmitted] = useState(false);
+	const [submitError, setSubmitError] = useState<string | null>(null);
 	const [selectedPreset, setSelectedPreset] = useState<
 		AmountPreset["id"] | null
 	>(null);
@@ -100,8 +103,13 @@ export function DonateFinancialForm({
 		valueAsNumber: true,
 	});
 
-	const onSubmit = handleSubmit(async () => {
-		await new Promise((resolve) => setTimeout(resolve, 400));
+	const onSubmit = handleSubmit(async (values) => {
+		setSubmitError(null);
+		const result = await submitFinancialDonationAction(values);
+		if (!result.success) {
+			setSubmitError(copy.errors.submitFailed);
+			return;
+		}
 		setSubmitted(true);
 	});
 
@@ -291,6 +299,11 @@ export function DonateFinancialForm({
 						</div>
 
 						<div className="sm:col-span-2">
+							{submitError ? (
+								<p role="alert" className="mb-4 text-small text-foreground">
+									{submitError}
+								</p>
+							) : null}
 							<Button
 								type="submit"
 								variant="primary"

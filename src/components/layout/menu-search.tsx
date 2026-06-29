@@ -2,7 +2,7 @@
 
 import { ArrowLeftIcon } from "@heroicons/react/24/outline";
 import { useReducedMotion } from "motion/react";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import { type FormEvent, useEffect, useMemo, useState } from "react";
 import { DirectionalIcon } from "@/components/ui/directional-icon";
 import { Input } from "@/components/ui/input";
@@ -14,17 +14,25 @@ import {
 	SEARCH_SCOPES,
 	type SearchScope,
 } from "@/config/site";
+import {
+	type ClientSearchItem,
+	type ClientSearchSectionKey,
+	fetchGlobalSearch,
+	groupSearchItems,
+} from "@/lib/search/client";
 import { cn } from "@/lib/utils";
 
 /** Min characters before we filter the catalog or flag a too-short query. */
 const MIN_QUERY_LENGTH = 2;
+const SEARCH_DEBOUNCE_MS = 300;
 
-type SearchResult = {
+type NavSearchResult = {
 	id: string;
 	href: string;
 	label: string;
 	parentLabel?: string;
 	navKey: string;
+	searchText: string;
 };
 
 type MenuSearchProps = {
@@ -40,6 +48,15 @@ const SEARCH_SCOPE_LABEL_KEYS = {
 	library: "searchScopeLibrary",
 } as const satisfies Record<SearchScope, string>;
 
+const SEARCH_SECTION_LABEL_KEYS: Record<ClientSearchSectionKey, string> = {
+	projects: "projects",
+	news: "news",
+	videos: "video",
+	writings: "writings",
+	soundTracks: "sound",
+	imageCollections: "gallery",
+};
+
 /** Keeps overlay copy readable when background photos run bright. */
 const overlayTextShadow =
 	"[text-shadow:0_1px_2px_color-mix(in_oklch,var(--color-foreground)_75%,transparent),0_0_1.75rem_color-mix(in_oklch,var(--color-foreground)_40%,transparent)]";
@@ -53,22 +70,33 @@ function normalizeSearchText(value: string) {
 
 function buildSearchIndex(
 	t: ReturnType<typeof useTranslations<"Nav">>,
-): SearchResult[] {
-	return NAV_ITEMS.flatMap((item) => [
-		{
-			id: item.key,
-			href: item.href,
-			label: t(item.key),
-			navKey: item.key,
-		},
-		...item.children.map((child) => ({
-			id: `${item.key}-${child.key}`,
-			href: child.href,
-			label: t(child.key),
-			parentLabel: t(item.key),
-			navKey: item.key,
-		})),
-	]);
+): NavSearchResult[] {
+	return NAV_ITEMS.flatMap((item) => {
+		const parentLabel = t(item.key);
+		const parentDescription = t(item.descriptionKey);
+		const parentSearchText = `${parentLabel} ${parentDescription}`;
+
+		return [
+			{
+				id: item.key,
+				href: item.href,
+				label: parentLabel,
+				navKey: item.key,
+				searchText: parentSearchText,
+			},
+			...item.children.map((child) => {
+				const childLabel = t(child.key);
+				return {
+					id: `${item.key}-${child.key}`,
+					href: child.href,
+					label: childLabel,
+					parentLabel,
+					navKey: item.key,
+					searchText: `${childLabel} ${parentSearchText}`,
+				};
+			}),
+		];
+	});
 }
 
 function isInSearchScope(navKey: string, scope: SearchScope): boolean {
@@ -79,11 +107,11 @@ function isInSearchScope(navKey: string, scope: SearchScope): boolean {
 	return SEARCH_SCOPE_NAV_KEYS[scope].includes(navKey);
 }
 
-function filterSearchResults(
-	index: SearchResult[],
+function filterNavSearchResults(
+	index: NavSearchResult[],
 	query: string,
 	scope: SearchScope,
-): SearchResult[] {
+): NavSearchResult[] {
 	const normalizedQuery = normalizeSearchText(query);
 	if (!normalizedQuery) return [];
 
@@ -92,23 +120,113 @@ function filterSearchResults(
 			return false;
 		}
 
-		const haystack = [entry.label, entry.parentLabel].filter(
+		const haystack = [entry.searchText, entry.label, entry.parentLabel].filter(
 			(value): value is string => Boolean(value),
 		);
 
 		return haystack.some((value) =>
-			value.toLocaleLowerCase().includes(normalizedQuery),
+			normalizeSearchText(value).includes(normalizedQuery),
 		);
 	});
 }
 
 function SearchResultsList({
+	groups,
+	isSearching,
+	isLoading,
+	onNavigate,
+	noResultsLabel,
+	loadingLabel,
+	getSectionLabel,
+}: {
+	groups: { key: ClientSearchSectionKey; items: ClientSearchItem[] }[];
+	isSearching: boolean;
+	isLoading: boolean;
+	onNavigate: () => void;
+	noResultsLabel: string;
+	loadingLabel: string;
+	getSectionLabel: (key: ClientSearchSectionKey) => string;
+}) {
+	if (isLoading) {
+		return (
+			<p
+				className={cn(
+					"py-3 text-body text-primary-foreground/55",
+					overlayTextShadow,
+				)}
+			>
+				{loadingLabel}
+			</p>
+		);
+	}
+
+	if (groups.length > 0) {
+		return (
+			<div className="flex flex-col gap-6 pb-4">
+				{groups.map((group) => (
+					<section key={group.key}>
+						<h4
+							className={cn(
+								"mb-2 text-small font-medium text-primary-foreground/55",
+								overlayTextShadow,
+							)}
+						>
+							{getSectionLabel(group.key)}
+						</h4>
+						<ul className="flex flex-col">
+							{group.items.map((result) => (
+								<li
+									key={result.id}
+									className="border-b border-primary-foreground/15 last:border-b-0"
+								>
+									<Link
+										href={result.href}
+										variant="nav"
+										onClick={onNavigate}
+										className={cn(
+											"block py-3 text-body text-primary-foreground/80 transition-colors hover:text-primary-foreground",
+											overlayTextShadow,
+										)}
+									>
+										<span>{result.label}</span>
+										{result.description ? (
+											<span className="mt-1 block text-small text-primary-foreground/45">
+												{result.description}
+											</span>
+										) : null}
+									</Link>
+								</li>
+							))}
+						</ul>
+					</section>
+				))}
+			</div>
+		);
+	}
+
+	if (isSearching) {
+		return (
+			<p
+				className={cn(
+					"py-3 text-body text-primary-foreground/55",
+					overlayTextShadow,
+				)}
+			>
+				{noResultsLabel}
+			</p>
+		);
+	}
+
+	return null;
+}
+
+function NavFallbackResultsList({
 	results,
 	isSearching,
 	onNavigate,
 	noResultsLabel,
 }: {
-	results: SearchResult[];
+	results: NavSearchResult[];
 	isSearching: boolean;
 	onNavigate: () => void;
 	noResultsLabel: string;
@@ -159,18 +277,19 @@ function SearchResultsList({
 	return null;
 }
 
-/**
- * In-overlay search view. Live-filters the nav catalog as the user types.
- * TODO(search): wire submit + deeper results to a backend endpoint when defined.
- */
+/** In-overlay search — API results when available; nav catalog fallback otherwise. */
 export function MenuSearch({ onBack, onNavigate }: MenuSearchProps) {
 	const t = useTranslations("Nav");
+	const locale = useLocale();
 	const reduceMotion = useReducedMotion();
 	const [isExpanded, setIsExpanded] = useState(false);
 
 	const [query, setQuery] = useState("");
 	const [scope, setScope] = useState<SearchScope>("main");
 	const [submitted, setSubmitted] = useState(false);
+	const [apiResults, setApiResults] = useState<ClientSearchItem[] | null>(null);
+	const [isLoading, setIsLoading] = useState(false);
+	const [contentSearchUnavailable, setContentSearchUnavailable] = useState(false);
 
 	const trimmedQuery = query.trim();
 	const hasQuery = trimmedQuery.length > 0;
@@ -179,7 +298,7 @@ export function MenuSearch({ onBack, onNavigate }: MenuSearchProps) {
 
 	const searchIndex = useMemo(() => buildSearchIndex(t), [t]);
 
-	const liveResults = useMemo((): SearchResult[] => {
+	const navFallbackResults = useMemo((): NavSearchResult[] => {
 		if (!isSearching) {
 			return SEARCH_SCOPE_SUGGESTION_KEYS[scope].flatMap((key) => {
 				const item = NAV_ITEMS.find((entry) => entry.key === key);
@@ -191,30 +310,84 @@ export function MenuSearch({ onBack, onNavigate }: MenuSearchProps) {
 						href: item.href,
 						label: t(item.key),
 						navKey: item.key,
-					} satisfies SearchResult,
+						searchText: `${t(item.key)} ${t(item.descriptionKey)}`,
+					} satisfies NavSearchResult,
 				];
 			});
 		}
 
-		return filterSearchResults(searchIndex, trimmedQuery, scope);
+		return filterNavSearchResults(searchIndex, trimmedQuery, scope);
 	}, [isSearching, scope, searchIndex, t, trimmedQuery]);
 
-	// Keep the compact layout during the rise animation so the list stays
-	// glued under the input; switch to scrollable only after it finishes.
+	const groupedApiResults = useMemo(() => {
+		if (!apiResults) {
+			return [];
+		}
+		return groupSearchItems(apiResults);
+	}, [apiResults]);
+
 	useEffect(() => {
-		if (!hasQuery) {
+		if (!isSearching) {
+			setApiResults(null);
+			setIsLoading(false);
+			setContentSearchUnavailable(false);
+			return;
+		}
+
+		const controller = new AbortController();
+		const timeoutId = window.setTimeout(async () => {
+			setIsLoading(true);
+			try {
+				const { items, unavailable } = await fetchGlobalSearch(
+					trimmedQuery,
+					locale,
+					scope,
+				);
+				if (controller.signal.aborted) {
+					return;
+				}
+				setContentSearchUnavailable(unavailable);
+				if (items.length > 0) {
+					setApiResults(items);
+				} else {
+					setApiResults(null);
+				}
+			} finally {
+				if (!controller.signal.aborted) {
+					setIsLoading(false);
+				}
+			}
+		}, SEARCH_DEBOUNCE_MS);
+
+		return () => {
+			controller.abort();
+			window.clearTimeout(timeoutId);
+		};
+	}, [isSearching, locale, scope, trimmedQuery]);
+
+	useEffect(() => {
+		if (!hasQuery && !isSearching) {
 			setIsExpanded(false);
 			return;
 		}
 
-		if (reduceMotion) {
+		if (reduceMotion || isSearching) {
 			setIsExpanded(true);
 			return;
 		}
 
 		const id = window.setTimeout(() => setIsExpanded(true), LAYOUT_MS);
 		return () => clearTimeout(id);
-	}, [hasQuery, reduceMotion]);
+	}, [hasQuery, isSearching, reduceMotion]);
+
+	const hasApiResults = groupedApiResults.length > 0;
+	const showNavResults = !isLoading && !hasApiResults;
+	const visibleNavResults = showNavResults ? navFallbackResults : [];
+	const showEmptyState =
+		isSearching &&
+		!isLoading &&
+		!hasApiResults &&
+		visibleNavResults.length === 0;
 
 	const spacerClass = cn(
 		"min-h-0 shrink-0 basis-0",
@@ -224,8 +397,10 @@ export function MenuSearch({ onBack, onNavigate }: MenuSearchProps) {
 	function onSubmit(event: FormEvent<HTMLFormElement>) {
 		event.preventDefault();
 		setSubmitted(true);
-		// TODO(search): replace with API-driven search when endpoint exists.
 	}
+
+	const getSectionLabel = (key: ClientSearchSectionKey) =>
+		t(SEARCH_SECTION_LABEL_KEYS[key]);
 
 	return (
 		<div className="flex min-h-0 flex-1 flex-col overflow-hidden">
@@ -353,12 +528,71 @@ export function MenuSearch({ onBack, onNavigate }: MenuSearchProps) {
 							isExpanded && scrollbarHiddenClass,
 						)}
 					>
-						<SearchResultsList
-							results={liveResults}
-							isSearching={isSearching}
-							onNavigate={onNavigate}
-							noResultsLabel={t("searchNoResults")}
-						/>
+						{isSearching && isLoading ? (
+							<p
+								className={cn(
+									"py-3 text-body text-primary-foreground/55",
+									overlayTextShadow,
+								)}
+							>
+								{t("searchLoading")}
+							</p>
+						) : null}
+
+						{contentSearchUnavailable && isSearching && !isLoading ? (
+							<p
+								className={cn(
+									"mb-3 text-small text-primary-foreground/55",
+									overlayTextShadow,
+								)}
+							>
+								{t("searchContentUnavailable")}
+							</p>
+						) : null}
+
+						{hasApiResults ? (
+							<SearchResultsList
+								groups={groupedApiResults}
+								isSearching={isSearching}
+								isLoading={false}
+								onNavigate={onNavigate}
+								noResultsLabel={t("searchNoResults")}
+								loadingLabel={t("searchLoading")}
+								getSectionLabel={getSectionLabel}
+							/>
+						) : null}
+
+						{visibleNavResults.length > 0 ? (
+							<div className={hasApiResults ? "mt-6" : undefined}>
+								{isSearching && hasApiResults ? (
+									<h4
+										className={cn(
+											"mb-2 text-small font-medium text-primary-foreground/55",
+											overlayTextShadow,
+										)}
+									>
+										{t("searchNavFallback")}
+									</h4>
+								) : null}
+								<NavFallbackResultsList
+									results={visibleNavResults}
+									isSearching={isSearching}
+									onNavigate={onNavigate}
+									noResultsLabel={t("searchNoResults")}
+								/>
+							</div>
+						) : null}
+
+						{showEmptyState ? (
+							<p
+								className={cn(
+									"py-3 text-body text-primary-foreground/55",
+									overlayTextShadow,
+								)}
+							>
+								{t("searchNoResults")}
+							</p>
+						) : null}
 					</div>
 				</section>
 			</div>

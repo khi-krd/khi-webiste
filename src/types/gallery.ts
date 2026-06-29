@@ -38,6 +38,8 @@ export type ImageAlbumItem = z.infer<typeof ImageAlbumItemSchema>;
 
 export const ImageCollectionSchema = z.object({
 	id: z.number(),
+	slugCkb: z.string().nullish(),
+	slugKmr: z.string().nullish(),
 	collectionType: ImageCollectionTypeSchema,
 	ckbCoverUrl: z.string().nullish(),
 	kmrCoverUrl: z.string().nullish(),

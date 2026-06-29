@@ -14,6 +14,7 @@ import {
 } from "@/types/content";
 
 const FEATURED_ENDPOINT = "/featured";
+const FEATURED_V1_ENDPOINT = "/api/v1/featured";
 const FEATURED_TAG = "featured";
 const FEATURED_REVALIDATE_SECONDS = DEFAULT_REVALIDATE;
 
@@ -178,28 +179,30 @@ export async function getFeaturedItems(
 		return getDemoFeaturedItems(locale);
 	}
 
-	try {
-		const payload = await apiFetchRaw(FEATURED_ENDPOINT, {
-			revalidate: FEATURED_REVALIDATE_SECONDS,
-			tags: [FEATURED_TAG],
-			searchParams: { locale },
-		});
+	for (const endpoint of [FEATURED_V1_ENDPOINT, FEATURED_ENDPOINT]) {
+		try {
+			const payload = await apiFetchRaw(endpoint, {
+				revalidate: FEATURED_REVALIDATE_SECONDS,
+				tags: [FEATURED_TAG],
+				searchParams: { locale },
+			});
 
-		const unwrapped = unwrapApiPayload(payload);
-		if (!unwrapped) {
-			return getDemoFeaturedItems(locale);
+			const unwrapped = unwrapApiPayload(payload);
+			if (!unwrapped) {
+				continue;
+			}
+
+			const rawItems = normalizeItems(unwrapped);
+			const remappedItems = rawItems.map((item) => remapFeaturedItem(item));
+			const parsed = FeaturedItemsSchema.safeParse(remappedItems);
+
+			if (parsed.success && parsed.data.length > 0) {
+				return parsed.data;
+			}
+		} catch {
+			continue;
 		}
-
-		const rawItems = normalizeItems(unwrapped);
-		const remappedItems = rawItems.map((item) => remapFeaturedItem(item));
-		const parsed = FeaturedItemsSchema.safeParse(remappedItems);
-
-		if (!parsed.success || parsed.data.length === 0) {
-			return getDemoFeaturedItems(locale);
-		}
-
-		return parsed.data;
-	} catch {
-		return getDemoFeaturedItems(locale);
 	}
+
+	return getDemoFeaturedItems(locale);
 }

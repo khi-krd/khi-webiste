@@ -4,11 +4,11 @@ import { ServicesBottomCards } from "@/components/services/services-bottom-cards
 import { ServicesHero } from "@/components/services/services-hero";
 import { ServicesShell } from "@/components/services/services-shell";
 import { VisuallyHidden } from "@/components/ui/visually-hidden";
-import { getServiceSections, getServicesLayout } from "@/lib/api/services";
 import {
-	getServicesBottomCards,
-	getServicesHeroMedia,
-} from "@/lib/mock/services";
+	getMergedServiceSections,
+	getServicePartnerCards,
+	getServicesHeroMediaFromApi,
+} from "@/lib/api/services";
 
 export async function generateMetadata({
 	params,
@@ -33,32 +33,38 @@ export default async function ServicesPage({
 	setRequestLocale(locale);
 
 	const t = await getTranslations("Services");
-	const services = getServicesLayout(locale);
-	const apiSections = await getServiceSections(locale);
-	const bottomCards = getServicesBottomCards(locale);
+	const [mergedSections, heroMedia, partnerCards] = await Promise.all([
+		getMergedServiceSections(locale),
+		getServicesHeroMediaFromApi(locale),
+		getServicePartnerCards(locale),
+	]);
 
-	const navItems = services.map((service) => ({
-		id: service.id,
-		title: t(`items.${service.id}.title`),
+	const navItems = mergedSections.map((section) => ({
+		id: section.service.id,
+		title: section.title ?? t(`items.${section.mockId}.title`),
 	}));
 
-	const sections = services.map((service) => {
-		const apiSection = apiSections.find((section) => section.id === service.id);
-		return {
-			service,
-			title: apiSection?.title ?? t(`items.${service.id}.title`),
-			body: apiSection?.body ?? t(`items.${service.id}.body`),
-		};
-	});
+	const sections = mergedSections.map((section) => ({
+		service: section.service,
+		title: section.title ?? t(`items.${section.mockId}.title`),
+		body: section.body ?? t(`items.${section.mockId}.body`),
+	}));
 
-	const bottomCardItems = bottomCards.map((card) => ({
+	const bottomCardItems = partnerCards.map((card) => ({
 		card,
-		copy: {
-			eyebrow: t(`bottom.${card.id}.eyebrow`),
-			title: t(`bottom.${card.id}.title`),
-			description: t(`bottom.${card.id}.description`),
-			cta: t(`bottom.${card.id}.cta`),
-		},
+		copy: card.title
+			? {
+					eyebrow: "",
+					title: card.title,
+					description: card.description ?? "",
+					cta: t("hero.cta"),
+				}
+			: {
+					eyebrow: t(`bottom.${card.id}.eyebrow`),
+					title: t(`bottom.${card.id}.title`),
+					description: t(`bottom.${card.id}.description`),
+					cta: t(`bottom.${card.id}.cta`),
+				},
 	}));
 
 	return (
@@ -66,8 +72,8 @@ export default async function ServicesPage({
 			<VisuallyHidden as="h1">{t("pageTitle")}</VisuallyHidden>
 
 			<ServicesHero
-				heroMedia={getServicesHeroMedia()}
-				firstServiceId={services[0]?.id ?? "institute-hall"}
+				heroMedia={heroMedia}
+				firstServiceId={mergedSections[0]?.service.id ?? "institute-hall"}
 				eyebrow={t("hero.eyebrow")}
 				title={t("hero.title")}
 				intro={t("hero.intro")}

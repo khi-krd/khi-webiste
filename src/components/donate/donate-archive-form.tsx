@@ -14,6 +14,7 @@ import {
 	createDonateArchiveFormSchema,
 	type DonateArchiveFormValues,
 } from "@/lib/schemas/donate-archive-form";
+import { submitArchiveDonationAction } from "@/lib/actions/donations";
 import { cn } from "@/lib/utils";
 
 type MaterialOption = {
@@ -50,6 +51,7 @@ type DonateArchiveFormCopy = {
 		materialTypeRequired: string;
 		fileTooLarge: string;
 		fileInvalidType: string;
+		submitFailed: string;
 	};
 };
 
@@ -60,6 +62,7 @@ type DonateArchiveFormProps = {
 
 export function DonateArchiveForm({ copy, className }: DonateArchiveFormProps) {
 	const [submitted, setSubmitted] = useState(false);
+	const [submitError, setSubmitError] = useState<string | null>(null);
 
 	const schema = useMemo(
 		() =>
@@ -90,8 +93,13 @@ export function DonateArchiveForm({ copy, className }: DonateArchiveFormProps) {
 		},
 	});
 
-	const onSubmit = handleSubmit(async () => {
-		await new Promise((resolve) => setTimeout(resolve, 400));
+	const onSubmit = handleSubmit(async (values) => {
+		setSubmitError(null);
+		const result = await submitArchiveDonationAction(values);
+		if (!result.success) {
+			setSubmitError(copy.errors.submitFailed);
+			return;
+		}
 		setSubmitted(true);
 	});
 
@@ -249,6 +257,11 @@ export function DonateArchiveForm({ copy, className }: DonateArchiveFormProps) {
 						</div>
 
 						<div className="sm:col-span-2">
+							{submitError ? (
+								<p role="alert" className="mb-4 text-small text-foreground">
+									{submitError}
+								</p>
+							) : null}
 							<Button
 								type="submit"
 								variant="primary"

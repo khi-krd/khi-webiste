@@ -26,13 +26,22 @@ export const VideoClipItemSchema = z.object({
 
 export type VideoClipItem = z.infer<typeof VideoClipItemSchema>;
 
-export const VideoCastMemberSchema = z.object({
-	nameCkb: z.string().nullable(),
-	nameKmr: z.string().nullable(),
-	roleCkb: z.string().nullable(),
-	roleKmr: z.string().nullable(),
-	photoUrl: z.string().nullable(),
-});
+export const VideoCastMemberSchema = z
+	.object({
+		nameCkb: z.string().nullable(),
+		nameKmr: z.string().nullable(),
+		roleCkb: z.string().nullable(),
+		roleKmr: z.string().nullable(),
+		photoUrl: z.string().nullable().optional(),
+		imageUrl: z.string().nullable().optional(),
+	})
+	.transform((member) => ({
+		nameCkb: member.nameCkb,
+		nameKmr: member.nameKmr,
+		roleCkb: member.roleCkb,
+		roleKmr: member.roleKmr,
+		photoUrl: member.photoUrl ?? member.imageUrl ?? null,
+	}));
 
 export type VideoCastMember = z.infer<typeof VideoCastMemberSchema>;
 
@@ -42,6 +51,8 @@ export const VideoHighlightClipSchema = z.object({
 	thumbnailUrl: z.string().nullable(),
 	startSeconds: z.number().int().nullable().optional(),
 	url: z.string().nullable().optional(),
+	embedUrl: z.string().nullable().optional(),
+	durationSeconds: z.number().int().nullable().optional(),
 });
 
 export type VideoHighlightClip = z.infer<typeof VideoHighlightClipSchema>;

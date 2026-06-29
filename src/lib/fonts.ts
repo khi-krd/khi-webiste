@@ -17,31 +17,15 @@ export const vazirmatn = Vazirmatn({
 export const archivo = localFont({
 	src: [
 		{
-			path: "../../public/fonts/Archivo/Archivo-Regular.woff2",
-			weight: "400",
+			path: "../../public/fonts/Archivo/Archivo-Variable.woff2",
 			style: "normal",
 		},
 		{
-			path: "../../public/fonts/Archivo/Archivo-Medium.woff2",
-			weight: "500",
-			style: "normal",
-		},
-		{
-			path: "../../public/fonts/Archivo/Archivo-SemiBold.woff2",
-			weight: "600",
-			style: "normal",
-		},
-		{
-			path: "../../public/fonts/Archivo/Archivo-Bold.woff2",
-			weight: "700",
-			style: "normal",
-		},
-		{
-			path: "../../public/fonts/Archivo/Archivo-Italic.woff2",
-			weight: "400",
+			path: "../../public/fonts/Archivo/Archivo-VariableItalic.woff2",
 			style: "italic",
 		},
 	],
+	weight: "100 900",
 	variable: "--font-archivo",
 	display: "swap",
 });
@@ -50,28 +34,8 @@ export const archivo = localFont({
  * ku (Latin) heading family.
  */
 export const clashDisplay = localFont({
-	src: [
-		{
-			path: "../../public/fonts/Clash Display/ClashDisplay-Regular.woff2",
-			weight: "400",
-			style: "normal",
-		},
-		{
-			path: "../../public/fonts/Clash Display/ClashDisplay-Medium.woff2",
-			weight: "500",
-			style: "normal",
-		},
-		{
-			path: "../../public/fonts/Clash Display/ClashDisplay-Semibold.woff2",
-			weight: "600",
-			style: "normal",
-		},
-		{
-			path: "../../public/fonts/Clash Display/ClashDisplay-Bold.woff2",
-			weight: "700",
-			style: "normal",
-		},
-	],
+	src: "../../public/fonts/Clash Display/ClashDisplay-Variable.woff2",
+	weight: "200 700",
 	variable: "--font-clash-display",
 	display: "swap",
 });

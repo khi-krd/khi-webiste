@@ -6,13 +6,15 @@ import { AboutMission } from "@/components/about/about-mission";
 import { AboutPartners } from "@/components/about/about-partners";
 import { AboutTeamShowcase } from "@/components/about/about-team-showcase";
 import { VisuallyHidden } from "@/components/ui/visually-hidden";
-import { getPrimaryAboutPage, resolveAboutContent } from "@/lib/api/about";
+import { resolveFounderFromAbout } from "@/lib/about/resolve";
 import {
 	getAboutFounder,
 	getAboutHeroMedia,
 	getAboutOffices,
 	getAboutPartners,
-} from "@/lib/mock/about";
+	getPrimaryAboutPage,
+	resolveAboutContent,
+} from "@/lib/api/about";
 import { plainTextFromRichContent } from "@/lib/rich-text";
 
 export async function generateMetadata({
@@ -49,10 +51,15 @@ export default async function AboutPage({
 	const aboutContent = aboutPage
 		? resolveAboutContent(locale, aboutPage)
 		: null;
-	const heroMedia = getAboutHeroMedia();
-	const founder = getAboutFounder(locale);
-	const offices = getAboutOffices(locale);
-	const partners = getAboutPartners(locale);
+	const [heroMedia, founder, offices, partners] = await Promise.all([
+		getAboutHeroMedia(),
+		getAboutFounder(locale),
+		getAboutOffices(locale),
+		getAboutPartners(locale),
+	]);
+	const apiFounder = aboutPage
+		? resolveFounderFromAbout(locale, aboutPage)
+		: null;
 	const officeLabels = {
 		sulaymaniyah: t("team.offices.sulaymaniyah"),
 		duhok: t("team.offices.duhok"),
@@ -62,11 +69,11 @@ export default async function AboutPage({
 		...office,
 		members: office.members.map((member) => ({
 			...member,
-			name: t(`team.members.${member.id}.name`),
-			role: t(`team.members.${member.id}.role`),
+			name: member.name ?? t(`team.members.${member.id}.name`),
+			role: member.role ?? t(`team.members.${member.id}.role`),
 			image: {
 				...member.image,
-				alt: t(`team.members.${member.id}.name`),
+				alt: member.name ?? t(`team.members.${member.id}.name`),
 			},
 		})),
 	}));
@@ -97,10 +104,10 @@ export default async function AboutPage({
 					...founder,
 					image: {
 						...founder.image,
-						alt: t("founder.imageAlt"),
+						alt: apiFounder?.name ?? t("founder.imageAlt"),
 					},
 				}}
-				name={t("founder.name")}
+				name={apiFounder?.name ?? t("founder.name")}
 				role1={t("founder.role1")}
 				role2={t("founder.role2")}
 			/>
@@ -113,12 +120,26 @@ export default async function AboutPage({
 			<AboutPartners
 				partners={partners}
 				sectionTitle={t("partners.title")}
-				getPartnerCopy={(id) => ({
-					eyebrow: t(`partners.items.${id}.eyebrow`),
-					title: t(`partners.items.${id}.title`),
-					description: t(`partners.items.${id}.description`),
-					cta: t(`partners.items.${id}.cta`),
-				})}
+				getPartnerCopy={(id) => {
+					const partner = partners.find((item) => item.id === id);
+					if (partner?.title) {
+						return {
+							eyebrow: t("partners.title"),
+							title: partner.title,
+							description: partner.description ?? "",
+							cta: t(`partners.items.${id}.cta`, {
+								defaultValue: t("partners.items.services.cta"),
+							}),
+						};
+					}
+
+					return {
+						eyebrow: t(`partners.items.${id}.eyebrow`),
+						title: t(`partners.items.${id}.title`),
+						description: t(`partners.items.${id}.description`),
+						cta: t(`partners.items.${id}.cta`),
+					};
+				}}
 			/>
 		</main>
 	);

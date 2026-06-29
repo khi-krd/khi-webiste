@@ -33,6 +33,33 @@ export function contentListingHref(type: ContentType): string {
 	return `/${TYPE_SEGMENTS[type]}`;
 }
 
+function firstNonBlank(
+	...values: (string | null | undefined)[]
+): string | null {
+	for (const value of values) {
+		if (value && value.trim().length > 0) {
+			return value;
+		}
+	}
+	return null;
+}
+
+/** Prefer locale slug; fall back to numeric id string. */
+export function resolveContentSlug(
+	locale: string,
+	slugs: {
+		slugCkb?: string | null;
+		slugKmr?: string | null;
+		id: number;
+	},
+): string {
+	const slug =
+		locale === "ckb"
+			? firstNonBlank(slugs.slugCkb, slugs.slugKmr)
+			: firstNonBlank(slugs.slugKmr, slugs.slugCkb);
+	return slug ?? String(slugs.id);
+}
+
 /** Locale-relative detail path for a featured item — only routes that exist today. */
 export function contentDetailHref(
 	item: Pick<FeaturedItem, "type" | "id" | "slug">,

@@ -8,10 +8,23 @@ export const ServiceContentSchema = z.object({
 	description: z.string().nullish(),
 });
 
+export const ServiceLayoutTypeSchema = z.enum([
+	"DEFAULT",
+	"FEATURE_GRID",
+	"MEDIA_HERO",
+]);
+
 export const ServiceSchema = z.object({
 	id: z.number(),
 	serviceType: z.string().nullish(),
 	location: z.string().nullish(),
+	layoutType: ServiceLayoutTypeSchema.nullish(),
+	heroVideoUrl: z.string().nullish(),
+	heroPosterUrl: z.string().nullish(),
+	navAnchorId: z.string().nullish(),
+	featureImageUrls: z.array(z.string()).optional(),
+	thumbnailUrls: z.array(z.string()).optional(),
+	partnerIds: z.array(z.number()).optional(),
 	active: z.boolean(),
 	publishedAt: z.string().nullish(),
 	contents: z.array(ServiceContentSchema),
@@ -32,6 +45,7 @@ export const ServicesPageSchema = z.object({
 	empty: z.boolean().optional(),
 });
 
+export type ServiceLayoutType = z.infer<typeof ServiceLayoutTypeSchema>;
 export type Service = z.infer<typeof ServiceSchema>;
 export type ServiceContent = z.infer<typeof ServiceContentSchema>;
 export type ServicesPage = z.infer<typeof ServicesPageSchema>;

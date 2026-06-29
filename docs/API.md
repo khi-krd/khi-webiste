@@ -25,6 +25,8 @@ This document describes the REST API contract expected by **khi-website** (publi
 
 ---
 
+
+
 ## Configuration
 
 
@@ -73,7 +75,7 @@ Long-form text returned by the API should be **Markdown** (preferred) or legacy 
 | Featured          | `description`            | —                                            | Homepage hero *(mock today)*                                           | Full rich text                                               |
 
 
-All fields above accept `string` content in **Markdown or HTML**. Kurmanji (`kmrContent.`*) and Sorani (`ckbContent.*`) follow the same rules; the site picks the locale-appropriate variant with fallback to the other script.
+All fields above accept `string` content in **Markdown or HTML**. Kurmanji (`kmrContent.`*) and Sorani (*`ckbContent.`) follow the same rules; the site picks the locale-appropriate variant with fallback to the other script.
 
 **Pagination convention**
 
@@ -100,6 +102,8 @@ Expected page body (after unwrapping):
 ```
 
 ---
+
+
 
 ## Coverage summary
 
@@ -130,7 +134,11 @@ Expected page body (after unwrapping):
 
 ---
 
+
+
 ## Endpoints the site requires
+
+
 
 ### 1. About
 
@@ -162,6 +170,8 @@ Expected page body (after unwrapping):
 **Not covered by API:** founder photo, team members, partner cards, hero video/poster.
 
 ---
+
+
 
 ### 2. Contact
 
@@ -206,6 +216,8 @@ Expected page body (after unwrapping):
 
 ---
 
+
+
 ### 3. News
 
 **Used by:** `/[locale]/news`, `/[locale]/news/[slug]`, homepage latest updates & bento
@@ -226,9 +238,9 @@ Expected page body (after unwrapping):
 | `id`                                    | `number`                    | ✅                  |
 | `coverUrl`                              | `string`                    | ✅ (card image)     |
 | `coverThumbnailUrl`                     | `string`                    | Optional           |
-| `coverMediaType`                        | `IMAGE` | `VIDEO` | `AUDIO` | Optional           |
+| `coverMediaType`                        | `IMAGE`                     | `VIDEO`            |
 | `datePublished`                         | `ISO string`                | ✅                  |
-| `contentLanguages`                      | `CKB` | `KMR`[]             | ✅                  |
+| `contentLanguages`                      | `CKB`                       | `KMR`[]            |
 | `category.ckbName` / `category.kmrName` | `string`                    | Taxonomy / filters |
 | `ckbContent.title`                      | `string`                    | ✅                  |
 | `ckbContent.description`                | `string` (Markdown or HTML) | Excerpt / body     |
@@ -240,6 +252,8 @@ Expected page body (after unwrapping):
 **Typical fetch sizes:** list `20`, latest updates `8`.
 
 ---
+
+
 
 ### 4. Projects
 
@@ -257,23 +271,25 @@ Expected page body (after unwrapping):
 **Required response fields (per item)**
 
 
-| Field                                 | Type                                            | Required      |
-| ------------------------------------- | ----------------------------------------------- | ------------- |
-| `id`                                  | `number`                                        | ✅             |
-| `coverUrl`                            | `string`                                        | ✅             |
-| `coverMediaType`                      | `IMAGE` | `VIDEO` | `AUDIO`                     | Optional      |
-| `projectDate`                         | `ISO string`                                    | ✅             |
-| `status`                              | `ACTIVE` | `ONGOING` | `COMPLETED` | `ARCHIVED` | Optional      |
-| `contentLanguages`                    | `CKB` | `KMR`[]                                 | ✅             |
-| `ckbContent.title`                    | `string`                                        | ✅             |
-| `ckbContent.subtitle` / `description` | `string` (Markdown or HTML)                     | Card + detail |
-| `ckbContent.location`                 | `string`                                        | Optional      |
-| `kmrContent.*`                        | same                                            | Kurmanji      |
-| `tagsCkb` / `tagsKmr`                 | `string[]`                                      | Filter        |
-| `keywordsCkb` / `keywordsKmr`         | `string[]`                                      | Search        |
+| Field                                 | Type                        | Required      |
+| ------------------------------------- | --------------------------- | ------------- |
+| `id`                                  | `number`                    | ✅             |
+| `coverUrl`                            | `string`                    | ✅             |
+| `coverMediaType`                      | `IMAGE`                     | `VIDEO`       |
+| `projectDate`                         | `ISO string`                | ✅             |
+| `status`                              | `ACTIVE`                    | `ONGOING`     |
+| `contentLanguages`                    | `CKB`                       | `KMR`[]       |
+| `ckbContent.title`                    | `string`                    | ✅             |
+| `ckbContent.subtitle` / `description` | `string` (Markdown or HTML) | Card + detail |
+| `ckbContent.location`                 | `string`                    | Optional      |
+| `kmrContent.*`                        | same                        | Kurmanji      |
+| `tagsCkb` / `tagsKmr`                 | `string[]`                  | Filter        |
+| `keywordsCkb` / `keywordsKmr`         | `string[]`                  | Search        |
 
 
 ---
+
+
 
 ### 5. Writings
 
@@ -305,14 +321,14 @@ Expected page body (after unwrapping):
 | Field                                       | Type                               | Required                 |
 | ------------------------------------------- | ---------------------------------- | ------------------------ |
 | `id`                                        | `number`                           | ✅                        |
-| `contentLanguages`                          | `CKB` | `KMR`[]                    | ✅                        |
+| `contentLanguages`                          | `CKB`                              | `KMR`[]                  |
 | `ckbCoverUrl` / `kmrCoverUrl`               | `string`                           | At least one             |
 | `hoverCoverUrl`                             | `string`                           | Optional                 |
 | `ckbContent.title`                          | `string`                           | ✅                        |
 | `ckbContent.writer`                         | `string`                           | ✅                        |
 | `ckbContent.description`                    | `string` (Markdown or HTML)        | Excerpt                  |
 | `ckbContent.fileUrl`                        | `string`                           | PDF viewer               |
-| `ckbContent.fileFormat`                     | `PDF` | `DOCX` | …                 | Optional                 |
+| `ckbContent.fileFormat`                     | `PDF`                              | `DOCX`                   |
 | `ckbContent.pageCount`                      | `number`                           | Optional                 |
 | `ckbContent.genre`                          | `string`                           | Optional free-text genre |
 | `kmrContent.*`                              | same                               | Kurmanji                 |
@@ -325,7 +341,7 @@ Expected page body (after unwrapping):
 | `topicId` / `topicNameCkb` / `topicNameKmr` | —                                  | Optional                 |
 
 
-**Series detail (`/series/{seriesId}`)**
+**Series detail (**`/series/{seriesId}`**)**
 
 
 | Field                           | Type     | Required |
@@ -341,6 +357,8 @@ Expected page body (after unwrapping):
 **Genre alignment note:** the site Zod schema accepts `POETRY`, `NOVEL`, `SHORT_STORY`, `DRAMA`, `HISTORY`, `BIOGRAPHY`, `PHILOSOPHY`, `RELIGION`, `FOLKLORE`, `POLITICS`, `SOCIOLOGY`, `ECONOMICS`, `LAW`, `LINGUISTICS`, `ARTS`, `CULTURAL`, `SCIENCE`, `MEDICINE`, `EDUCATIONAL`, `CHILDREN`, `TRAVEL`, `OTHER`. Backend may return additional values (`ESSAY`, `POLITICAL`, `ACADEMIC`, etc.) — those records fail validation until schemas are aligned.
 
 ---
+
+
 
 ### 6. Sound tracks (audio)
 
@@ -375,10 +393,10 @@ Expected page body (after unwrapping):
 | ------------------------------------------- | --------------------------- | ------------------ |
 | `id`                                        | `number`                    | ✅                  |
 | `soundType`                                 | `string`                    | ✅                  |
-| `trackState`                                | `SINGLE` | `MULTI`          | ✅                  |
+| `trackState`                                | `SINGLE`                    | `MULTI`            |
 | `albumOfMemories`                           | `boolean`                   | ✅                  |
 | `ckbCoverUrl` / `kmrCoverUrl`               | `string`                    | At least one       |
-| `contentLanguages`                          | `CKB` | `KMR`[]             | ✅                  |
+| `contentLanguages`                          | `CKB`                       | `KMR`[]            |
 | `ckbContent.title`                          | `string`                    | ✅                  |
 | `ckbContent.description`                    | `string` (Markdown or HTML) | Optional           |
 | `files[]`                                   | see below                   | ✅ (playback)       |
@@ -387,7 +405,7 @@ Expected page body (after unwrapping):
 | `createdAt` / `updatedAt`                   | ISO string                  | ✅                  |
 
 
-**Per file (`files[]`)**
+**Per file (**`files[]`**)**
 
 
 | Field                      | Type                                   | Required             |
@@ -396,12 +414,14 @@ Expected page body (after unwrapping):
 | `fileUrl`                  | `string`                               | For direct audio     |
 | `externalUrl` / `embedUrl` | `string`                               | For external players |
 | `title`                    | `string`                               | Optional             |
-| `fileType`                 | `AUDIO` | `VIDEO` | `OTHER`            | ✅                    |
+| `fileType`                 | `AUDIO`                                | `VIDEO`              |
 | `durationSeconds`          | `number`                               | Optional             |
 | `brochures[]`              | `{ imageUrl, caption, brochureOrder }` | Detail page          |
 
 
 ---
+
+
 
 ### 7. Videos
 
@@ -430,11 +450,11 @@ Expected page body (after unwrapping):
 | Field                                                 | Type                        | Required                       |
 | ----------------------------------------------------- | --------------------------- | ------------------------------ |
 | `id`                                                  | `number`                    | ✅                              |
-| `videoType`                                           | `FILM` | `VIDEO_CLIP`       | ✅                              |
+| `videoType`                                           | `FILM`                      | `VIDEO_CLIP`                   |
 | `albumOfMemories`                                     | `boolean`                   | ✅                              |
 | `ckbCoverUrl` / `kmrCoverUrl` / `hoverCoverUrl`       | `string`                    | Covers                         |
 | `topicId` / `topicNameCkb` / `topicNameKmr`           | —                           | Short-films filter (`topicId`) |
-| `contentLanguages`                                    | `CKB` | `KMR`[]             | ✅                              |
+| `contentLanguages`                                    | `CKB`                       | `KMR`[]                        |
 | `ckbContent.title`                                    | `string`                    | ✅                              |
 | `ckbContent.description`                              | `string` (Markdown or HTML) | Optional                       |
 | `ckbContent.director` / `producer` / `location`       | `string`                    | Detail                         |
@@ -449,6 +469,8 @@ Expected page body (after unwrapping):
 **Homepage fetch pattern:** `getVideoListing` with `videoType: FILM`, `memories: true`, `size: 4` (film section); short films exclude `topicId` for short-films topic.
 
 ---
+
+
 
 ### 8. Image collections (gallery)
 
@@ -473,22 +495,22 @@ Expected page body (after unwrapping):
 **Required response fields (per collection)**
 
 
-| Field                                       | Type                                     | Required   |
-| ------------------------------------------- | ---------------------------------------- | ---------- |
-| `id`                                        | `number`                                 | ✅          |
-| `collectionType`                            | `SINGLE` | `GALLERY` | `PHOTO_STORY` | … | ✅          |
-| `ckbCoverUrl` / `kmrCoverUrl`               | `string`                                 | Card image |
-| `contentLanguages`                          | `CKB` | `KMR`[]                          | ✅          |
-| `ckbContent.title`                          | `string`                                 | ✅          |
-| `ckbContent.description`                    | `string` (Markdown or HTML)              | Body       |
-| `ckbContent.location` / `collectedBy`       | `string`                                 | Optional   |
-| `kmrContent.*`                              | same                                     | Kurmanji   |
-| `imageAlbum[]`                              | see below                                | ✅          |
-| `publishmentDate`                           | ISO string                               | Optional   |
-| `topicId` / `topicNameCkb` / `topicNameKmr` | —                                        | Optional   |
+| Field                                       | Type                        | Required   |
+| ------------------------------------------- | --------------------------- | ---------- |
+| `id`                                        | `number`                    | ✅          |
+| `collectionType`                            | `SINGLE`                    | `GALLERY`  |
+| `ckbCoverUrl` / `kmrCoverUrl`               | `string`                    | Card image |
+| `contentLanguages`                          | `CKB`                       | `KMR`[]    |
+| `ckbContent.title`                          | `string`                    | ✅          |
+| `ckbContent.description`                    | `string` (Markdown or HTML) | Body       |
+| `ckbContent.location` / `collectedBy`       | `string`                    | Optional   |
+| `kmrContent.*`                              | same                        | Kurmanji   |
+| `imageAlbum[]`                              | see below                   | ✅          |
+| `publishmentDate`                           | ISO string                  | Optional   |
+| `topicId` / `topicNameCkb` / `topicNameKmr` | —                           | Optional   |
 
 
-**Per album image (`imageAlbum[]`)**
+**Per album image (**`imageAlbum[]`**)**
 
 
 | Field                       | Type     | Required |
@@ -501,6 +523,8 @@ Expected page body (after unwrapping):
 
 
 ---
+
+
 
 ### 9. Services
 
@@ -525,12 +549,12 @@ Expected page body (after unwrapping):
 | `contents[]`  | see below | ✅        |
 
 
-**Per content entry (`contents[]`)**
+**Per content entry (**`contents[]`**)**
 
 
 | Field          | Type                        | Required     |
 | -------------- | --------------------------- | ------------ |
-| `languageCode` | `CKB` | `KMR`               | ✅            |
+| `languageCode` | `CKB`                       | `KMR`        |
 | `title`        | `string`                    | ✅            |
 | `description`  | `string` (Markdown or HTML) | Section body |
 
@@ -538,6 +562,8 @@ Expected page body (after unwrapping):
 **Not covered by API:** service layout type, hero video, feature images, thumbnail gallery, bottom partner cards, nav anchor IDs. The site maps API text onto mock sections **by index**.
 
 ---
+
+
 
 ### 10. Featured (homepage hero)
 
@@ -554,20 +580,22 @@ Expected page body (after unwrapping):
 **Expected response (array of items)**
 
 
-| Field         | Type                                                           | Required          |
-| ------------- | -------------------------------------------------------------- | ----------------- |
-| `id`          | `string`                                                       | ✅                 |
-| `type`        | `book` | `audio` | `video` | `article` | `gallery` | `archive` | ✅                 |
-| `slug`        | `string`                                                       | ✅ (route segment) |
-| `title`       | `string`                                                       | ✅                 |
-| `description` | `string` (Markdown or HTML)                                    | ✅                 |
-| `image.url`   | `string`                                                       | ✅                 |
-| `image.alt`   | `string`                                                       | Optional          |
+| Field         | Type                        | Required          |
+| ------------- | --------------------------- | ----------------- |
+| `id`          | `string`                    | ✅                 |
+| `type`        | `book`                      | `audio`           |
+| `slug`        | `string`                    | ✅ (route segment) |
+| `title`       | `string`                    | ✅                 |
+| `description` | `string` (Markdown or HTML) | ✅                 |
+| `image.url`   | `string`                    | ✅                 |
+| `image.alt`   | `string`                    | Optional          |
 
 
 **Workaround without new endpoint:** compose featured slides from the first items of news, writings, videos, sound-tracks, and image-collections (as khi-website-v1 did).
 
 ---
+
+
 
 ### 11. Media (indirect)
 
@@ -587,72 +615,3 @@ Expected page body (after unwrapping):
 
 ---
 
-## Not required from external API (static / mock today)
-
-
-| Feature                                               | Current source                          |
-| ----------------------------------------------------- | --------------------------------------- |
-| Donate page (types, hero, payment details)            | `src/lib/mock/donate.ts` + i18n         |
-| Donate financial / archive forms                      | Mock submit only (no API endpoint)      |
-| Contact form submission                               | Mock submit only (no API endpoint)      |
-| Social links (Facebook, Instagram, YouTube, WhatsApp) | `src/lib/mock/contact.ts`               |
-| About founder, team, partners                         | `src/lib/mock/about.ts` + i18n          |
-| Services layout & media                               | `src/lib/mock/services.ts`              |
-| Menu / nav search                                     | Static `src/config/site.ts`             |
-| Static copy (i18n)                                    | `messages/ckb.json`, `messages/ku.json` |
-| Sitemap                                               | `src/app/sitemap.ts` (empty stub)       |
-
-
----
-
-## Integration mismatches (fix before production)
-
-These are gaps between **what the external API provides** and **what the site currently calls or parses**.
-
-
-| Issue                | Current site integration | External API                | Fix                                            |
-| -------------------- | ------------------------ | --------------------------- | ---------------------------------------------- |
-| Services list path   | `GET /api/v1/services`   | `GET /api/v1/services/all`  | Update `src/lib/api/services.ts`               |
-| About list shape     | Expects plain array      | Paginated `{ content: [] }` | Parse page wrapper                             |
-| Contact active shape | Expects plain array      | Paginated page              | Parse page wrapper                             |
-| About by slug        | `GET /about/{slug}`      | `GET /about/{id}` only      | Resolve slug from list or add slug route       |
-| News search param    | `q`                      | `keyword`                   | Align query param name                         |
-| Featured hero        | `GET /featured`          | Does not exist              | Add endpoint or compose from content APIs      |
-| Contact page         | Uses mocks               | `/contact/active` ready     | Wire `getActiveContactPages()`                 |
-| Writings genres      | Strict Zod enum          | May return extra values     | Align enums or relax schema                    |
-| Gallery detail slug  | String slugs             | Numeric `/{id}` only        | Use numeric IDs in routes or add slug endpoint |
-
-
----
-
-## Suggested new endpoints (if backend is extended)
-
-
-| Endpoint                           | Purpose                      | Priority |
-| ---------------------------------- | ---------------------------- | -------- |
-| `GET /api/v1/featured?locale=`     | Curated homepage hero slides | High     |
-| `POST /api/v1/contact/messages`    | Visitor contact form         | Medium   |
-| `POST /api/v1/donations/financial` | Financial donation intent    | Medium   |
-| `POST /api/v1/donations/archive`   | Archive material offer       | Medium   |
-| `GET /api/v1/settings/social`      | Global social links          | Low      |
-| `GET /api/v1/about/team`           | Team members per office      | Low      |
-| `GET /api/v1/about/partners`       | Partner cards                | Low      |
-| `GET /api/v1/search?q=&locale=`    | Cross-content search         | Low      |
-
-
----
-
-## Source references
-
-
-| Location                      | Role                                   |
-| ----------------------------- | -------------------------------------- |
-| `src/lib/api/*.ts`            | Site API modules & endpoints           |
-| `src/types/*.ts`              | Zod response contracts                 |
-| `khi-dashboard/services/*.ts` | External API surface (admin dashboard) |
-| `src/lib/mock/*.ts`           | Fallback data when API unavailable     |
-
-
----
-
-*Last updated: 28 June 2026*

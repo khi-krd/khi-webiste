@@ -57,15 +57,39 @@ export type AudioListingOptions = {
 	size?: number;
 };
 
-async function fetchAllTracksFromApi(): Promise<SoundTrack[] | null> {
+async function fetchTracksPage(
+	searchParams: Record<string, string | number | undefined>,
+): Promise<SoundTrack[] | null> {
 	const page = await apiFetch(SOUND_TRACKS_ENDPOINT, {
 		schema: SoundTracksPageSchema,
 		tags: [SOUND_TRACKS_TAG],
 		revalidate: DEFAULT_REVALIDATE,
-		searchParams: { page: 0, size: BULK_FETCH_SIZE },
+		searchParams,
 	});
 
 	return page?.content.length ? page.content : null;
+}
+
+async function fetchTracksBySoundType(soundType: string): Promise<SoundTrack[] | null> {
+	return apiFetch(`${SOUND_TRACKS_ENDPOINT}/by-sound-type`, {
+		schema: SoundTracksPageSchema,
+		tags: [SOUND_TRACKS_TAG],
+		revalidate: DEFAULT_REVALIDATE,
+		searchParams: { soundType, page: 0, size: BULK_FETCH_SIZE },
+	}).then((page) => (page?.content.length ? page.content : null));
+}
+
+async function fetchTracksByKeyword(keyword: string): Promise<SoundTrack[] | null> {
+	return apiFetch(`${SOUND_TRACKS_ENDPOINT}/search/keyword`, {
+		schema: SoundTracksPageSchema,
+		tags: [SOUND_TRACKS_TAG],
+		revalidate: DEFAULT_REVALIDATE,
+		searchParams: { keyword, page: 0, size: BULK_FETCH_SIZE },
+	}).then((page) => (page?.content.length ? page.content : null));
+}
+
+async function fetchAllTracksFromApi(): Promise<SoundTrack[] | null> {
+	return fetchTracksPage({ page: 0, size: BULK_FETCH_SIZE });
 }
 
 async function getAllSoundTracks(): Promise<SoundTrack[]> {
@@ -103,6 +127,30 @@ export async function getAudioListing(
 		size = AUDIO_GRID_PAGE_SIZE,
 	}: AudioListingOptions = {},
 ): Promise<AudioListResult> {
+	if (getApiBaseUrl()) {
+		let apiTracks: SoundTrack[] | null = null;
+
+		if (soundType?.trim()) {
+			apiTracks = await fetchTracksBySoundType(soundType.trim());
+		} else if (query?.trim()) {
+			apiTracks = await fetchTracksByKeyword(query.trim());
+		}
+
+		if (apiTracks) {
+			const allItems = apiTracks
+				.map((track) => resolveAudioCard(locale, track))
+				.filter((item): item is ResolvedAudioCard => item != null);
+			const filtered = filterAudioTracks(allItems, {
+				soundType,
+				state,
+				topicId,
+				query: soundType?.trim() || query?.trim() ? null : query,
+			});
+			const sorted = sortAudioTracks(filtered);
+			return paginateAudioTracks(sorted, page, size);
+		}
+	}
+
 	const allItems = await getAllAudioCards(locale);
 	const filtered = filterAudioTracks(allItems, {
 		soundType,

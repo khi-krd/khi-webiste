@@ -44,15 +44,50 @@ export type VideoListingOptions = {
 	size?: number;
 };
 
-async function fetchAllVideosFromApi(): Promise<Video[] | null> {
+async function fetchVideosPage(
+	searchParams: Record<string, string | number | undefined>,
+): Promise<Video[] | null> {
 	const page = await apiFetch(VIDEOS_ENDPOINT, {
 		schema: VideosPageSchema,
 		tags: [VIDEOS_TAG],
 		revalidate: DEFAULT_REVALIDATE,
-		searchParams: { page: 0, size: BULK_FETCH_SIZE },
+		searchParams,
 	});
 
 	return page?.content.length ? page.content : null;
+}
+
+async function fetchAllVideosFromApi(
+	options: Pick<
+		VideoListingOptions,
+		"videoType" | "topicId" | "memories"
+	> = {},
+): Promise<Video[] | null> {
+	const hasFilters =
+		options.videoType != null ||
+		options.topicId != null ||
+		options.memories != null;
+
+	if (!hasFilters) {
+		return fetchVideosPage({ page: 0, size: BULK_FETCH_SIZE });
+	}
+
+	const searchParams: Record<string, string | number | undefined> = {
+		page: 0,
+		size: BULK_FETCH_SIZE,
+	};
+
+	if (options.videoType != null) {
+		searchParams.videoType = options.videoType;
+	}
+	if (options.topicId != null) {
+		searchParams.topicId = options.topicId;
+	}
+	if (options.memories != null) {
+		searchParams.memories = String(options.memories);
+	}
+
+	return fetchVideosPage(searchParams);
 }
 
 async function getAllVideos(): Promise<Video[]> {
@@ -82,6 +117,33 @@ export async function getVideoListing(
 		size = VIDEO_GRID_PAGE_SIZE,
 	}: VideoListingOptions = {},
 ): Promise<VideoListResult> {
+	if (
+		getApiBaseUrl() &&
+		!query?.trim() &&
+		excludeTopicId == null &&
+		(videoType != null || topicId != null || memories != null)
+	) {
+		const apiVideos = await fetchAllVideosFromApi({
+			videoType,
+			topicId,
+			memories,
+		});
+		if (apiVideos) {
+			const allItems = apiVideos
+				.map((video) => resolveVideoCard(locale, video))
+				.filter((item): item is ResolvedVideoCard => item != null);
+			const filtered = filterVideos(allItems, {
+				videoType,
+				topicId,
+				excludeTopicId,
+				memories,
+				query,
+			});
+			const sorted = sortVideos(filtered);
+			return paginateVideos(sorted, page, size);
+		}
+	}
+
 	const allItems = await getAllVideoCards(locale);
 	const filtered = filterVideos(allItems, {
 		videoType,

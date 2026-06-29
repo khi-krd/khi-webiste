@@ -56,14 +56,24 @@ export const TopicInfoSchema = z.object({
 	nameKmr: z.string().nullable(),
 });
 
-export const SeriesInfoSchema = z.object({
-	seriesId: z.string().nullable(),
-	seriesName: z.string().nullable(),
-	seriesOrder: z.number().nullable(),
-	parentBookId: z.number().nullable().optional(),
-	totalBooks: z.number().int().nullable(),
-	isParent: z.boolean().optional(),
-});
+export const SeriesInfoSchema = z
+	.object({
+		seriesId: z.string().nullable(),
+		seriesName: z.string().nullable(),
+		seriesOrder: z.number().nullable(),
+		parentBookId: z.number().nullable().optional(),
+		totalBooks: z.number().int().nullable(),
+		isParent: z.boolean().optional(),
+		parent: z.boolean().optional(),
+	})
+	.transform((series) => ({
+		seriesId: series.seriesId,
+		seriesName: series.seriesName,
+		seriesOrder: series.seriesOrder,
+		parentBookId: series.parentBookId,
+		totalBooks: series.totalBooks,
+		isParent: series.isParent ?? series.parent,
+	}));
 
 export const BilingualSetSchema = z.object({
 	ckb: z.array(z.string()),

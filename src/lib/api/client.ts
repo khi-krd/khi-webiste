@@ -90,6 +90,86 @@ type ApiFetchRawOptions = {
 	searchParams?: Record<string, string | number | undefined>;
 };
 
+type ApiMutationOptions<T extends z.ZodType> = {
+	schema: T;
+	tags?: string[];
+	revalidate?: number;
+	/** Bypass the Next.js data cache (default true for mutations). */
+	noStore?: boolean;
+};
+
+async function apiMutate<T extends z.ZodType>(
+	path: string,
+	method: "POST" | "PATCH",
+	body: unknown,
+	{
+		schema,
+		tags = [],
+		revalidate = DEFAULT_REVALIDATE,
+		noStore = true,
+	}: ApiMutationOptions<T>,
+): Promise<z.infer<T> | null> {
+	const apiBaseUrl = getApiBaseUrl();
+	if (!apiBaseUrl) {
+		return null;
+	}
+
+	try {
+		const endpoint = new URL(path, apiBaseUrl);
+		const response = await fetch(
+			endpoint,
+			noStore
+				? {
+						method,
+						headers: { "Content-Type": "application/json" },
+						body: JSON.stringify(body),
+						cache: "no-store",
+					}
+				: {
+						method,
+						headers: { "Content-Type": "application/json" },
+						body: JSON.stringify(body),
+						next: { revalidate, tags },
+					},
+		);
+
+		if (!response.ok) {
+			return null;
+		}
+
+		const payload: unknown = await response.json();
+		const data = unwrapApiPayload(payload);
+		if (data == null) {
+			return null;
+		}
+
+		const parsed = schema.safeParse(data);
+		if (!parsed.success) {
+			return null;
+		}
+
+		return parsed.data;
+	} catch {
+		return null;
+	}
+}
+
+export async function apiPost<T extends z.ZodType>(
+	path: string,
+	body: unknown,
+	options: ApiMutationOptions<T>,
+): Promise<z.infer<T> | null> {
+	return apiMutate(path, "POST", body, options);
+}
+
+export async function apiPatch<T extends z.ZodType>(
+	path: string,
+	body: unknown,
+	options: ApiMutationOptions<T>,
+): Promise<z.infer<T> | null> {
+	return apiMutate(path, "PATCH", body, options);
+}
+
 export async function apiFetchRaw(
 	path: string,
 	{

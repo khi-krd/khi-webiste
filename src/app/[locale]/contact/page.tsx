@@ -5,7 +5,8 @@ import { ContactForm } from "@/components/contact/contact-form";
 import { ContactHero } from "@/components/contact/contact-hero";
 import { ContactSocial } from "@/components/contact/contact-social";
 import { VisuallyHidden } from "@/components/ui/visually-hidden";
-import { getContactOffices, getSocialPlatforms } from "@/lib/mock/contact";
+import { getContactOffices } from "@/lib/api/contact";
+import { getSocialPlatformsFromApi } from "@/lib/api/social";
 
 export async function generateMetadata({
 	params,
@@ -30,8 +31,10 @@ export default async function ContactPage({
 	setRequestLocale(locale);
 
 	const t = await getTranslations("Contact");
-	const offices = getContactOffices();
-	const socialPlatforms = getSocialPlatforms();
+	const [offices, socialPlatforms] = await Promise.all([
+		getContactOffices(locale),
+		getSocialPlatformsFromApi(),
+	]);
 
 	return (
 		<main className="-mt-26 sm:-mt-30">
@@ -91,6 +94,7 @@ export default async function ContactPage({
 			/>
 
 			<ContactForm
+				locale={locale}
 				copy={{
 					eyebrow: t("form.eyebrow"),
 					heading: t("form.heading"),
@@ -119,6 +123,7 @@ export default async function ContactPage({
 						emailInvalid: t("form.errors.emailInvalid"),
 						subjectRequired: t("form.errors.subjectRequired"),
 						messageRequired: t("form.errors.messageRequired"),
+						submitFailed: t("form.errors.submitFailed"),
 					},
 				}}
 			/>

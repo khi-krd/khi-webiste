@@ -4,6 +4,9 @@ export type TeamMember = {
 		url: string;
 		alt?: string;
 	};
+	/** Populated when sourced from the API. */
+	name?: string;
+	role?: string;
 };
 
 export type OfficeTeam = {
@@ -26,6 +29,9 @@ export type PartnerItem = {
 		alt?: string;
 	};
 	href: string;
+	/** Populated when sourced from the API. */
+	title?: string;
+	description?: string;
 };
 
 export type AboutHeroMedia = {

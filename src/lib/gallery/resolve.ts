@@ -7,6 +7,7 @@ import type {
 } from "@/lib/mock/gallery";
 import type { ImageCollectionItem } from "@/lib/mock/image-collection";
 import type { ImageAlbumItem, ImageCollection } from "@/types/gallery";
+import { resolveContentSlug } from "@/lib/content/href";
 
 type GalleryAspect = GalleryHeroImage["aspect"];
 
@@ -150,6 +151,17 @@ function resolveTags(locale: string, collection: ImageCollection): string[] {
 	return collection.tags?.kmr ?? collection.tags?.ckb ?? [];
 }
 
+function resolveCollectionSlug(
+	locale: string,
+	collection: ImageCollection,
+): string {
+	return resolveContentSlug(locale, {
+		slugCkb: collection.slugCkb,
+		slugKmr: collection.slugKmr,
+		id: collection.id,
+	});
+}
+
 export function resolveGalleryPost(
 	locale: string,
 	collection: ImageCollection,
@@ -166,7 +178,7 @@ export function resolveGalleryPost(
 		.map((item) => resolveAlbumItem(locale, item));
 
 	return {
-		id: String(collection.id),
+		id: resolveCollectionSlug(locale, collection),
 		collectionType: mapCollectionType(collection.collectionType),
 		title,
 		description,
@@ -241,8 +253,8 @@ export function resolveImageCollectionItem(
 	const location = content?.location?.trim();
 
 	return {
-		id: String(collection.id),
-		slug: String(collection.id),
+		id: resolveCollectionSlug(locale, collection),
+		slug: resolveCollectionSlug(locale, collection),
 		title,
 		subtitle: location ?? "",
 		catalogRef: `Plate ${String(index + 1).padStart(2, "0")}`,

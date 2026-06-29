@@ -85,22 +85,23 @@ export async function getGalleryPostBySlug(
 	locale: string,
 	slug: string,
 ): Promise<GalleryPostDetail | null> {
-	const numericId = Number.parseInt(slug, 10);
-	const isNumericSlug =
-		Number.isInteger(numericId) && numericId > 0 && String(numericId) === slug;
+	if (getApiBaseUrl()) {
+		const slugDetail = await apiFetch(
+			`${GALLERY_ENDPOINT}/slug/${encodeURIComponent(slug)}`,
+			{
+				schema: ImageCollectionSchema,
+				tags: [GALLERY_TAG, `image-collection-slug-${slug}`],
+				revalidate: DEFAULT_REVALIDATE,
+			},
+		);
 
-	if (getApiBaseUrl() && isNumericSlug) {
-		const detail = await apiFetch(`${GALLERY_ENDPOINT}/${numericId}`, {
-			schema: ImageCollectionSchema,
-			tags: [GALLERY_TAG, `image-collection-${numericId}`],
-			revalidate: DEFAULT_REVALIDATE,
-		});
-
-		if (detail) {
-			const post = resolveGalleryPost(locale, detail);
+		if (slugDetail) {
+			const post = resolveGalleryPost(locale, slugDetail);
 			if (post) {
 				const allPosts = await getGalleryPosts(locale);
-				const index = allPosts.findIndex((entry) => entry.id === slug);
+				const index = allPosts.findIndex(
+					(entry) => entry.id === post.id || entry.id === slug,
+				);
 				return {
 					post,
 					previous: index > 0 ? allPosts[index - 1] : null,
@@ -109,6 +110,36 @@ export async function getGalleryPostBySlug(
 							? allPosts[index + 1]
 							: null,
 				};
+			}
+		}
+
+		const numericId = Number.parseInt(slug, 10);
+		const isNumericSlug =
+			Number.isInteger(numericId) &&
+			numericId > 0 &&
+			String(numericId) === slug;
+
+		if (isNumericSlug) {
+			const detail = await apiFetch(`${GALLERY_ENDPOINT}/${numericId}`, {
+				schema: ImageCollectionSchema,
+				tags: [GALLERY_TAG, `image-collection-${numericId}`],
+				revalidate: DEFAULT_REVALIDATE,
+			});
+
+			if (detail) {
+				const post = resolveGalleryPost(locale, detail);
+				if (post) {
+					const allPosts = await getGalleryPosts(locale);
+					const index = allPosts.findIndex((entry) => entry.id === post.id);
+					return {
+						post,
+						previous: index > 0 ? allPosts[index - 1] : null,
+						next:
+							index >= 0 && index < allPosts.length - 1
+								? allPosts[index + 1]
+								: null,
+					};
+				}
 			}
 		}
 	}
