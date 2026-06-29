@@ -22,6 +22,10 @@
 		"searchErrorMinLength": "Kêm kêm 2 tîp binivîse",
 		"searchResults": "Encam",
 		"searchNoResults": "Tu encam nehatin dîtin",
+		"searchScopeLabel": "Qada lêgerînê",
+		"searchScopeMain": "Giştî",
+		"searchScopeArchive": "Arşîv",
+		"searchScopeLibrary": "Pirtûkxane",
 		"secondaryLinkPrefix": "Lêkolîn",
 		"newsDescription": "Nûçeyên lêkolînê li ser çand, dîrok, ziman û civaka Kurd.",
 		"newsSubCulture": "Çand",
@@ -349,7 +353,8 @@
 			"seek": "Di parçeyê de bigere",
 			"volume": "Asta dengê",
 			"mute": "Bêdeng bike",
-			"unmute": "Dengê vegerîne"
+			"unmute": "Dengê vegerîne",
+			"close": "Bigire"
 		},
 		"post": {
 			"back": "Vegere arşîvê",
@@ -567,10 +572,10 @@
 		}
 	},
 	"Video": {
-		"eyebrow": "Fîlm & vîdyo",
-		"title": "Belgefîlm, performans û mîrata wêneyên livok.",
-		"description": "Ders, nûçeyên wêneyî û performansên hatine tomarkirin ji herêmên Kurdî.",
-		"viewAll": "Vîdyoyê keşf bike",
+		"eyebrow": "Klîp & rêze",
+		"title": "Rêzeyên klîp, ders û tomarên wêneyî yên kurt.",
+		"description": "Rêzeyên klîp, dersên tomarkirî û tomarên wêneyî yên kurt — li ser bingeha mijaran têne rêzkirin.",
+		"viewAll": "Klîpan keşf bike",
 		"pageTitle": "Arşîva Fîlm û Vîdyo",
 		"metaDescription": "Fîlm, belgefîlm, performans û tomarên wêneyî yên mîrateya kurdî — sînematêka Enstîtuya Kelepora Kurdî.",
 		"categories": {
@@ -649,6 +654,17 @@
 			"keywords": "Peyvên sereke",
 			"published": "Hat weşandin",
 			"updated": "Hat nûkirin"
+		},
+		"films": {
+			"home": {
+				"eyebrow": "Fîlm",
+				"title": "Belgefîlm, performans û sînema kurdî.",
+				"description": "Fîlmên dirêj, belgefîlm û performansên tomarkirî — ji arşîva wêneyên livok ya Enstîtuyê.",
+				"viewAll": "Fîlman keşf bike",
+				"featuredLabel": "Hilbijartî",
+				"programLabel": "Bername",
+				"moreLabel": "Zêdetir fîlm"
+			}
 		},
 		"shortfilms": {
 			"pageTitle": "Kurtefîlm",

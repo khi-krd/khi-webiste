@@ -6,6 +6,7 @@ import { WritingHero } from "@/components/writing/writing-hero";
 import { WritingsShell } from "@/components/writing/writings-shell";
 import { getWritingsCarousel } from "@/lib/api/writings";
 import { homeInsetClass } from "@/lib/layout";
+import { WRITINGS_STILL } from "@/lib/mock/public-stills";
 import { cn } from "@/lib/utils";
 import { loadWritingsPageData } from "@/lib/writing/page-data";
 import type { BookGenre } from "@/types/writing";
@@ -63,13 +64,12 @@ export default async function WritingsPage({
 		topicName: item.topicName,
 		publishedByInstitute: item.publishedByInstitute,
 		instituteBadgeLabel: t("carousel.instituteBadge"),
-		seriesOrderLabel: item.seriesOrderLabel,
 		fileUrl: item.fileUrl,
 		downloadLabel: t("carousel.download"),
 	}));
 
 	const heroTexture =
-		items.find((item) => item.coverUrl)?.coverUrl ?? "/writings.png";
+		items.find((item) => item.coverUrl)?.coverUrl ?? WRITINGS_STILL;
 
 	const direction = locale === "ckb" ? "rtl" : "ltr";
 

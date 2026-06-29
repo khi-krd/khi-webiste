@@ -6,6 +6,7 @@ import {
 } from "@/components/motion/scroll-reveal";
 import { DirectionalIcon } from "@/components/ui/directional-icon";
 import { Link } from "@/components/ui/link";
+import { WRITINGS_STILL } from "@/lib/mock/public-stills";
 import { cn } from "@/lib/utils";
 
 type WritingHeroProps = {
@@ -68,7 +69,7 @@ export function WritingHero({
 	titleEmphasis,
 	cta,
 	learnMore,
-	textureUrl = "/writings.png",
+	textureUrl = WRITINGS_STILL,
 	showEmphasisItalic = false,
 }: WritingHeroProps) {
 	return (

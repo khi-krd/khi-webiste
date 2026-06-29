@@ -7,7 +7,13 @@ import { type FormEvent, useEffect, useMemo, useState } from "react";
 import { DirectionalIcon } from "@/components/ui/directional-icon";
 import { Input } from "@/components/ui/input";
 import { Link } from "@/components/ui/link";
-import { NAV_ITEMS, SEARCH_SUGGESTION_KEYS } from "@/config/site";
+import {
+	NAV_ITEMS,
+	SEARCH_SCOPE_NAV_KEYS,
+	SEARCH_SCOPE_SUGGESTION_KEYS,
+	SEARCH_SCOPES,
+	type SearchScope,
+} from "@/config/site";
 import { cn } from "@/lib/utils";
 
 /** Min characters before we filter the catalog or flag a too-short query. */
@@ -18,6 +24,7 @@ type SearchResult = {
 	href: string;
 	label: string;
 	parentLabel?: string;
+	navKey: string;
 };
 
 type MenuSearchProps = {
@@ -26,6 +33,12 @@ type MenuSearchProps = {
 };
 
 const LAYOUT_MS = 400;
+
+const SEARCH_SCOPE_LABEL_KEYS = {
+	main: "searchScopeMain",
+	archive: "searchScopeArchive",
+	library: "searchScopeLibrary",
+} as const satisfies Record<SearchScope, string>;
 
 /** Keeps overlay copy readable when background photos run bright. */
 const overlayTextShadow =
@@ -46,24 +59,39 @@ function buildSearchIndex(
 			id: item.key,
 			href: item.href,
 			label: t(item.key),
+			navKey: item.key,
 		},
 		...item.children.map((child) => ({
 			id: `${item.key}-${child.key}`,
 			href: child.href,
 			label: t(child.key),
 			parentLabel: t(item.key),
+			navKey: item.key,
 		})),
 	]);
+}
+
+function isInSearchScope(navKey: string, scope: SearchScope): boolean {
+	if (scope === "main") {
+		return true;
+	}
+
+	return SEARCH_SCOPE_NAV_KEYS[scope].includes(navKey);
 }
 
 function filterSearchResults(
 	index: SearchResult[],
 	query: string,
+	scope: SearchScope,
 ): SearchResult[] {
 	const normalizedQuery = normalizeSearchText(query);
 	if (!normalizedQuery) return [];
 
 	return index.filter((entry) => {
+		if (!isInSearchScope(entry.navKey, scope)) {
+			return false;
+		}
+
 		const haystack = [entry.label, entry.parentLabel].filter(
 			(value): value is string => Boolean(value),
 		);
@@ -141,6 +169,7 @@ export function MenuSearch({ onBack, onNavigate }: MenuSearchProps) {
 	const [isExpanded, setIsExpanded] = useState(false);
 
 	const [query, setQuery] = useState("");
+	const [scope, setScope] = useState<SearchScope>("main");
 	const [submitted, setSubmitted] = useState(false);
 
 	const trimmedQuery = query.trim();
@@ -152,7 +181,7 @@ export function MenuSearch({ onBack, onNavigate }: MenuSearchProps) {
 
 	const liveResults = useMemo((): SearchResult[] => {
 		if (!isSearching) {
-			return SEARCH_SUGGESTION_KEYS.flatMap((key) => {
+			return SEARCH_SCOPE_SUGGESTION_KEYS[scope].flatMap((key) => {
 				const item = NAV_ITEMS.find((entry) => entry.key === key);
 				if (!item) return [];
 
@@ -161,13 +190,14 @@ export function MenuSearch({ onBack, onNavigate }: MenuSearchProps) {
 						id: item.key,
 						href: item.href,
 						label: t(item.key),
+						navKey: item.key,
 					} satisfies SearchResult,
 				];
 			});
 		}
 
-		return filterSearchResults(searchIndex, trimmedQuery);
-	}, [isSearching, searchIndex, t, trimmedQuery]);
+		return filterSearchResults(searchIndex, trimmedQuery, scope);
+	}, [isSearching, scope, searchIndex, t, trimmedQuery]);
 
 	// Keep the compact layout during the rise animation so the list stays
 	// glued under the input; switch to scrollable only after it finishes.
@@ -234,21 +264,56 @@ export function MenuSearch({ onBack, onNavigate }: MenuSearchProps) {
 						<label htmlFor="menu-search-input" className="visually-hidden">
 							{t("searchLabel")}
 						</label>
-						<Input
-							id="menu-search-input"
-							name="q"
-							type="search"
-							variant="overlay"
-							fieldSize="lg"
-							autoFocus
-							autoComplete="off"
-							spellCheck={false}
-							placeholder={t("searchPlaceholder")}
-							value={query}
-							onChange={(event) => setQuery(event.target.value)}
-							aria-invalid={showError ? true : undefined}
-							aria-describedby={showError ? "menu-search-error" : undefined}
-						/>
+
+						<div className="flex flex-col gap-3 sm:flex-row sm:items-stretch">
+							<Input
+								id="menu-search-input"
+								name="q"
+								type="search"
+								variant="overlay"
+								fieldSize="lg"
+								autoFocus
+								autoComplete="off"
+								spellCheck={false}
+								placeholder={t("searchPlaceholder")}
+								value={query}
+								onChange={(event) => setQuery(event.target.value)}
+								aria-invalid={showError ? true : undefined}
+								aria-describedby={showError ? "menu-search-error" : undefined}
+								className="min-w-0 flex-1"
+							/>
+
+							<div
+								role="radiogroup"
+								aria-label={t("searchScopeLabel")}
+								className="flex shrink-0 gap-1.5 sm:gap-2"
+							>
+								{SEARCH_SCOPES.map((option) => {
+									const isActive = scope === option;
+									const labelKey = SEARCH_SCOPE_LABEL_KEYS[option];
+
+									return (
+										<button
+											key={option}
+											type="button"
+											role="radio"
+											aria-checked={isActive}
+											onClick={() => setScope(option)}
+											className={cn(
+												"shrink-0 border px-3 py-2.5 font-heading text-small font-semibold transition-[color,background-color,border-color] duration-200 sm:px-3.5 sm:py-3",
+												isActive
+													? "border-primary-foreground bg-primary-foreground text-foreground"
+													: "border-primary-foreground/35 bg-transparent text-primary-foreground/80 fine-hover:border-primary-foreground/60 fine-hover:text-primary-foreground",
+												!isActive && overlayTextShadow,
+											)}
+										>
+											{t(labelKey)}
+										</button>
+									);
+								})}
+							</div>
+						</div>
+
 						{showError && (
 							<p
 								id="menu-search-error"

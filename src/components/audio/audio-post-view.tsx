@@ -40,9 +40,19 @@ function MetaCell({
 	children: React.ReactNode;
 }) {
 	return (
-		<div className="flex flex-col gap-2 py-5 sm:py-6">
-			<dt className="label font-medium">{label}</dt>
-			<dd className="text-small text-foreground">{children}</dd>
+		<div className="min-w-0">
+			<dt className="label font-medium text-muted">{label}</dt>
+			<dd className="mt-0.5 text-small leading-snug text-foreground">
+				{children}
+			</dd>
+		</div>
+	);
+}
+
+function MetaRow({ children }: { children: React.ReactNode }) {
+	return (
+		<div className="grid grid-cols-1 gap-x-6 gap-y-3 border-b border-border py-3 sm:grid-cols-2 sm:gap-x-10 sm:py-3.5">
+			{children}
 		</div>
 	);
 }
@@ -234,37 +244,55 @@ export async function AudioPostView({ detail, locale }: AudioPostViewProps) {
 									/>
 								) : null}
 
-								<dl className="mt-8 grid grid-cols-1 gap-x-8 border-t border-border sm:grid-cols-2 [&>*]:border-b [&>*]:border-border">
-									{detail.topicName ? (
-										<MetaCell label={t("post.topic")}>
-											{detail.topicName}
-										</MetaCell>
+								<dl className="mt-7 border-t border-border">
+									{detail.topicName || detail.terms ? (
+										<MetaRow>
+											{detail.topicName ? (
+												<MetaCell label={t("post.topic")}>
+													{detail.topicName}
+												</MetaCell>
+											) : null}
+											{detail.terms ? (
+												<MetaCell label={t("post.terms")}>
+													{detail.terms}
+												</MetaCell>
+											) : null}
+										</MetaRow>
 									) : null}
-									{detail.terms ? (
-										<MetaCell label={t("post.terms")}>{detail.terms}</MetaCell>
+									{detail.genre || detail.locations.length > 0 ? (
+										<MetaRow>
+											{detail.genre ? (
+												<MetaCell label={t("post.genre")}>
+													{detail.genre}
+												</MetaCell>
+											) : null}
+											{detail.locations.length > 0 ? (
+												<MetaCell label={t("post.locations")}>
+													{detail.locations.join(" · ")}
+												</MetaCell>
+											) : null}
+										</MetaRow>
 									) : null}
-									{detail.genre ? (
-										<MetaCell label={t("post.genre")}>{detail.genre}</MetaCell>
-									) : null}
-									{detail.locations.length > 0 ? (
-										<MetaCell label={t("post.locations")}>
-											{detail.locations.join(" · ")}
-										</MetaCell>
-									) : null}
-									{detail.reader ? (
-										<MetaCell label={t("post.reader")}>
-											{detail.reader}
-										</MetaCell>
-									) : null}
-									{detail.directors.length > 0 ? (
-										<MetaCell label={t("post.directors")}>
-											{detail.directors.join(" · ")}
-										</MetaCell>
+									{detail.reader || detail.directors.length > 0 ? (
+										<MetaRow>
+											{detail.reader ? (
+												<MetaCell label={t("post.reader")}>
+													{detail.reader}
+												</MetaCell>
+											) : null}
+											{detail.directors.length > 0 ? (
+												<MetaCell label={t("post.directors")}>
+													{detail.directors.join(" · ")}
+												</MetaCell>
+											) : null}
+										</MetaRow>
 									) : null}
 									{languageLabels.length > 0 ? (
-										<MetaCell label={t("post.languagesLabel")}>
-											{languageLabels.join(" · ")}
-										</MetaCell>
+										<MetaRow>
+											<MetaCell label={t("post.languagesLabel")}>
+												{languageLabels.join(" · ")}
+											</MetaCell>
+										</MetaRow>
 									) : null}
 								</dl>
 							</div>

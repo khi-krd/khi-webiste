@@ -17,7 +17,6 @@ export type WritingCardProps = {
 	topicName: string | null;
 	publishedByInstitute: boolean;
 	instituteBadgeLabel: string;
-	seriesOrderLabel: string;
 	fileUrl: string | null;
 	downloadLabel: string;
 };
@@ -45,7 +44,6 @@ export function WritingCard({
 	topicName,
 	publishedByInstitute,
 	instituteBadgeLabel,
-	seriesOrderLabel,
 	downloadLabel,
 }: WritingCardProps) {
 	const hasHoverCover =
@@ -124,12 +122,6 @@ export function WritingCard({
 								{downloadLabel}
 								<DirectionalIcon icon={ArrowUpRightIcon} className="size-3.5" />
 							</Link>
-							<span
-								aria-hidden
-								className="font-heading text-[4rem] leading-none font-bold text-primary-foreground/14 select-none sm:text-[5rem]"
-							>
-								{seriesOrderLabel}
-							</span>
 						</div>
 					</div>
 				</div>

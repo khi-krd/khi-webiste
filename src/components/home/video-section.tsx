@@ -12,18 +12,29 @@ import {
 import { DirectionalIcon } from "@/components/ui/directional-icon";
 import { Link } from "@/components/ui/link";
 import { getVideoListing } from "@/lib/api/videos";
+import { buildVideoHref } from "@/lib/video-url";
 import { formatDuration } from "@/lib/video/format";
 import type { ResolvedVideoCard } from "@/types/video";
 
 const viewAllClass =
 	"group/viewall relative inline-flex h-10 w-fit shrink-0 items-center gap-2.5 overflow-hidden border border-foreground px-5 font-heading text-small font-semibold text-foreground no-underline transition-[color,gap,box-shadow] duration-300 ease-out before:absolute before:inset-0 before:z-0 before:origin-bottom before:scale-y-0 before:bg-foreground before:transition-transform before:duration-300 before:ease-[cubic-bezier(0.22,1,0.36,1)] fine-hover:gap-3.5 fine-hover:text-primary-foreground fine-hover:shadow-[0_8px_24px_-12px_rgba(26,24,19,0.35)] fine-hover:before:scale-y-100 motion-reduce:before:transition-none motion-reduce:fine-hover:before:scale-y-100 motion-reduce:fine-hover:gap-2.5";
 
+const HOME_VIDEO_COUNT = 5;
+
 export async function VideoSection() {
 	const locale = await getLocale();
 	const t = await getTranslations("Video");
-	const listing = await getVideoListing(locale, { page: 1, size: 5 });
+	const listing = await getVideoListing(locale, {
+		videoType: "VIDEO_CLIP",
+		page: 1,
+		size: HOME_VIDEO_COUNT,
+	});
 
-	const [featured, second, third, fourth, fifth] = listing.items;
+	if (listing.items.length === 0) {
+		return null;
+	}
+
+	const [featured, second, third, fourth, fifth, ...more] = listing.items;
 
 	const toItem = (card: ResolvedVideoCard): HomeVideoCardItem => ({
 		id: card.id,
@@ -38,7 +49,7 @@ export async function VideoSection() {
 
 	return (
 		<section
-			className="cv-auto flex w-full flex-col overflow-hidden border-t border-border bg-background [--cv-intrinsic:1200px]"
+			className="cv-auto flex w-full flex-col overflow-hidden border-t border-border bg-background [--cv-intrinsic:1400px]"
 			aria-labelledby="video-heading"
 		>
 			<ScrollRevealBlock className="shrink-0 px-6 pt-12 pb-8 sm:px-8 sm:pt-16 sm:pb-10 lg:pt-20">
@@ -55,7 +66,11 @@ export async function VideoSection() {
 							<p className="mt-3 text-body text-muted">{t("description")}</p>
 						</div>
 
-						<Link href="/videos" variant="nav" className={viewAllClass}>
+						<Link
+							href={buildVideoHref({ type: "VIDEO_CLIP" })}
+							variant="nav"
+							className={viewAllClass}
+						>
 							<span className="relative z-1">{t("viewAll")}</span>
 							<DirectionalIcon
 								icon={ArrowRightIcon}
@@ -120,6 +135,23 @@ export async function VideoSection() {
 						</ScrollRevealItem>
 					) : null}
 				</ScrollReveal>
+
+				{more.length > 0 ? (
+					<ScrollReveal className="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-2 sm:gap-4 lg:grid-cols-3 lg:gap-4">
+						{more.map((card) => (
+							<ScrollRevealItem
+								key={card.id}
+								className="relative aspect-video min-h-0"
+							>
+								<VideoCard
+									item={toItem(card)}
+									categoryLabel={categoryLabel(card)}
+									fill
+								/>
+							</ScrollRevealItem>
+						))}
+					</ScrollReveal>
+				) : null}
 			</div>
 		</section>
 	);

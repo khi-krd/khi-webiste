@@ -5,11 +5,11 @@ import {
 	ForwardIcon,
 	SpeakerWaveIcon,
 	SpeakerXMarkIcon,
+	XMarkIcon,
 } from "@heroicons/react/24/outline";
 import { PauseIcon, PlayIcon } from "@heroicons/react/24/solid";
 import NextImage from "next/image";
 import { useTranslations } from "next-intl";
-import { useMemo } from "react";
 import {
 	usePlayer,
 	usePlayerTime,
@@ -17,12 +17,10 @@ import {
 import { DirectionalIcon } from "@/components/ui/directional-icon";
 import { Link } from "@/components/ui/link";
 import { formatDuration } from "@/lib/audio/format";
-import { waveformBars } from "@/lib/audio/waveform";
 import { homeInsetClass } from "@/lib/layout";
 import { cn } from "@/lib/utils";
 
 // .khi-audio-range styles live in globals.css (shell component styles).
-const SEEK_WAVE_BARS = 64;
 
 const controlButtonClass =
 	"inline-flex size-9 shrink-0 items-center justify-center rounded-md text-foreground transition-colors fine-hover:bg-sunken focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring";
@@ -39,13 +37,6 @@ export function AudioPlayerBar() {
 	const t = useTranslations("Audio.player");
 
 	const current = state.queue[state.index];
-
-	// computed before the early return (rules of hooks); seeded per file so
-	// every track gets its own stable, deterministic contour
-	const waveBars = useMemo(
-		() => waveformBars(current?.fileId ?? 1, SEEK_WAVE_BARS),
-		[current?.fileId],
-	);
 
 	if (!current) {
 		return null;
@@ -151,43 +142,18 @@ export function AudioPlayerBar() {
 						>
 							{elapsedLabel}
 						</span>
-						{/* Waveform visualizer doubles as the seek control: decorative
-						    bars underneath, an invisible native range on top for
-						    pointer + keyboard + AT. Bars flow with `dir`, so the
-						    played (accent) side starts at the inline start in RTL. */}
-						<div className="relative h-9 min-w-0 flex-1 has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-offset-2 has-[:focus-visible]:outline-ring">
-							<div
-								aria-hidden
-								className="absolute inset-0 flex items-center gap-px"
-							>
-								{waveBars.map((height, index) => (
-									<div
-										// biome-ignore lint/suspicious/noArrayIndexKey: static decorative bars, never reordered
-										key={index}
-										className={cn(
-											"min-w-0 flex-1 transition-colors duration-150",
-											(index + 0.5) / waveBars.length <= progress
-												? "bg-accent"
-												: "bg-border",
-										)}
-										style={{
-											height: `${Math.max(14, Math.round(height * 100))}%`,
-										}}
-									/>
-								))}
-							</div>
-							<input
-								type="range"
-								min={0}
-								max={seekMax}
-								step={1}
-								value={Math.min(seekMax, Math.round(currentTime))}
-								onChange={(event) => actions.seek(Number(event.target.value))}
-								aria-label={t("seek")}
-								aria-valuetext={`${elapsedLabel} / ${totalLabel}`}
-								className="absolute inset-0 h-full w-full cursor-pointer opacity-0"
-							/>
-						</div>
+						<input
+							type="range"
+							min={0}
+							max={seekMax}
+							step={1}
+							value={Math.min(seekMax, Math.round(currentTime))}
+							onChange={(event) => actions.seek(Number(event.target.value))}
+							aria-label={t("seek")}
+							aria-valuetext={`${elapsedLabel} / ${totalLabel}`}
+							className="khi-audio-range min-w-0 flex-1"
+							style={{ "--progress": progress } as React.CSSProperties}
+						/>
 						<span
 							dir="ltr"
 							className="shrink-0 text-label text-muted tabular-nums"
@@ -224,6 +190,15 @@ export function AudioPlayerBar() {
 							style={{ "--progress": volumeProgress } as React.CSSProperties}
 						/>
 					</div>
+
+					<button
+						type="button"
+						onClick={actions.close}
+						aria-label={t("close")}
+						className={controlButtonClass}
+					>
+						<XMarkIcon aria-hidden className="size-4" />
+					</button>
 				</div>
 			</section>
 		</>

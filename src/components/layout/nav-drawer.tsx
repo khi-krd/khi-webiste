@@ -77,6 +77,27 @@ const primaryItemArrowClass =
 const overlayTextShadow =
 	"[text-shadow:0_1px_2px_color-mix(in_oklch,var(--color-foreground)_75%,transparent),0_0_1.75rem_color-mix(in_oklch,var(--color-foreground)_40%,transparent)]";
 
+const navDismissSpacerClass =
+	"block min-h-0 w-full flex-1 cursor-default border-0 bg-transparent p-0";
+
+type NavDismissSpacerProps = {
+	label: string;
+	onDismiss: () => void;
+};
+
+/** Invisible flex region above nav links — tap/click closes the overlay. */
+function NavDismissSpacer({ label, onDismiss }: NavDismissSpacerProps) {
+	return (
+		<button
+			type="button"
+			onClick={onDismiss}
+			className={navDismissSpacerClass}
+			aria-label={label}
+			tabIndex={-1}
+		/>
+	);
+}
+
 type NavBackgroundProps = {
 	src: string;
 	reduceMotion: boolean | null;
@@ -398,13 +419,17 @@ export function NavDrawer({
 
 								<div className="relative z-10 flex min-h-0 flex-1 flex-col">
 									<Container className="max-w-none shrink-0 pt-8 sm:pt-10">
-										<div className="flex justify-end">
+										<div className="flex">
+											<NavDismissSpacer
+												label={t("menuClose")}
+												onDismiss={close}
+											/>
 											<button
 												ref={closeRef}
 												type="button"
 												onClick={close}
 												aria-label={t("menuClose")}
-												className="inline-flex min-h-11 min-w-11 items-center justify-center rounded-md border border-transparent bg-foreground/40 p-2 transition-colors hover:border-primary-foreground/30 hover:bg-foreground/60 focus-visible:border-primary-foreground/40 focus-visible:bg-foreground/60"
+												className="inline-flex min-h-11 min-w-11 shrink-0 items-center justify-center rounded-md border border-transparent bg-foreground/40 p-2 transition-colors hover:border-primary-foreground/30 hover:bg-foreground/60 focus-visible:border-primary-foreground/40 focus-visible:bg-foreground/60"
 											>
 												<XMarkIcon
 													className="size-6 shrink-0"
@@ -446,9 +471,6 @@ export function NavDrawer({
 															className={cn(
 																"w-full",
 																isLg && "flex flex-1 gap-10 xl:gap-14",
-																isLg &&
-																	!showDesktopPanel &&
-																	"flex flex-1 items-center",
 																isLg && showDesktopPanel && "items-start",
 																!isLg &&
 																	"relative flex min-h-0 flex-1 flex-col",
@@ -459,15 +481,19 @@ export function NavDrawer({
 																	{!showMobilePanel ? (
 																		<motion.div
 																			key="mobile-primary"
-																			className="absolute inset-0 flex items-center"
+																			className="absolute inset-0 flex flex-col"
 																			initial={mobilePrimaryEnter}
 																			animate={{ opacity: 1, x: 0 }}
 																			exit={mobilePrimaryExit}
 																			transition={panelSlideTransition}
 																		>
+																			<NavDismissSpacer
+																				label={t("menuClose")}
+																				onDismiss={close}
+																			/>
 																			<nav
 																				aria-label={t("primary")}
-																				className="w-full"
+																				className="w-full shrink-0"
 																			>
 																				<ul className="flex flex-col gap-0.5">
 																					{primaryNavItems.map((item) => {
@@ -541,6 +567,10 @@ export function NavDrawer({
 																					})}
 																				</ul>
 																			</nav>
+																			<div
+																				className="min-h-0 flex-1"
+																				aria-hidden
+																			/>
 																		</motion.div>
 																	) : (
 																		activeItem && (
@@ -575,12 +605,16 @@ export function NavDrawer({
 																<div
 																	className={cn(
 																		"shrink-0 lg:max-w-[min(100%,22rem)]",
-																		"flex flex-1 items-center self-stretch",
+																		"flex flex-1 flex-col self-stretch",
 																	)}
 																>
+																	<NavDismissSpacer
+																		label={t("menuClose")}
+																		onDismiss={close}
+																	/>
 																	<nav
 																		aria-label={t("primary")}
-																		className="w-full"
+																		className="w-full shrink-0"
 																	>
 																		<ul className="flex flex-col gap-0.5">
 																			{primaryNavItems.map((item) => {
@@ -648,6 +682,10 @@ export function NavDrawer({
 																			})}
 																		</ul>
 																	</nav>
+																	<div
+																		className="min-h-0 flex-1"
+																		aria-hidden
+																	/>
 																</div>
 															)}
 

@@ -53,8 +53,6 @@ export default async function AboutPage({
 	const founder = getAboutFounder(locale);
 	const offices = getAboutOffices(locale);
 	const partners = getAboutPartners(locale);
-	const direction = locale === "ckb" ? "rtl" : "ltr";
-
 	const officeLabels = {
 		sulaymaniyah: t("team.offices.sulaymaniyah"),
 		duhok: t("team.offices.duhok"),
@@ -110,8 +108,6 @@ export default async function AboutPage({
 			<AboutTeamShowcase
 				offices={officesWithCopy}
 				officeLabels={officeLabels}
-				sectionLabel={t("team.offices.sulaymaniyah")}
-				direction={direction}
 			/>
 
 			<AboutPartners

@@ -257,7 +257,6 @@ export function WritingRowShowcase() {
 							genreLabel: t(`categories.${item.category}`),
 							fileUrl: null,
 						}}
-						index={index}
 					/>
 				))}
 			</div>

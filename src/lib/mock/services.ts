@@ -49,13 +49,13 @@ export type ServiceId = (typeof SERVICE_IDS)[number];
 
 const LAYOUT_BY_ID: Record<ServiceId, ServiceLayout> = {
 	"institute-hall": "cinema",
-	studio: "studio-panel",
-	"research-publishing": "editorial",
-	"printing-house": "stacked",
-	sales: "split",
-	library: "gallery",
-	"audio-visual-archive": "split-reverse",
-	"joint-projects": "bento",
+	studio: "cinema",
+	"research-publishing": "cinema",
+	"printing-house": "cinema",
+	sales: "cinema",
+	library: "cinema",
+	"audio-visual-archive": "cinema",
+	"joint-projects": "cinema",
 };
 
 function buildThumbnails(startIndex: number): ServiceItem["thumbnails"] {

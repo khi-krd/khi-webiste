@@ -23,4 +23,4 @@
   (chevrons/arrows) must flip with dir.
 
 - Borders are a design element (hairline rules, boxed labels): use the border
-  token, keep them thin/low-contrast.
+  token, keep them thin/low-contrast. with border radious please. 

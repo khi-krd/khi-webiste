@@ -44,8 +44,6 @@ export async function AboutTeamShowcasePreview() {
 	const locale = await getLocale();
 	const t = await getTranslations("About");
 	const offices = getAboutOffices(locale);
-	const direction = locale === "ckb" ? "rtl" : "ltr";
-
 	const officeLabels = {
 		sulaymaniyah: t("team.offices.sulaymaniyah"),
 		duhok: t("team.offices.duhok"),
@@ -68,8 +66,6 @@ export async function AboutTeamShowcasePreview() {
 		<AboutTeamShowcase
 			offices={officesWithCopy}
 			officeLabels={officeLabels}
-			sectionLabel={t("team.offices.sulaymaniyah")}
-			direction={direction}
 		/>
 	);
 }

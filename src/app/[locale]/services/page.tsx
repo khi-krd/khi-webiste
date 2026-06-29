@@ -36,7 +36,6 @@ export default async function ServicesPage({
 	const services = getServicesLayout(locale);
 	const apiSections = await getServiceSections(locale);
 	const bottomCards = getServicesBottomCards(locale);
-	const direction = locale === "ckb" ? "rtl" : "ltr";
 
 	const navItems = services.map((service) => ({
 		id: service.id,
@@ -51,11 +50,6 @@ export default async function ServicesPage({
 			body: apiSection?.body ?? t(`items.${service.id}.body`),
 		};
 	});
-
-	const heroNavItems = services.map((service) => ({
-		service,
-		title: t(`items.${service.id}.title`),
-	}));
 
 	const bottomCardItems = bottomCards.map((card) => ({
 		card,
@@ -73,14 +67,11 @@ export default async function ServicesPage({
 
 			<ServicesHero
 				heroMedia={getServicesHeroMedia()}
-				navItems={heroNavItems}
 				firstServiceId={services[0]?.id ?? "institute-hall"}
 				eyebrow={t("hero.eyebrow")}
 				title={t("hero.title")}
 				intro={t("hero.intro")}
 				cta={t("hero.cta")}
-				navLabel={t("nav.label")}
-				direction={direction}
 			/>
 
 			<ServicesShell

@@ -158,6 +158,29 @@ export const SEARCH_SUGGESTION_KEYS = [
 	"about",
 ] as const;
 
+/** Menu overlay search scopes — filter which nav catalogue entries are searched. */
+export type SearchScope = "main" | "archive" | "library";
+
+export const SEARCH_SCOPES: SearchScope[] = ["main", "archive", "library"];
+
+/** Top-level `NavItem.key` values included per scope (`main` = all). */
+export const SEARCH_SCOPE_NAV_KEYS: Record<
+	Exclude<SearchScope, "main">,
+	readonly string[]
+> = {
+	archive: ["projects", "sound", "video", "gallery"],
+	library: ["writings"],
+};
+
+export const SEARCH_SCOPE_SUGGESTION_KEYS: Record<
+	SearchScope,
+	readonly string[]
+> = {
+	main: SEARCH_SUGGESTION_KEYS,
+	archive: SEARCH_SCOPE_NAV_KEYS.archive,
+	library: SEARCH_SCOPE_NAV_KEYS.library,
+};
+
 export const SERVICES_HREF = "/services";
 
 export const DONATE_HREF = "/donate";

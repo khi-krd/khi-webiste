@@ -38,6 +38,8 @@ export type PlayerActions = {
 	seek: (seconds: number) => void;
 	setVolume: (volume: number) => void;
 	toggleMute: () => void;
+	/** Stops playback and dismisses the player bar. */
+	close: () => void;
 };
 
 type PlayerContextValue = {
@@ -199,6 +201,19 @@ export function AudioPlayerProvider({
 		}
 	}, []);
 
+	const close = useCallback(() => {
+		const audio = audioRef.current;
+		if (audio) {
+			audio.pause();
+			audio.removeAttribute("src");
+			audio.load();
+		}
+		setQueue([]);
+		setIndex(0);
+		setStatus("paused");
+		setTime({ currentTime: 0, duration: 0 });
+	}, []);
+
 	// restore persisted volume once on mount
 	useEffect(() => {
 		try {
@@ -249,8 +264,17 @@ export function AudioPlayerProvider({
 	}, [currentPayload, toggle, previous, next]);
 
 	const actions = useMemo<PlayerActions>(
-		() => ({ playQueue, toggle, next, previous, seek, setVolume, toggleMute }),
-		[playQueue, toggle, next, previous, seek, setVolume, toggleMute],
+		() => ({
+			playQueue,
+			toggle,
+			next,
+			previous,
+			seek,
+			setVolume,
+			toggleMute,
+			close,
+		}),
+		[playQueue, toggle, next, previous, seek, setVolume, toggleMute, close],
 	);
 
 	const state = useMemo<PlayerState>(

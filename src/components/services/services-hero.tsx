@@ -1,17 +1,12 @@
-import {
-	ArrowRightIcon,
-	WrenchScrewdriverIcon,
-} from "@heroicons/react/24/outline";
+import { ArrowRightIcon } from "@heroicons/react/24/outline";
 import NextImage from "next/image";
 import {
 	ServicesHeroBlock,
 	ServicesHeroMotion,
 } from "@/components/services/services-motion";
-import { ServicesNavCarousel } from "@/components/services/services-nav-carousel";
-import { Badge } from "@/components/ui/badge";
 import { DirectionalIcon } from "@/components/ui/directional-icon";
 import { Link } from "@/components/ui/link";
-import type { getServicesHeroMedia, ServiceItem } from "@/lib/mock/services";
+import type { getServicesHeroMedia } from "@/lib/mock/services";
 import { cn } from "@/lib/utils";
 
 const soundCtaClass =
@@ -19,27 +14,21 @@ const soundCtaClass =
 
 type ServicesHeroProps = {
 	heroMedia: ReturnType<typeof getServicesHeroMedia>;
-	navItems: { service: ServiceItem; title: string }[];
 	firstServiceId: string;
 	eyebrow: string;
 	title: string;
 	intro: string;
 	cta: string;
-	navLabel: string;
-	direction: "ltr" | "rtl";
 	className?: string;
 };
 
 export function ServicesHero({
 	heroMedia,
-	navItems,
 	firstServiceId,
 	eyebrow,
 	title,
 	intro,
 	cta,
-	navLabel,
-	direction,
 	className,
 }: ServicesHeroProps) {
 	return (
@@ -51,7 +40,7 @@ export function ServicesHero({
 			)}
 		>
 			<div className="absolute inset-0 isolate">
-				<div className="absolute inset-0 [&_img]:h-full [&_img]:w-full [&_img]:object-cover [&_img]:brightness-[0.82] [&_img]:contrast-[1.08] [&_img]:saturate-[0.62]">
+				<div className="absolute inset-0 [&_img]:h-full [&_img]:w-full [&_img]:object-cover [&_img]:brightness-[0.72] [&_img]:contrast-[1.12] [&_img]:saturate-[0.58]">
 					<NextImage
 						src={heroMedia.url}
 						alt={heroMedia.alt ?? ""}
@@ -63,54 +52,51 @@ export function ServicesHero({
 				</div>
 
 				<div
-					className="pointer-events-none absolute inset-0 z-1 bg-foreground/20"
+					className="pointer-events-none absolute inset-0 z-1 bg-foreground/45"
 					aria-hidden
 				/>
 				<div
-					className="pointer-events-none absolute inset-0 z-1 bg-linear-to-t from-foreground/55 from-0% via-foreground/30 via-28% to-transparent to-68%"
+					className="pointer-events-none absolute inset-0 z-1 bg-linear-to-t from-foreground from-0% via-foreground/80 via-32% to-transparent to-72%"
 					aria-hidden
 				/>
 				<div
-					className="pointer-events-none absolute inset-x-0 top-0 z-1 h-40 bg-linear-to-b from-foreground/40 via-foreground/15 to-transparent sm:h-48"
+					className="pointer-events-none absolute inset-x-0 top-0 z-1 h-44 bg-linear-to-b from-foreground/85 via-foreground/35 to-transparent sm:h-52"
 					aria-hidden
 				/>
 				<div
-					className="pointer-events-none absolute inset-0 z-1 bg-linear-to-r from-foreground/35 from-0% via-foreground/15 via-38% to-transparent to-78% rtl:bg-linear-to-l"
+					className="pointer-events-none absolute inset-0 z-1 bg-linear-to-r from-foreground/75 from-0% via-foreground/40 via-42% to-transparent to-80% rtl:bg-linear-to-l"
 					aria-hidden
 				/>
 				<div
-					className="pointer-events-none absolute inset-0 z-1 bg-[radial-gradient(ellipse_130%_90%_at_50%_115%,var(--color-foreground)_0%,transparent_62%)] opacity-35"
+					className="pointer-events-none absolute inset-0 z-1 bg-[radial-gradient(ellipse_130%_90%_at_50%_115%,var(--color-foreground)_0%,transparent_62%)] opacity-70"
 					aria-hidden
 				/>
 			</div>
 
 			<ServicesHeroMotion className="relative z-10 flex min-h-svh flex-col justify-end px-6 pb-14 sm:px-10 sm:pb-16 lg:px-14 lg:pb-20">
-				<div className="grid gap-8 lg:grid-cols-2 lg:items-end lg:gap-12 xl:gap-16">
-					<ServicesHeroBlock className="max-w-2xl text-start text-white">
-						<Badge
-							variant="outline"
-							size="md"
-							leadingIcon={<WrenchScrewdriverIcon aria-hidden />}
-							className="border-white/40 bg-white/10 text-white/90 [&_svg]:text-white/80"
-						>
-							{eyebrow}
-						</Badge>
+				<div className="max-w-4xl text-start text-white">
+					<ServicesHeroBlock>
+						<p className="hero-slide-eyebrow">{eyebrow}</p>
+					</ServicesHeroBlock>
 
+					<ServicesHeroBlock>
 						<h2
 							id="services-hero-heading"
-							className="mt-4 font-heading text-display font-bold leading-[1.02] text-balance sm:mt-5"
+							className="hero-slide-title mt-3"
 						>
 							{title}
 						</h2>
 					</ServicesHeroBlock>
 
-					<ServicesHeroBlock className="max-w-xl text-start text-white">
-						<p className="text-body leading-relaxed text-white/88">{intro}</p>
+					<ServicesHeroBlock>
+						<p className="hero-slide-description mt-5 max-w-2xl">{intro}</p>
+					</ServicesHeroBlock>
 
+					<ServicesHeroBlock>
 						<Link
 							href={`#${firstServiceId}`}
 							variant="nav"
-							className={cn(soundCtaClass, "mt-6 sm:mt-8")}
+							className={cn(soundCtaClass, "mt-8")}
 						>
 							<span className="relative z-1">{cta}</span>
 							<DirectionalIcon
@@ -120,14 +106,6 @@ export function ServicesHero({
 						</Link>
 					</ServicesHeroBlock>
 				</div>
-
-				<ServicesHeroBlock>
-					<ServicesNavCarousel
-						items={navItems}
-						navLabel={navLabel}
-						direction={direction}
-					/>
-				</ServicesHeroBlock>
 			</ServicesHeroMotion>
 		</section>
 	);

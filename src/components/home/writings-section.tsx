@@ -74,9 +74,9 @@ export async function WritingsSection() {
 				</ScrollRevealBlock>
 
 				<ScrollReveal className="mt-12 lg:mt-0">
-					{rows.map((item, index) => (
+					{rows.map((item) => (
 						<ScrollRevealItem key={item.id}>
-							<WritingRow item={item} index={index} />
+							<WritingRow item={item} />
 						</ScrollRevealItem>
 					))}
 				</ScrollReveal>

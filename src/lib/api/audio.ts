@@ -38,6 +38,7 @@ const SOUND_TRACKS_TAG = "sound-tracks";
 
 export const AUDIO_GRID_PAGE_SIZE = 12;
 export const AUDIO_MEMORIES_SIZE = 8;
+export const SOUND_SECTION_CARD_COUNT = 4;
 
 export type AudioListResult = {
 	items: ResolvedAudioCard[];
@@ -80,6 +81,15 @@ export async function getAllAudioCards(
 	return tracks
 		.map((track) => resolveAudioCard(locale, track))
 		.filter((item): item is ResolvedAudioCard => item != null);
+}
+
+/** Featured audio cards for the homepage sound section. */
+export async function getAudioCarousel(
+	locale: string,
+	size = SOUND_SECTION_CARD_COUNT,
+): Promise<ResolvedAudioCard[]> {
+	const { items } = await getAudioListing(locale, { page: 1, size });
+	return items;
 }
 
 export async function getAudioListing(

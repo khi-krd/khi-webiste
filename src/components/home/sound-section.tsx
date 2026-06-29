@@ -1,6 +1,13 @@
-import { getTranslations } from "next-intl/server";
+import { getLocale, getTranslations } from "next-intl/server";
+import {
+	type SoundSectionCardItem,
+	SoundSectionCards,
+} from "@/components/home/sound-section-cards";
 import { SoundSectionContent } from "@/components/home/sound-section-content";
 import { SoundSectionVideo } from "@/components/home/sound-section-video";
+import { getAudioCarousel } from "@/lib/api/audio";
+import { formatDuration } from "@/lib/audio/format";
+import { soundTypeLabel } from "@/lib/audio/sound-types";
 import { cn } from "@/lib/utils";
 
 type SoundSectionProps = {
@@ -13,14 +20,38 @@ export async function SoundSection({
 	compact = false,
 	className,
 }: SoundSectionProps = {}) {
-	const t = await getTranslations("Sound");
+	const locale = await getLocale();
+	const [t, audioT, cards] = await Promise.all([
+		getTranslations("Sound"),
+		getTranslations("Audio"),
+		getAudioCarousel(locale, compact ? 3 : undefined),
+	]);
+
+	const cardItems: SoundSectionCardItem[] = cards.map((card) => {
+		const typeLabel = soundTypeLabel((key) => audioT(key), card.soundType);
+		const durationLabel = formatDuration(card.totalDurationSeconds);
+		const trackCountLabel =
+			card.trackState === "MULTI"
+				? audioT("card.albumTracks", { count: card.totalTracks ?? 0 })
+				: null;
+
+		return {
+			id: card.id,
+			title: card.title,
+			typeLabel,
+			durationLabel,
+			trackCountLabel,
+			coverUrl: card.coverUrl,
+			queue: card.queue,
+		};
+	});
 
 	return (
 		<section
 			aria-labelledby="sound-heading"
 			className={cn(
-				"cv-auto relative w-full overflow-hidden border-t border-border [--cv-intrinsic:900px]",
-				compact ? "min-h-112 sm:min-h-144" : "min-h-svh",
+				"cv-auto relative w-full overflow-hidden border-t border-border [--cv-intrinsic:1000px]",
+				compact ? "min-h-128 sm:min-h-160" : "min-h-svh",
 				className,
 			)}
 		>
@@ -48,7 +79,7 @@ export async function SoundSection({
 				aria-hidden
 			/>
 
-			<div className="relative z-10 flex min-h-[inherit] flex-col justify-end px-6 pb-14 sm:px-10 sm:pb-16 lg:px-14 lg:pb-20">
+			<div className="relative z-10 flex min-h-[inherit] flex-col justify-end px-6 pb-16 sm:px-10 sm:pb-20 lg:px-14 lg:pb-24">
 				<SoundSectionContent
 					eyebrow={t("eyebrow")}
 					title={t("title")}
@@ -56,6 +87,7 @@ export async function SoundSection({
 					cta={t("cta")}
 					ctaHref="/audio"
 				/>
+				<SoundSectionCards items={cardItems} compact={compact} />
 			</div>
 		</section>
 	);

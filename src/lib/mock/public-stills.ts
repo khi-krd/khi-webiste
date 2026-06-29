@@ -46,12 +46,21 @@ export const ABOUT_STILLS = [
 	"/about/475203467_1007002848126180_7383496220452921499_n.jpg",
 ] as const;
 
-export const WRITINGS_STILL = "/writings.png";
+export const WRITINGS_STILLS = [
+	"/writings/images/1.jpeg",
+	"/writings/images/2.jpeg",
+	"/writings/images/3.jpeg",
+	"/writings/images/4.jpeg",
+	"/writings/images/5.jpeg",
+	"/writings/images/6.jpeg",
+] as const;
+
+export const WRITINGS_STILL = WRITINGS_STILLS[0];
 
 export const ALL_PUBLIC_STILLS = [
 	...MENU_STILLS,
 	...GALLERY_STILLS,
 	...NEWS_STILLS,
 	...ABOUT_STILLS,
-	WRITINGS_STILL,
+	...WRITINGS_STILLS,
 ] as const;

@@ -15,24 +15,15 @@ export type WritingRowItem = {
 
 type WritingRowProps = {
 	item: WritingRowItem;
-	index: number;
 	className?: string;
 };
 
-export function WritingRow({ item, index, className }: WritingRowProps) {
-	const displayIndex = String(index + 1).padStart(2, "0");
+export function WritingRow({ item, className }: WritingRowProps) {
 	const linkClassName =
 		"group flex items-start gap-10 no-underline sm:gap-12 lg:gap-14";
 
 	const content = (
 		<>
-			<span
-				className="hidden shrink-0 pt-1 font-heading text-label tabular-nums text-muted sm:block"
-				aria-hidden
-			>
-				{displayIndex}
-			</span>
-
 			<div className="min-w-0 flex-1 text-start">
 				<Badge variant="subtle" size="sm" className="mb-4 w-fit">
 					{item.genreLabel}
