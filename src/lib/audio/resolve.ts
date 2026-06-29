@@ -1,6 +1,7 @@
 import { plainTextFromRichContent } from "@/lib/rich-text";
 import type {
 	PlayerTrackPayload,
+	ResolvedAlbumVideo,
 	ResolvedAudioCard,
 	ResolvedAudioDetail,
 	ResolvedAudioFileRow,
@@ -162,12 +163,14 @@ function resolveFileRow(
 	trackTitle: string,
 	index: number,
 	totalFiles: number,
+	coverUrl: string | null,
 ): ResolvedAudioFileRow {
 	return {
 		id: file.id,
 		title:
 			firstNonBlank(file.title) ??
 			(totalFiles > 1 ? `${trackTitle} — ${index + 1}` : trackTitle),
+		thumbUrl: firstNonBlank(file.thumbUrl, coverUrl),
 		fileType: file.fileType,
 		playable: isPlayable(file),
 		externalUrl: file.externalUrl,
@@ -185,6 +188,44 @@ function resolveFileRow(
 	};
 }
 
+function resolvePosterUrl(track: SoundTrack): string | null {
+	const poster = track.attachments.find(
+		(attachment) =>
+			attachment.attachmentType === "IMAGE" &&
+			(attachment.title?.toLowerCase().includes("poster") ||
+				attachment.fileUrl.toLowerCase().includes("poster")),
+	);
+	return poster?.fileUrl ?? null;
+}
+
+function resolveAlbumVideo(track: SoundTrack): ResolvedAlbumVideo | null {
+	const posterUrl = resolvePosterUrl(track);
+
+	const videoFile = track.files.find(
+		(file) =>
+			file.fileType === "VIDEO" &&
+			Boolean(file.fileUrl?.trim() || file.externalUrl?.trim()),
+	);
+	if (videoFile) {
+		const url = firstNonBlank(videoFile.fileUrl, videoFile.externalUrl);
+		if (url) {
+			return { url, posterUrl };
+		}
+	}
+
+	const videoAttachment = track.attachments.find(
+		(attachment) => attachment.attachmentType === "VIDEO",
+	);
+	if (videoAttachment?.fileUrl) {
+		return {
+			url: videoAttachment.fileUrl,
+			posterUrl,
+		};
+	}
+
+	return null;
+}
+
 export function resolveAudioDetail(
 	locale: string,
 	track: SoundTrack,
@@ -195,6 +236,7 @@ export function resolveAudioDetail(
 	}
 
 	const trackTitle = content.title;
+	const coverUrl = resolveAudioCoverUrl(locale, track);
 
 	const brochures: ResolvedBrochureItem[] = track.files
 		.flatMap((file) => file.brochures)
@@ -214,7 +256,7 @@ export function resolveAudioDetail(
 		id: track.id,
 		title: trackTitle,
 		description: content.description?.trim() ?? "",
-		coverUrl: resolveAudioCoverUrl(locale, track),
+		coverUrl,
 		hoverCoverUrl: track.hoverCoverUrl ?? null,
 		soundType: track.soundType,
 		trackState: track.trackState,
@@ -237,9 +279,10 @@ export function resolveAudioDetail(
 		totalDurationSeconds: track.totalDurationSeconds,
 		totalSizeBytes: track.totalSizeBytes,
 		fileRows: track.files.map((file, index) =>
-			resolveFileRow(file, trackTitle, index, track.files.length),
+			resolveFileRow(file, trackTitle, index, track.files.length, coverUrl),
 		),
 		brochures,
+		video: resolveAlbumVideo(track),
 		attachments,
 		tags: resolveBilingualStrings(locale, track.tags.ckb, track.tags.kmr),
 		keywords: resolveBilingualStrings(

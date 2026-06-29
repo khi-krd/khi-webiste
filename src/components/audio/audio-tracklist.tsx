@@ -2,6 +2,7 @@ import {
 	ArrowTopRightOnSquareIcon,
 	ChevronDownIcon,
 } from "@heroicons/react/24/outline";
+import NextImage from "next/image";
 import { AudioPlayButton } from "@/components/audio/audio-play-button";
 import { formatDuration, formatFileSize } from "@/lib/audio/format";
 import { cn } from "@/lib/utils";
@@ -156,6 +157,18 @@ export function AudioTracklist({
 								>
 									{trackNo(index)}
 								</span>
+
+								{row.thumbUrl ? (
+									<span className="relative hidden size-10 shrink-0 overflow-hidden border border-border bg-sunken sm:block">
+										<NextImage
+											src={row.thumbUrl}
+											alt=""
+											fill
+											sizes="2.5rem"
+											className="object-cover brightness-[0.94] saturate-[0.9]"
+										/>
+									</span>
+								) : null}
 
 								<p className="min-w-0 flex-1 text-body font-medium text-foreground">
 									{row.title}

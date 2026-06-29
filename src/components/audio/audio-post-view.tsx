@@ -1,7 +1,9 @@
 import { ArrowLeftIcon } from "@heroicons/react/24/outline";
 import NextImage from "next/image";
 import { getTranslations } from "next-intl/server";
+import { AudioAlbumVideo } from "@/components/audio/audio-album-video";
 import { AudioAttachments } from "@/components/audio/audio-attachments";
+import { AudioBookletReader } from "@/components/audio/audio-booklet-reader";
 import { AudioBrochures } from "@/components/audio/audio-brochures";
 import { AudioPlayButton } from "@/components/audio/audio-play-button";
 import {
@@ -134,6 +136,20 @@ export async function AudioPostView({ detail, locale }: AudioPostViewProps) {
 	);
 
 	const hasCredits = Boolean(detail.reader || detail.directors.length > 0);
+
+	const downloadableAttachments = detail.attachments.filter((attachment) => {
+		if (attachment.attachmentType === "VIDEO") {
+			return false;
+		}
+		if (
+			attachment.attachmentType === "IMAGE" &&
+			(attachment.title?.toLowerCase().includes("poster") ||
+				attachment.fileUrl.toLowerCase().includes("poster"))
+		) {
+			return false;
+		}
+		return true;
+	});
 
 	return (
 		<article>
@@ -317,34 +333,59 @@ export async function AudioPostView({ detail, locale }: AudioPostViewProps) {
 					{detail.brochures.length > 0 ? (
 						<ScrollRevealItem>
 							<div className="mt-12 lg:mt-16">
-								<AudioBrochures
-									title={t("brochures.title")}
-									items={detail.brochures}
-									openLabel={t("brochures.open")}
-									closeLabel={t("brochures.close")}
-									previousLabel={t("brochures.previous")}
-									nextLabel={t("brochures.next")}
-									metadataLabels={{
-										dimensions: t("brochures.metadata.dimensions"),
-										fileSize: t("brochures.metadata.fileSize"),
-										fileSizeBytes: t("brochures.metadata.fileSizeBytes"),
-										mimeType: t("brochures.metadata.mimeType"),
-										aspectRatio: t("brochures.metadata.aspectRatio"),
-										sortOrder: t("brochures.metadata.sortOrder"),
-										externalUrl: t("brochures.metadata.externalUrl"),
-										embedUrl: t("brochures.metadata.embedUrl"),
-									}}
-								/>
+								{detail.albumOfMemories ? (
+									<AudioBookletReader
+										title={t("brochures.title")}
+										items={detail.brochures}
+										labels={{
+											previous: t("brochures.previous"),
+											next: t("brochures.next"),
+											zoomIn: t("brochures.zoomIn"),
+											zoomOut: t("brochures.zoomOut"),
+											fullscreen: t("brochures.fullscreen"),
+											exitFullscreen: t("brochures.exitFullscreen"),
+										}}
+									/>
+								) : (
+									<AudioBrochures
+										title={t("brochures.title")}
+										items={detail.brochures}
+										openLabel={t("brochures.open")}
+										closeLabel={t("brochures.close")}
+										previousLabel={t("brochures.previous")}
+										nextLabel={t("brochures.next")}
+										metadataLabels={{
+											dimensions: t("brochures.metadata.dimensions"),
+											fileSize: t("brochures.metadata.fileSize"),
+											fileSizeBytes: t("brochures.metadata.fileSizeBytes"),
+											mimeType: t("brochures.metadata.mimeType"),
+											aspectRatio: t("brochures.metadata.aspectRatio"),
+											sortOrder: t("brochures.metadata.sortOrder"),
+											externalUrl: t("brochures.metadata.externalUrl"),
+											embedUrl: t("brochures.metadata.embedUrl"),
+										}}
+									/>
+								)}
 							</div>
 						</ScrollRevealItem>
 					) : null}
 
-					{detail.attachments.length > 0 ? (
+					{detail.video ? (
+						<ScrollRevealItem>
+							<AudioAlbumVideo
+								title={t("video.title")}
+								video={detail.video}
+								className="mt-12 lg:mt-16"
+							/>
+						</ScrollRevealItem>
+					) : null}
+
+					{downloadableAttachments.length > 0 ? (
 						<ScrollRevealItem>
 							<div className="mt-12 lg:mt-16">
 								<AudioAttachments
 									title={t("attachments.title")}
-									attachments={detail.attachments}
+									attachments={downloadableAttachments}
 									untitledLabel={t("attachments.untitled")}
 									downloadLabel={t("attachments.download")}
 									typeLabels={{

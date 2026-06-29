@@ -408,6 +408,11 @@
 			"close": "داخستن",
 			"previous": "وێنەی پێشوو",
 			"next": "وێنەی دواتر",
+			"zoomIn": "گەورەکردنەوە",
+			"zoomOut": "بچووککردنەوە",
+			"fullscreen": "پڕ بە شاشە",
+			"exitFullscreen": "دەرچوون لە پڕ بە شاشە",
+			"pageIndicator": "{current} / {total}",
 			"metadata": {
 				"dimensions": "ڕەهەندەکان",
 				"fileSize": "قەبارەی فایل",
@@ -418,6 +423,9 @@
 				"externalUrl": "بەستەری دەرەکی",
 				"embedUrl": "بەستەری نیشاندان"
 			}
+		},
+		"video": {
+			"title": "ڤیدیۆ"
 		},
 		"attachments": {
 			"title": "سەرچاوەکان و داگرتنەکان",

@@ -408,6 +408,11 @@
 			"close": "Bigire",
 			"previous": "Wêneya berê",
 			"next": "Wêneya paş",
+			"zoomIn": "Mezin bike",
+			"zoomOut": "Biçûk bike",
+			"fullscreen": "Dîmender tijî",
+			"exitFullscreen": "Ji dîmender tijî derkeve",
+			"pageIndicator": "{current} / {total}",
 			"metadata": {
 				"dimensions": "Pîvan",
 				"fileSize": "Mezinahiya dosyayê",
@@ -418,6 +423,9 @@
 				"externalUrl": "Girêdana derveyî",
 				"embedUrl": "Girêdana embedê"
 			}
+		},
+		"video": {
+			"title": "Vîdyo"
 		},
 		"attachments": {
 			"title": "Çavkanî & daxistin",

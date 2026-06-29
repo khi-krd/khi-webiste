@@ -33,6 +33,7 @@ export const SoundTrackFileSchema = z.object({
 	fileUrl: z.string().nullable(),
 	externalUrl: z.string().nullable(),
 	embedUrl: z.string().nullable(),
+	thumbUrl: z.string().nullable().optional(),
 	title: z.string().nullable(),
 	fileType: SoundFileTypeSchema,
 	publishmentYear: z.number().int().nullable(),
@@ -165,6 +166,7 @@ export type ResolvedAudioCard = {
 export type ResolvedAudioFileRow = {
 	id: number;
 	title: string;
+	thumbUrl: string | null;
 	fileType: SoundFileType;
 	playable: boolean;
 	externalUrl: string | null;
@@ -186,6 +188,11 @@ export type ResolvedBrochureItem = {
 	imageUrl: string;
 	caption: string | null;
 	sortOrder: number;
+};
+
+export type ResolvedAlbumVideo = {
+	url: string;
+	posterUrl: string | null;
 };
 
 export type ResolvedAudioDetail = {
@@ -213,6 +220,7 @@ export type ResolvedAudioDetail = {
 	totalSizeBytes: number | null;
 	fileRows: ResolvedAudioFileRow[];
 	brochures: ResolvedBrochureItem[];
+	video: ResolvedAlbumVideo | null;
 	attachments: SoundAttachment[];
 	tags: string[];
 	keywords: string[];
