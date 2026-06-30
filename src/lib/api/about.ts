@@ -6,7 +6,11 @@ import {
 	resolvePartnerItems,
 	resolveTeamOffices,
 } from "@/lib/about/resolve";
-import { apiFetch, DEFAULT_REVALIDATE } from "@/lib/api/client";
+import {
+	apiFetch,
+	BULK_FETCH_SIZE,
+	DEFAULT_REVALIDATE,
+} from "@/lib/api/client";
 import { getApiBaseUrl } from "@/lib/api/config";
 import {
 	getAboutFounder as getMockAboutFounder,
@@ -18,7 +22,7 @@ import {
 	type OfficeTeam,
 	type PartnerItem,
 } from "@/lib/mock/about";
-import { type About, AboutListSchema, AboutSchema } from "@/types/about";
+import { type About, AboutPageSchema, AboutSchema } from "@/types/about";
 import { PartnerListSchema } from "@/types/partner";
 import { TeamMemberListSchema } from "@/types/team";
 
@@ -32,13 +36,14 @@ export async function getAboutPages(): Promise<About[]> {
 		return [];
 	}
 
-	const pages = await apiFetch(ABOUT_ENDPOINT, {
-		schema: AboutListSchema,
+	const page = await apiFetch(ABOUT_ENDPOINT, {
+		schema: AboutPageSchema,
 		tags: [ABOUT_TAG],
 		revalidate: DEFAULT_REVALIDATE,
+		searchParams: { page: 0, size: BULK_FETCH_SIZE },
 	});
 
-	return pages ?? [];
+	return page?.content ?? [];
 }
 
 export async function getAboutPageBySlug(slug: string): Promise<About | null> {

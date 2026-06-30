@@ -34,6 +34,16 @@ export const AboutSchema = z.object({
 
 export const AboutListSchema = z.array(AboutSchema);
 
+export const AboutPageSchema = z.object({
+	content: z.array(AboutSchema),
+	totalElements: z.number(),
+	totalPages: z.number(),
+	number: z.number().optional(),
+	size: z.number().optional(),
+	empty: z.boolean().optional(),
+});
+
 export type About = z.infer<typeof AboutSchema>;
+export type AboutPage = z.infer<typeof AboutPageSchema>;
 export type AboutContent = z.infer<typeof AboutContentSchema>;
 export type AboutStat = z.infer<typeof AboutStatSchema>;

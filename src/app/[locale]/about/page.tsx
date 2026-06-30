@@ -109,7 +109,7 @@ export default async function AboutPage({
 				}}
 				name={apiFounder?.name ?? t("founder.name")}
 				role1={t("founder.role1")}
-				role2={t("founder.role2")}
+				role2={apiFounder?.bio ?? t("founder.role2")}
 			/>
 
 			<AboutTeamShowcase
