@@ -47,6 +47,6 @@ next-env.d.ts
 CLAUDE.md
 AGENTS.md
 
-# API
-API
+# API (root-level backend only; do not match src/lib/api/)
+/API/
 
