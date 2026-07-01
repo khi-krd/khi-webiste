@@ -134,7 +134,7 @@ function resolveAlbumItem(
 		caption,
 		description:
 			description && description !== caption ? description : undefined,
-		sortOrder: item.sortOrder,
+		sortOrder: item.sortOrder ?? 0,
 		widthPx: item.widthPx ?? undefined,
 		heightPx: item.heightPx ?? undefined,
 		aspectRatio: item.aspectRatio ?? undefined,
@@ -174,7 +174,7 @@ export function resolveGalleryPost(
 
 	const description = content?.description?.trim() ?? "";
 	const album = [...collection.imageAlbum]
-		.sort((a, b) => a.sortOrder - b.sortOrder)
+		.sort((a, b) => (a.sortOrder ?? 0) - (b.sortOrder ?? 0))
 		.map((item) => resolveAlbumItem(locale, item));
 
 	return {

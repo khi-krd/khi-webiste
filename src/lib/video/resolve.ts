@@ -97,6 +97,15 @@ export function isShortFilm(topicId: number | null): boolean {
 	return topicId === SHORT_FILMS_TOPIC_ID;
 }
 
+function resolveClipUrl(
+	clip?: NonNullable<Video["videoClipItems"]>[number] | null,
+): string | null {
+	if (!clip) {
+		return null;
+	}
+	return firstNonBlank(clip.url, clip.externalUrl, clip.embedUrl);
+}
+
 function sortedClips(video: Video): Video["videoClipItems"] {
 	if (!video.videoClipItems) {
 		return null;
@@ -133,7 +142,7 @@ export function resolveVideoPlayer(video: Video): {
 } {
 	if (video.videoType === "VIDEO_CLIP") {
 		const first = sortedClips(video)?.[0];
-		const classified = classifySource(first?.url);
+		const classified = classifySource(resolveClipUrl(first));
 		return classified
 			? { playerKind: classified.kind, playableSrc: classified.src }
 			: { playerKind: "none", playableSrc: null };
@@ -207,8 +216,8 @@ function resolveClip(
 	return {
 		clipNumber: clip.clipNumber,
 		title: title ?? String(clip.clipNumber),
-		url: clip.url,
-		durationSeconds: clip.durationSeconds,
+		url: resolveClipUrl(clip) ?? "",
+		durationSeconds: clip.durationSeconds ?? null,
 	};
 }
 
@@ -269,7 +278,7 @@ export function resolveVideoCard(
 			video.keywordsCkb,
 			video.keywordsKmr,
 		),
-		createdAt: video.createdAt,
+		createdAt: video.createdAt ?? "",
 	};
 }
 
@@ -325,7 +334,7 @@ export function resolveVideoDetail(
 			video.keywordsCkb,
 			video.keywordsKmr,
 		),
-		createdAt: video.createdAt,
-		updatedAt: video.updatedAt,
+		createdAt: video.createdAt ?? "",
+		updatedAt: video.updatedAt ?? "",
 	};
 }

@@ -21,7 +21,7 @@ export type AttachmentType = z.infer<typeof AttachmentTypeSchema>;
 
 export const BrochureSchema = z.object({
 	id: z.number(),
-	imageUrl: z.string(),
+	imageUrl: z.string().nullish(),
 	caption: z.string().nullable(),
 	brochureOrder: z.number().nullable(),
 });
@@ -30,36 +30,36 @@ export type Brochure = z.infer<typeof BrochureSchema>;
 
 export const SoundTrackFileSchema = z.object({
 	id: z.number(),
-	fileUrl: z.string().nullable(),
-	externalUrl: z.string().nullable(),
-	embedUrl: z.string().nullable(),
-	thumbUrl: z.string().nullable().optional(),
+	fileUrl: z.string().nullish(),
+	externalUrl: z.string().nullish(),
+	embedUrl: z.string().nullish(),
+	thumbUrl: z.string().nullish().optional(),
 	title: z.string().nullable(),
-	fileType: SoundFileTypeSchema,
-	publishmentYear: z.number().int().nullable(),
-	fileFormat: z.string().nullable(),
-	sizeBytes: z.number().nullable(),
-	durationSeconds: z.number().nullable(),
-	durationMinutes: z.number().nullable(),
-	bitRate: z.string().nullable(),
-	sampleRate: z.string().nullable(),
+	fileType: SoundFileTypeSchema.default("AUDIO"),
+	publishmentYear: z.number().int().nullish(),
+	fileFormat: z.string().nullish(),
+	sizeBytes: z.number().nullish(),
+	durationSeconds: z.number().nullish(),
+	durationMinutes: z.number().nullish(),
+	bitRate: z.string().nullish(),
+	sampleRate: z.string().nullish(),
 	audioChannel: AudioChannelSchema.nullable(),
-	form: z.string().nullable(),
-	genre: z.string().nullable(),
-	recordingVenue: z.string().nullable(),
-	brochures: z.array(BrochureSchema),
+	form: z.string().nullish(),
+	genre: z.string().nullish(),
+	recordingVenue: z.string().nullish(),
+	brochures: z.array(BrochureSchema).default([]),
 });
 
 export type SoundTrackFile = z.infer<typeof SoundTrackFileSchema>;
 
 export const SoundAttachmentSchema = z.object({
 	id: z.number(),
-	fileUrl: z.string(),
+	fileUrl: z.string().nullish(),
 	title: z.string().nullable(),
-	attachmentType: AttachmentTypeSchema,
-	sizeBytes: z.number().nullable(),
-	mimeType: z.string().nullable(),
-	attachmentOrder: z.number().nullable(),
+	attachmentType: AttachmentTypeSchema.default("OTHER"),
+	sizeBytes: z.number().nullish(),
+	mimeType: z.string().nullish(),
+	attachmentOrder: z.number().nullish(),
 });
 
 export type SoundAttachment = z.infer<typeof SoundAttachmentSchema>;
@@ -90,18 +90,18 @@ export const SoundTrackSchema = z.object({
 	directors: z.array(z.string()).optional().default([]),
 	terms: z.string().nullable(),
 	thisProjectOfInstitute: z.boolean(),
-	tags: BilingualSetSchema,
-	keywords: BilingualSetSchema,
-	files: z.array(SoundTrackFileSchema),
+	tags: BilingualSetSchema.default({ ckb: [], kmr: [] }),
+	keywords: BilingualSetSchema.default({ ckb: [], kmr: [] }),
+	files: z.array(SoundTrackFileSchema).default([]),
 	totalDurationSeconds: z.number().nullable(),
 	totalSizeBytes: z.number().nullable(),
 	albumName: z.string().nullable(),
 	publishmentYear: z.number().int().nullable(),
 	cdNumber: z.number().int().nullable(),
 	totalTracks: z.number().int().nullable(),
-	attachments: z.array(SoundAttachmentSchema),
-	createdAt: z.string(),
-	updatedAt: z.string(),
+	attachments: z.array(SoundAttachmentSchema).default([]),
+	createdAt: z.string().optional(),
+	updatedAt: z.string().optional(),
 });
 
 export type SoundTrack = z.infer<typeof SoundTrackSchema>;

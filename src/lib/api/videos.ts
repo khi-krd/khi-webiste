@@ -2,10 +2,14 @@ import "server-only";
 import { z } from "zod";
 import {
 	apiFetch,
+	apiFetchPage,
+	apiFetchRaw,
 	BULK_FETCH_SIZE,
 	DEFAULT_REVALIDATE,
+	unwrapApiPayload,
 } from "@/lib/api/client";
 import { getApiBaseUrl } from "@/lib/api/config";
+import { normalizeVideoRecord } from "@/lib/api/normalize";
 import {
 	DEMO_VIDEO_TOPICS,
 	getAllDemoVideos,
@@ -19,7 +23,7 @@ import type {
 	Video,
 	VideoType,
 } from "@/types/video";
-import { VideoSchema, VideosPageSchema, VideoTopicSchema } from "@/types/video";
+import { VideoSchema, VideoTopicSchema } from "@/types/video";
 
 const VIDEOS_ENDPOINT = "/api/v1/videos";
 const VIDEOS_TAG = "videos";
@@ -47,11 +51,12 @@ export type VideoListingOptions = {
 async function fetchVideosPage(
 	searchParams: Record<string, string | number | undefined>,
 ): Promise<Video[] | null> {
-	const page = await apiFetch(VIDEOS_ENDPOINT, {
-		schema: VideosPageSchema,
+	const page = await apiFetchPage(VIDEOS_ENDPOINT, {
+		itemSchema: VideoSchema,
 		tags: [VIDEOS_TAG],
 		revalidate: DEFAULT_REVALIDATE,
 		searchParams,
+		normalizeItem: normalizeVideoRecord,
 	});
 
 	return page?.content.length ? page.content : null;
@@ -161,14 +166,17 @@ export async function getVideoById(
 	id: number,
 ): Promise<ResolvedVideoDetail | null> {
 	if (getApiBaseUrl()) {
-		const detail = await apiFetch(`${VIDEOS_ENDPOINT}/${id}`, {
-			schema: VideoSchema,
+		const raw = await apiFetchRaw(`${VIDEOS_ENDPOINT}/${id}`, {
 			tags: [VIDEOS_TAG, `video-${id}`],
 			revalidate: DEFAULT_REVALIDATE,
 		});
+		const unwrapped = unwrapApiPayload(raw);
+		const parsed = unwrapped
+			? VideoSchema.safeParse(normalizeVideoRecord(unwrapped))
+			: null;
 
-		if (detail) {
-			const resolved = resolveVideoDetail(locale, detail);
+		if (parsed?.success) {
+			const resolved = resolveVideoDetail(locale, parsed.data);
 			if (resolved?.id === id) {
 				return resolved;
 			}

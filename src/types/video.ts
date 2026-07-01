@@ -9,7 +9,7 @@ export type VideoContentLanguage = z.infer<typeof VideoContentLanguageSchema>;
 export const VideoContentSchema = z.object({
 	title: z.string().nullable(),
 	description: z.string().nullable(),
-	location: z.string().nullable(),
+	location: z.string().nullish(),
 	director: z.string().nullable(),
 	producer: z.string().nullable(),
 });
@@ -18,10 +18,12 @@ export type VideoContent = z.infer<typeof VideoContentSchema>;
 
 export const VideoClipItemSchema = z.object({
 	clipNumber: z.number().int(),
-	url: z.string(),
-	durationSeconds: z.number().int().nullable(),
-	titleCkb: z.string().nullable(),
-	titleKmr: z.string().nullable(),
+	url: z.string().nullish(),
+	externalUrl: z.string().nullish(),
+	embedUrl: z.string().nullish(),
+	durationSeconds: z.number().int().nullish(),
+	titleCkb: z.string().nullish(),
+	titleKmr: z.string().nullish(),
 });
 
 export type VideoClipItem = z.infer<typeof VideoClipItemSchema>;
@@ -97,8 +99,8 @@ export const VideoSchema = z.object({
 	keywordsCkb: z.array(z.string()).optional().default([]),
 	keywordsKmr: z.array(z.string()).optional().default([]),
 	keywordsEn: z.array(z.string()).optional(),
-	createdAt: z.string(),
-	updatedAt: z.string(),
+	createdAt: z.string().optional(),
+	updatedAt: z.string().optional(),
 	castMembers: z.array(VideoCastMemberSchema).optional(),
 	highlightClips: z.array(VideoHighlightClipSchema).optional(),
 });

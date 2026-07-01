@@ -1,12 +1,10 @@
 import { ArrowUpRightIcon, FilmIcon, MusicalNoteIcon, PhotoIcon } from "@heroicons/react/24/outline";
 import { ProjectCoverImage } from "@/components/projects/project-cover-image";
 import { DirectionalIcon } from "@/components/ui/directional-icon";
-import { RichText } from "@/components/ui/rich-text";
 import { Link } from "@/i18n/navigation";
 import type { ProjectListItem } from "@/lib/mock/projects";
 import { countGalleryMedia } from "@/lib/project/media";
 import { projectDetailHref } from "@/lib/projects-url";
-import { isRichTextEmpty } from "@/lib/rich-text";
 import type { MediaKind } from "@/types/media";
 import { cn } from "@/lib/utils";
 
@@ -16,7 +14,6 @@ type ProjectCardCopy = {
 
 type ProjectCardProps = {
 	item: ProjectListItem;
-	globalIndex: number;
 	copy: ProjectCardCopy;
 	className?: string;
 	priority?: boolean;
@@ -38,16 +35,14 @@ function MediaKindBadge({ kind }: { kind: MediaKind }) {
 }
 
 /**
- * Editorial project card — index numeral, cover, title, rich-text teaser, CTA.
+ * Editorial project card — cover, title, rich-text teaser, CTA.
  */
 export function ProjectCard({
 	item,
-	globalIndex,
 	copy,
 	className,
 	priority = false,
 }: ProjectCardProps) {
-	const indexLabel = String(globalIndex + 1);
 	const coverKind = item.coverMediaType ?? "IMAGE";
 	const galleryCounts = countGalleryMedia(item.mediaGallery);
 	const hasGallery =
@@ -56,14 +51,7 @@ export function ProjectCard({
 
 	return (
 		<article className={cn("flex h-full flex-col", className)}>
-			<span
-				className="font-heading text-[clamp(3rem,8vw,5.5rem)] font-bold leading-[0.85] text-foreground/[0.12]"
-				aria-hidden
-			>
-				{indexLabel}
-			</span>
-
-			<div className="mt-4 flex flex-1 flex-col sm:mt-6">
+			<div className="flex flex-1 flex-col">
 				<Link href={href} className="group block no-underline">
 					<div className="relative">
 						<ProjectCoverImage
@@ -97,17 +85,11 @@ export function ProjectCard({
 					</h3>
 				</Link>
 
-				{!isRichTextEmpty(item.description) ? (
-					<RichText
-						content={item.description}
-						compact
-						className="project-card-preview mt-3 flex-1 text-muted"
-					/>
-				) : (
-					<p className="mt-3 line-clamp-5 flex-1 text-small leading-relaxed text-muted">
+				{item.excerpt ? (
+					<p className="mt-3 line-clamp-2 text-small leading-relaxed text-muted">
 						{item.excerpt}
 					</p>
-				)}
+				) : null}
 
 				<Link
 					href={href}

@@ -2,7 +2,16 @@ import bundleAnalyzer from "@next/bundle-analyzer";
 import type { NextConfig } from "next";
 import createNextIntlPlugin from "next-intl/plugin";
 
-const mediaHost = process.env.NEXT_PUBLIC_MEDIA_HOST;
+/**
+ * CMS cover URLs may point at S3, Wikimedia, YouTube thumbnails, or any other
+ * HTTPS host. Wildcard patterns let next/image optimize arbitrary remote src.
+ */
+const REMOTE_IMAGE_PATTERNS: NonNullable<
+	NextConfig["images"]
+>["remotePatterns"] = [
+	{ protocol: "https", hostname: "**" },
+	{ protocol: "http", hostname: "**" },
+];
 
 // Opt-in treemap of client/server bundles: `ANALYZE=true pnpm build`.
 const withBundleAnalyzer = bundleAnalyzer({
@@ -26,9 +35,7 @@ const nextConfig: NextConfig = {
 		// No CDN in front (self-hosted/Dokploy), so let the on-container optimizer
 		// cache optimized variants aggressively (1 year) instead of re-encoding.
 		minimumCacheTTL: 31536000,
-		remotePatterns: mediaHost
-			? [{ protocol: "https" as const, hostname: mediaHost }]
-			: [],
+		remotePatterns: REMOTE_IMAGE_PATTERNS,
 	},
 };
 

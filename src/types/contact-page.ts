@@ -37,6 +37,17 @@ export const ContactPageSchema = z.object({
 
 export const ContactPageListSchema = z.array(ContactPageSchema);
 
+export const ContactActivePageSchema = z.object({
+	content: z.array(ContactPageSchema),
+	totalElements: z.number().optional(),
+	totalPages: z.number().optional(),
+	number: z.number().optional(),
+	size: z.number().optional(),
+	empty: z.boolean().optional(),
+});
+
+export type ContactActivePage = z.infer<typeof ContactActivePageSchema>;
+
 export const ContactMessageStatusSchema = z.enum([
 	"NEW",
 	"IN_PROGRESS",

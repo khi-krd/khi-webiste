@@ -144,7 +144,7 @@ export async function AudioPostView({ detail, locale }: AudioPostViewProps) {
 		if (
 			attachment.attachmentType === "IMAGE" &&
 			(attachment.title?.toLowerCase().includes("poster") ||
-				attachment.fileUrl.toLowerCase().includes("poster"))
+				attachment.fileUrl?.toLowerCase().includes("poster"))
 		) {
 			return false;
 		}

@@ -10,7 +10,6 @@ import type { ProjectListItem } from "@/lib/mock/projects";
 
 type ProjectsShellProps = {
 	items: ProjectListItem[];
-	indexOffset: number;
 	currentPage: number;
 	totalPages: number;
 	tags: string[];
@@ -27,7 +26,6 @@ type ProjectsShellProps = {
 
 export function ProjectsShell({
 	items,
-	indexOffset,
 	currentPage,
 	totalPages,
 	tags,
@@ -64,7 +62,6 @@ export function ProjectsShell({
 								>
 									<ProjectCard
 										item={item}
-										globalIndex={indexOffset + index}
 										copy={{ preview: previewLabel }}
 										priority={index < 3}
 									/>

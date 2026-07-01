@@ -2,10 +2,14 @@ import "server-only";
 import { z } from "zod";
 import {
 	apiFetch,
+	apiFetchPage,
+	apiFetchRaw,
 	BULK_FETCH_SIZE,
 	DEFAULT_REVALIDATE,
+	unwrapApiPayload,
 } from "@/lib/api/client";
 import { getApiBaseUrl } from "@/lib/api/config";
+import { normalizeSoundTrackRecord } from "@/lib/api/normalize";
 import {
 	filterAudioTracks,
 	paginateAudioTracks,
@@ -30,7 +34,6 @@ import type {
 import {
 	SoundTopicSchema,
 	SoundTrackSchema,
-	SoundTracksPageSchema,
 } from "@/types/audio";
 
 const SOUND_TRACKS_ENDPOINT = "/api/v1/sound-tracks";
@@ -60,32 +63,37 @@ export type AudioListingOptions = {
 async function fetchTracksPage(
 	searchParams: Record<string, string | number | undefined>,
 ): Promise<SoundTrack[] | null> {
-	const page = await apiFetch(SOUND_TRACKS_ENDPOINT, {
-		schema: SoundTracksPageSchema,
+	const page = await apiFetchPage(SOUND_TRACKS_ENDPOINT, {
+		itemSchema: SoundTrackSchema,
 		tags: [SOUND_TRACKS_TAG],
 		revalidate: DEFAULT_REVALIDATE,
 		searchParams,
+		normalizeItem: normalizeSoundTrackRecord,
 	});
 
 	return page?.content.length ? page.content : null;
 }
 
 async function fetchTracksBySoundType(soundType: string): Promise<SoundTrack[] | null> {
-	return apiFetch(`${SOUND_TRACKS_ENDPOINT}/by-sound-type`, {
-		schema: SoundTracksPageSchema,
+	const page = await apiFetchPage(`${SOUND_TRACKS_ENDPOINT}/by-sound-type`, {
+		itemSchema: SoundTrackSchema,
 		tags: [SOUND_TRACKS_TAG],
 		revalidate: DEFAULT_REVALIDATE,
 		searchParams: { soundType, page: 0, size: BULK_FETCH_SIZE },
-	}).then((page) => (page?.content.length ? page.content : null));
+		normalizeItem: normalizeSoundTrackRecord,
+	});
+	return page?.content.length ? page.content : null;
 }
 
 async function fetchTracksByKeyword(keyword: string): Promise<SoundTrack[] | null> {
-	return apiFetch(`${SOUND_TRACKS_ENDPOINT}/search/keyword`, {
-		schema: SoundTracksPageSchema,
+	const page = await apiFetchPage(`${SOUND_TRACKS_ENDPOINT}/search/keyword`, {
+		itemSchema: SoundTrackSchema,
 		tags: [SOUND_TRACKS_TAG],
 		revalidate: DEFAULT_REVALIDATE,
 		searchParams: { keyword, page: 0, size: BULK_FETCH_SIZE },
-	}).then((page) => (page?.content.length ? page.content : null));
+		normalizeItem: normalizeSoundTrackRecord,
+	});
+	return page?.content.length ? page.content : null;
 }
 
 async function fetchAllTracksFromApi(): Promise<SoundTrack[] | null> {
@@ -168,11 +176,12 @@ export async function getAlbumOfMemories(
 	size = AUDIO_MEMORIES_SIZE,
 ): Promise<ResolvedAudioCard[]> {
 	if (getApiBaseUrl()) {
-		const page = await apiFetch(`${SOUND_TRACKS_ENDPOINT}/album-of-memories`, {
-			schema: SoundTracksPageSchema,
+		const page = await apiFetchPage(`${SOUND_TRACKS_ENDPOINT}/album-of-memories`, {
+			itemSchema: SoundTrackSchema,
 			tags: [SOUND_TRACKS_TAG, "album-of-memories"],
 			revalidate: DEFAULT_REVALIDATE,
 			searchParams: { page: 0, size },
+			normalizeItem: normalizeSoundTrackRecord,
 		});
 
 		if (page?.content.length) {
@@ -197,14 +206,17 @@ export async function getAudioTrackById(
 	id: number,
 ): Promise<ResolvedAudioDetail | null> {
 	if (getApiBaseUrl()) {
-		const detail = await apiFetch(`${SOUND_TRACKS_ENDPOINT}/${id}`, {
-			schema: SoundTrackSchema,
+		const raw = await apiFetchRaw(`${SOUND_TRACKS_ENDPOINT}/${id}`, {
 			tags: [SOUND_TRACKS_TAG, `sound-track-${id}`],
 			revalidate: DEFAULT_REVALIDATE,
 		});
+		const unwrapped = unwrapApiPayload(raw);
+		const parsed = unwrapped
+			? SoundTrackSchema.safeParse(normalizeSoundTrackRecord(unwrapped))
+			: null;
 
-		if (detail) {
-			const resolved = resolveAudioDetail(locale, detail);
+		if (parsed?.success) {
+			const resolved = resolveAudioDetail(locale, parsed.data);
 			if (resolved?.id === id) {
 				return resolved;
 			}

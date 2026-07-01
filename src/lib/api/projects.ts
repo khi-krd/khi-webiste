@@ -1,8 +1,10 @@
 import "server-only";
 import {
-	apiFetch,
+	apiFetchPage,
+	apiFetchRaw,
 	BULK_FETCH_SIZE,
 	DEFAULT_REVALIDATE,
+	unwrapApiPayload,
 } from "@/lib/api/client";
 import { getApiBaseUrl } from "@/lib/api/config";
 import {
@@ -24,7 +26,7 @@ import {
 	resolveProjectItem,
 	resolveProjectItems,
 } from "@/lib/project/resolve";
-import { ProjectsPageSchema, ProjectSchema } from "@/types/project";
+import { ProjectSchema } from "@/types/project";
 
 const PROJECTS_ENDPOINT = "/api/v1/projects/getAll";
 const PROJECTS_TAG = "projects";
@@ -44,8 +46,8 @@ export {
 async function fetchProjectsPage(
 	searchParams: Record<string, string | number | undefined>,
 ) {
-	return apiFetch(PROJECTS_ENDPOINT, {
-		schema: ProjectsPageSchema,
+	return apiFetchPage(PROJECTS_ENDPOINT, {
+		itemSchema: ProjectSchema,
 		tags: [PROJECTS_TAG],
 		revalidate: DEFAULT_REVALIDATE,
 		searchParams,
@@ -53,8 +55,8 @@ async function fetchProjectsPage(
 }
 
 async function fetchProjectsByTag(tag: string) {
-	return apiFetch("/api/v1/projects/search/tag", {
-		schema: ProjectsPageSchema,
+	return apiFetchPage("/api/v1/projects/search/tag", {
+		itemSchema: ProjectSchema,
 		tags: [PROJECTS_TAG],
 		revalidate: DEFAULT_REVALIDATE,
 		searchParams: { tag, page: 0, size: BULK_FETCH_SIZE },
@@ -62,8 +64,8 @@ async function fetchProjectsByTag(tag: string) {
 }
 
 async function fetchProjectsByKeyword(keyword: string) {
-	return apiFetch("/api/v1/projects/search/keyword", {
-		schema: ProjectsPageSchema,
+	return apiFetchPage("/api/v1/projects/search/keyword", {
+		itemSchema: ProjectSchema,
 		tags: [PROJECTS_TAG],
 		revalidate: DEFAULT_REVALIDATE,
 		searchParams: { keyword, page: 0, size: BULK_FETCH_SIZE },
@@ -144,14 +146,15 @@ export async function getProjectById(
 		return getMockProjectById(locale, id);
 	}
 
-	const detail = await apiFetch(`/api/v1/projects/${encodeURIComponent(id)}`, {
-		schema: ProjectSchema,
+	const raw = await apiFetchRaw(`/api/v1/projects/${encodeURIComponent(id)}`, {
 		tags: [PROJECTS_TAG, `project-${id}`],
 		revalidate: DEFAULT_REVALIDATE,
 	});
+	const unwrapped = unwrapApiPayload(raw);
+	const parsed = unwrapped ? ProjectSchema.safeParse(unwrapped) : null;
 
-	if (detail) {
-		const item = resolveProjectListItem(locale, detail);
+	if (parsed?.success) {
+		const item = resolveProjectListItem(locale, parsed.data);
 		if (item) {
 			const items = await getAllProjectRecords(locale);
 			const index = items.findIndex(

@@ -19,7 +19,6 @@ export type ProjectsPageData = {
 	activeYear: string | null;
 	activeTag: string | null;
 	activeQuery: string | null;
-	indexOffset: number;
 };
 
 type LoadProjectsPageOptions = {
@@ -69,6 +68,5 @@ export async function loadProjectsPageData(
 		activeYear,
 		activeTag,
 		activeQuery,
-		indexOffset: (currentPage - 1) * PROJECTS_PER_PAGE,
 	};
 }

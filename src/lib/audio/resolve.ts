@@ -80,8 +80,12 @@ function resolveBilingualStrings(
 	return kmr.length > 0 ? kmr : ckb;
 }
 
+function resolvePlayableAudioUrl(file: SoundTrackFile): string | null {
+	return firstNonBlank(file.fileUrl, file.externalUrl);
+}
+
 function isPlayable(file: SoundTrackFile): boolean {
-	return file.fileType === "AUDIO" && Boolean(file.fileUrl?.trim());
+	return file.fileType === "AUDIO" && Boolean(resolvePlayableAudioUrl(file));
 }
 
 /** Locale-relative detail path consumed by the i18n-aware `Link`. */
@@ -106,10 +110,10 @@ export function buildPlayerQueue(
 			(track.files.length > 1 ? `${trackTitle} — ${index + 1}` : trackTitle),
 		artist,
 		coverUrl,
-		// biome-ignore lint/style/noNonNullAssertion: isPlayable guarantees fileUrl
-		audioUrl: file.fileUrl!,
+		// biome-ignore lint/style/noNonNullAssertion: isPlayable guarantees a source URL
+		audioUrl: resolvePlayableAudioUrl(file)!,
 		href: audioDetailHref(track.id),
-		durationSeconds: file.durationSeconds,
+		durationSeconds: file.durationSeconds ?? null,
 	}));
 }
 
@@ -154,7 +158,7 @@ export function resolveAudioCard(
 			track.keywords.kmr,
 		),
 		queue: buildPlayerQueue(locale, track),
-		createdAt: track.createdAt,
+		createdAt: track.createdAt ?? "",
 	};
 }
 
@@ -173,18 +177,18 @@ function resolveFileRow(
 		thumbUrl: firstNonBlank(file.thumbUrl, coverUrl),
 		fileType: file.fileType,
 		playable: isPlayable(file),
-		externalUrl: file.externalUrl,
-		embedUrl: file.embedUrl,
-		durationSeconds: file.durationSeconds,
-		sizeBytes: file.sizeBytes,
-		bitRate: file.bitRate,
-		sampleRate: file.sampleRate,
-		audioChannel: file.audioChannel,
-		form: file.form,
-		genre: file.genre,
-		recordingVenue: file.recordingVenue,
-		publishmentYear: file.publishmentYear,
-		fileFormat: file.fileFormat,
+		externalUrl: file.externalUrl ?? null,
+		embedUrl: file.embedUrl ?? null,
+		durationSeconds: file.durationSeconds ?? null,
+		sizeBytes: file.sizeBytes ?? null,
+		bitRate: file.bitRate ?? null,
+		sampleRate: file.sampleRate ?? null,
+		audioChannel: file.audioChannel ?? null,
+		form: file.form ?? null,
+		genre: file.genre ?? null,
+		recordingVenue: file.recordingVenue ?? null,
+		publishmentYear: file.publishmentYear ?? null,
+		fileFormat: file.fileFormat ?? null,
 	};
 }
 
@@ -193,7 +197,7 @@ function resolvePosterUrl(track: SoundTrack): string | null {
 		(attachment) =>
 			attachment.attachmentType === "IMAGE" &&
 			(attachment.title?.toLowerCase().includes("poster") ||
-				attachment.fileUrl.toLowerCase().includes("poster")),
+				attachment.fileUrl?.toLowerCase().includes("poster")),
 	);
 	return poster?.fileUrl ?? null;
 }
@@ -240,12 +244,19 @@ export function resolveAudioDetail(
 
 	const brochures: ResolvedBrochureItem[] = track.files
 		.flatMap((file) => file.brochures)
-		.map((brochure, index) => ({
-			id: brochure.id,
-			imageUrl: brochure.imageUrl,
-			caption: brochure.caption,
-			sortOrder: brochure.brochureOrder ?? index,
-		}))
+		.map((brochure, index) => {
+			const imageUrl = brochure.imageUrl?.trim();
+			if (!imageUrl) {
+				return null;
+			}
+			return {
+				id: brochure.id,
+				imageUrl,
+				caption: brochure.caption,
+				sortOrder: brochure.brochureOrder ?? index,
+			};
+		})
+		.filter((brochure): brochure is ResolvedBrochureItem => brochure != null)
 		.sort((a, b) => a.sortOrder - b.sortOrder);
 
 	const attachments = [...track.attachments].sort(
@@ -291,7 +302,7 @@ export function resolveAudioDetail(
 			track.keywords.kmr,
 		),
 		queue: buildPlayerQueue(locale, track),
-		createdAt: track.createdAt,
-		updatedAt: track.updatedAt,
+		createdAt: track.createdAt ?? "",
+		updatedAt: track.updatedAt ?? "",
 	};
 }

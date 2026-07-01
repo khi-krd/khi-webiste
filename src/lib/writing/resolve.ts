@@ -3,6 +3,7 @@ import type {
 	ResolvedSeriesBook,
 	ResolvedWritingCard,
 	ResolvedWritingDetail,
+	SeriesBookSummary,
 	SeriesInfo,
 	TopicInfo,
 	Writing,
@@ -139,10 +140,10 @@ export function resolveWritingCard(
 		seriesName: seriesInfo.seriesName?.trim() || null,
 		publishedByInstitute: writing.publishedByInstitute,
 		seriesOrderLabel: String(Math.round(seriesOrder)).padStart(2, "0"),
-		fileUrl: content.fileUrl,
-		fileFormat: content.fileFormat,
-		pageCount: content.pageCount,
-		fileSizeBytes: content.fileSizeBytes,
+		fileUrl: content.fileUrl ?? null,
+		fileFormat: content.fileFormat ?? null,
+		pageCount: content.pageCount ?? null,
+		fileSizeBytes: content.fileSizeBytes ?? null,
 	};
 }
 
@@ -248,27 +249,28 @@ export function resolveWritingDetail(
 			writing.keywords.kmr,
 		),
 		fileOffers: uniqueOffers,
-		createdAt: writing.createdAt,
-		updatedAt: writing.updatedAt,
+		createdAt: writing.createdAt ?? "",
+		updatedAt: writing.updatedAt ?? "",
 	};
 }
 
 export function resolveSeriesBooks(
 	locale: string,
-	books: Array<{
-		id: number;
-		titleCkb: string | null;
-		titleKmr: string | null;
-		seriesOrder: number | null;
-	}>,
+	books: SeriesBookSummary[],
 	currentId: number,
 ): ResolvedSeriesBook[] {
 	return books
 		.map((book) => {
 			const title =
 				locale === "ckb"
-					? (book.titleCkb ?? book.titleKmr)
-					: (book.titleKmr ?? book.titleCkb);
+					? (book.titleCkb ??
+						book.titleKmr ??
+						book.ckbContent?.title ??
+						null)
+					: (book.titleKmr ??
+						book.titleCkb ??
+						book.kmrContent?.title ??
+						null);
 			if (!title) {
 				return null;
 			}

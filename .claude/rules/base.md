@@ -16,7 +16,7 @@ Set the folder structure and conventions. Decide where components, feature modul
 
 Build the typed REST client + zod layer. A small fetch wrapper with ISR/revalidate, plus zod schemas that validate every API response. This is the contract the whole site is built on — worth doing carefully before pages consume it.
 
-Configure next/image. Add the S3 host to remotePatterns so media renders.
+Configure next/image with wildcard `remotePatterns` (`hostname: "**"`) so any CMS cover URL renders; prefer S3 via `NEXT_PUBLIC_MEDIA_HOST` for production uploads.
 
 Lay down SEO scaffolding. Metadata helpers, hreflang for both locales, sitemap.ts, robots, and a JSON-LD helper you'll specialize per content type later.
 

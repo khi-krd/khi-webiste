@@ -65,7 +65,6 @@ export default async function ProjectsPage({
 
 			<ProjectsShell
 				items={pageData.items}
-				indexOffset={pageData.indexOffset}
 				currentPage={pageData.currentPage}
 				totalPages={pageData.totalPages}
 				tags={pageData.tags}

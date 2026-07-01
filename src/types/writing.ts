@@ -23,6 +23,12 @@ export const BookGenreSchema = z.enum([
 	"CHILDREN",
 	"TRAVEL",
 	"OTHER",
+	"ESSAY",
+	"POLITICAL",
+	"GEOGRAPHY",
+	"ACADEMIC",
+	"REFERENCE",
+	"RELIGIOUS",
 ]);
 
 export type BookGenre = z.infer<typeof BookGenreSchema>;
@@ -43,10 +49,10 @@ export const WritingContentSchema = z.object({
 	title: z.string().nullable(),
 	description: z.string().nullable(),
 	writer: z.string().nullable(),
-	fileUrl: z.string().nullable(),
-	fileFormat: WritingFileFormatSchema.nullable(),
-	fileSizeBytes: z.number().nullable(),
-	pageCount: z.number().int().nullable(),
+	fileUrl: z.string().nullish(),
+	fileFormat: WritingFileFormatSchema.nullish(),
+	fileSizeBytes: z.number().nullish(),
+	pageCount: z.number().int().nullish(),
 	genre: z.string().nullable(),
 });
 
@@ -76,8 +82,8 @@ export const SeriesInfoSchema = z
 	}));
 
 export const BilingualSetSchema = z.object({
-	ckb: z.array(z.string()),
-	kmr: z.array(z.string()),
+	ckb: z.array(z.string()).default([]),
+	kmr: z.array(z.string()).default([]),
 });
 
 export const WritingSchema = z.object({
@@ -98,8 +104,8 @@ export const WritingSchema = z.object({
 	keywords: BilingualSetSchema,
 	series: SeriesInfoSchema.nullish(),
 	seriesInfo: SeriesInfoSchema.nullish(),
-	createdAt: z.string(),
-	updatedAt: z.string(),
+	createdAt: z.string().optional(),
+	updatedAt: z.string().optional(),
 });
 
 export type Writing = z.infer<typeof WritingSchema>;
@@ -136,10 +142,16 @@ export const ApiResponseSchema = <T extends z.ZodType>(dataSchema: T) =>
 
 export const SeriesBookSummarySchema = z.object({
 	id: z.number(),
-	titleCkb: z.string().nullable(),
-	titleKmr: z.string().nullable(),
+	titleCkb: z.string().nullish(),
+	titleKmr: z.string().nullish(),
 	seriesOrder: z.number().nullable(),
-	createdAt: z.string(),
+	createdAt: z.string().optional(),
+	ckbContent: z
+		.object({ title: z.string().nullish() })
+		.nullish(),
+	kmrContent: z
+		.object({ title: z.string().nullish() })
+		.nullish(),
 });
 
 export const SeriesResponseSchema = z.object({

@@ -14,7 +14,7 @@ import {
 	ContactMessageResponseSchema,
 	type ContactMessageSubmission,
 	type ContactPage,
-	ContactPageListSchema,
+	ContactActivePageSchema,
 } from "@/types/contact-page";
 
 const CONTACT_ACTIVE_ENDPOINT = "/api/v1/contact/active";
@@ -26,13 +26,13 @@ export async function getActiveContactPages(): Promise<ContactPage[]> {
 		return [];
 	}
 
-	const pages = await apiFetch(CONTACT_ACTIVE_ENDPOINT, {
-		schema: ContactPageListSchema,
+	const page = await apiFetch(CONTACT_ACTIVE_ENDPOINT, {
+		schema: ContactActivePageSchema,
 		tags: [CONTACT_TAG],
 		revalidate: DEFAULT_REVALIDATE,
 	});
 
-	return pages ?? [];
+	return page?.content ?? [];
 }
 
 export async function getContactOffices(

@@ -6,15 +6,16 @@ import {
 } from "@/lib/api/client";
 import { getApiBaseUrl } from "@/lib/api/config";
 import { getDemoFeaturedItems } from "@/lib/mock/featured";
+import { plainTextFromRichContent } from "@/lib/rich-text";
 import {
 	type ContentType,
 	ContentTypeSchema,
 	type FeaturedItem,
 	FeaturedItemsSchema,
+	type FeaturedSource,
 } from "@/types/content";
 
-const FEATURED_ENDPOINT = "/featured";
-const FEATURED_V1_ENDPOINT = "/api/v1/featured";
+const FEATURED_ENDPOINT = "/api/v1/featured";
 const FEATURED_TAG = "featured";
 const FEATURED_REVALIDATE_SECONDS = DEFAULT_REVALIDATE;
 
@@ -69,13 +70,37 @@ function normalizeContentType(
 		news: "article",
 		gallery: "gallery",
 		image: "gallery",
+		imagecollection: "gallery",
 		archive: "archive",
+		project: "archive",
 	};
 
 	const mapped = aliases[normalized];
 	return mapped && ContentTypeSchema.safeParse(mapped).success
 		? mapped
 		: undefined;
+}
+
+const SOURCE_TO_TYPE: Record<FeaturedSource, ContentType> = {
+	news: "article",
+	project: "archive",
+	writing: "book",
+	video: "video",
+	"sound-track": "audio",
+	"image-collection": "gallery",
+};
+
+function normalizeSourceType(raw: string | undefined): ContentType | undefined {
+	if (!raw) {
+		return undefined;
+	}
+
+	const normalized = raw.toLowerCase() as FeaturedSource;
+	if (normalized in SOURCE_TO_TYPE) {
+		return SOURCE_TO_TYPE[normalized];
+	}
+
+	return undefined;
 }
 
 function pickImage(item: UnknownRecord): UnknownRecord | null {
@@ -98,7 +123,17 @@ function pickImage(item: UnknownRecord): UnknownRecord | null {
 	return thumbnail;
 }
 
-function remapFeaturedItem(rawItem: unknown): unknown {
+function resolveDescription(raw: string | undefined): string | undefined {
+	if (!raw) {
+		return undefined;
+	}
+
+	const plain = plainTextFromRichContent(raw).trim();
+	return plain.length > 0 ? plain : undefined;
+}
+
+/** Map a raw featured API record to the lean UI model shape. */
+export function remapFeaturedItem(rawItem: unknown): unknown {
 	const item = asRecord(rawItem);
 	if (!item) {
 		return rawItem;
@@ -112,33 +147,38 @@ function remapFeaturedItem(rawItem: unknown): unknown {
 		getString(item.contentType) ??
 		getString(item.content_type);
 
+	const rawSource = getString(item.source);
+
+	const type =
+		normalizeContentType(rawType) ?? normalizeSourceType(rawSource) ?? rawType;
+
+	const title =
+		getString(item.title) ??
+		getString(item.name) ??
+		getString(localized?.title);
+
+	const description =
+		resolveDescription(getString(item.description)) ??
+		resolveDescription(getString(item.excerpt)) ??
+		resolveDescription(getString(item.summary)) ??
+		resolveDescription(getString(localized?.description));
+
 	return {
 		id: getIdentifier(item.id) ?? getIdentifier(item._id),
-		type: normalizeContentType(rawType) ?? rawType,
+		type,
 		slug:
 			getString(item.slug) ??
 			getString(item.path) ??
-			getIdentifier(item.id) ??
-			getIdentifier(item._id),
-		title:
-			getString(item.title) ??
-			getString(item.name) ??
-			getString(localized?.title),
-		description:
-			getString(item.description) ??
-			getString(item.excerpt) ??
-			getString(item.summary) ??
-			getString(localized?.description),
+			getIdentifier(item.entityId),
+		title,
+		description,
 		image: {
 			url:
 				getString(image?.url) ??
 				getString(image?.src) ??
 				getString(image?.path) ??
 				"",
-			alt:
-				getString(image?.alt) ??
-				getString(image?.altText) ??
-				getString(item.title),
+			alt: getString(image?.alt) ?? getString(image?.altText) ?? title,
 			width: getNumber(image?.width),
 			height: getNumber(image?.height),
 			blurDataURL:
@@ -179,29 +219,27 @@ export async function getFeaturedItems(
 		return getDemoFeaturedItems(locale);
 	}
 
-	for (const endpoint of [FEATURED_V1_ENDPOINT, FEATURED_ENDPOINT]) {
-		try {
-			const payload = await apiFetchRaw(endpoint, {
-				revalidate: FEATURED_REVALIDATE_SECONDS,
-				tags: [FEATURED_TAG],
-				searchParams: { locale },
-			});
+	try {
+		const payload = await apiFetchRaw(FEATURED_ENDPOINT, {
+			revalidate: FEATURED_REVALIDATE_SECONDS,
+			tags: [FEATURED_TAG],
+			searchParams: { locale },
+		});
 
-			const unwrapped = unwrapApiPayload(payload);
-			if (!unwrapped) {
-				continue;
-			}
-
-			const rawItems = normalizeItems(unwrapped);
-			const remappedItems = rawItems.map((item) => remapFeaturedItem(item));
-			const parsed = FeaturedItemsSchema.safeParse(remappedItems);
-
-			if (parsed.success && parsed.data.length > 0) {
-				return parsed.data;
-			}
-		} catch {
-			continue;
+		const unwrapped = unwrapApiPayload(payload);
+		if (!unwrapped) {
+			return getDemoFeaturedItems(locale);
 		}
+
+		const rawItems = normalizeItems(unwrapped);
+		const remappedItems = rawItems.map((item) => remapFeaturedItem(item));
+		const parsed = FeaturedItemsSchema.safeParse(remappedItems);
+
+		if (parsed.success) {
+			return parsed.data;
+		}
+	} catch {
+		// fall through to demo mock
 	}
 
 	return getDemoFeaturedItems(locale);

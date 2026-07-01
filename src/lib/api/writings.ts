@@ -1,10 +1,16 @@
 import "server-only";
 import {
-	apiFetch,
+	apiFetchPage,
+	apiFetchRaw,
 	BULK_FETCH_SIZE,
 	DEFAULT_REVALIDATE,
+	unwrapApiPayload,
 } from "@/lib/api/client";
 import { getApiBaseUrl } from "@/lib/api/config";
+import {
+	normalizeSeriesBookRecord,
+	normalizeWritingRecord,
+} from "@/lib/api/normalize";
 import {
 	getDemoWritingById,
 	getDemoWritingSeries,
@@ -33,7 +39,6 @@ import {
 	type ResolvedWritingDetail,
 	SeriesResponseSchema,
 	WritingSchema,
-	WritingsPageSchema,
 } from "@/types/writing";
 
 const WRITINGS_ENDPOINT = "/api/v1/writings";
@@ -72,11 +77,12 @@ export async function getWritingsCarousel(
 async function fetchAllWritingsFromApi(
 	locale: string,
 ): Promise<ResolvedWritingCard[] | null> {
-	const page = await apiFetch(WRITINGS_ENDPOINT, {
-		schema: WritingsPageSchema,
+	const page = await apiFetchPage(WRITINGS_ENDPOINT, {
+		itemSchema: WritingSchema,
 		tags: [WRITINGS_TAG],
 		revalidate: DEFAULT_REVALIDATE,
 		searchParams: { page: 0, size: BULK_FETCH_SIZE },
+		normalizeItem: normalizeWritingRecord,
 	});
 
 	if (!page?.content.length) {
@@ -126,11 +132,12 @@ export async function getWritingsPage(
 		return getDemoWritingCards(locale, currentPage, size);
 	}
 
-	const data = await apiFetch(WRITINGS_ENDPOINT, {
-		schema: WritingsPageSchema,
+	const data = await apiFetchPage(WRITINGS_ENDPOINT, {
+		itemSchema: WritingSchema,
 		tags: [WRITINGS_TAG],
 		revalidate: DEFAULT_REVALIDATE,
 		searchParams: { page: currentPage - 1, size },
+		normalizeItem: normalizeWritingRecord,
 	});
 
 	if (!data) {
@@ -175,19 +182,20 @@ export async function getWritingById(
 		return getDemoWritingById(locale, id, labels);
 	}
 
-	const detail = await apiFetch(`${WRITINGS_ENDPOINT}/${id}`, {
-		schema: WritingSchema,
+	const raw = await apiFetchRaw(`${WRITINGS_ENDPOINT}/${id}`, {
 		tags: [WRITINGS_TAG, `writing-${id}`],
 		revalidate: DEFAULT_REVALIDATE,
 	});
+	const unwrapped = unwrapApiPayload(raw);
+	const parsed = unwrapped
+		? WritingSchema.safeParse(normalizeWritingRecord(unwrapped))
+		: null;
 
-	if (!detail) {
-		return getDemoWritingById(locale, id, labels);
-	}
-
-	const resolved = resolveWritingDetail(locale, detail, labels);
-	if (resolved?.id === id) {
-		return resolved;
+	if (parsed?.success) {
+		const resolved = resolveWritingDetail(locale, parsed.data, labels);
+		if (resolved?.id === id) {
+			return resolved;
+		}
 	}
 
 	return getDemoWritingById(locale, id, labels);
@@ -202,18 +210,29 @@ export async function getWritingSeriesBooks(
 		return getDemoWritingSeries(locale, seriesId, currentId);
 	}
 
-	const data = await apiFetch(
+	const raw = await apiFetchRaw(
 		`${WRITINGS_ENDPOINT}/series/${encodeURIComponent(seriesId)}`,
 		{
-			schema: SeriesResponseSchema,
 			tags: [WRITINGS_TAG, `writing-series-${seriesId}`],
 			revalidate: DEFAULT_REVALIDATE,
 		},
 	);
 
-	if (!data) {
-		return getDemoWritingSeries(locale, seriesId, currentId);
+	const unwrapped = unwrapApiPayload(raw);
+	const record =
+		unwrapped && typeof unwrapped === "object"
+			? (unwrapped as Record<string, unknown>)
+			: null;
+	const books = Array.isArray(record?.books)
+		? record.books.map(normalizeSeriesBookRecord)
+		: [];
+	const parsed = record
+		? SeriesResponseSchema.safeParse({ ...record, books })
+		: null;
+
+	if (parsed?.success) {
+		return resolveSeriesBooks(locale, parsed.data.books, currentId);
 	}
 
-	return resolveSeriesBooks(locale, data.books, currentId);
+	return getDemoWritingSeries(locale, seriesId, currentId);
 }

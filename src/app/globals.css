@@ -543,22 +543,6 @@ html[data-corners="rounded"]
 		margin-block-start: 2.2em;
 	}
 
-	/* List card — clamp long HTML previews without breaking layout. */
-	.project-card-preview {
-		display: -webkit-box;
-		-webkit-box-orient: vertical;
-		-webkit-line-clamp: 6;
-		overflow: hidden;
-		max-block-size: 11rem;
-	}
-
-	.project-card-preview.prose :is(h2, h3, h4, figure, video, audio, blockquote) {
-		display: none;
-	}
-
-	.project-card-preview.prose img {
-		display: none;
-	}
 }
 
 /* --- State components: spinner + skeleton --------------------------------

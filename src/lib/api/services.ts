@@ -20,7 +20,7 @@ import {
 } from "@/lib/services/resolve";
 import { type Service, ServicesPageSchema } from "@/types/service";
 
-const SERVICES_ENDPOINT = "/api/v1/services";
+const SERVICES_ENDPOINT = "/api/v1/services/all";
 const SERVICES_TAG = "services";
 
 export async function getServiceRecords(): Promise<Service[]> {

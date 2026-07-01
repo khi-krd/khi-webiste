@@ -34,7 +34,7 @@ This document describes the REST API contract expected by **khi-website** (publi
 | ------------------------ | ---------------- | ------------------------------------------------------------------- |
 | `API_BASE_URL`           | Yes (production) | Base URL of the external REST API, e.g. `https://api.example.com`   |
 | `USE_MOCK_DATA`          | No               | When `true`, the site skips all API calls and uses `src/lib/mock/*` |
-| `NEXT_PUBLIC_MEDIA_HOST` | Yes (media)      | S3 / CDN hostname for `next/image` remote patterns                  |
+| `NEXT_PUBLIC_MEDIA_HOST` | Recommended (media) | Primary S3/CDN hostname; used for PDF proxy hints — `next/image` allows any HTTPS/HTTP host via wildcard `remotePatterns` |
 | `NEXT_PUBLIC_SITE_URL`   | Yes (SEO)        | Canonical site origin                                               |
 
 
@@ -72,7 +72,7 @@ Long-form text returned by the API should be **Markdown** (preferred) or legacy 
 | Videos            | `ckbContent.description` | `kmrContent.description`                     | `/videos`, `/videos/[id]`, `/videos/shortfilms`, homepage film & video | Full rich text (sidebar + detail)                            |
 | Image collections | `ckbContent.description` | `kmrContent.description`                     | `/gallery`, `/gallery/[slug]`, homepage image collection               | Full rich text                                               |
 | Services          | `contents[].description` | One entry per `languageCode` (`CKB` / `KMR`) | `/services` — section prose                                            | Full rich text                                               |
-| Featured          | `description`            | —                                            | Homepage hero *(mock today)*                                           | Full rich text                                               |
+| Featured          | `description`            | —                                            | Homepage hero                                                          | Full rich text (stripped to plain text in hero)               |
 
 
 All fields above accept `string` content in **Markdown or HTML**. Kurmanji (`kmrContent.`*) and Sorani (*`ckbContent.`) follow the same rules; the site picks the locale-appropriate variant with fallback to the other script.
@@ -110,7 +110,7 @@ Expected page body (after unwrapping):
 
 | Site area                   | API available       | Site integrated | Effective coverage |
 | --------------------------- | ------------------- | --------------- | ------------------ |
-| Homepage — featured hero    | ❌ No endpoint       | Partial         | **0%** (mock only) |
+| Homepage — featured hero    | ✅ Featured          | ✅               | **~100%**          |
 | Homepage — latest updates   | ✅ News              | ✅               | **~95%**           |
 | Homepage — projects         | ✅ Projects          | ✅               | **~90%**           |
 | Homepage — sound            | ✅ Sound tracks      | ✅               | **~90%**           |
@@ -533,8 +533,8 @@ Expected page body (after unwrapping):
 
 | Method | Path                   | Query params   | Site integration          |
 | ------ | ---------------------- | -------------- | ------------------------- |
-| `GET`  | `/api/v1/services`     | `page`, `size` | `getServiceRecords()` ⚠️  |
-| `GET`  | `/api/v1/services/all` | `page`, `size` | **Correct external path** |
+| `GET`  | `/api/v1/services/all` | `page`, `size` | `getServiceRecords()` |
+| `GET`  | `/api/v1/services`     | `page`, `size` | Alias (also works on some deployments) |
 
 
 **Required response fields (per service)**
@@ -570,28 +570,34 @@ Expected page body (after unwrapping):
 **Used by:** homepage `FeaturedHero`
 
 
-| Method | Path        | Query params | Site integration     |
-| ------ | ----------- | ------------ | -------------------- |
-| `GET`  | `/featured` | `locale`     | `getFeaturedItems()` |
+| Method | Path                  | Query params | Site integration     |
+| ------ | --------------------- | ------------ | -------------------- |
+| `GET`  | `/api/v1/featured`    | `locale`     | `getFeaturedItems()` |
 
 
-**Status:** ❌ **Not implemented in external API.** Site falls back to `getDemoFeaturedItems()`.
+**Status:** ✅ **Implemented.** Site calls `GET /api/v1/featured?locale=` and maps the response to hero slides. When the API returns a valid empty array, the hero shows static fallback slides. Demo mock is used only when `API_BASE_URL` is unset, `USE_MOCK_DATA=true`, or the fetch/parse fails.
 
-**Expected response (array of items)**
+**Locale:** `kmr` and `ku` resolve to Kurmanji; any other value (including omission) resolves to `ckb`.
 
+**Response:** array of featured items, globally sorted by `featuredOrder` ascending (nulls last), then `displayOrder` assigned sequentially.
 
-| Field         | Type                        | Required          |
-| ------------- | --------------------------- | ----------------- |
-| `id`          | `string`                    | ✅                 |
-| `type`        | `book`                      | `audio`           |
-| `slug`        | `string`                    | ✅ (route segment) |
-| `title`       | `string`                    | ✅                 |
-| `description` | `string` (Markdown or HTML) | ✅                 |
-| `image.url`   | `string`                    | ✅                 |
-| `image.alt`   | `string`                    | Optional          |
+| Field            | Type                        | Required | Notes |
+| ---------------- | --------------------------- | -------- | ----- |
+| `id`             | `string`                    | ✅        | Composite `{source}-{entityId}` |
+| `source`         | `news` \| `project` \| …    | ✅        | Entity type: `news`, `project`, `writing`, `video`, `sound-track`, `image-collection` |
+| `entityId`       | `number`                    | ✅        | Original database ID |
+| `type`           | `book` \| `audio` \| …      | ✅        | Hero category: `article`, `archive`, `book`, `video`, `audio`, `gallery` |
+| `slug`           | `string`                    | ✅        | Route segment (entity ID string, or localized slug for image collections) |
+| `title`          | `string`                    | ✅        | Localized title |
+| `description`    | `string` (Markdown or HTML) | ✅        | Stripped to plain text in hero |
+| `image.url`      | `string`                    | ✅        | Hero image URL |
+| `image.alt`      | `string`                    | Optional | Defaults to title |
+| `featuredOrder`  | `number` \| `null`          | Optional | Global sort priority |
+| `displayOrder`   | `number`                    | Optional | Final order in response (1..N) |
 
+Items without a resolvable image URL are omitted server-side. An empty array is valid.
 
-**Workaround without new endpoint:** compose featured slides from the first items of news, writings, videos, sound-tracks, and image-collections (as khi-website-v1 did).
+**Admin (not consumed by this site):** per-entity `PATCH /api/v1/{resource}/{id}/featured` endpoints manage `featured` and `featuredOrder` across news, projects, writings, videos, sound-tracks, and image-collections.
 
 ---
 
@@ -610,7 +616,8 @@ Expected page body (after unwrapping):
 
 **Public site requirements**
 
-- Media URLs must be served from `NEXT_PUBLIC_MEDIA_HOST` or `s3-khiwebsite.s3.us-east-1.amazonaws.com`.
+- Cover and gallery URLs may be served from any HTTPS (or HTTP) host; `next.config.ts` uses wildcard `remotePatterns` so CMS-provided image URLs render without per-host configuration.
+- Prefer `NEXT_PUBLIC_MEDIA_HOST` / S3 (`s3-khiwebsite.s3.us-east-1.amazonaws.com`) for production media when possible.
 - Writing PDFs are proxied via `GET /api/writings/pdf?src=…` (Next.js route, not external API).
 
 ---

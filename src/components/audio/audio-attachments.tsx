@@ -48,7 +48,7 @@ export function AudioAttachments({
 			<ul className="mt-5 border border-border bg-surface">
 				{attachments.map((attachment, index) => {
 					const Icon = typeIcons[attachment.attachmentType];
-					const sizeLabel = formatFileSize(attachment.sizeBytes);
+					const sizeLabel = formatFileSize(attachment.sizeBytes ?? null);
 
 					return (
 						<li
@@ -87,7 +87,7 @@ export function AudioAttachments({
 								</Badge>
 
 								<a
-									href={attachment.fileUrl}
+									href={attachment.fileUrl ?? undefined}
 									target="_blank"
 									rel="noopener noreferrer"
 									download

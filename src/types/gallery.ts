@@ -25,7 +25,7 @@ export const ImageAlbumItemSchema = z.object({
 	captionKmr: z.string().nullable().optional(),
 	descriptionCkb: z.string().nullable().optional(),
 	descriptionKmr: z.string().nullable().optional(),
-	sortOrder: z.number().int(),
+	sortOrder: z.number().int().nullish(),
 	widthPx: z.number().nullable().optional(),
 	heightPx: z.number().nullable().optional(),
 	mimeType: z.string().nullable().optional(),

@@ -1,5 +1,8 @@
 import { audioDetailHref } from "@/lib/audio/resolve";
-import { projectDetailHref } from "@/lib/content/project-href";
+import {
+	projectDetailHref,
+	projectsIndexHref,
+} from "@/lib/content/project-href";
 import { videoDetailHref } from "@/lib/video/resolve";
 import type { ContentType, FeaturedItem } from "@/types/content";
 import { TYPE_SEGMENTS } from "@/types/content";
@@ -8,7 +11,7 @@ import { TYPE_SEGMENTS } from "@/types/content";
 // definition lives in a zod-free module so client code can use it directly.
 export { projectDetailHref };
 
-function resolveNumericId(id: string, slug: string): number | null {
+function resolveNumericId(slug: string, id: string): number | null {
 	for (const value of [slug, id]) {
 		const parsed = Number.parseInt(value, 10);
 		if (Number.isInteger(parsed) && parsed > 0 && String(parsed) === value) {
@@ -71,11 +74,11 @@ export function contentDetailHref(
 			return `${listing}/${item.slug || item.id}`;
 		case "song":
 		case "audio": {
-			const trackId = resolveNumericId(item.id, item.slug);
+			const trackId = resolveNumericId(item.slug, item.id);
 			return trackId != null ? audioDetailHref(trackId) : listing;
 		}
 		case "video": {
-			const videoId = resolveNumericId(item.id, item.slug);
+			const videoId = resolveNumericId(item.slug, item.id);
 			return videoId != null ? videoDetailHref(videoId) : listing;
 		}
 		case "gallery":
@@ -84,8 +87,12 @@ export function contentDetailHref(
 			return item.slug || item.id
 				? newsDetailHref(item.slug || item.id)
 				: listing;
-		case "archive":
-			return listing;
+		case "archive": {
+			const projectId = resolveNumericId(item.slug, item.id);
+			return projectId != null
+				? projectDetailHref(String(projectId))
+				: projectsIndexHref();
+		}
 		default:
 			return listing;
 	}

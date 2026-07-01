@@ -1,10 +1,13 @@
 import "server-only";
 import {
-	apiFetch,
+	apiFetchPage,
+	apiFetchRaw,
 	BULK_FETCH_SIZE,
 	DEFAULT_REVALIDATE,
+	unwrapApiPayload,
 } from "@/lib/api/client";
 import { getApiBaseUrl } from "@/lib/api/config";
+import { normalizeImageCollectionRecord } from "@/lib/api/normalize";
 import {
 	resolveGalleryHeroColumns,
 	resolveGalleryPost,
@@ -22,7 +25,6 @@ import {
 } from "@/lib/mock/gallery";
 import {
 	ImageCollectionSchema,
-	ImageCollectionsPageSchema,
 } from "@/types/gallery";
 
 const GALLERY_ENDPOINT = "/api/v1/image-collections";
@@ -37,11 +39,12 @@ export {
 };
 
 async function fetchAllCollections() {
-	const page = await apiFetch(GALLERY_ENDPOINT, {
-		schema: ImageCollectionsPageSchema,
+	const page = await apiFetchPage(GALLERY_ENDPOINT, {
+		itemSchema: ImageCollectionSchema,
 		tags: [GALLERY_TAG],
 		revalidate: DEFAULT_REVALIDATE,
 		searchParams: { page: 0, size: BULK_FETCH_SIZE },
+		normalizeItem: normalizeImageCollectionRecord,
 	});
 
 	return page?.content.length ? page.content : null;
@@ -86,17 +89,25 @@ export async function getGalleryPostBySlug(
 	slug: string,
 ): Promise<GalleryPostDetail | null> {
 	if (getApiBaseUrl()) {
-		const slugDetail = await apiFetch(
-			`${GALLERY_ENDPOINT}/slug/${encodeURIComponent(slug)}`,
-			{
-				schema: ImageCollectionSchema,
-				tags: [GALLERY_TAG, `image-collection-slug-${slug}`],
+		const fetchDetail = async (path: string) => {
+			const raw = await apiFetchRaw(path, {
+				tags: [GALLERY_TAG],
 				revalidate: DEFAULT_REVALIDATE,
-			},
+			});
+			const unwrapped = unwrapApiPayload(raw);
+			return unwrapped
+				? ImageCollectionSchema.safeParse(
+						normalizeImageCollectionRecord(unwrapped),
+					)
+				: null;
+		};
+
+		const slugDetail = await fetchDetail(
+			`${GALLERY_ENDPOINT}/slug/${encodeURIComponent(slug)}`,
 		);
 
-		if (slugDetail) {
-			const post = resolveGalleryPost(locale, slugDetail);
+		if (slugDetail?.success) {
+			const post = resolveGalleryPost(locale, slugDetail.data);
 			if (post) {
 				const allPosts = await getGalleryPosts(locale);
 				const index = allPosts.findIndex(
@@ -120,14 +131,10 @@ export async function getGalleryPostBySlug(
 			String(numericId) === slug;
 
 		if (isNumericSlug) {
-			const detail = await apiFetch(`${GALLERY_ENDPOINT}/${numericId}`, {
-				schema: ImageCollectionSchema,
-				tags: [GALLERY_TAG, `image-collection-${numericId}`],
-				revalidate: DEFAULT_REVALIDATE,
-			});
+			const detail = await fetchDetail(`${GALLERY_ENDPOINT}/${numericId}`);
 
-			if (detail) {
-				const post = resolveGalleryPost(locale, detail);
+			if (detail?.success) {
+				const post = resolveGalleryPost(locale, detail.data);
 				if (post) {
 					const allPosts = await getGalleryPosts(locale);
 					const index = allPosts.findIndex((entry) => entry.id === post.id);

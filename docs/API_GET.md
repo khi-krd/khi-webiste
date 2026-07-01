@@ -522,54 +522,47 @@ Response — new fields:
 
 ### 2.1 Featured homepage
 
-| Method | Endpoint | Parameters/body |
+**Public read (consumed by khi-website):**
+
+| Method | Endpoint | Parameters |
 | --- | --- | --- |
-| `GET` | `/api/v1/featured` | Optional query: `locale` |
-| `GET` | `/featured` | Optional query: `locale` |
-| `POST` | `/api/v1/featured` | JSON body |
-| `PUT` | `/api/v1/featured/{id}` | `id`: Featured ID; JSON body |
-| `DELETE` | `/api/v1/featured/{id}` | `id`: Featured ID |
+| `GET` | `/api/v1/featured` | Optional query: `locale` (`kmr`/`ku` → Kurmanji; else Sorani) |
 
-Request:
+Response (array):
 
 ```json
-{
-  "type": "article",
-  "slug": "heritage-story",
-  "title": "Heritage Story",
-  "description": "<p>Featured homepage description...</p>",
-  "imageUrl": "https://cdn.example.com/featured/story.jpg",
-  "imageAlt": "Historic Kurdish archive",
-  "locale": "ckb",
-  "displayOrder": 1,
-  "active": true
-}
+[
+  {
+    "id": "news-42",
+    "source": "news",
+    "entityId": 42,
+    "type": "article",
+    "slug": "42",
+    "title": "News KMR",
+    "description": "<p>Localized description</p>",
+    "image": {
+      "url": "https://cdn.example.com/news.jpg",
+      "alt": "News KMR"
+    },
+    "locale": "kmr",
+    "featured": true,
+    "featuredOrder": 1,
+    "displayOrder": 1,
+    "active": true
+  }
+]
 ```
 
-Response:
+**Admin write (not consumed by khi-website):** mark items featured via per-entity PATCH endpoints:
 
-```json
-{
-  "success": true,
-  "message": "Featured items fetched",
-  "data": [
-    {
-      "id": "1",
-      "type": "article",
-      "slug": "heritage-story",
-      "title": "Heritage Story",
-      "description": "<p>Featured homepage description...</p>",
-      "image": {
-        "url": "https://cdn.example.com/featured/story.jpg",
-        "alt": "Historic Kurdish archive"
-      },
-      "locale": "ckb",
-      "displayOrder": 1,
-      "active": true
-    }
-  ]
-}
-```
+- `PATCH /api/v1/news/{id}/featured`
+- `PATCH /api/v1/projects/{id}/featured`
+- `PATCH /api/v1/writings/{id}/featured`
+- `PATCH /api/v1/videos/{id}/featured`
+- `PATCH /api/v1/sound-tracks/{id}/featured`
+- `PATCH /api/v1/image-collections/{id}/featured`
+
+Request body: `{ "featured": true, "featuredOrder": 1 }` — returns `204 No Content` on success. Global featured limit enforced via `SiteSettings.maxFeaturedSlides`.
 
 ### 2.2 Team members
 
