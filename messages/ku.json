@@ -172,6 +172,11 @@
 			"byAuthor": "Ji aliyê {author}",
 			"tags": "Tag",
 			"gallery": "Medya & galerî",
+			"lightbox": {
+				"close": "Bigire",
+				"previous": "Medya berê",
+				"next": "Medya paşê"
+			},
 			"navLabel": "Nûçeyên têkildar",
 			"previous": "Berê",
 			"next": "Piştî"

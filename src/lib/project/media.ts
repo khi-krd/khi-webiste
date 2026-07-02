@@ -11,11 +11,58 @@ function firstNonBlank(
 	return null;
 }
 
-export function parseMediaKind(value: unknown): MediaKind {
+function normalizeDeclaredMediaKind(value: unknown): MediaKind | null {
 	if (value === "VIDEO" || value === "AUDIO" || value === "IMAGE") {
 		return value;
 	}
-	return "IMAGE";
+
+	if (typeof value === "string") {
+		const upper = value.trim().toUpperCase();
+		if (upper === "VIDEO" || upper === "AUDIO" || upper === "IMAGE") {
+			return upper;
+		}
+	}
+
+	return null;
+}
+
+/** Infer media kind from a URL path or known embed hosts. */
+export function inferMediaKindFromUrl(url: string): MediaKind | null {
+	const trimmed = url.trim();
+	if (!trimmed) return null;
+
+	const path = trimmed.split(/[?#]/)[0]?.toLowerCase() ?? "";
+	if (/\.(mp4|webm|mov|m4v|ogv)$/.test(path)) return "VIDEO";
+	if (/\.(mp3|m4a|wav|ogg|aac|flac)$/.test(path)) return "AUDIO";
+	if (/\.(jpe?g|png|gif|webp|avif|svg|bmp|ico|heic|heif)$/.test(path)) {
+		return "IMAGE";
+	}
+
+	const lower = trimmed.toLowerCase();
+	if (
+		lower.includes("youtube.com") ||
+		lower.includes("youtu.be") ||
+		lower.startsWith("youtube/")
+	) {
+		return "VIDEO";
+	}
+
+	return null;
+}
+
+export function parseMediaKind(
+	value: unknown,
+	url?: string | null,
+): MediaKind {
+	const declared = normalizeDeclaredMediaKind(value);
+	const inferred = url ? inferMediaKindFromUrl(url) : null;
+
+	// CMS rows sometimes mark an image URL as VIDEO/AUDIO — trust the file URL.
+	if (declared && inferred && declared !== inferred) {
+		return inferred;
+	}
+
+	return declared ?? inferred ?? "IMAGE";
 }
 
 export function parseMediaGallery(
@@ -64,7 +111,10 @@ export function parseMediaGallery(
 			return [
 				{
 					url,
-					kind: parseMediaKind(record.kind ?? record.mediaType ?? record.type),
+					kind: parseMediaKind(
+						record.kind ?? record.mediaType ?? record.type,
+						url,
+					),
 					thumbnailUrl: firstNonBlank(
 						typeof record.thumbnailUrl === "string"
 							? record.thumbnailUrl

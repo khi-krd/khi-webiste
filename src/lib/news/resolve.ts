@@ -114,7 +114,7 @@ export function resolveNewsItem(locale: string, news: News): NewsItem | null {
 		category: mapCategory(locale, news),
 		publishedAt:
 			news.datePublished ?? news.createdAt ?? new Date().toISOString(),
-		coverMediaType: parseMediaKind(news.coverMediaType),
+		coverMediaType: parseMediaKind(news.coverMediaType, coverUrl),
 		coverUrl: coverUrl ?? "/menu/1.jpg",
 		coverThumbnailUrl: news.coverThumbnailUrl ?? null,
 		mediaGallery: parseMediaGallery(news.mediaGallery, locale),

@@ -59,6 +59,9 @@ export default async function NewsPostPage({ params }: NewsPostPageProps) {
 				}
 				tagsLabel={t("post.tags")}
 				galleryLabel={t("post.gallery")}
+				closeLabel={t("post.lightbox.close")}
+				lightboxPreviousLabel={t("post.lightbox.previous")}
+				lightboxNextLabel={t("post.lightbox.next")}
 				previous={detail.previous}
 				next={detail.next}
 				navLabel={t("post.navLabel")}

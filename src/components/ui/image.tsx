@@ -37,6 +37,13 @@ function ratioValue(ratio: AspectRatio): string {
 	return NAMED_RATIOS[ratio] ?? ratio.replace("/", " / ");
 }
 
+function isRemoteSrc(src: NextImageProps["src"]): boolean {
+	return (
+		typeof src === "string" &&
+		(src.startsWith("http://") || src.startsWith("https://"))
+	);
+}
+
 /**
  * Thin wrapper over next/image with KHI defaults: square corners, optional
  * hairline frame, a sensible default `sizes`, and an `aspectRatio` box that
@@ -54,11 +61,14 @@ export function Image({
 	className,
 	imageClassName,
 	alt,
+	src,
+	unoptimized: unoptimizedProp,
 	...props
 }: ImageProps) {
 	const fit = objectFit === "contain" ? "object-contain" : "object-cover";
 	// Square corners everywhere (radius tokens are 0); frame is a hairline.
 	const frame = framed ? "rounded-md border border-border" : undefined;
+	const unoptimized = unoptimizedProp ?? isRemoteSrc(src);
 
 	if (aspectRatio) {
 		return (
@@ -68,9 +78,11 @@ export function Image({
 			>
 				<NextImage
 					alt={alt}
+					src={src}
 					fill
 					sizes={sizes ?? DEFAULT_SIZES}
 					className={cn(fit, imageClassName)}
+					unoptimized={unoptimized}
 					{...props}
 				/>
 			</div>
@@ -81,8 +93,10 @@ export function Image({
 	return (
 		<NextImage
 			alt={alt}
+			src={src}
 			sizes={sizes ?? DEFAULT_SIZES}
 			className={cn("h-auto", fit, frame, className, imageClassName)}
+			unoptimized={unoptimized}
 			{...props}
 		/>
 	);

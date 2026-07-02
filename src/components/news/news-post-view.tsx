@@ -1,5 +1,5 @@
+import { NewsCoverMedia } from "@/components/news/news-cover-media";
 import { NewsMediaGallery } from "@/components/news/news-media-gallery";
-import { ProjectCoverMedia } from "@/components/projects/project-cover-media";
 import { ArrowLeftIcon, ArrowRightIcon } from "@heroicons/react/24/outline";
 import {
 	ScrollReveal,
@@ -25,6 +25,9 @@ type NewsPostViewProps = {
 	readTimeLabel?: string;
 	tagsLabel: string;
 	galleryLabel: string;
+	closeLabel: string;
+	lightboxPreviousLabel: string;
+	lightboxNextLabel: string;
 	previous: NewsItem | null;
 	next: NewsItem | null;
 	navLabel: string;
@@ -81,6 +84,9 @@ export function NewsPostView({
 	readTimeLabel,
 	tagsLabel,
 	galleryLabel,
+	closeLabel,
+	lightboxPreviousLabel,
+	lightboxNextLabel,
 	previous,
 	next,
 	navLabel,
@@ -116,12 +122,15 @@ export function NewsPostView({
 				<div className="mt-10 grid gap-10 lg:grid-cols-[minmax(0,22rem)_minmax(0,1fr)] lg:items-start lg:gap-14 xl:grid-cols-[minmax(0,26rem)_minmax(0,1fr)] xl:gap-20">
 					<div className="min-w-0 lg:sticky lg:top-32 lg:self-start">
 						<div className="overflow-hidden border border-border bg-sunken">
-							<ProjectCoverMedia
+							<NewsCoverMedia
 								url={coverUrl}
 								alt={item.image.alt ?? item.title}
 								kind={coverKind}
 								posterUrl={item.coverThumbnailUrl ?? item.image.url}
 								priority
+								closeLabel={closeLabel}
+								previousLabel={lightboxPreviousLabel}
+								nextLabel={lightboxNextLabel}
 								className={cn(
 									coverKind === "IMAGE"
 										? "aspect-[4/5] w-full"
@@ -194,6 +203,9 @@ export function NewsPostView({
 						items={mediaGallery}
 						title={galleryLabel}
 						articleTitle={item.title}
+						closeLabel={closeLabel}
+						previousLabel={lightboxPreviousLabel}
+						nextLabel={lightboxNextLabel}
 					/>
 				</ScrollReveal>
 			)}

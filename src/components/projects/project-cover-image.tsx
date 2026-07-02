@@ -1,10 +1,14 @@
 "use client";
 
 import NextImage from "next/image";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { cn } from "@/lib/utils";
 
 const FALLBACK = "/menu/1.jpg";
+
+function isRemoteSrc(src: string): boolean {
+	return src.startsWith("http://") || src.startsWith("https://");
+}
 
 type ProjectCoverImageProps = {
 	src: string;
@@ -25,6 +29,10 @@ export function ProjectCoverImage({
 }: ProjectCoverImageProps) {
 	const [currentSrc, setCurrentSrc] = useState(src || FALLBACK);
 
+	useEffect(() => {
+		setCurrentSrc(src || FALLBACK);
+	}, [src]);
+
 	return (
 		<div className={cn("relative overflow-hidden bg-sunken", className)}>
 			<NextImage
@@ -33,6 +41,7 @@ export function ProjectCoverImage({
 				fill
 				priority={priority}
 				sizes={sizes}
+				unoptimized={isRemoteSrc(currentSrc)}
 				className={cn("object-cover", imageClassName)}
 				onError={() => {
 					if (currentSrc !== FALLBACK) {

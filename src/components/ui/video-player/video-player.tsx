@@ -64,7 +64,7 @@ export function VideoPlayer({
 			poster={poster}
 			playsInline
 			streamType="on-demand"
-			load="visible"
+			load="idle"
 		>
 			<Layout embed={embed} poster={poster} posterAlt={posterAlt} />
 		</MediaPlayer>
