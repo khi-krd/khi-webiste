@@ -460,7 +460,8 @@ export function filterNews(
 		result = result.filter(
 			(item) =>
 				item.title.toLowerCase().includes(q) ||
-				item.excerpt.toLowerCase().includes(q),
+				item.excerpt.toLowerCase().includes(q) ||
+				(item.tags ?? []).some((tag) => tag.toLowerCase().includes(q)),
 		);
 	}
 

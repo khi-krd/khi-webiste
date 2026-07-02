@@ -5,14 +5,15 @@ import {
 	ScrollReveal,
 	ScrollRevealBlock,
 } from "@/components/motion/scroll-reveal";
-import { Badge } from "@/components/ui/badge";
 import { DirectionalIcon } from "@/components/ui/directional-icon";
 import { RichText } from "@/components/ui/rich-text";
+import { TaxonomyBadgeLink } from "@/components/ui/taxonomy-badge-link";
 import { Link } from "@/i18n/navigation";
 import { newsDetailHref } from "@/lib/content/href";
 import { homeInsetClass } from "@/lib/layout";
 import type { NewsItem } from "@/lib/mock/news";
 import { isRichTextEmpty } from "@/lib/rich-text";
+import { newsCategoryHref, newsTagHref } from "@/lib/search/taxonomy-href";
 import { cn } from "@/lib/utils";
 
 type NewsPostViewProps = {
@@ -134,9 +135,13 @@ export function NewsPostView({
 
 					<div className="min-w-0">
 						<div className="flex flex-wrap items-center gap-2">
-							<Badge variant="outline" size="sm">
+							<TaxonomyBadgeLink
+								href={newsCategoryHref(item.category)}
+								variant="outline"
+								size="sm"
+							>
 								{categoryLabel}
-							</Badge>
+							</TaxonomyBadgeLink>
 							<time className="text-small text-muted">{dateLabel}</time>
 							{readTimeLabel ? (
 								<span className="text-small text-muted">{readTimeLabel}</span>
@@ -172,9 +177,13 @@ export function NewsPostView({
 							<ul className="mt-3 flex flex-wrap gap-2">
 								{tags.map((tag) => (
 									<li key={tag}>
-										<Badge variant="outline" size="sm">
+										<TaxonomyBadgeLink
+											href={newsTagHref(tag)}
+											variant="outline"
+											size="sm"
+										>
 											{tag}
-										</Badge>
+										</TaxonomyBadgeLink>
 									</li>
 								))}
 							</ul>

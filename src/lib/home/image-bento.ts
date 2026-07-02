@@ -1,37 +1,36 @@
 /** Number of gallery tiles on the homepage image bento. */
 export const HOME_IMAGE_BENTO_COUNT = 16;
 
-/**
- * Mobile: uniform 4×4 (16 cells). Desktop (lg): 8×4 bento with mixed spans.
- * Row totals on lg always equal 8 columns.
- */
-export const HOME_IMAGE_BENTO_CELL_CLASS = [
-	"col-span-1 row-span-1 lg:col-span-3 lg:row-span-2",
-	"col-span-1 row-span-1 lg:col-span-2",
-	"col-span-1 row-span-1 lg:col-span-1",
-	"col-span-1 row-span-1 lg:col-span-2",
-	"col-span-1 row-span-1 lg:col-span-2",
-	"col-span-1 row-span-1 lg:col-span-1",
-	"col-span-1 row-span-1 lg:col-span-2",
-	"col-span-1 row-span-1 lg:col-span-2",
-	"col-span-1 row-span-1 lg:col-span-1",
-	"col-span-1 row-span-1 lg:col-span-1",
-	"col-span-1 row-span-1 lg:col-span-2",
-	"col-span-1 row-span-1 lg:col-span-2",
-	"col-span-1 row-span-1 lg:col-span-2",
-	"col-span-1 row-span-1 lg:col-span-1",
-	"col-span-1 row-span-1 lg:col-span-1",
-	"col-span-1 row-span-1 lg:col-span-4",
-] as const;
+/** All tiles share one size; images crop with object-cover inside each cell. */
+export const HOME_IMAGE_BENTO_CELL_CLASS = "col-span-1 row-span-1";
 
-/** Fills remaining viewport below the section header; rows stretch to fit. */
-export const HOME_IMAGE_BENTO_GRID_CLASS =
-	"grid h-full min-h-0 w-full grid-flow-dense grid-cols-4 grid-rows-4 gap-px bg-border/80 lg:grid-cols-8";
+const HOME_IMAGE_BENTO_GRID_BASE =
+	"grid h-full min-h-0 w-full auto-rows-fr gap-px bg-border/80";
+
+/** Pick a uniform grid that fills the tray without empty slots for `count` tiles. */
+export function homeImageBentoGridClass(itemCount: number): string {
+	const count = Math.min(Math.max(itemCount, 1), HOME_IMAGE_BENTO_COUNT);
+
+	if (count <= 6) {
+		return `${HOME_IMAGE_BENTO_GRID_BASE} grid-cols-3 grid-rows-2 lg:grid-cols-6 lg:grid-rows-1`;
+	}
+	if (count <= 8) {
+		return `${HOME_IMAGE_BENTO_GRID_BASE} grid-cols-4 grid-rows-2 lg:grid-cols-4 lg:grid-rows-2`;
+	}
+	if (count <= 10) {
+		return `${HOME_IMAGE_BENTO_GRID_BASE} grid-cols-5 grid-rows-2 lg:grid-cols-5 lg:grid-rows-2`;
+	}
+	if (count <= 12) {
+		return `${HOME_IMAGE_BENTO_GRID_BASE} grid-cols-4 grid-rows-3 lg:grid-cols-6 lg:grid-rows-2`;
+	}
+	return `${HOME_IMAGE_BENTO_GRID_BASE} grid-cols-4 grid-rows-4 lg:grid-cols-8 lg:grid-rows-2`;
+}
 
 export const HOME_IMAGE_BENTO_TRAY_CLASS =
 	"h-full min-h-0 overflow-hidden rounded-lg bg-border/80 ring-1 ring-border/60 ring-inset";
 
-export const HOME_IMAGE_BENTO_CELL_BASE = "relative min-h-0 min-w-0";
+export const HOME_IMAGE_BENTO_CELL_BASE =
+	"relative h-full min-h-0 min-w-0 w-full";
 
 /** Inner layout — height comes from the section (`h-svh`). */
 export const HOME_IMAGE_BENTO_SECTION_CLASS =

@@ -272,6 +272,7 @@ export function resolveAudioDetail(
 		soundType: track.soundType,
 		trackState: track.trackState,
 		albumOfMemories: track.albumOfMemories,
+		topicId: track.topicId ?? null,
 		topicName: resolveAudioTopicName(locale, track),
 		reader: track.reader ?? null,
 		directors: track.directors,

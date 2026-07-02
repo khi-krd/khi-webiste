@@ -21,6 +21,7 @@ import {
 	getGalleryHeroColumns as getMockGalleryHeroColumns,
 	getGalleryPostBySlug as getMockGalleryPostBySlug,
 	getGalleryPosts as getMockGalleryPosts,
+	filterGalleryPosts,
 	paginateGalleryPosts,
 } from "@/lib/mock/gallery";
 import {
@@ -36,6 +37,7 @@ export {
 	type GalleryPost,
 	type GalleryPostDetail,
 	paginateGalleryPosts,
+	filterGalleryPosts,
 };
 
 async function fetchAllCollections() {

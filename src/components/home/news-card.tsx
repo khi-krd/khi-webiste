@@ -13,11 +13,46 @@ export type NewsCardVariant =
 	| "medium"
 	| "wide";
 
+export type NewsCardOverlayTone = "default" | "light";
+
 type NewsCardProps = {
 	item: LatestUpdateItem;
 	variant: NewsCardVariant;
 	categoryLabel: string;
 	className?: string;
+	overlayTone?: NewsCardOverlayTone;
+};
+
+const flatOverlayClass: Record<
+	NewsCardOverlayTone,
+	{ featured: string; default: string }
+> = {
+	default: {
+		featured: "bg-foreground/28 group-hover:bg-foreground/38",
+		default: "bg-foreground/20 group-hover:bg-foreground/32",
+	},
+	light: {
+		featured: "bg-foreground/20 group-hover:bg-foreground/28",
+		default: "bg-foreground/14 group-hover:bg-foreground/22",
+	},
+};
+
+const gradientOverlayClass: Record<
+	NewsCardOverlayTone,
+	{ featured: string; default: string }
+> = {
+	default: {
+		featured:
+			"from-0% via-foreground/68 via-30% to-transparent to-65% group-hover:via-foreground/76",
+		default:
+			"from-0% via-foreground/58 via-35% to-transparent to-70% group-hover:via-foreground/68",
+	},
+	light: {
+		featured:
+			"from-0% via-foreground/55 via-30% to-transparent to-65% group-hover:via-foreground/62",
+		default:
+			"from-0% via-foreground/46 via-35% to-transparent to-70% group-hover:via-foreground/54",
+	},
 };
 
 const variantClass: Record<NewsCardVariant, string> = {
@@ -57,6 +92,7 @@ export function NewsCard({
 	variant,
 	categoryLabel,
 	className,
+	overlayTone = "default",
 }: NewsCardProps) {
 	const href = newsDetailHref(item.slug);
 	const showExcerpt =
@@ -91,8 +127,8 @@ export function NewsCard({
 					className={cn(
 						"pointer-events-none absolute inset-0 z-1 transition-opacity duration-500 ease-out motion-reduce:transition-none",
 						isFeatured
-							? "bg-foreground/28 group-hover:bg-foreground/38"
-							: "bg-foreground/20 group-hover:bg-foreground/32",
+							? flatOverlayClass[overlayTone].featured
+							: flatOverlayClass[overlayTone].default,
 					)}
 					aria-hidden
 				/>
@@ -100,8 +136,8 @@ export function NewsCard({
 					className={cn(
 						"pointer-events-none absolute inset-0 z-1 bg-linear-to-t from-foreground transition-opacity duration-500 ease-out motion-reduce:transition-none",
 						isFeatured
-							? "from-0% via-foreground/68 via-30% to-transparent to-65% group-hover:via-foreground/76"
-							: "from-0% via-foreground/58 via-35% to-transparent to-70% group-hover:via-foreground/68",
+							? gradientOverlayClass[overlayTone].featured
+							: gradientOverlayClass[overlayTone].default,
 					)}
 					aria-hidden
 				/>

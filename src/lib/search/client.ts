@@ -1,14 +1,13 @@
 import type { SearchScope } from "@/config/site";
 import type { ResolvedGlobalSearchResponse } from "@/lib/api/search";
+import {
+	filterTaxonomyItems,
+	type ClientSearchSectionKey,
+	type SearchTaxonomyItem,
+} from "@/lib/search/taxonomy-types";
 import type { SearchType } from "@/types/search";
 
-export type ClientSearchSectionKey =
-	| "projects"
-	| "news"
-	| "videos"
-	| "writings"
-	| "soundTracks"
-	| "imageCollections";
+export type { ClientSearchSectionKey, SearchTaxonomyItem } from "@/lib/search/taxonomy-types";
 
 export type ClientSearchItem = {
 	id: string;
@@ -114,6 +113,44 @@ export type GlobalSearchFetchResult = {
 	items: ClientSearchItem[];
 	unavailable: boolean;
 };
+
+export type TaxonomyCatalogFetchResult = {
+	items: SearchTaxonomyItem[];
+	unavailable: boolean;
+};
+
+export async function fetchTaxonomyCatalog(
+	locale: string,
+): Promise<TaxonomyCatalogFetchResult> {
+	const params = new URLSearchParams({ locale });
+	const response = await fetch(`/api/search/taxonomy?${params.toString()}`);
+
+	if (!response.ok) {
+		return { items: [], unavailable: true };
+	}
+
+	const payload: {
+		success: boolean;
+		data: SearchTaxonomyItem[];
+	} = await response.json();
+
+	if (!payload.success) {
+		return { items: [], unavailable: true };
+	}
+
+	return {
+		items: payload.data,
+		unavailable: false,
+	};
+}
+
+export function filterTaxonomyCatalog(
+	items: SearchTaxonomyItem[],
+	query: string,
+	scope: SearchScope,
+): SearchTaxonomyItem[] {
+	return filterTaxonomyItems(items, query, scope);
+}
 
 export async function fetchGlobalSearch(
 	query: string,

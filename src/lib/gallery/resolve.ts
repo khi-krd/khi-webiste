@@ -57,6 +57,15 @@ function resolveCoverUrl(
 	);
 }
 
+/** Prefer the first album image (full resolution) over CMS cover thumbnails. */
+function resolveCollectionImageUrl(
+	locale: string,
+	collection: ImageCollection,
+): string | null {
+	const albumImage = dedupeImageAlbumItems(collection.imageAlbum)[0]?.imageUrl;
+	return firstNonBlank(albumImage, resolveCoverUrl(locale, collection));
+}
+
 function resolveTopicName(
 	locale: string,
 	collection: ImageCollection,
@@ -119,6 +128,38 @@ function resolveAlbumDescription(
 	);
 }
 
+/** Drop repeated album rows the API may return (same id or media URL). */
+export function dedupeImageAlbumItems(
+	items: ImageAlbumItem[],
+): ImageAlbumItem[] {
+	const seenIds = new Set<number>();
+	const seenMedia = new Set<string>();
+	const sorted = [...items].sort(
+		(a, b) => (a.sortOrder ?? 0) - (b.sortOrder ?? 0),
+	);
+	const result: ImageAlbumItem[] = [];
+
+	for (const item of sorted) {
+		if (seenIds.has(item.id)) {
+			continue;
+		}
+
+		const mediaKey =
+			item.imageUrl ?? item.externalUrl ?? item.embedUrl ?? null;
+		if (mediaKey && seenMedia.has(mediaKey)) {
+			continue;
+		}
+
+		seenIds.add(item.id);
+		if (mediaKey) {
+			seenMedia.add(mediaKey);
+		}
+		result.push(item);
+	}
+
+	return result;
+}
+
 function resolveAlbumItem(
 	locale: string,
 	item: ImageAlbumItem,
@@ -173,9 +214,9 @@ export function resolveGalleryPost(
 	}
 
 	const description = content?.description?.trim() ?? "";
-	const album = [...collection.imageAlbum]
-		.sort((a, b) => (a.sortOrder ?? 0) - (b.sortOrder ?? 0))
-		.map((item) => resolveAlbumItem(locale, item));
+	const album = dedupeImageAlbumItems(collection.imageAlbum).map((item) =>
+		resolveAlbumItem(locale, item),
+	);
 
 	return {
 		id: resolveCollectionSlug(locale, collection),
@@ -249,7 +290,7 @@ export function resolveImageCollectionItem(
 		return null;
 	}
 
-	const cover = resolveCoverUrl(locale, collection);
+	const imageUrl = resolveCollectionImageUrl(locale, collection);
 	const location = content?.location?.trim();
 
 	return {
@@ -259,7 +300,7 @@ export function resolveImageCollectionItem(
 		subtitle: location ?? "",
 		catalogRef: `Plate ${String(index + 1).padStart(2, "0")}`,
 		image: {
-			url: cover ?? "/menu/1.jpg",
+			url: imageUrl ?? "/menu/1.jpg",
 			alt: title,
 		},
 	};

@@ -774,6 +774,23 @@ function buildAlbum(base: GalleryPostBase, locale: string): GalleryAlbumItem[] {
 
 export const GALLERY_POSTS_PER_PAGE = 4;
 
+export function filterGalleryPosts(
+	items: GalleryPost[],
+	query?: string | null,
+): GalleryPost[] {
+	const trimmedQuery = query?.trim().toLowerCase();
+	if (!trimmedQuery) {
+		return items;
+	}
+
+	return items.filter(
+		(item) =>
+			item.title.toLowerCase().includes(trimmedQuery) ||
+			item.tags.some((tag) => tag.toLowerCase().includes(trimmedQuery)) ||
+			item.topicName?.toLowerCase().includes(trimmedQuery),
+	);
+}
+
 export function paginateGalleryPosts<T>(
 	items: T[],
 	page: number,

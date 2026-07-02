@@ -3,7 +3,17 @@ import { z } from "zod";
 import type { ZodType } from "zod";
 import { getApiBaseUrl } from "@/lib/api/config";
 
-export const DEFAULT_REVALIDATE = 600;
+function parseRevalidateSeconds(): number {
+	const raw = process.env.REVALIDATE_SECONDS?.trim();
+	if (!raw) {
+		return 600;
+	}
+
+	const parsed = Number.parseInt(raw, 10);
+	return Number.isFinite(parsed) && parsed > 0 ? parsed : 600;
+}
+
+export const DEFAULT_REVALIDATE = parseRevalidateSeconds();
 export const DEFAULT_PAGE_SIZE = 20;
 export const BULK_FETCH_SIZE = 200;
 

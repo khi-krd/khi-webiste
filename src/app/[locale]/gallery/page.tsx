@@ -7,6 +7,7 @@ import {
 	getGalleryHeroColumns,
 	getGalleryPosts,
 	paginateGalleryPosts,
+	filterGalleryPosts,
 } from "@/lib/api/gallery";
 
 export async function generateMetadata({
@@ -25,7 +26,7 @@ export async function generateMetadata({
 
 type GalleryPageProps = {
 	params: Promise<{ locale: string }>;
-	searchParams: Promise<{ page?: string }>;
+	searchParams: Promise<{ page?: string; q?: string }>;
 };
 
 export default async function GalleryPage({
@@ -33,14 +34,14 @@ export default async function GalleryPage({
 	searchParams,
 }: GalleryPageProps) {
 	const { locale } = await params;
-	const { page: pageParam } = await searchParams;
+	const { page: pageParam, q } = await searchParams;
 	setRequestLocale(locale);
 
 	const t = await getTranslations("Gallery");
 	const columns = await getGalleryHeroColumns(locale);
 
 	const page = Math.max(1, Number.parseInt(pageParam ?? "1", 10) || 1);
-	const allPosts = await getGalleryPosts(locale);
+	const allPosts = filterGalleryPosts(await getGalleryPosts(locale), q);
 	const { items, totalPages, currentPage } = paginateGalleryPosts(
 		allPosts,
 		page,

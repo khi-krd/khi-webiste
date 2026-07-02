@@ -204,6 +204,7 @@ export type ResolvedAudioDetail = {
 	soundType: string;
 	trackState: TrackState;
 	albumOfMemories: boolean;
+	topicId: number | null;
 	topicName: string | null;
 	reader: string | null;
 	directors: string[];

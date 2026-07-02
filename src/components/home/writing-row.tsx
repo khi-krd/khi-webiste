@@ -49,12 +49,12 @@ export function WritingRow({ item, className }: WritingRowProps) {
 			</div>
 
 			{item.coverUrl ? (
-				<div className="relative hidden size-28 shrink-0 overflow-hidden border border-border sm:block lg:size-32">
+				<div className="relative hidden size-32 shrink-0 overflow-hidden border border-border sm:block lg:size-40">
 					<NextImage
 						src={item.coverUrl}
 						alt=""
 						fill
-						sizes="(max-width: 1024px) 112px, 128px"
+						sizes="(max-width: 1024px) 128px, 160px"
 						className="object-cover brightness-[0.88] saturate-[0.75]"
 					/>
 				</div>

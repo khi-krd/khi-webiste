@@ -8,10 +8,12 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { DirectionalIcon } from "@/components/ui/directional-icon";
 import { RichText } from "@/components/ui/rich-text";
+import { TaxonomyBadgeLink } from "@/components/ui/taxonomy-badge-link";
 import { Link } from "@/i18n/navigation";
 import { homeInsetClass } from "@/lib/layout";
 import type { ProjectDetail, ProjectListItem } from "@/lib/mock/projects";
 import { projectDetailHref, projectsHref } from "@/lib/projects-url";
+import { projectTagHref } from "@/lib/search/taxonomy-href";
 import { isRichTextEmpty } from "@/lib/rich-text";
 import { cn } from "@/lib/utils";
 
@@ -207,9 +209,13 @@ export function ProjectDetailView({
 						<ul className="mt-3 flex flex-wrap gap-2">
 							{project.tags.map((tag) => (
 								<li key={tag}>
-									<Badge variant="outline" size="sm">
+									<TaxonomyBadgeLink
+										href={projectTagHref(tag)}
+										variant="outline"
+										size="sm"
+									>
 										{tag}
-									</Badge>
+									</TaxonomyBadgeLink>
 								</li>
 							))}
 						</ul>

@@ -15,7 +15,7 @@ import {
 	HOME_IMAGE_BENTO_CELL_BASE,
 	HOME_IMAGE_BENTO_CELL_CLASS,
 	HOME_IMAGE_BENTO_COUNT,
-	HOME_IMAGE_BENTO_GRID_CLASS,
+	homeImageBentoGridClass,
 	HOME_IMAGE_BENTO_HEADER_CLASS,
 	HOME_IMAGE_BENTO_SECTION_CLASS,
 	HOME_IMAGE_BENTO_TRAY_CLASS,
@@ -78,6 +78,7 @@ function BentoRevealItem({ children, className, index }: BentoRevealItemProps) {
 function ImageCollectionBento({ items }: { items: ImageCollectionItem[] }) {
 	const reduceMotion = useReducedMotion();
 	const tiles = items.slice(0, HOME_IMAGE_BENTO_COUNT);
+	const gridClass = homeImageBentoGridClass(tiles.length);
 
 	const grid = (
 		<>
@@ -87,8 +88,7 @@ function ImageCollectionBento({ items }: { items: ImageCollectionItem[] }) {
 					index={index}
 					className={cn(
 						HOME_IMAGE_BENTO_CELL_BASE,
-						HOME_IMAGE_BENTO_CELL_CLASS[index] ??
-							HOME_IMAGE_BENTO_CELL_CLASS.at(-1),
+						HOME_IMAGE_BENTO_CELL_CLASS,
 					)}
 				>
 					<ImageCollectionCard item={item} priority={index < 4} />
@@ -98,10 +98,10 @@ function ImageCollectionBento({ items }: { items: ImageCollectionItem[] }) {
 	);
 
 	const gridInner = reduceMotion ? (
-		<div className={HOME_IMAGE_BENTO_GRID_CLASS}>{grid}</div>
+		<div className={gridClass}>{grid}</div>
 	) : (
 		<motion.div
-			className={HOME_IMAGE_BENTO_GRID_CLASS}
+			className={gridClass}
 			initial="hidden"
 			whileInView="visible"
 			viewport={viewport}

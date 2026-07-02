@@ -1,4 +1,4 @@
-import { ArrowLeftIcon, BookmarkIcon } from "@heroicons/react/24/outline";
+import { ArrowLeftIcon } from "@heroicons/react/24/outline";
 import NextImage from "next/image";
 import { getTranslations } from "next-intl/server";
 import {
@@ -14,7 +14,11 @@ import {
 	type VideoPosterCardProps,
 } from "@/components/video/video-poster-card";
 import { homeInsetClass } from "@/lib/layout";
-import { plainTextFromRichContent } from "@/lib/rich-text";
+import {
+	videoTagHref,
+	videoTopicHref,
+	videoTypeHref,
+} from "@/lib/search/taxonomy-href";
 import { cn } from "@/lib/utils";
 import { formatDuration, formatPublishmentDate } from "@/lib/video/format";
 import type {
@@ -22,8 +26,6 @@ import type {
 	ResolvedVideoDetail,
 	ResolvedVideoHighlight,
 } from "@/types/video";
-
-const FULL_DESCRIPTION_MIN = 180;
 
 type ShortFilmDetailViewProps = {
 	detail: ResolvedVideoDetail;
@@ -153,11 +155,6 @@ export async function ShortFilmDetailView({
 	const genreLabel = detail.tags[0] ?? detail.topicName ?? "—";
 	const directorLabel = detail.director ?? null;
 	const producerLabel = detail.producer ?? null;
-	const descriptionPlain = detail.description
-		? plainTextFromRichContent(detail.description)
-		: "";
-	const showFullDescription =
-		descriptionPlain.length > FULL_DESCRIPTION_MIN;
 	const publishYear = detail.publishmentDate?.slice(0, 4) ?? null;
 
 	const metaRows = [
@@ -204,14 +201,6 @@ export async function ShortFilmDetailView({
 					<h1 className="pointer-events-none absolute inset-x-0 truncate px-14 text-center font-heading text-small font-semibold sm:text-body">
 						{detail.title}
 					</h1>
-
-					<button
-						type="button"
-						className="inline-flex size-9 items-center justify-center text-primary-foreground/50 transition-colors fine-hover:text-primary-foreground"
-						aria-label={t("shortfilms.detail.bookmark")}
-					>
-						<BookmarkIcon className="size-5" />
-					</button>
 				</div>
 			</header>
 
@@ -246,10 +235,23 @@ export async function ShortFilmDetailView({
 						<aside className="flex w-full flex-col justify-between gap-6 rounded-md border border-primary-foreground/15 bg-primary-foreground/3 p-5 sm:p-6 lg:sticky lg:top-24 lg:self-start">
 							<div className="flex flex-col gap-4">
 								<div className="flex flex-wrap items-center gap-2">
-									<span className="label rounded-md border border-primary-foreground/25 bg-primary-foreground/8 px-2 py-0.5 font-medium text-primary-foreground/90">
+									<Link
+										href={videoTypeHref(detail.videoType, "/videos/shortfilms")}
+										className="label rounded-md border border-primary-foreground/25 bg-primary-foreground/8 px-2 py-0.5 font-medium text-primary-foreground/90 transition-opacity fine-hover:opacity-80"
+									>
 										{t(`typeBadge.${detail.videoType}`)}
-									</span>
-									{detail.topicName ? (
+									</Link>
+									{detail.topicName && detail.topicId != null ? (
+										<Link
+											href={videoTopicHref(
+												detail.topicId,
+												"/videos/shortfilms",
+											)}
+											className="text-label text-primary-foreground/55 underline decoration-primary-foreground/25 underline-offset-2 transition-colors fine-hover:text-primary-foreground/80 fine-hover:decoration-primary-foreground/50"
+										>
+											{detail.topicName}
+										</Link>
+									) : detail.topicName ? (
 										<span className="text-label text-primary-foreground/55">
 											{detail.topicName}
 										</span>
@@ -259,14 +261,6 @@ export async function ShortFilmDetailView({
 								<h2 className="font-heading text-h2 font-bold leading-[1.12] text-balance text-primary-foreground xl:text-h1">
 									{detail.title}
 								</h2>
-
-								{detail.description ? (
-									<RichText
-										content={detail.description}
-										compact
-										className="text-primary-foreground/75 [&_a]:text-primary-foreground [&_a]:underline [&_strong]:text-primary-foreground"
-									/>
-								) : null}
 
 								{(durationLabel || publishYear) && (
 									<div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-label text-primary-foreground/50">
@@ -289,12 +283,13 @@ export async function ShortFilmDetailView({
 								{detail.tags.length > 1 ? (
 									<div className="flex flex-wrap gap-1.5">
 										{detail.tags.slice(1, 5).map((tag) => (
-											<span
+											<Link
 												key={tag}
-												className="rounded-md border border-primary-foreground/15 px-1.5 py-0.5 text-label text-primary-foreground/65"
+												href={videoTagHref(tag, "/videos/shortfilms")}
+												className="rounded-md border border-primary-foreground/15 px-1.5 py-0.5 text-label text-primary-foreground/65 transition-opacity fine-hover:opacity-80"
 											>
 												{tag}
-											</span>
+											</Link>
 										))}
 									</div>
 								) : null}
@@ -317,7 +312,7 @@ export async function ShortFilmDetailView({
 			</div>
 
 			<div className={cn(homeInsetClass, "mx-auto max-w-7xl pb-10 sm:pb-14")}>
-				{showFullDescription ? (
+				{detail.description ? (
 					<ScrollReveal>
 						<ScrollRevealItem>
 							<section className="border-t border-primary-foreground/20 pt-10 sm:pt-12">
@@ -339,7 +334,7 @@ export async function ShortFilmDetailView({
 							<section
 								className={cn(
 									"border-t border-primary-foreground/20 pt-10 sm:pt-12",
-									showFullDescription ? "mt-10 sm:mt-12" : "",
+									detail.description ? "mt-10 sm:mt-12" : "",
 								)}
 							>
 								<SectionHeading>{t("shortfilms.detail.cast")}</SectionHeading>

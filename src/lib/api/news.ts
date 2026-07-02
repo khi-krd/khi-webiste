@@ -23,9 +23,10 @@ import {
 	paginateNews,
 	SIDEBAR_ITEMS_LIMIT,
 } from "@/lib/mock/news";
-import { resolveNewsItem, resolveNewsItems } from "@/lib/news/resolve";
+import { dedupeNewsItems, resolveNewsItem, resolveNewsItems } from "@/lib/news/resolve";
 import type { News } from "@/types/news";
 import { NewsPageSchema, NewsSchema } from "@/types/news";
+import type { NewsPage } from "@/types/news";
 
 const NEWS_ENDPOINT = "/api/v1/news";
 const NEWS_TAG = "news";
@@ -44,6 +45,13 @@ export {
 async function fetchNewsPage(
 	searchParams: Record<string, string | number | undefined>,
 ): Promise<News[] | null> {
+	const page = await fetchNewsPageResult(searchParams);
+	return page?.content.length ? page.content : null;
+}
+
+async function fetchNewsPageResult(
+	searchParams: Record<string, string | number | undefined>,
+): Promise<NewsPage | null> {
 	const page = await apiFetch(NEWS_ENDPOINT, {
 		schema: NewsPageSchema,
 		tags: [NEWS_TAG],
@@ -51,7 +59,7 @@ async function fetchNewsPage(
 		searchParams,
 	});
 
-	return page?.content.length ? page.content : null;
+	return page?.content.length ? page : null;
 }
 
 async function fetchNewsSearch(query: string): Promise<News[] | null> {
@@ -154,25 +162,22 @@ export async function getLatestNews(locale: string): Promise<NewsItem[]> {
 }
 
 export async function getBentoNews(locale: string): Promise<{
-	hero: NewsItem;
+	hero: NewsItem | null;
 	rail: NewsItem[];
-	editorial: NewsItem;
-	wide: NewsItem;
+	editorial: NewsItem | null;
+	wide: NewsItem | null;
 }> {
 	if (!getApiBaseUrl()) {
 		return getMockBentoNews(locale);
 	}
 
 	const items = await getAllNewsRecords(locale);
-	const [hero, railA, railB, railC, railD, editorial, , wide] = items;
 
 	return {
-		hero: hero ?? items[0],
-		rail: [railA, railB, railC, railD].filter(
-			(item): item is NewsItem => item != null,
-		),
-		editorial: editorial ?? items[0],
-		wide: wide ?? items[items.length - 1] ?? items[0],
+		hero: items[0] ?? null,
+		rail: items.slice(1, 5),
+		editorial: items[5] ?? null,
+		wide: items[7] ?? null,
 	};
 }
 
@@ -188,6 +193,44 @@ function toLatestUpdateItem(item: NewsItem): LatestUpdateItem {
 }
 
 const LATEST_UPDATES_COUNT = 8;
+const LATEST_UPDATES_MAX_PAGES = 3;
+
+async function fetchUniqueLatestNewsItems(
+	locale: string,
+	targetCount: number,
+): Promise<NewsItem[] | null> {
+	let collected: NewsItem[] = [];
+
+	for (let page = 0; page < LATEST_UPDATES_MAX_PAGES; page++) {
+		const pageData = await fetchNewsPageResult({
+			page,
+			size: targetCount,
+		});
+		if (!pageData) {
+			break;
+		}
+
+		collected = dedupeNewsItems([
+			...collected,
+			...resolveNewsItems(locale, pageData.content),
+		]);
+
+		if (collected.length >= targetCount) {
+			return collected.slice(0, targetCount);
+		}
+
+		const isLastPage =
+			pageData.empty === true ||
+			page >= pageData.totalPages - 1 ||
+			pageData.content.length < targetCount;
+
+		if (isLastPage) {
+			break;
+		}
+	}
+
+	return collected.length > 0 ? collected : null;
+}
 
 export async function getLatestUpdates(
 	locale: string,
@@ -196,23 +239,14 @@ export async function getLatestUpdates(
 		return getMockLatestUpdates(locale);
 	}
 
-	const raw = await fetchNewsPage({ page: 0, size: LATEST_UPDATES_COUNT });
-	const apiItems = raw
-		? resolveNewsItems(locale, raw)
-				.slice(0, LATEST_UPDATES_COUNT)
-				.map(toLatestUpdateItem)
-		: [];
+	const items = await fetchUniqueLatestNewsItems(
+		locale,
+		LATEST_UPDATES_COUNT,
+	);
 
-	if (apiItems.length >= LATEST_UPDATES_COUNT) {
-		return apiItems;
-	}
-
-	if (apiItems.length === 0) {
+	if (!items) {
 		return getMockLatestUpdates(locale);
 	}
 
-	return [...apiItems, ...getMockLatestUpdates(locale)].slice(
-		0,
-		LATEST_UPDATES_COUNT,
-	);
+	return items.map(toLatestUpdateItem);
 }

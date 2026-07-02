@@ -48,8 +48,8 @@ export function ImageCollectionCard({
 							alt={item.image.alt ?? item.title}
 							fill
 							priority={priority}
-							sizes="(max-width: 1024px) 25vw, 12vw"
-							className="object-cover brightness-[0.94] contrast-[1.06] saturate-[0.9] transition-[filter] duration-700 group-fine:brightness-[0.82] group-fine:saturate-[0.95] motion-reduce:transition-none"
+							sizes="(max-width: 1024px) 25vw, 13vw"
+							className="object-cover object-center brightness-[0.94] contrast-[1.06] saturate-[0.9] transition-[filter] duration-700 group-fine:brightness-[0.82] group-fine:saturate-[0.95] motion-reduce:transition-none"
 						/>
 					</div>
 

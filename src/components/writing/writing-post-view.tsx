@@ -3,11 +3,15 @@ import NextImage from "next/image";
 import { ScrollRevealBlock } from "@/components/motion/scroll-reveal";
 import { Badge } from "@/components/ui/badge";
 import { DirectionalIcon } from "@/components/ui/directional-icon";
+import { TaxonomyBadgeLink } from "@/components/ui/taxonomy-badge-link";
 import { Link } from "@/components/ui/link";
 import { RichText } from "@/components/ui/rich-text";
-import { buildGenreLabels } from "@/components/writing/writing-card";
 import { WritingPdfPreview } from "@/components/writing/writing-pdf-preview";
 import { homeInsetClass } from "@/lib/layout";
+import {
+	writingGenreHref,
+	writingTagHref,
+} from "@/lib/search/taxonomy-href";
 import { cn } from "@/lib/utils";
 import type {
 	BookGenre,
@@ -79,11 +83,6 @@ export function WritingPostView({
 	updatedLabel,
 	locale,
 }: WritingPostViewProps) {
-	const genreText = buildGenreLabels(
-		detail.genres,
-		detail.freeTextGenre,
-		(genre) => genreLabels[genre],
-	);
 	const hasMeta = Boolean(
 		detail.writer ||
 			detail.topicName ||
@@ -140,11 +139,25 @@ export function WritingPostView({
 									{instituteBadgeLabel}
 								</Badge>
 							) : null}
-							{genreText.map((label) => (
-								<Badge key={label} variant="subtle" size="sm">
-									{label}
-								</Badge>
+							{detail.genres.map((genre) => (
+								<TaxonomyBadgeLink
+									key={genre}
+									href={writingGenreHref(genre)}
+									variant="subtle"
+									size="sm"
+								>
+									{genreLabels[genre]}
+								</TaxonomyBadgeLink>
 							))}
+							{detail.freeTextGenre ? (
+								<TaxonomyBadgeLink
+									href={writingTagHref(detail.freeTextGenre)}
+									variant="subtle"
+									size="sm"
+								>
+									{detail.freeTextGenre}
+								</TaxonomyBadgeLink>
+							) : null}
 							{detail.topicName ? (
 								<Badge variant="outline" size="sm">
 									{detail.topicName}
@@ -213,9 +226,14 @@ export function WritingPostView({
 							>
 								<span className="flex flex-wrap gap-1.5">
 									{detail.tags.map((tag) => (
-										<Badge key={tag} variant="subtle" size="sm">
+										<TaxonomyBadgeLink
+											key={tag}
+											href={writingTagHref(tag)}
+											variant="subtle"
+											size="sm"
+										>
 											{tag}
-										</Badge>
+										</TaxonomyBadgeLink>
 									))}
 								</span>
 							</MetaCell>
@@ -227,9 +245,14 @@ export function WritingPostView({
 							>
 								<span className="flex flex-wrap gap-1.5">
 									{detail.keywords.map((keyword) => (
-										<Badge key={keyword} variant="outline" size="sm">
+										<TaxonomyBadgeLink
+											key={keyword}
+											href={writingTagHref(keyword)}
+											variant="outline"
+											size="sm"
+										>
 											{keyword}
-										</Badge>
+										</TaxonomyBadgeLink>
 									))}
 								</span>
 							</MetaCell>

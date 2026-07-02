@@ -5,9 +5,11 @@ import { ScrollRevealBlock } from "@/components/motion/scroll-reveal";
 import { Badge } from "@/components/ui/badge";
 import { DirectionalIcon } from "@/components/ui/directional-icon";
 import { RichText } from "@/components/ui/rich-text";
+import { TaxonomyBadgeLink } from "@/components/ui/taxonomy-badge-link";
 import { Link } from "@/i18n/navigation";
 import { homeInsetClass } from "@/lib/layout";
 import type { GalleryPost, GalleryPostDetail } from "@/lib/mock/gallery";
+import { galleryTagHref } from "@/lib/search/taxonomy-href";
 import { cn } from "@/lib/utils";
 
 type GalleryPostViewProps = {
@@ -177,9 +179,14 @@ export function GalleryPostView({
 							>
 								<span className="flex flex-wrap gap-1.5">
 									{post.tags.map((tag) => (
-										<Badge key={tag} variant="subtle" size="sm">
+										<TaxonomyBadgeLink
+											key={tag}
+											href={galleryTagHref(tag)}
+											variant="subtle"
+											size="sm"
+										>
 											{tag}
-										</Badge>
+										</TaxonomyBadgeLink>
 									))}
 								</span>
 							</CreditCell>

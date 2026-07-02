@@ -126,8 +126,26 @@ export function resolveNewsItem(locale: string, news: News): NewsItem | null {
 	};
 }
 
+/** Drop repeated rows the API may return (same id). */
+export function dedupeNewsItems(items: NewsItem[]): NewsItem[] {
+	const seen = new Set<string>();
+	const result: NewsItem[] = [];
+
+	for (const item of items) {
+		if (seen.has(item.id)) {
+			continue;
+		}
+		seen.add(item.id);
+		result.push(item);
+	}
+
+	return result;
+}
+
 export function resolveNewsItems(locale: string, items: News[]): NewsItem[] {
-	return items
-		.map((item) => resolveNewsItem(locale, item))
-		.filter((item): item is NewsItem => item != null);
+	return dedupeNewsItems(
+		items
+			.map((item) => resolveNewsItem(locale, item))
+			.filter((item): item is NewsItem => item != null),
+	);
 }

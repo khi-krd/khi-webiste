@@ -4,12 +4,18 @@ import {
 	ScrollReveal,
 	ScrollRevealItem,
 } from "@/components/motion/scroll-reveal";
-import { Badge } from "@/components/ui/badge";
+import { TaxonomyBadgeLink } from "@/components/ui/taxonomy-badge-link";
 import { DirectionalIcon } from "@/components/ui/directional-icon";
 import { Link } from "@/components/ui/link";
 import { RichText } from "@/components/ui/rich-text";
 import { VideoPlayerFrame } from "@/components/video/video-player-frame";
 import { homeInsetClass } from "@/lib/layout";
+import {
+	videoMemoriesHref,
+	videoTagHref,
+	videoTopicHref,
+	videoTypeHref,
+} from "@/lib/search/taxonomy-href";
 import { cn } from "@/lib/utils";
 import {
 	formatDuration,
@@ -125,18 +131,30 @@ export async function VideoDetailView({
 
 					<ScrollRevealItem>
 						<div className="mt-8 flex flex-wrap items-center gap-2">
-							<Badge variant="outline" size="sm">
+							<TaxonomyBadgeLink
+								href={videoTypeHref(detail.videoType)}
+								variant="outline"
+								size="sm"
+							>
 								{t(`typeBadge.${detail.videoType}`)}
-							</Badge>
-							{detail.topicName ? (
-								<Badge variant="subtle" size="sm">
+							</TaxonomyBadgeLink>
+							{detail.topicName && detail.topicId != null ? (
+								<TaxonomyBadgeLink
+									href={videoTopicHref(detail.topicId)}
+									variant="subtle"
+									size="sm"
+								>
 									{detail.topicName}
-								</Badge>
+								</TaxonomyBadgeLink>
 							) : null}
 							{detail.albumOfMemories ? (
-								<Badge variant="outline" size="sm">
+								<TaxonomyBadgeLink
+									href={videoMemoriesHref()}
+									variant="outline"
+									size="sm"
+								>
 									{t("card.memoriesBadge")}
-								</Badge>
+								</TaxonomyBadgeLink>
 							) : null}
 						</div>
 
@@ -176,7 +194,16 @@ export async function VideoDetailView({
 								) : null}
 								{detail.topicName ? (
 									<MetaCell label={t("detail.topic")}>
-										{detail.topicName}
+										{detail.topicId != null ? (
+											<Link
+												href={videoTopicHref(detail.topicId)}
+												className="underline decoration-border underline-offset-2 transition-colors fine-hover:decoration-foreground"
+											>
+												{detail.topicName}
+											</Link>
+										) : (
+											detail.topicName
+										)}
 									</MetaCell>
 								) : null}
 								{durationLabel ? (
@@ -221,9 +248,14 @@ export async function VideoDetailView({
 										<p className="label font-medium">{t("detail.tags")}</p>
 										<div className="mt-3 flex flex-wrap gap-2">
 											{detail.tags.map((tag) => (
-												<Badge key={tag} variant="outline" size="sm">
+												<TaxonomyBadgeLink
+													key={tag}
+													href={videoTagHref(tag)}
+													variant="outline"
+													size="sm"
+												>
 													{tag}
-												</Badge>
+												</TaxonomyBadgeLink>
 											))}
 										</div>
 									</div>
@@ -233,9 +265,14 @@ export async function VideoDetailView({
 										<p className="label font-medium">{t("detail.keywords")}</p>
 										<div className="mt-3 flex flex-wrap gap-2">
 											{detail.keywords.map((keyword) => (
-												<Badge key={keyword} variant="subtle" size="sm">
+												<TaxonomyBadgeLink
+													key={keyword}
+													href={videoTagHref(keyword)}
+													variant="subtle"
+													size="sm"
+												>
 													{keyword}
-												</Badge>
+												</TaxonomyBadgeLink>
 											))}
 										</div>
 									</div>

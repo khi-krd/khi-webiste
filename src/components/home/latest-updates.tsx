@@ -9,7 +9,7 @@ import {
 import { DirectionalIcon } from "@/components/ui/directional-icon";
 import { Link } from "@/components/ui/link";
 import { getLatestUpdates } from "@/lib/api/news";
-import type { LatestUpdateCategory } from "@/lib/mock/latest-updates";
+import type { LatestUpdateCategory, LatestUpdateItem } from "@/lib/mock/latest-updates";
 
 function getCategoryLabel(
 	t: Awaited<ReturnType<typeof getTranslations>>,
@@ -18,12 +18,33 @@ function getCategoryLabel(
 	return t(`categories.${category}`);
 }
 
+function dedupeLatestUpdates(items: LatestUpdateItem[]): LatestUpdateItem[] {
+	const seen = new Set<string>();
+	const result: LatestUpdateItem[] = [];
+
+	for (const item of items) {
+		if (seen.has(item.id)) {
+			continue;
+		}
+		seen.add(item.id);
+		result.push(item);
+	}
+
+	return result;
+}
+
 export async function LatestUpdates() {
 	const locale = await getLocale();
 	const t = await getTranslations("LatestUpdates");
-	const items = await getLatestUpdates(locale);
+	const items = dedupeLatestUpdates(await getLatestUpdates(locale));
 
-	const [hero, railA, railB, railC, railD, overflowA, overflowB] = items;
+	if (items.length === 0) {
+		return null;
+	}
+
+	const [hero, ...rest] = items;
+	const rail = rest.slice(0, 4);
+	const overflow = rest.slice(4, 6);
 
 	return (
 		<section
@@ -60,62 +81,55 @@ export async function LatestUpdates() {
 
 			<div className="px-6 sm:px-8">
 				<ScrollReveal className="grid grid-cols-1 gap-3 sm:grid-cols-2 sm:gap-4 lg:grid-cols-12 lg:grid-rows-[minmax(18rem,1fr)_minmax(18rem,1fr)] lg:gap-4">
-					<ScrollRevealItem className="sm:col-span-2 lg:col-span-7 lg:row-span-2">
-						<NewsCard
-							item={hero}
-							variant="featured"
-							categoryLabel={getCategoryLabel(t, hero.category)}
-							className="h-full"
-						/>
-					</ScrollRevealItem>
+					{hero ? (
+						<ScrollRevealItem className="sm:col-span-2 lg:col-span-7 lg:row-span-2">
+							<NewsCard
+								item={hero}
+								variant="featured"
+								categoryLabel={getCategoryLabel(t, hero.category)}
+								overlayTone="light"
+								className="h-full"
+							/>
+						</ScrollRevealItem>
+					) : null}
 
-					<ScrollRevealItem className="lg:col-span-5 lg:row-span-2">
-						<ScrollReveal className="grid h-full grid-cols-2 gap-3 sm:gap-4 lg:grid-rows-2">
-							<ScrollRevealItem>
-								<NewsCard
-									item={railA}
-									variant="small"
-									categoryLabel={getCategoryLabel(t, railA.category)}
-								/>
-							</ScrollRevealItem>
-							<ScrollRevealItem>
-								<NewsCard
-									item={railB}
-									variant="small"
-									categoryLabel={getCategoryLabel(t, railB.category)}
-								/>
-							</ScrollRevealItem>
-							<ScrollRevealItem>
-								<NewsCard
-									item={railC}
-									variant="small"
-									categoryLabel={getCategoryLabel(t, railC.category)}
-								/>
-							</ScrollRevealItem>
-							<ScrollRevealItem>
-								<NewsCard
-									item={railD}
-									variant="small"
-									categoryLabel={getCategoryLabel(t, railD.category)}
-								/>
-							</ScrollRevealItem>
-						</ScrollReveal>
-					</ScrollRevealItem>
+					{rail.length > 0 ? (
+						<ScrollRevealItem className="lg:col-span-5 lg:row-span-2">
+							<ScrollReveal className="grid h-full grid-cols-2 gap-3 sm:gap-4 lg:grid-rows-2">
+								{rail.map((item) => (
+									<ScrollRevealItem key={item.id}>
+										<NewsCard
+											item={item}
+											variant="small"
+											categoryLabel={getCategoryLabel(t, item.category)}
+											overlayTone="light"
+										/>
+									</ScrollRevealItem>
+								))}
+							</ScrollReveal>
+						</ScrollRevealItem>
+					) : null}
 
-					<ScrollRevealItem className="sm:col-span-1 lg:hidden">
-						<NewsCard
-							item={overflowA}
-							variant="medium"
-							categoryLabel={getCategoryLabel(t, overflowA.category)}
-						/>
-					</ScrollRevealItem>
-					<ScrollRevealItem className="sm:col-span-2 lg:hidden">
-						<NewsCard
-							item={overflowB}
-							variant="wide"
-							categoryLabel={getCategoryLabel(t, overflowB.category)}
-						/>
-					</ScrollRevealItem>
+					{overflow[0] ? (
+						<ScrollRevealItem className="sm:col-span-1 lg:hidden">
+							<NewsCard
+								item={overflow[0]}
+								variant="medium"
+								categoryLabel={getCategoryLabel(t, overflow[0].category)}
+								overlayTone="light"
+							/>
+						</ScrollRevealItem>
+					) : null}
+					{overflow[1] ? (
+						<ScrollRevealItem className="sm:col-span-2 lg:hidden">
+							<NewsCard
+								item={overflow[1]}
+								variant="wide"
+								categoryLabel={getCategoryLabel(t, overflow[1].category)}
+								overlayTone="light"
+							/>
+						</ScrollRevealItem>
+					) : null}
 				</ScrollReveal>
 			</div>
 		</section>

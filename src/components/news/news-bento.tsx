@@ -24,6 +24,12 @@ export async function NewsBento({
 }: NewsBentoProps) {
 	const { hero, rail, editorial, wide } = await getBentoNews(locale);
 
+	if (!hero) {
+		return null;
+	}
+
+	const showBottomRow = editorial != null || wide != null;
+
 	return (
 		<section
 			className={cn(
@@ -54,37 +60,50 @@ export async function NewsBento({
 						/>
 					</ScrollRevealItem>
 
-					<ScrollRevealItem className="lg:col-span-5 lg:row-span-2">
-						<ScrollReveal className="grid h-full grid-cols-2 gap-3 sm:gap-4 lg:grid-rows-2">
-							{rail.map((item) => (
-								<ScrollRevealItem key={item.id}>
-									<NewsCard
-										item={item}
-										variant="small"
-										categoryLabel={categoryLabels[item.category]}
-									/>
-								</ScrollRevealItem>
-							))}
-						</ScrollReveal>
-					</ScrollRevealItem>
+					{rail.length > 0 ? (
+						<ScrollRevealItem className="lg:col-span-5 lg:row-span-2">
+							<ScrollReveal className="grid h-full grid-cols-2 gap-3 sm:gap-4 lg:grid-rows-2">
+								{rail.map((item) => (
+									<ScrollRevealItem key={item.id}>
+										<NewsCard
+											item={item}
+											variant="small"
+											categoryLabel={categoryLabels[item.category]}
+										/>
+									</ScrollRevealItem>
+								))}
+							</ScrollReveal>
+						</ScrollRevealItem>
+					) : null}
 				</ScrollReveal>
 
-				<ScrollReveal className="mt-3 grid grid-cols-1 gap-3 sm:mt-4 sm:grid-cols-2 sm:gap-4 lg:grid-cols-12 lg:gap-4">
-					<ScrollRevealItem className="sm:col-span-2 lg:col-span-5">
-						<NewsEditorialCard
-							item={editorial}
-							categoryLabel={categoryLabels[editorial.category]}
-						/>
-					</ScrollRevealItem>
+				{showBottomRow ? (
+					<ScrollReveal className="mt-3 grid grid-cols-1 gap-3 sm:mt-4 sm:grid-cols-2 sm:gap-4 lg:grid-cols-12 lg:gap-4">
+						{editorial ? (
+							<ScrollRevealItem className="sm:col-span-2 lg:col-span-5">
+								<NewsEditorialCard
+									item={editorial}
+									categoryLabel={categoryLabels[editorial.category]}
+								/>
+							</ScrollRevealItem>
+						) : null}
 
-					<ScrollRevealItem className="sm:col-span-2 lg:col-span-7">
-						<NewsCard
-							item={wide}
-							variant="wide"
-							categoryLabel={categoryLabels[wide.category]}
-						/>
-					</ScrollRevealItem>
-				</ScrollReveal>
+						{wide ? (
+							<ScrollRevealItem
+								className={cn(
+									"sm:col-span-2",
+									editorial ? "lg:col-span-7" : "lg:col-span-12",
+								)}
+							>
+								<NewsCard
+									item={wide}
+									variant="wide"
+									categoryLabel={categoryLabels[wide.category]}
+								/>
+							</ScrollRevealItem>
+						) : null}
+					</ScrollReveal>
+				) : null}
 			</div>
 		</section>
 	);

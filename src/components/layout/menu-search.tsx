@@ -17,9 +17,13 @@ import {
 import {
 	type ClientSearchItem,
 	type ClientSearchSectionKey,
+	type SearchTaxonomyItem,
 	fetchGlobalSearch,
+	fetchTaxonomyCatalog,
+	filterTaxonomyCatalog,
 	groupSearchItems,
 } from "@/lib/search/client";
+import { groupTaxonomyItems } from "@/lib/search/taxonomy-types";
 import { cn } from "@/lib/utils";
 
 /** Min characters before we filter the catalog or flag a too-short query. */
@@ -56,6 +60,14 @@ const SEARCH_SECTION_LABEL_KEYS: Record<ClientSearchSectionKey, string> = {
 	soundTracks: "sound",
 	imageCollections: "gallery",
 };
+
+const SEARCH_TAXONOMY_KIND_LABEL_KEYS = {
+	category: "searchTaxonomyCategory",
+	tag: "searchTaxonomyTag",
+	topic: "searchTaxonomyTopic",
+	genre: "searchTaxonomyGenre",
+	type: "searchTaxonomyType",
+} as const satisfies Record<SearchTaxonomyItem["kind"], string>;
 
 /** Keeps overlay copy readable when background photos run bright. */
 const overlayTextShadow =
@@ -138,6 +150,7 @@ function SearchResultsList({
 	noResultsLabel,
 	loadingLabel,
 	getSectionLabel,
+	getItemDescription,
 }: {
 	groups: { key: ClientSearchSectionKey; items: ClientSearchItem[] }[];
 	isSearching: boolean;
@@ -146,6 +159,7 @@ function SearchResultsList({
 	noResultsLabel: string;
 	loadingLabel: string;
 	getSectionLabel: (key: ClientSearchSectionKey) => string;
+	getItemDescription?: (item: ClientSearchItem) => string | undefined;
 }) {
 	if (isLoading) {
 		return (
@@ -184,14 +198,14 @@ function SearchResultsList({
 										variant="nav"
 										onClick={onNavigate}
 										className={cn(
-											"block py-3 text-body text-primary-foreground/80 transition-colors hover:text-primary-foreground",
+											"block cursor-pointer py-3 text-body text-primary-foreground/80 transition-colors hover:text-primary-foreground",
 											overlayTextShadow,
 										)}
 									>
 										<span>{result.label}</span>
-										{result.description ? (
+										{(getItemDescription?.(result) ?? result.description) ? (
 											<span className="mt-1 block text-small text-primary-foreground/45">
-												{result.description}
+												{getItemDescription?.(result) ?? result.description}
 											</span>
 										) : null}
 									</Link>
@@ -218,6 +232,62 @@ function SearchResultsList({
 	}
 
 	return null;
+}
+
+function TaxonomyResultsList({
+	groups,
+	onNavigate,
+	getSectionLabel,
+	getKindLabel,
+}: {
+	groups: { key: ClientSearchSectionKey; items: SearchTaxonomyItem[] }[];
+	onNavigate: () => void;
+	getSectionLabel: (key: ClientSearchSectionKey) => string;
+	getKindLabel: (item: SearchTaxonomyItem) => string;
+}) {
+	if (groups.length === 0) {
+		return null;
+	}
+
+	return (
+		<div className="flex flex-col gap-6 pb-4">
+			{groups.map((group) => (
+				<section key={group.key}>
+					<h4
+						className={cn(
+							"mb-2 text-small font-medium text-primary-foreground/55",
+							overlayTextShadow,
+						)}
+					>
+						{getSectionLabel(group.key)}
+					</h4>
+					<ul className="flex flex-col">
+						{group.items.map((result) => (
+							<li
+								key={result.id}
+								className="border-b border-primary-foreground/15 last:border-b-0"
+							>
+								<Link
+									href={result.href}
+									variant="nav"
+									onClick={onNavigate}
+									className={cn(
+										"block py-3 text-body text-primary-foreground/80 transition-colors hover:text-primary-foreground",
+										overlayTextShadow,
+									)}
+								>
+									<span>{result.label}</span>
+									<span className="mt-1 block text-small text-primary-foreground/45">
+										{getKindLabel(result)}
+									</span>
+								</Link>
+							</li>
+						))}
+					</ul>
+				</section>
+			))}
+		</div>
+	);
 }
 
 function NavFallbackResultsList({
@@ -290,6 +360,10 @@ export function MenuSearch({ onBack, onNavigate }: MenuSearchProps) {
 	const [apiResults, setApiResults] = useState<ClientSearchItem[] | null>(null);
 	const [isLoading, setIsLoading] = useState(false);
 	const [contentSearchUnavailable, setContentSearchUnavailable] = useState(false);
+	const [taxonomyCatalog, setTaxonomyCatalog] = useState<
+		SearchTaxonomyItem[] | null
+	>(null);
+	const [taxonomyUnavailable, setTaxonomyUnavailable] = useState(false);
 
 	const trimmedQuery = query.trim();
 	const hasQuery = trimmedQuery.length > 0;
@@ -325,6 +399,34 @@ export function MenuSearch({ onBack, onNavigate }: MenuSearchProps) {
 		}
 		return groupSearchItems(apiResults);
 	}, [apiResults]);
+
+	const filteredTaxonomyResults = useMemo(() => {
+		if (!taxonomyCatalog || !isSearching) {
+			return [];
+		}
+		return filterTaxonomyCatalog(taxonomyCatalog, trimmedQuery, scope);
+	}, [isSearching, scope, taxonomyCatalog, trimmedQuery]);
+
+	const groupedTaxonomyResults = useMemo(
+		() => groupTaxonomyItems(filteredTaxonomyResults),
+		[filteredTaxonomyResults],
+	);
+
+	useEffect(() => {
+		let cancelled = false;
+
+		void fetchTaxonomyCatalog(locale).then(({ items, unavailable }) => {
+			if (cancelled) {
+				return;
+			}
+			setTaxonomyCatalog(items);
+			setTaxonomyUnavailable(unavailable);
+		});
+
+		return () => {
+			cancelled = true;
+		};
+	}, [locale]);
 
 	useEffect(() => {
 		if (!isSearching) {
@@ -381,12 +483,14 @@ export function MenuSearch({ onBack, onNavigate }: MenuSearchProps) {
 	}, [hasQuery, isSearching, reduceMotion]);
 
 	const hasApiResults = groupedApiResults.length > 0;
+	const hasTaxonomyResults = groupedTaxonomyResults.length > 0;
 	const showNavResults = !isLoading && !hasApiResults;
 	const visibleNavResults = showNavResults ? navFallbackResults : [];
 	const showEmptyState =
 		isSearching &&
 		!isLoading &&
 		!hasApiResults &&
+		!hasTaxonomyResults &&
 		visibleNavResults.length === 0;
 
 	const spacerClass = cn(
@@ -401,6 +505,9 @@ export function MenuSearch({ onBack, onNavigate }: MenuSearchProps) {
 
 	const getSectionLabel = (key: ClientSearchSectionKey) =>
 		t(SEARCH_SECTION_LABEL_KEYS[key]);
+
+	const getTaxonomyKindLabel = (item: SearchTaxonomyItem) =>
+		t(SEARCH_TAXONOMY_KIND_LABEL_KEYS[item.kind]);
 
 	return (
 		<div className="flex min-h-0 flex-1 flex-col overflow-hidden">
@@ -560,6 +667,38 @@ export function MenuSearch({ onBack, onNavigate }: MenuSearchProps) {
 								loadingLabel={t("searchLoading")}
 								getSectionLabel={getSectionLabel}
 							/>
+						) : null}
+
+						{hasTaxonomyResults ? (
+							<div className={hasApiResults ? "mt-6" : undefined}>
+								{hasApiResults ? (
+									<h4
+										className={cn(
+											"mb-2 text-small font-medium text-primary-foreground/55",
+											overlayTextShadow,
+										)}
+									>
+										{t("searchTaxonomy")}
+									</h4>
+								) : null}
+								<TaxonomyResultsList
+									groups={groupedTaxonomyResults}
+									onNavigate={onNavigate}
+									getSectionLabel={getSectionLabel}
+									getKindLabel={getTaxonomyKindLabel}
+								/>
+							</div>
+						) : null}
+
+						{taxonomyUnavailable && isSearching && !hasTaxonomyResults ? (
+							<p
+								className={cn(
+									"mb-3 text-small text-primary-foreground/55",
+									overlayTextShadow,
+								)}
+							>
+								{t("searchTaxonomyUnavailable")}
+							</p>
 						) : null}
 
 						{visibleNavResults.length > 0 ? (
