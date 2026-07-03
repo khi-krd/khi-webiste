@@ -7,6 +7,7 @@ import {
 	unwrapApiPayload,
 } from "@/lib/api/client";
 import { getApiBaseUrl } from "@/lib/api/config";
+import { applyMockPolicy, applyMockPolicyNullable } from "@/lib/api/mock-policy";
 import {
 	normalizeSeriesBookRecord,
 	normalizeWritingRecord,
@@ -70,8 +71,32 @@ export async function getWritingsCarousel(
 	locale: string,
 	size = WRITINGS_CAROUSEL_SIZE,
 ): Promise<ResolvedWritingCard[]> {
-	const { items } = await getWritingsPage(locale, 1, size);
-	return items;
+	const getMockItems = () => getDemoWritingCards(locale, 1, size).items;
+
+	let apiItems: ResolvedWritingCard[] = [];
+
+	if (getApiBaseUrl()) {
+		const data = await apiFetchPage(WRITINGS_ENDPOINT, {
+			itemSchema: WritingSchema,
+			tags: [WRITINGS_TAG],
+			revalidate: DEFAULT_REVALIDATE,
+			searchParams: { page: 0, size },
+			normalizeItem: normalizeWritingRecord,
+		});
+
+		if (data) {
+			apiItems = data.content
+				.map((writing) => resolveWritingCard(locale, writing))
+				.filter((item): item is ResolvedWritingCard => item != null);
+		}
+	}
+
+	return applyMockPolicy({
+		context: "home",
+		apiItems,
+		getMockItems,
+		targetCount: size,
+	});
 }
 
 async function fetchAllWritingsFromApi(
@@ -100,8 +125,24 @@ async function fetchAllWritingsFromApi(
 export async function getAllWritings(
 	locale: string,
 ): Promise<ResolvedWritingCard[]> {
-	const apiItems = await fetchAllWritingsFromApi(locale);
-	return apiItems ?? getAllDemoWritingCards(locale);
+	const apiItems = (await fetchAllWritingsFromApi(locale)) ?? [];
+	return applyMockPolicy({
+		context: "global",
+		apiItems,
+		getMockItems: () => getAllDemoWritingCards(locale),
+	});
+}
+
+function emptyWritingsPage(
+	currentPage: number,
+): WritingsListResult {
+	return {
+		items: [],
+		totalPages: 1,
+		totalElements: 0,
+		currentPage,
+		empty: true,
+	};
 }
 
 export async function getWritingsListing(
@@ -127,9 +168,18 @@ export async function getWritingsPage(
 	size = WRITINGS_PER_PAGE,
 ): Promise<WritingsListResult> {
 	const currentPage = Math.max(1, page);
+	const getMockPage = () => getDemoWritingCards(locale, currentPage, size);
 
 	if (!getApiBaseUrl()) {
-		return getDemoWritingCards(locale, currentPage, size);
+		const mockPage = getMockPage();
+		const items = applyMockPolicy({
+			context: "global",
+			apiItems: [],
+			getMockItems: () => mockPage.items,
+		});
+		return items.length > 0
+			? { ...mockPage, items }
+			: emptyWritingsPage(currentPage);
 	}
 
 	const data = await apiFetchPage(WRITINGS_ENDPOINT, {
@@ -140,24 +190,32 @@ export async function getWritingsPage(
 		normalizeItem: normalizeWritingRecord,
 	});
 
-	if (!data) {
-		return getDemoWritingCards(locale, currentPage, size);
-	}
-
-	const items = data.content
-		.map((writing) => resolveWritingCard(locale, writing))
-		.filter((item): item is ResolvedWritingCard => item != null);
+	const apiItems = data
+		? data.content
+				.map((writing) => resolveWritingCard(locale, writing))
+				.filter((item): item is ResolvedWritingCard => item != null)
+		: [];
+	const items = applyMockPolicy({
+		context: "global",
+		apiItems,
+		getMockItems: () => getMockPage().items,
+	});
 
 	if (items.length === 0) {
-		return getDemoWritingCards(locale, currentPage, size);
+		return emptyWritingsPage(currentPage);
+	}
+
+	if (apiItems.length === 0) {
+		const mockPage = getMockPage();
+		return { ...mockPage, items };
 	}
 
 	return {
 		items,
-		totalPages: Math.max(data.totalPages, 1),
-		totalElements: data.totalElements,
+		totalPages: Math.max(data?.totalPages ?? 1, 1),
+		totalElements: data?.totalElements ?? items.length,
 		currentPage,
-		empty: data.empty ?? items.length === 0,
+		empty: data?.empty ?? items.length === 0,
 	};
 }
 
@@ -178,27 +236,30 @@ export async function getWritingById(
 	id: number,
 	labels: WritingDetailLabels,
 ): Promise<ResolvedWritingDetail | null> {
-	if (!getApiBaseUrl()) {
-		return getDemoWritingById(locale, id, labels);
-	}
+	let apiDetail: ResolvedWritingDetail | null = null;
 
-	const raw = await apiFetchRaw(`${WRITINGS_ENDPOINT}/${id}`, {
-		tags: [WRITINGS_TAG, `writing-${id}`],
-		revalidate: DEFAULT_REVALIDATE,
-	});
-	const unwrapped = unwrapApiPayload(raw);
-	const parsed = unwrapped
-		? WritingSchema.safeParse(normalizeWritingRecord(unwrapped))
-		: null;
+	if (getApiBaseUrl()) {
+		const raw = await apiFetchRaw(`${WRITINGS_ENDPOINT}/${id}`, {
+			tags: [WRITINGS_TAG, `writing-${id}`],
+			revalidate: DEFAULT_REVALIDATE,
+		});
+		const unwrapped = unwrapApiPayload(raw);
+		const parsed = unwrapped
+			? WritingSchema.safeParse(normalizeWritingRecord(unwrapped))
+			: null;
 
-	if (parsed?.success) {
-		const resolved = resolveWritingDetail(locale, parsed.data, labels);
-		if (resolved?.id === id) {
-			return resolved;
+		if (parsed?.success) {
+			const resolved = resolveWritingDetail(locale, parsed.data, labels);
+			if (resolved?.id === id) {
+				apiDetail = resolved;
+			}
 		}
 	}
 
-	return getDemoWritingById(locale, id, labels);
+	return applyMockPolicyNullable({
+		apiValue: apiDetail,
+		getMockValue: () => getDemoWritingById(locale, id, labels),
+	});
 }
 
 export async function getWritingSeriesBooks(
@@ -206,33 +267,37 @@ export async function getWritingSeriesBooks(
 	seriesId: string,
 	currentId: number,
 ): Promise<ResolvedSeriesBook[]> {
-	if (!getApiBaseUrl()) {
-		return getDemoWritingSeries(locale, seriesId, currentId);
-	}
+	let apiBooks: ResolvedSeriesBook[] = [];
 
-	const raw = await apiFetchRaw(
-		`${WRITINGS_ENDPOINT}/series/${encodeURIComponent(seriesId)}`,
-		{
-			tags: [WRITINGS_TAG, `writing-series-${seriesId}`],
-			revalidate: DEFAULT_REVALIDATE,
-		},
-	);
+	if (getApiBaseUrl()) {
+		const raw = await apiFetchRaw(
+			`${WRITINGS_ENDPOINT}/series/${encodeURIComponent(seriesId)}`,
+			{
+				tags: [WRITINGS_TAG, `writing-series-${seriesId}`],
+				revalidate: DEFAULT_REVALIDATE,
+			},
+		);
 
-	const unwrapped = unwrapApiPayload(raw);
-	const record =
-		unwrapped && typeof unwrapped === "object"
-			? (unwrapped as Record<string, unknown>)
+		const unwrapped = unwrapApiPayload(raw);
+		const record =
+			unwrapped && typeof unwrapped === "object"
+				? (unwrapped as Record<string, unknown>)
+				: null;
+		const books = Array.isArray(record?.books)
+			? record.books.map(normalizeSeriesBookRecord)
+			: [];
+		const parsed = record
+			? SeriesResponseSchema.safeParse({ ...record, books })
 			: null;
-	const books = Array.isArray(record?.books)
-		? record.books.map(normalizeSeriesBookRecord)
-		: [];
-	const parsed = record
-		? SeriesResponseSchema.safeParse({ ...record, books })
-		: null;
 
-	if (parsed?.success) {
-		return resolveSeriesBooks(locale, parsed.data.books, currentId);
+		if (parsed?.success) {
+			apiBooks = resolveSeriesBooks(locale, parsed.data.books, currentId);
+		}
 	}
 
-	return getDemoWritingSeries(locale, seriesId, currentId);
+	return applyMockPolicy({
+		context: "global",
+		apiItems: apiBooks,
+		getMockItems: () => getDemoWritingSeries(locale, seriesId, currentId),
+	});
 }

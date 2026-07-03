@@ -43,7 +43,7 @@ describe("dedupeImageAlbumItems", () => {
 });
 
 describe("resolveImageCollectionItem", () => {
-	it("prefers the first album image over CMS cover URLs", () => {
+	it("uses the CMS cover URL instead of the first album image", () => {
 		const collection = {
 			id: 1,
 			slugKmr: "test-gallery",
@@ -57,13 +57,11 @@ describe("resolveImageCollectionItem", () => {
 				location: "Hewraman",
 				collectedBy: null,
 			},
-			imageAlbum: [
-				albumItem(1, "https://cdn.example.com/full-image.jpg", 0),
-			],
+			imageAlbum: [albumItem(1, "https://cdn.example.com/full-image.jpg", 0)],
 		} as ImageCollection;
 
 		const item = resolveImageCollectionItem("ku", collection, 0);
-		expect(item?.image.url).toBe("https://cdn.example.com/full-image.jpg");
+		expect(item?.image.url).toBe("https://cdn.example.com/cover-thumb.jpg");
 	});
 
 	it("falls back to cover URL when the album is empty", () => {

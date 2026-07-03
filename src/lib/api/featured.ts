@@ -5,6 +5,7 @@ import {
 	unwrapApiPayload,
 } from "@/lib/api/client";
 import { getApiBaseUrl } from "@/lib/api/config";
+import { applyMockPolicy } from "@/lib/api/mock-policy";
 import { getDemoFeaturedItems } from "@/lib/mock/featured";
 import { plainTextFromRichContent } from "@/lib/rich-text";
 import {
@@ -215,9 +216,17 @@ function normalizeItems(payload: unknown): unknown[] {
 export async function getFeaturedItems(
 	locale: string,
 ): Promise<FeaturedItem[]> {
+	const getMockItems = () => getDemoFeaturedItems(locale);
+
 	if (!getApiBaseUrl()) {
-		return getDemoFeaturedItems(locale);
+		return applyMockPolicy({
+			context: "home",
+			apiItems: [],
+			getMockItems,
+		});
 	}
+
+	let apiItems: FeaturedItem[] = [];
 
 	try {
 		const payload = await apiFetchRaw(FEATURED_ENDPOINT, {
@@ -227,20 +236,22 @@ export async function getFeaturedItems(
 		});
 
 		const unwrapped = unwrapApiPayload(payload);
-		if (!unwrapped) {
-			return getDemoFeaturedItems(locale);
-		}
+		if (unwrapped) {
+			const rawItems = normalizeItems(unwrapped);
+			const remappedItems = rawItems.map((item) => remapFeaturedItem(item));
+			const parsed = FeaturedItemsSchema.safeParse(remappedItems);
 
-		const rawItems = normalizeItems(unwrapped);
-		const remappedItems = rawItems.map((item) => remapFeaturedItem(item));
-		const parsed = FeaturedItemsSchema.safeParse(remappedItems);
-
-		if (parsed.success) {
-			return parsed.data;
+			if (parsed.success) {
+				apiItems = parsed.data;
+			}
 		}
 	} catch {
-		// fall through to demo mock
+		// fall through to mock policy
 	}
 
-	return getDemoFeaturedItems(locale);
+	return applyMockPolicy({
+		context: "home",
+		apiItems,
+		getMockItems,
+	});
 }

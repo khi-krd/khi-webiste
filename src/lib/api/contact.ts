@@ -1,6 +1,7 @@
 import "server-only";
 import { apiFetch, apiPost, DEFAULT_REVALIDATE } from "@/lib/api/client";
 import { getApiBaseUrl } from "@/lib/api/config";
+import { applyMockPolicy } from "@/lib/api/mock-policy";
 import {
 	resolveContactOffices,
 	type ResolvedContactOffice,
@@ -39,12 +40,14 @@ export async function getContactOffices(
 	locale: string,
 ): Promise<ResolvedContactOffice[]> {
 	const pages = await getActiveContactPages();
-	if (pages.length === 0) {
-		return getMockContactOffices();
-	}
+	const apiItems =
+		pages.length > 0 ? resolveContactOffices(locale, pages) : [];
 
-	const offices = resolveContactOffices(locale, pages);
-	return offices.length > 0 ? offices : getMockContactOffices();
+	return applyMockPolicy({
+		context: "global",
+		apiItems,
+		getMockItems: () => getMockContactOffices(),
+	});
 }
 
 export type { ContactOffice, ResolvedContactOffice };

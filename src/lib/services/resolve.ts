@@ -182,6 +182,47 @@ export function mergeServiceSections(
 	});
 }
 
+function serviceItemFromApi(api: ResolvedServiceContent): ServiceItem {
+	const sectionId = api.layout.navAnchorId ?? String(api.id);
+	const layout = mapApiLayoutType(api.layout.layoutType) ?? "editorial";
+	const thumbUrls = api.layout.thumbnailUrls;
+
+	return {
+		id: sectionId,
+		slug: sectionId,
+		layout,
+		featureImage: {
+			url: api.layout.featureImageUrls[0] ?? "",
+			alt: api.title,
+		},
+		video: {
+			src: api.layout.heroVideoUrl ?? "",
+			poster: api.layout.heroPosterUrl ?? "",
+			posterAlt: api.title,
+		},
+		thumbnails: [
+			{ url: thumbUrls[0] ?? "", alt: api.title },
+			{ url: thumbUrls[1] ?? "", alt: api.title },
+			{ url: thumbUrls[2] ?? "", alt: api.title },
+			{ url: thumbUrls[3] ?? "", alt: api.title },
+		],
+	};
+}
+
+/** Build service sections from API records without mock layout shells. */
+export function buildApiOnlyServiceSections(
+	locale: string,
+	apiRecords: Service[],
+): MergedServiceSection[] {
+	return resolveServiceContents(locale, apiRecords).map((api) => ({
+		mockId: api.layout.navAnchorId ?? String(api.id),
+		service: serviceItemFromApi(api),
+		title: api.title,
+		body: api.body,
+		partnerIds: api.layout.partnerIds,
+	}));
+}
+
 export function resolveServicesHeroMedia(
 	apiRecords: Service[],
 	locale: string,

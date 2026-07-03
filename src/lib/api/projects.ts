@@ -7,6 +7,7 @@ import {
 	unwrapApiPayload,
 } from "@/lib/api/client";
 import { getApiBaseUrl } from "@/lib/api/config";
+import { applyMockPolicy, applyMockPolicyNullable } from "@/lib/api/mock-policy";
 import {
 	filterProjects,
 	getProjectById as getMockProjectById,
@@ -72,18 +73,28 @@ async function fetchProjectsByKeyword(keyword: string) {
 	});
 }
 
-async function getAllProjectRecords(locale: string): Promise<ProjectListItem[]> {
+async function fetchProjectListItemsFromApi(
+	locale: string,
+): Promise<ProjectListItem[]> {
 	if (!getApiBaseUrl()) {
-		return getMockProjectListItems(locale);
+		return [];
 	}
 
 	const page = await fetchProjectsPage({ page: 0, size: BULK_FETCH_SIZE });
 	if (!page?.content.length) {
-		return getMockProjectListItems(locale);
+		return [];
 	}
 
-	const items = resolveProjectListItems(locale, page.content);
-	return items.length > 0 ? items : getMockProjectListItems(locale);
+	return resolveProjectListItems(locale, page.content);
+}
+
+async function getAllProjectRecords(locale: string): Promise<ProjectListItem[]> {
+	const apiItems = await fetchProjectListItemsFromApi(locale);
+	return applyMockPolicy({
+		context: "global",
+		apiItems,
+		getMockItems: () => getMockProjectListItems(locale),
+	});
 }
 
 async function searchProjectRecords(
@@ -91,7 +102,12 @@ async function searchProjectRecords(
 	filter: ProjectFilter,
 ): Promise<ProjectListItem[]> {
 	if (!getApiBaseUrl()) {
-		return filterProjects(getMockProjectListItems(locale), filter);
+		return applyMockPolicy({
+			context: "global",
+			apiItems: [],
+			getMockItems: () =>
+				filterProjects(getMockProjectListItems(locale), filter),
+		});
 	}
 
 	if (filter.tag?.trim()) {
@@ -118,7 +134,13 @@ async function searchProjectRecords(
 }
 
 export async function getProjects(locale: string): Promise<ProjectItem[]> {
-	const records = await getAllProjectRecords(locale);
+	const apiItems = await fetchProjectListItemsFromApi(locale);
+	const records = applyMockPolicy({
+		context: "home",
+		apiItems,
+		getMockItems: () => getMockProjectListItems(locale),
+	});
+
 	return records.map((record) => ({
 		id: record.id,
 		slug: record.slug,
@@ -142,42 +164,52 @@ export async function getProjectById(
 	locale: string,
 	id: string,
 ): Promise<ProjectDetail | null> {
-	if (!getApiBaseUrl()) {
-		return getMockProjectById(locale, id);
-	}
+	let apiDetail: ProjectDetail | null = null;
 
-	const raw = await apiFetchRaw(`/api/v1/projects/${encodeURIComponent(id)}`, {
-		tags: [PROJECTS_TAG, `project-${id}`],
-		revalidate: DEFAULT_REVALIDATE,
-	});
-	const unwrapped = unwrapApiPayload(raw);
-	const parsed = unwrapped ? ProjectSchema.safeParse(unwrapped) : null;
+	if (getApiBaseUrl()) {
+		const raw = await apiFetchRaw(`/api/v1/projects/${encodeURIComponent(id)}`, {
+			tags: [PROJECTS_TAG, `project-${id}`],
+			revalidate: DEFAULT_REVALIDATE,
+		});
+		const unwrapped = unwrapApiPayload(raw);
+		const parsed = unwrapped ? ProjectSchema.safeParse(unwrapped) : null;
 
-	if (parsed?.success) {
-		const item = resolveProjectListItem(locale, parsed.data);
-		if (item) {
+		if (parsed?.success) {
+			const item = resolveProjectListItem(locale, parsed.data);
+			if (item) {
+				const items = await getAllProjectRecords(locale);
+				const index = items.findIndex(
+					(entry) => entry.id === item.id || entry.slug === item.slug,
+				);
+				apiDetail = {
+					...item,
+					previous: index > 0 ? items[index] : null,
+					next:
+						index >= 0 && index < items.length - 1 ? items[index + 1] : null,
+				};
+			}
+		}
+
+		if (!apiDetail) {
 			const items = await getAllProjectRecords(locale);
 			const index = items.findIndex(
-				(entry) => entry.id === item.id || entry.slug === item.slug,
+				(item) => item.id === id || item.slug === id,
 			);
-			return {
-				...item,
-				previous: index > 0 ? items[index] : null,
-				next: index >= 0 && index < items.length - 1 ? items[index + 1] : null,
-			};
+			if (index !== -1) {
+				const item = items[index];
+				apiDetail = {
+					...item,
+					previous: index > 0 ? items[index - 1] : null,
+					next: index < items.length - 1 ? items[index + 1] : null,
+				};
+			}
 		}
 	}
 
-	const items = await getAllProjectRecords(locale);
-	const index = items.findIndex((item) => item.id === id || item.slug === id);
-	if (index === -1) return null;
-
-	const item = items[index];
-	return {
-		...item,
-		previous: index > 0 ? items[index - 1] : null,
-		next: index < items.length - 1 ? items[index + 1] : null,
-	};
+	return applyMockPolicyNullable({
+		apiValue: apiDetail,
+		getMockValue: () => getMockProjectById(locale, id),
+	});
 }
 
 export async function getProjectsHeroCovers(

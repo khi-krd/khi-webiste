@@ -5,13 +5,11 @@ import {
 	DEFAULT_REVALIDATE,
 } from "@/lib/api/client";
 import { getApiBaseUrl } from "@/lib/api/config";
+import { applyMockPolicy, applyMockPolicyNullable } from "@/lib/api/mock-policy";
 import type { LatestUpdateItem } from "@/lib/mock/latest-updates";
 import { getLatestUpdates as getMockLatestUpdates } from "@/lib/mock/latest-updates";
 import {
 	filterNews as filterNewsItems,
-	getBentoNews as getMockBentoNews,
-	getFeaturedNews as getMockFeaturedNews,
-	getLatestNews as getMockLatestNews,
 	getNews as getMockNews,
 	getNewsBySlug as getMockNewsBySlug,
 	isValidCategory,
@@ -77,20 +75,23 @@ async function getAllNewsRecords(
 	locale: string,
 	query?: string | null,
 ): Promise<NewsItem[]> {
-	if (!getApiBaseUrl()) {
-		return getMockNews(locale);
+	let apiItems: NewsItem[] = [];
+
+	if (getApiBaseUrl()) {
+		const raw = query?.trim()
+			? await fetchNewsSearch(query.trim())
+			: await fetchNewsPage({ page: 0, size: NEWS_FETCH_SIZE });
+
+		if (raw) {
+			apiItems = resolveNewsItems(locale, raw);
+		}
 	}
 
-	const raw = query?.trim()
-		? await fetchNewsSearch(query.trim())
-		: await fetchNewsPage({ page: 0, size: NEWS_FETCH_SIZE });
-
-	if (!raw) {
-		return getMockNews(locale);
-	}
-
-	const items = resolveNewsItems(locale, raw);
-	return items.length > 0 ? items : getMockNews(locale);
+	return applyMockPolicy({
+		context: "global",
+		apiItems,
+		getMockItems: () => getMockNews(locale),
+	});
 }
 
 export async function getNews(
@@ -140,23 +141,18 @@ export async function getNewsBySlug(
 		}
 	}
 
-	return getMockNewsBySlug(locale, slug);
+	return applyMockPolicyNullable({
+		apiValue: null,
+		getMockValue: () => getMockNewsBySlug(locale, slug),
+	});
 }
 
 export async function getFeaturedNews(locale: string): Promise<NewsItem[]> {
-	if (!getApiBaseUrl()) {
-		return getMockFeaturedNews(locale);
-	}
-
 	const items = await getAllNewsRecords(locale);
 	return items.slice(0, SIDEBAR_ITEMS_LIMIT);
 }
 
 export async function getLatestNews(locale: string): Promise<NewsItem[]> {
-	if (!getApiBaseUrl()) {
-		return getMockLatestNews(locale);
-	}
-
 	const items = await getAllNewsRecords(locale);
 	return items.slice(0, SIDEBAR_ITEMS_LIMIT);
 }
@@ -167,10 +163,6 @@ export async function getBentoNews(locale: string): Promise<{
 	editorial: NewsItem | null;
 	wide: NewsItem | null;
 }> {
-	if (!getApiBaseUrl()) {
-		return getMockBentoNews(locale);
-	}
-
 	const items = await getAllNewsRecords(locale);
 
 	return {
@@ -235,18 +227,27 @@ async function fetchUniqueLatestNewsItems(
 export async function getLatestUpdates(
 	locale: string,
 ): Promise<LatestUpdateItem[]> {
+	const getMockItems = () => getMockLatestUpdates(locale);
+
 	if (!getApiBaseUrl()) {
-		return getMockLatestUpdates(locale);
+		return applyMockPolicy({
+			context: "home",
+			apiItems: [],
+			getMockItems,
+			targetCount: LATEST_UPDATES_COUNT,
+		});
 	}
 
 	const items = await fetchUniqueLatestNewsItems(
 		locale,
 		LATEST_UPDATES_COUNT,
 	);
+	const apiItems = items ? items.map(toLatestUpdateItem) : [];
 
-	if (!items) {
-		return getMockLatestUpdates(locale);
-	}
-
-	return items.map(toLatestUpdateItem);
+	return applyMockPolicy({
+		context: "home",
+		apiItems,
+		getMockItems,
+		targetCount: LATEST_UPDATES_COUNT,
+	});
 }

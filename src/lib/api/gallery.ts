@@ -7,6 +7,10 @@ import {
 	unwrapApiPayload,
 } from "@/lib/api/client";
 import { getApiBaseUrl } from "@/lib/api/config";
+import {
+	applyMockPolicy,
+	applyMockPolicyNullable,
+} from "@/lib/api/mock-policy";
 import { normalizeImageCollectionRecord } from "@/lib/api/normalize";
 import {
 	resolveGalleryHeroColumns,
@@ -53,37 +57,33 @@ async function fetchAllCollections() {
 }
 
 export async function getGalleryPosts(locale: string): Promise<GalleryPost[]> {
-	if (!getApiBaseUrl()) {
-		return getMockGalleryPosts(locale);
-	}
+	const raw = getApiBaseUrl() ? await fetchAllCollections() : null;
+	const apiItems = raw ? resolveGalleryPosts(locale, raw) : [];
 
-	const raw = await fetchAllCollections();
-	if (!raw) {
-		return getMockGalleryPosts(locale);
-	}
-
-	const posts = resolveGalleryPosts(locale, raw);
-	return posts.length > 0 ? posts : getMockGalleryPosts(locale);
+	return applyMockPolicy({
+		context: "global",
+		apiItems,
+		getMockItems: () => getMockGalleryPosts(locale),
+	});
 }
 
 export async function getGalleryHeroColumns(
 	locale: string,
 ): Promise<GalleryHeroColumns> {
-	if (!getApiBaseUrl()) {
-		return getMockGalleryHeroColumns(locale);
-	}
+	const emptyColumns: GalleryHeroColumns = { up: [], down: [] };
+	const raw = getApiBaseUrl() ? await fetchAllCollections() : null;
+	const apiColumns = raw
+		? resolveGalleryHeroColumns(locale, raw)
+		: emptyColumns;
+	const hasApiColumns =
+		apiColumns.up.length > 0 || apiColumns.down.length > 0;
 
-	const raw = await fetchAllCollections();
-	if (!raw) {
-		return getMockGalleryHeroColumns(locale);
-	}
-
-	const columns = resolveGalleryHeroColumns(locale, raw);
-	if (columns.up.length === 0 && columns.down.length === 0) {
-		return getMockGalleryHeroColumns(locale);
-	}
-
-	return columns;
+	return (
+		applyMockPolicyNullable({
+			apiValue: hasApiColumns ? apiColumns : null,
+			getMockValue: () => getMockGalleryHeroColumns(locale),
+		}) ?? emptyColumns
+	);
 }
 
 export async function getGalleryPostBySlug(
@@ -153,5 +153,8 @@ export async function getGalleryPostBySlug(
 		}
 	}
 
-	return getMockGalleryPostBySlug(locale, slug);
+	return applyMockPolicyNullable({
+		apiValue: null,
+		getMockValue: () => getMockGalleryPostBySlug(locale, slug),
+	});
 }

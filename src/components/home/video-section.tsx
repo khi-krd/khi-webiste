@@ -28,6 +28,7 @@ export async function VideoSection() {
 		videoType: "VIDEO_CLIP",
 		page: 1,
 		size: HOME_VIDEO_COUNT,
+		mockContext: "home",
 	});
 
 	if (listing.items.length === 0) {

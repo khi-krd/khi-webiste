@@ -12,6 +12,7 @@ import {
 	DEFAULT_REVALIDATE,
 } from "@/lib/api/client";
 import { getApiBaseUrl } from "@/lib/api/config";
+import { applyMockPolicy, applyMockPolicyNullable } from "@/lib/api/mock-policy";
 import {
 	getAboutFounder as getMockAboutFounder,
 	getAboutHeroMedia as getMockAboutHeroMedia,
@@ -73,44 +74,56 @@ export async function getPrimaryAboutPage(
 
 export async function getAboutHeroMedia(): Promise<AboutHeroMedia> {
 	const page = await getPrimaryAboutPage("ckb");
-	if (!page?.heroVideoUrl && !page?.heroPosterUrl) {
-		return getMockAboutHeroMedia();
-	}
+	const apiValue =
+		page?.heroVideoUrl || page?.heroPosterUrl
+			? {
+					poster: page.heroPosterUrl ?? "",
+					videoSrc: page.heroVideoUrl ?? "",
+				}
+			: null;
 
-	return {
-		poster: page.heroPosterUrl ?? getMockAboutHeroMedia().poster,
-		videoSrc: page.heroVideoUrl ?? getMockAboutHeroMedia().videoSrc,
-	};
+	return (
+		applyMockPolicyNullable({
+			apiValue,
+			getMockValue: () => getMockAboutHeroMedia(),
+		}) ?? { poster: "", videoSrc: "" }
+	);
 }
 
 export async function getAboutFounder(locale: string): Promise<FounderPerson> {
 	const page = await getPrimaryAboutPage(locale);
 	const resolved = page ? resolveFounderFromAbout(locale, page) : null;
-	if (resolved) {
-		return resolved;
-	}
 
-	return getMockAboutFounder(locale);
+	return (
+		applyMockPolicyNullable({
+			apiValue: resolved,
+			getMockValue: () => getMockAboutFounder(locale),
+		}) ?? { image: { url: "", alt: "" } }
+	);
 }
 
 export async function getAboutOffices(locale: string): Promise<OfficeTeam[]> {
 	const members = await getTeamMembers();
-	if (members.length === 0) {
-		return getMockAboutOffices(locale);
-	}
+	const apiItems =
+		members.length > 0 ? resolveTeamOffices(locale, members) : [];
 
-	const offices = resolveTeamOffices(locale, members);
-	return offices.length > 0 ? offices : getMockAboutOffices(locale);
+	return applyMockPolicy({
+		context: "global",
+		apiItems,
+		getMockItems: () => getMockAboutOffices(locale),
+	});
 }
 
 export async function getAboutPartners(locale: string): Promise<PartnerItem[]> {
 	const partners = await getPartners();
-	if (partners.length === 0) {
-		return getMockAboutPartners(locale);
-	}
+	const apiItems =
+		partners.length > 0 ? resolvePartnerItems(locale, partners) : [];
 
-	const items = resolvePartnerItems(locale, partners);
-	return items.length > 0 ? items : getMockAboutPartners(locale);
+	return applyMockPolicy({
+		context: "global",
+		apiItems,
+		getMockItems: () => getMockAboutPartners(locale),
+	});
 }
 
 export async function getTeamMembers() {

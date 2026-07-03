@@ -11,5 +11,6 @@ services:
       - "3000"
     environment:
       API_BASE_URL: ${API_BASE_URL}
-      USE_MOCK_DATA: ${USE_MOCK_DATA:-false}
+      # off | full | auto — see docs/API.md
+      USE_MOCK_DATA: ${USE_MOCK_DATA:-off}
     restart: unless-stopped

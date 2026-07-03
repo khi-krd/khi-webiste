@@ -33,16 +33,23 @@ This document describes the REST API contract expected by **khi-website** (publi
 | Variable                 | Required         | Description                                                         |
 | ------------------------ | ---------------- | ------------------------------------------------------------------- |
 | `API_BASE_URL`           | Yes (production) | Base URL of the external REST API, e.g. `https://api.example.com`   |
-| `USE_MOCK_DATA`          | No               | When `true`, the site skips all API calls and uses `src/lib/mock/*` |
+| `USE_MOCK_DATA`          | No               | Mock policy mode — see values below (default: `off`)                |
 | `NEXT_PUBLIC_MEDIA_HOST` | Recommended (media) | Primary S3/CDN hostname; used for PDF proxy hints — `next/image` allows any HTTPS/HTTP host via wildcard `remotePatterns` |
 | `NEXT_PUBLIC_SITE_URL`   | Yes (SEO)        | Canonical site origin                                               |
 
+**`USE_MOCK_DATA` modes** (parsed in `src/lib/api/config.ts`, applied via `src/lib/api/mock-policy.ts`):
+
+| Mode | Accepted values | Behaviour |
+| ---- | --------------- | --------- |
+| `off` | `false`, `0`, `off`, unset | Always call the API when `API_BASE_URL` is set. Never use `src/lib/mock/*` — return real data or empty/null. |
+| `full` | `true`, `1`, `full`, `yes`, `on` | Skip API calls. Always use mock data. |
+| `auto` | `auto`, `sparse`, `fallback` | Call the API. On **homepage sections only**, pad sparse results with mock items (never replace existing API items). Other pages never fall back to mock. |
 
 **Request behaviour**
 
 - All fetches go through `src/lib/api/client.ts` with ISR (`revalidate: 600` by default).
 - Responses may be a raw Spring page/DTO **or** wrapped as `{ success: true, data: … }` (see `unwrapApiPayload`).
-- Failed requests, non-OK status, or Zod validation failures silently fall back to mock data.
+- Mock fallback depends on `USE_MOCK_DATA` mode (see table above). In `off` mode, failed requests return empty results rather than demo content.
 
 **Rich text fields**
 
@@ -575,7 +582,7 @@ Expected page body (after unwrapping):
 | `GET`  | `/api/v1/featured`    | `locale`     | `getFeaturedItems()` |
 
 
-**Status:** ✅ **Implemented.** Site calls `GET /api/v1/featured?locale=` and maps the response to hero slides. When the API returns a valid empty array, the hero shows static fallback slides. Demo mock is used only when `API_BASE_URL` is unset, `USE_MOCK_DATA=true`, or the fetch/parse fails.
+**Status:** ✅ **Implemented.** Site calls `GET /api/v1/featured?locale=` and maps the response to hero slides. When the API returns a valid empty array, the hero shows static fallback slides. Demo mock is used only in `USE_MOCK_DATA=full`/`auto` (homepage), or when the fetch/parse fails in those modes.
 
 **Locale:** `kmr` and `ku` resolve to Kurmanji; any other value (including omission) resolves to `ckb`.
 

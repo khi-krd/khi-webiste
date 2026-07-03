@@ -9,6 +9,11 @@ import {
 	unwrapApiPayload,
 } from "@/lib/api/client";
 import { getApiBaseUrl } from "@/lib/api/config";
+import {
+	applyMockPolicy,
+	applyMockPolicyNullable,
+	type MockPolicyContext,
+} from "@/lib/api/mock-policy";
 import { normalizeVideoRecord } from "@/lib/api/normalize";
 import {
 	DEMO_VIDEO_TOPICS,
@@ -46,6 +51,7 @@ export type VideoListingOptions = {
 	query?: string | null;
 	page?: number;
 	size?: number;
+	mockContext?: MockPolicyContext;
 };
 
 async function fetchVideosPage(
@@ -97,7 +103,85 @@ async function fetchAllVideosFromApi(
 
 async function getAllVideos(): Promise<Video[]> {
 	const apiVideos = await fetchAllVideosFromApi();
-	return apiVideos ?? getAllDemoVideos();
+	return applyMockPolicy({
+		context: "global",
+		apiItems: apiVideos ?? [],
+		getMockItems: () => getAllDemoVideos(),
+	});
+}
+
+type VideoListingFilters = Pick<
+	VideoListingOptions,
+	"videoType" | "topicId" | "excludeTopicId" | "memories" | "query"
+>;
+
+function getMockVideoListingItems(
+	locale: string,
+	filters: VideoListingFilters,
+): ResolvedVideoCard[] {
+	const allItems = getAllDemoVideos()
+		.map((video) => resolveVideoCard(locale, video))
+		.filter((item): item is ResolvedVideoCard => item != null);
+	return sortVideos(filterVideos(allItems, filters));
+}
+
+async function resolveVideoListingItemsFromApi(
+	locale: string,
+	{
+		videoType,
+		topicId,
+		excludeTopicId,
+		memories,
+		query,
+	}: VideoListingFilters,
+): Promise<ResolvedVideoCard[]> {
+	if (!getApiBaseUrl()) {
+		return [];
+	}
+
+	if (
+		!query?.trim() &&
+		excludeTopicId == null &&
+		(videoType != null || topicId != null || memories != null)
+	) {
+		const apiVideos = await fetchAllVideosFromApi({
+			videoType,
+			topicId,
+			memories,
+		});
+		if (apiVideos) {
+			const allItems = apiVideos
+				.map((video) => resolveVideoCard(locale, video))
+				.filter((item): item is ResolvedVideoCard => item != null);
+			return sortVideos(
+				filterVideos(allItems, {
+					videoType,
+					topicId,
+					excludeTopicId,
+					memories,
+					query,
+				}),
+			);
+		}
+	}
+
+	const apiVideos = await fetchAllVideosFromApi();
+	if (!apiVideos) {
+		return [];
+	}
+
+	const allItems = apiVideos
+		.map((video) => resolveVideoCard(locale, video))
+		.filter((item): item is ResolvedVideoCard => item != null);
+	return sortVideos(
+		filterVideos(allItems, {
+			videoType,
+			topicId,
+			excludeTopicId,
+			memories,
+			query,
+		}),
+	);
 }
 
 /** Full resolved card set for in-memory filter/sort/paginate. */
@@ -120,51 +204,43 @@ export async function getVideoListing(
 		query,
 		page = 1,
 		size = VIDEO_GRID_PAGE_SIZE,
+		mockContext = "global",
 	}: VideoListingOptions = {},
 ): Promise<VideoListResult> {
-	if (
-		getApiBaseUrl() &&
-		!query?.trim() &&
-		excludeTopicId == null &&
-		(videoType != null || topicId != null || memories != null)
-	) {
-		const apiVideos = await fetchAllVideosFromApi({
-			videoType,
-			topicId,
-			memories,
-		});
-		if (apiVideos) {
-			const allItems = apiVideos
-				.map((video) => resolveVideoCard(locale, video))
-				.filter((item): item is ResolvedVideoCard => item != null);
-			const filtered = filterVideos(allItems, {
-				videoType,
-				topicId,
-				excludeTopicId,
-				memories,
-				query,
-			});
-			const sorted = sortVideos(filtered);
-			return paginateVideos(sorted, page, size);
-		}
-	}
-
-	const allItems = await getAllVideoCards(locale);
-	const filtered = filterVideos(allItems, {
+	const filters: VideoListingFilters = {
 		videoType,
 		topicId,
 		excludeTopicId,
 		memories,
 		query,
+	};
+	const apiItems = await resolveVideoListingItemsFromApi(locale, filters);
+	const items = applyMockPolicy({
+		context: mockContext,
+		apiItems,
+		getMockItems: () => getMockVideoListingItems(locale, filters),
+		targetCount: mockContext === "home" ? size : undefined,
 	});
-	const sorted = sortVideos(filtered);
-	return paginateVideos(sorted, page, size);
+
+	if (mockContext === "home") {
+		return {
+			items,
+			totalPages: 1,
+			totalElements: items.length,
+			currentPage: 1,
+			empty: items.length === 0,
+		};
+	}
+
+	return paginateVideos(items, page, size);
 }
 
 export async function getVideoById(
 	locale: string,
 	id: number,
 ): Promise<ResolvedVideoDetail | null> {
+	let apiDetail: ResolvedVideoDetail | null = null;
+
 	if (getApiBaseUrl()) {
 		const raw = await apiFetchRaw(`${VIDEOS_ENDPOINT}/${id}`, {
 			tags: [VIDEOS_TAG, `video-${id}`],
@@ -178,13 +254,17 @@ export async function getVideoById(
 		if (parsed?.success) {
 			const resolved = resolveVideoDetail(locale, parsed.data);
 			if (resolved?.id === id) {
-				return resolved;
+				apiDetail = resolved;
 			}
 		}
 	}
 
 	const demoVideo = getDemoVideoById(id);
-	return demoVideo ? resolveVideoDetail(locale, demoVideo) : null;
+	return applyMockPolicyNullable({
+		apiValue: apiDetail,
+		getMockValue: () =>
+			demoVideo ? resolveVideoDetail(locale, demoVideo) : null,
+	});
 }
 
 export type VideoTopicOption = {
@@ -192,10 +272,22 @@ export type VideoTopicOption = {
 	name: string;
 };
 
+function getMockVideoTopics(locale: string): VideoTopicOption[] {
+	return DEMO_VIDEO_TOPICS.map((topic) => ({
+		id: topic.id,
+		name:
+			locale === "ckb"
+				? (topic.nameCkb ?? topic.nameKmr ?? "")
+				: (topic.nameKmr ?? topic.nameCkb ?? ""),
+	})).filter((topic) => topic.name.length > 0);
+}
+
 /** Topic options for the filter UI (`GET /api/v1/videos/topics`). */
 export async function getVideoTopics(
 	locale: string,
 ): Promise<VideoTopicOption[]> {
+	let apiItems: VideoTopicOption[] = [];
+
 	if (getApiBaseUrl()) {
 		const topics = await apiFetch(`${VIDEOS_ENDPOINT}/topics`, {
 			schema: z.array(VideoTopicSchema),
@@ -204,7 +296,7 @@ export async function getVideoTopics(
 		});
 
 		if (topics && topics.length > 0) {
-			return topics
+			apiItems = topics
 				.map((topic) => ({
 					id: topic.id,
 					name:
@@ -216,13 +308,11 @@ export async function getVideoTopics(
 		}
 	}
 
-	return DEMO_VIDEO_TOPICS.map((topic) => ({
-		id: topic.id,
-		name:
-			locale === "ckb"
-				? (topic.nameCkb ?? topic.nameKmr ?? "")
-				: (topic.nameKmr ?? topic.nameCkb ?? ""),
-	})).filter((topic) => topic.name.length > 0);
+	return applyMockPolicy({
+		context: "global",
+		apiItems,
+		getMockItems: () => getMockVideoTopics(locale),
+	});
 }
 
 /** Resolve a single topic's localized name (used by the short-films header). */

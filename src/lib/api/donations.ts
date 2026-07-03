@@ -1,6 +1,7 @@
 import "server-only";
 import { apiFetch, apiPost, DEFAULT_REVALIDATE } from "@/lib/api/client";
 import { getApiBaseUrl } from "@/lib/api/config";
+import { applyMockPolicyNullable } from "@/lib/api/mock-policy";
 import {
 	getDonateHeroMedia,
 	getDonatePaymentDetails,
@@ -74,27 +75,36 @@ export async function submitArchiveDonation(body: ArchiveDonationSubmission) {
 
 export async function getDonateHeroMediaFromApi(): Promise<DonateHeroMedia> {
 	const settings = await getDonationSettings();
-	if (!settings?.heroImageUrl) {
-		return getDonateHeroMedia();
-	}
+	const apiValue = settings?.heroImageUrl
+		? {
+				url: settings.heroImageUrl,
+				alt: "",
+			}
+		: null;
 
-	return {
-		url: settings.heroImageUrl,
-		alt: "",
-	};
+	return (
+		applyMockPolicyNullable({
+			apiValue,
+			getMockValue: () => getDonateHeroMedia(),
+		}) ?? { url: "", alt: "" }
+	);
 }
 
 export async function getDonatePaymentDetailsFromApi(): Promise<DonatePaymentDetails> {
 	const settings = await getDonationSettings();
-	if (!settings) {
-		return getDonatePaymentDetails();
-	}
+	const apiValue = settings
+		? {
+				fibAccount: settings.accountNumber ?? "",
+				fastpayNumber: settings.iban ?? "",
+			}
+		: null;
 
-	return {
-		fibAccount: settings.accountNumber ?? getDonatePaymentDetails().fibAccount,
-		fastpayNumber:
-			settings.iban ?? getDonatePaymentDetails().fastpayNumber,
-	};
+	return (
+		applyMockPolicyNullable({
+			apiValue,
+			getMockValue: () => getDonatePaymentDetails(),
+		}) ?? { fibAccount: "", fastpayNumber: "" }
+	);
 }
 
 export async function getDonateTypeItemsFromApi(): Promise<DonateTypeItem[]> {
@@ -104,7 +114,10 @@ export async function getDonateTypeItemsFromApi(): Promise<DonateTypeItem[]> {
 	]);
 
 	if (!settings && types.length === 0) {
-		return getDonateTypeItems();
+		return applyMockPolicyNullable({
+			apiValue: null,
+			getMockValue: () => getDonateTypeItems(),
+		}) ?? [];
 	}
 
 	const mockItems = getDonateTypeItems();

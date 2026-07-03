@@ -1,6 +1,7 @@
 import "server-only";
 import { apiFetch, DEFAULT_REVALIDATE } from "@/lib/api/client";
 import { getApiBaseUrl } from "@/lib/api/config";
+import { applyMockPolicy } from "@/lib/api/mock-policy";
 import {
 	getSocialPlatforms,
 	type SocialPlatform,
@@ -47,14 +48,17 @@ export async function getSocialLinks(): Promise<SocialLink[]> {
 /** Map API social links to the mock `SocialPlatform` shape used by contact UI. */
 export async function getSocialPlatformsFromApi(): Promise<SocialPlatform[]> {
 	const links = await getSocialLinks();
-	if (links.length === 0) {
-		return getSocialPlatforms();
-	}
+	const apiItems =
+		links.length > 0
+			? links
+					.sort((a, b) => (a.displayOrder ?? 0) - (b.displayOrder ?? 0))
+					.map((link) => mapSocialLink(link))
+					.filter((item): item is SocialPlatform => item != null)
+			: [];
 
-	const mapped = links
-		.sort((a, b) => (a.displayOrder ?? 0) - (b.displayOrder ?? 0))
-		.map((link) => mapSocialLink(link))
-		.filter((item): item is SocialPlatform => item != null);
-
-	return mapped.length > 0 ? mapped : getSocialPlatforms();
+	return applyMockPolicy({
+		context: "global",
+		apiItems,
+		getMockItems: () => getSocialPlatforms(),
+	});
 }

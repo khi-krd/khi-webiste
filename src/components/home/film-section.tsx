@@ -53,6 +53,7 @@ export async function FilmSection() {
 	const listing = await getVideoListing(locale, {
 		videoType: "FILM",
 		size: FILM_COUNT,
+		mockContext: "home",
 	});
 
 	if (listing.items.length === 0) {

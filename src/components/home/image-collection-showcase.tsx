@@ -12,16 +12,15 @@ import { DirectionalIcon } from "@/components/ui/directional-icon";
 import { Link } from "@/components/ui/link";
 import {
 	HOME_IMAGE_BENTO_BODY_CLASS,
-	HOME_IMAGE_BENTO_CELL_BASE,
 	HOME_IMAGE_BENTO_CELL_CLASS,
 	HOME_IMAGE_BENTO_COUNT,
-	homeImageBentoGridClass,
+	HOME_IMAGE_BENTO_GRID_CLASS,
+	HOME_IMAGE_BENTO_GRID_WRAPPER_CLASS,
 	HOME_IMAGE_BENTO_HEADER_CLASS,
 	HOME_IMAGE_BENTO_SECTION_CLASS,
 	HOME_IMAGE_BENTO_TRAY_CLASS,
 } from "@/lib/home/image-bento";
 import type { ImageCollectionItem } from "@/lib/mock/image-collection";
-import { cn } from "@/lib/utils";
 
 const revealEase = [0.22, 1, 0.36, 1] as const;
 const viewport = { once: true, margin: "-5% 0px -2% 0px" } as const;
@@ -78,7 +77,6 @@ function BentoRevealItem({ children, className, index }: BentoRevealItemProps) {
 function ImageCollectionBento({ items }: { items: ImageCollectionItem[] }) {
 	const reduceMotion = useReducedMotion();
 	const tiles = items.slice(0, HOME_IMAGE_BENTO_COUNT);
-	const gridClass = homeImageBentoGridClass(tiles.length);
 
 	const grid = (
 		<>
@@ -86,10 +84,7 @@ function ImageCollectionBento({ items }: { items: ImageCollectionItem[] }) {
 				<BentoRevealItem
 					key={item.id}
 					index={index}
-					className={cn(
-						HOME_IMAGE_BENTO_CELL_BASE,
-						HOME_IMAGE_BENTO_CELL_CLASS,
-					)}
+					className={HOME_IMAGE_BENTO_CELL_CLASS}
 				>
 					<ImageCollectionCard item={item} priority={index < 4} />
 				</BentoRevealItem>
@@ -98,10 +93,10 @@ function ImageCollectionBento({ items }: { items: ImageCollectionItem[] }) {
 	);
 
 	const gridInner = reduceMotion ? (
-		<div className={gridClass}>{grid}</div>
+		<div className={HOME_IMAGE_BENTO_GRID_CLASS}>{grid}</div>
 	) : (
 		<motion.div
-			className={gridClass}
+			className={HOME_IMAGE_BENTO_GRID_CLASS}
 			initial="hidden"
 			whileInView="visible"
 			viewport={viewport}
@@ -119,7 +114,11 @@ function ImageCollectionBento({ items }: { items: ImageCollectionItem[] }) {
 		</motion.div>
 	);
 
-	return <div className={HOME_IMAGE_BENTO_TRAY_CLASS}>{gridInner}</div>;
+	return (
+		<div className={HOME_IMAGE_BENTO_TRAY_CLASS}>
+			<div className={HOME_IMAGE_BENTO_GRID_WRAPPER_CLASS}>{gridInner}</div>
+		</div>
+	);
 }
 
 export function ImageCollectionShowcase({

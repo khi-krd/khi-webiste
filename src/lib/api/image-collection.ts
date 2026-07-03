@@ -5,6 +5,7 @@ import {
 	DEFAULT_REVALIDATE,
 } from "@/lib/api/client";
 import { getApiBaseUrl } from "@/lib/api/config";
+import { applyMockPolicy } from "@/lib/api/mock-policy";
 import { normalizeImageCollectionRecord } from "@/lib/api/normalize";
 import { resolveImageCollectionItems } from "@/lib/gallery/resolve";
 import { HOME_IMAGE_BENTO_COUNT } from "@/lib/home/image-bento";
@@ -18,8 +19,15 @@ const GALLERY_TAG = "image-collections";
 export async function getImageCollection(
 	locale: string,
 ): Promise<ImageCollectionItem[]> {
+	const getMockItems = () => getMockImageCollection(locale);
+
 	if (!getApiBaseUrl()) {
-		return getMockImageCollection(locale).slice(0, HOME_IMAGE_BENTO_COUNT);
+		return applyMockPolicy({
+			context: "home",
+			apiItems: [],
+			getMockItems,
+			targetCount: HOME_IMAGE_BENTO_COUNT,
+		});
 	}
 
 	const page = await apiFetchPage(GALLERY_ENDPOINT, {
@@ -30,15 +38,14 @@ export async function getImageCollection(
 		normalizeItem: normalizeImageCollectionRecord,
 	});
 
-	if (!page?.content.length) {
-		return getMockImageCollection(locale);
-	}
+	const apiItems = page?.content.length
+		? resolveImageCollectionItems(locale, page.content)
+		: [];
 
-	const items = resolveImageCollectionItems(locale, page.content).slice(
-		0,
-		HOME_IMAGE_BENTO_COUNT,
-	);
-	return items.length > 0
-		? items
-		: getMockImageCollection(locale).slice(0, HOME_IMAGE_BENTO_COUNT);
+	return applyMockPolicy({
+		context: "home",
+		apiItems,
+		getMockItems,
+		targetCount: HOME_IMAGE_BENTO_COUNT,
+	});
 }
