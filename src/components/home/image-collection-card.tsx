@@ -37,6 +37,7 @@ export function ImageCollectionCard({
 				src={item.image.url}
 				alt={item.image.alt ?? item.title}
 				fill
+				sizes="(max-width: 1023px) 25vw, 12.5vw"
 				priority={priority}
 				className={cn(
 					"object-cover object-center",

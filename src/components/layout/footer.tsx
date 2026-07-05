@@ -2,6 +2,10 @@ import { ArrowRightIcon, ArrowUpRightIcon } from "@heroicons/react/24/outline";
 import NextImage from "next/image";
 import { getTranslations } from "next-intl/server";
 import { Logo } from "@/components/layout/logo";
+import {
+	FooterReveal,
+	FooterRevealItem,
+} from "@/components/motion/scroll-reveal";
 import { Container } from "@/components/ui/container";
 import { DirectionalIcon } from "@/components/ui/directional-icon";
 import { Link } from "@/components/ui/link";
@@ -142,85 +146,91 @@ export async function Footer() {
 
 			<div className="relative z-10 py-16 sm:py-20">
 				<Container className="max-w-none">
-					<section className="max-w-3xl">
-						<h2 className="max-w-2xl font-heading text-[clamp(2.1rem,4.25vw,3.4rem)] font-semibold leading-[1.04] text-primary-foreground">
-							{t("newsletterTitle")}
-						</h2>
-						<p className="mt-4 max-w-2xl text-body text-primary-foreground/80">
-							{t("newsletterDescription")}
-						</p>
-						<form
-							className="mt-8 grid max-w-2xl gap-2 sm:grid-cols-[1fr_auto]"
-							action="#"
-							method="post"
-						>
-							<input
-								type="email"
-								name="email"
-								autoComplete="email"
-								placeholder={t("emailPlaceholder")}
-								aria-label={t("emailLabel")}
-								className="h-12 w-full border border-primary-foreground/28 bg-primary-foreground/10 px-4 text-body text-primary-foreground placeholder:text-primary-foreground/55 outline-none transition focus:border-primary-foreground/55 focus:bg-primary-foreground/14"
-							/>
-							<button
-								type="submit"
-								className="inline-flex h-12 items-center justify-center gap-2 border border-primary bg-primary px-6 font-heading text-small font-semibold text-primary-foreground transition hover:opacity-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-foreground/45"
-							>
-								{t("signUp")}
-								<ArrowRightIcon
-									className="size-4 shrink-0"
-									aria-hidden="true"
-								/>
-							</button>
-						</form>
-					</section>
-
-					<section className="mt-12 overflow-hidden border border-border bg-border text-foreground shadow-[0_28px_90px_-48px_rgba(26,24,19,0.45)]">
-						<div aria-hidden="true" className="h-0.5 bg-foreground" />
-
-						<div className="grid gap-px lg:grid-cols-[minmax(0,19rem)_1fr] xl:grid-cols-[minmax(0,22rem)_1fr]">
-							<div className="flex flex-col justify-between gap-8 bg-surface p-8 sm:p-9 lg:p-10">
-								<div className="space-y-6">
-									<Logo />
-									<p className="label font-medium text-muted">
-										{t("brandEyebrow")}
-									</p>
-									<h3 className="max-w-[16rem] font-heading text-[clamp(1.625rem,2.4vw,2.125rem)] font-bold leading-[1.1] text-balance">
-										{t("brandTagline")}
-									</h3>
-								</div>
-								<Link
-									href="/contact"
-									className={cn(
-										"inline-flex h-11 w-fit items-center gap-2 border border-border-strong",
-										"bg-background px-5 font-heading text-small font-semibold text-foreground",
-										"transition fine-hover:bg-sunken",
-									)}
-									withArrow
+					<FooterReveal>
+						<FooterRevealItem>
+							<section className="max-w-3xl">
+								<h2 className="max-w-2xl font-heading text-[clamp(2.1rem,4.25vw,3.4rem)] font-semibold leading-[1.04] text-primary-foreground">
+									{t("newsletterTitle")}
+								</h2>
+								<p className="mt-4 max-w-2xl text-body text-primary-foreground/80">
+									{t("newsletterDescription")}
+								</p>
+								<form
+									className="mt-8 grid max-w-2xl gap-2 sm:grid-cols-[1fr_auto]"
+									action="#"
+									method="post"
 								>
-									{t("getInTouch")}
-								</Link>
-							</div>
-
-							<div className="grid gap-px bg-border sm:grid-cols-2 lg:grid-cols-3">
-								{navPanels.map((panel) => (
-									<FooterNavPanel
-										key={panel.key}
-										index={panel.index}
-										title={panel.title}
-										links={panel.links}
-										resolveLabel={resolveLabel}
+									<input
+										type="email"
+										name="email"
+										autoComplete="email"
+										placeholder={t("emailPlaceholder")}
+										aria-label={t("emailLabel")}
+										className="h-12 w-full border border-primary-foreground/28 bg-primary-foreground/10 px-4 text-body text-primary-foreground placeholder:text-primary-foreground/55 outline-none transition focus:border-primary-foreground/55 focus:bg-primary-foreground/14"
 									/>
-								))}
-							</div>
-						</div>
+									<button
+										type="submit"
+										className="inline-flex h-12 items-center justify-center gap-2 border border-primary bg-primary px-6 font-heading text-small font-semibold text-primary-foreground transition hover:opacity-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-foreground/45"
+									>
+										{t("signUp")}
+										<ArrowRightIcon
+											className="size-4 shrink-0"
+											aria-hidden="true"
+										/>
+									</button>
+								</form>
+							</section>
+						</FooterRevealItem>
 
-						<div className="border-t border-border bg-sunken/80 px-8 py-5 sm:px-10 lg:px-12">
-							<p className="text-small leading-relaxed text-muted">
-								{t("copyright")}
-							</p>
-						</div>
-					</section>
+						<FooterRevealItem>
+							<section className="mt-12 overflow-hidden border border-border bg-border text-foreground shadow-[0_28px_90px_-48px_rgba(26,24,19,0.45)]">
+								<div aria-hidden="true" className="h-0.5 bg-foreground" />
+
+								<div className="grid gap-px lg:grid-cols-[minmax(0,19rem)_1fr] xl:grid-cols-[minmax(0,22rem)_1fr]">
+									<div className="flex flex-col justify-between gap-8 bg-surface p-8 sm:p-9 lg:p-10">
+										<div className="space-y-6">
+											<Logo />
+											<p className="label font-medium text-muted">
+												{t("brandEyebrow")}
+											</p>
+											<h3 className="max-w-[16rem] font-heading text-[clamp(1.625rem,2.4vw,2.125rem)] font-bold leading-[1.1] text-balance">
+												{t("brandTagline")}
+											</h3>
+										</div>
+										<Link
+											href="/contact"
+											className={cn(
+												"inline-flex h-11 w-fit items-center gap-2 border border-border-strong",
+												"bg-background px-5 font-heading text-small font-semibold text-foreground",
+												"transition fine-hover:bg-sunken",
+											)}
+											withArrow
+										>
+											{t("getInTouch")}
+										</Link>
+									</div>
+
+									<div className="grid gap-px bg-border sm:grid-cols-2 lg:grid-cols-3">
+										{navPanels.map((panel) => (
+											<FooterNavPanel
+												key={panel.key}
+												index={panel.index}
+												title={panel.title}
+												links={panel.links}
+												resolveLabel={resolveLabel}
+											/>
+										))}
+									</div>
+								</div>
+
+								<div className="border-t border-border bg-sunken/80 px-8 py-5 sm:px-10 lg:px-12">
+									<p className="text-small leading-relaxed text-muted">
+										{t("copyright")}
+									</p>
+								</div>
+							</section>
+						</FooterRevealItem>
+					</FooterReveal>
 				</Container>
 			</div>
 		</footer>

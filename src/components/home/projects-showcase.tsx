@@ -5,7 +5,11 @@ import { ArrowRightIcon } from "@heroicons/react/24/outline";
 import useEmblaCarousel from "embla-carousel-react";
 import { useEffect } from "react";
 import { ProjectCard } from "@/components/home/project-card";
-import { ScrollRevealBlock } from "@/components/motion/scroll-reveal";
+import {
+	ScrollReveal,
+	ScrollRevealBlock,
+	ScrollRevealItem,
+} from "@/components/motion/scroll-reveal";
 import { DirectionalIcon } from "@/components/ui/directional-icon";
 import { Link } from "@/components/ui/link";
 import type { ProjectItem } from "@/lib/mock/projects";
@@ -82,22 +86,19 @@ export function ProjectsShowcase({
 				</header>
 			</ScrollRevealBlock>
 
-			<div
-				className={emblaViewportClass}
-				ref={emblaRef}
-			>
-				<ul className={emblaContainerClass}>
+			<div className={emblaViewportClass} ref={emblaRef}>
+				<ScrollReveal className={emblaContainerClass}>
 					{projects.map((project) => (
-						<li
+						<ScrollRevealItem
 							key={project.id}
 							role="group"
 							aria-roledescription="slide"
 							className={slideClass}
 						>
 							<ProjectCard item={project} variant="carousel" />
-						</li>
+						</ScrollRevealItem>
 					))}
-				</ul>
+				</ScrollReveal>
 			</div>
 		</div>
 	);
