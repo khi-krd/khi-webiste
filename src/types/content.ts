@@ -24,10 +24,10 @@ export const TYPE_SEGMENTS: Record<ContentType, string> = {
 
 export const FeaturedImageSchema = z.object({
 	url: z.string().min(1),
-	alt: z.string().optional(),
+	alt: z.string().nullish(),
 	width: z.number().int().positive().optional(),
 	height: z.number().int().positive().optional(),
-	blurDataURL: z.string().optional(),
+	blurDataURL: z.string().nullish(),
 });
 
 export const FeaturedItemSchema = z.object({

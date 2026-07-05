@@ -1,4 +1,5 @@
 import "server-only";
+import { z } from "zod";
 import {
 	apiFetchRaw,
 	DEFAULT_REVALIDATE,
@@ -11,14 +12,17 @@ import { plainTextFromRichContent } from "@/lib/rich-text";
 import {
 	type ContentType,
 	ContentTypeSchema,
+	type FeaturedApiItem,
+	FeaturedApiItemSchema,
 	type FeaturedItem,
-	FeaturedItemsSchema,
+	FeaturedItemSchema,
 	type FeaturedSource,
 } from "@/types/content";
 
 const FEATURED_ENDPOINT = "/api/v1/featured";
 const FEATURED_TAG = "featured";
 const FEATURED_REVALIDATE_SECONDS = DEFAULT_REVALIDATE;
+const isDevelopment = process.env.NODE_ENV === "development";
 
 type UnknownRecord = Record<string, unknown>;
 
@@ -133,7 +137,77 @@ function resolveDescription(raw: string | undefined): string | undefined {
 	return plain.length > 0 ? plain : undefined;
 }
 
-/** Map a raw featured API record to the lean UI model shape. */
+function logFeaturedParseFailure(rawItem: unknown, error: z.ZodError): void {
+	if (!isDevelopment) {
+		return;
+	}
+
+	const item = asRecord(rawItem);
+	const id =
+		getIdentifier(item?.id) ??
+		getIdentifier(item?.entityId) ??
+		"?";
+	const [firstIssue] = error.issues;
+	console.warn(
+		`[api] Zod parse failed for ${FEATURED_ENDPOINT}#item-${id}:`,
+		firstIssue
+			? `${firstIssue.path.join(".") || "(root)"}: ${firstIssue.message}`
+			: error.message,
+	);
+}
+
+function mapFeaturedApiItem(item: FeaturedApiItem): FeaturedItem | null {
+	const imageUrl = item.image.url.trim();
+	if (!imageUrl) {
+		return null;
+	}
+
+	const title = item.title.trim();
+	const description = resolveDescription(item.description) ?? title;
+	const slug = item.slug.trim() || String(item.entityId);
+
+	const parsed = FeaturedItemSchema.safeParse({
+		id: item.id,
+		type: item.type,
+		slug,
+		title,
+		description,
+		image: {
+			url: imageUrl,
+			alt: item.image.alt?.trim() || title,
+			width: item.image.width,
+			height: item.image.height,
+			blurDataURL: item.image.blurDataURL,
+		},
+	});
+
+	return parsed.success ? parsed.data : null;
+}
+
+/** Parse one raw featured record — official DTO first, legacy remap fallback. */
+export function parseFeaturedItem(rawItem: unknown): FeaturedItem | null {
+	const apiParsed = FeaturedApiItemSchema.safeParse(rawItem);
+	if (apiParsed.success) {
+		return mapFeaturedApiItem(apiParsed.data);
+	}
+
+	const remapped = remapFeaturedItem(rawItem);
+	const uiParsed = FeaturedItemSchema.safeParse(remapped);
+	if (uiParsed.success) {
+		return uiParsed.data;
+	}
+
+	logFeaturedParseFailure(rawItem, apiParsed.error);
+	return null;
+}
+
+function parseFeaturedItems(rawItems: unknown[]): FeaturedItem[] {
+	return rawItems
+		.map((item) => parseFeaturedItem(item))
+		.filter((item): item is FeaturedItem => item != null);
+}
+
+/** Map a legacy/alternate featured payload to the lean UI model shape. */
 export function remapFeaturedItem(rawItem: unknown): unknown {
 	const item = asRecord(rawItem);
 	if (!item) {
@@ -162,7 +236,8 @@ export function remapFeaturedItem(rawItem: unknown): unknown {
 		resolveDescription(getString(item.description)) ??
 		resolveDescription(getString(item.excerpt)) ??
 		resolveDescription(getString(item.summary)) ??
-		resolveDescription(getString(localized?.description));
+		resolveDescription(getString(localized?.description)) ??
+		title;
 
 	return {
 		id: getIdentifier(item.id) ?? getIdentifier(item._id),
@@ -235,14 +310,14 @@ export async function getFeaturedItems(
 			searchParams: { locale },
 		});
 
-		const unwrapped = unwrapApiPayload(payload);
-		if (unwrapped) {
-			const rawItems = normalizeItems(unwrapped);
-			const remappedItems = rawItems.map((item) => remapFeaturedItem(item));
-			const parsed = FeaturedItemsSchema.safeParse(remappedItems);
-
-			if (parsed.success) {
-				apiItems = parsed.data;
+		if (payload == null) {
+			if (isDevelopment) {
+				console.warn(`[api] HTTP error or empty response for ${FEATURED_ENDPOINT}`);
+			}
+		} else {
+			const unwrapped = unwrapApiPayload(payload);
+			if (unwrapped) {
+				apiItems = parseFeaturedItems(normalizeItems(unwrapped));
 			}
 		}
 	} catch {
