@@ -10,8 +10,8 @@ export const VideoContentSchema = z.object({
 	title: z.string().nullable(),
 	description: z.string().nullable(),
 	location: z.string().nullish(),
-	director: z.string().nullable(),
-	producer: z.string().nullable(),
+	director: z.string().nullish(),
+	producer: z.string().nullish(),
 });
 
 export type VideoContent = z.infer<typeof VideoContentSchema>;

@@ -179,6 +179,50 @@ export function normalizeSoundTrackRecord(raw: unknown): unknown {
 	};
 }
 
+function normalizeVideoContent(raw: unknown): unknown {
+	const content = asRecord(raw);
+	if (!content) return raw;
+
+	return {
+		...content,
+		title: content.title ?? null,
+		description: content.description ?? null,
+		location: content.location ?? null,
+		director: content.director ?? null,
+		producer: content.producer ?? null,
+	};
+}
+
+function normalizeVideoCastMember(raw: unknown): unknown {
+	const member = asRecord(raw);
+	if (!member) return raw;
+
+	return {
+		...member,
+		nameCkb: member.nameCkb ?? member.name_ckb ?? null,
+		nameKmr: member.nameKmr ?? member.name_kmr ?? null,
+		roleCkb: member.roleCkb ?? member.role_ckb ?? null,
+		roleKmr: member.roleKmr ?? member.role_kmr ?? null,
+		photoUrl: member.photoUrl ?? member.photo_url ?? member.imageUrl ?? member.image_url ?? null,
+	};
+}
+
+function normalizeVideoHighlightClip(raw: unknown): unknown {
+	const clip = asRecord(raw);
+	if (!clip) return raw;
+
+	return {
+		...clip,
+		titleCkb: clip.titleCkb ?? clip.title_ckb ?? null,
+		titleKmr: clip.titleKmr ?? clip.title_kmr ?? null,
+		thumbnailUrl: clip.thumbnailUrl ?? clip.thumbnail_url ?? null,
+		startSeconds: clip.startSeconds ?? clip.start_seconds ?? null,
+		url: clip.url ?? null,
+		embedUrl: clip.embedUrl ?? clip.embed_url ?? null,
+		durationSeconds: clip.durationSeconds ?? clip.duration_seconds ?? null,
+	};
+}
+
 function normalizeVideoClip(raw: unknown): unknown {
 	const clip = asRecord(raw);
 	if (!clip) return raw;
@@ -205,12 +249,26 @@ export function normalizeVideoRecord(raw: unknown): unknown {
 
 	return {
 		...record,
+		ckbContent:
+			record.ckbContent != null
+				? normalizeVideoContent(record.ckbContent)
+				: record.ckbContent,
+		kmrContent:
+			record.kmrContent != null
+				? normalizeVideoContent(record.kmrContent)
+				: record.kmrContent,
+		enContent:
+			record.enContent != null
+				? normalizeVideoContent(record.enContent)
+				: record.enContent,
 		videoClipItems: Array.isArray(record.videoClipItems)
 			? record.videoClipItems.map(normalizeVideoClip)
 			: record.videoClipItems,
-		castMembers: Array.isArray(record.castMembers) ? record.castMembers : [],
+		castMembers: Array.isArray(record.castMembers)
+			? record.castMembers.map(normalizeVideoCastMember)
+			: [],
 		highlightClips: Array.isArray(record.highlightClips)
-			? record.highlightClips
+			? record.highlightClips.map(normalizeVideoHighlightClip)
 			: [],
 		tagsCkb: coerceStringArray(record.tagsCkb ?? record.tags_ckb),
 		tagsKmr: coerceStringArray(record.tagsKmr ?? record.tags_kmr),
