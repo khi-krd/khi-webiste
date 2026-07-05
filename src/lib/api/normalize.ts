@@ -144,6 +144,7 @@ function normalizeSoundFile(raw: unknown): unknown {
 		fileFormat: file.fileFormat ?? file.file_format ?? null,
 		bitRate: file.bitRate ?? file.bit_rate ?? null,
 		sampleRate: file.sampleRate ?? file.sample_rate ?? null,
+		audioChannel: file.audioChannel ?? file.audio_channel ?? null,
 		form: file.form ?? null,
 		genre: file.genre ?? null,
 		recordingVenue: file.recordingVenue ?? file.recording_venue ?? null,
@@ -170,6 +171,9 @@ export function normalizeSoundTrackRecord(raw: unknown): unknown {
 		attachments: Array.isArray(record.attachments) ? record.attachments : [],
 		locations: Array.isArray(record.locations) ? record.locations : [],
 		directors: Array.isArray(record.directors) ? record.directors : [],
+		publishmentYear:
+			record.publishmentYear ?? record.publishment_year ?? null,
+		cdNumber: record.cdNumber ?? record.cd_number ?? null,
 		createdAt: record.createdAt ?? record.created_at ?? "",
 		updatedAt: record.updatedAt ?? record.updated_at ?? "",
 	};
