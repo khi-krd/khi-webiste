@@ -1,6 +1,7 @@
 "use client";
 
 import { useTransition } from "react";
+import { useScrollToSection } from "@/components/providers/lenis-context";
 import { Pagination } from "@/components/ui/pagination";
 import { useRouter } from "@/i18n/navigation";
 import { cn } from "@/lib/utils";
@@ -34,15 +35,12 @@ export function GalleryPagination({
 }: GalleryPaginationProps) {
 	const router = useRouter();
 	const [isPending, startTransition] = useTransition();
+	const scrollToSection = useScrollToSection();
 
 	const handlePageChange = (page: number) => {
 		startTransition(() => {
 			router.replace(hrefFor(page), { scroll: false });
-
-			document.getElementById("gallery-content")?.scrollIntoView({
-				behavior: "smooth",
-				block: "start",
-			});
+			scrollToSection("gallery-content");
 		});
 	};
 

@@ -134,6 +134,7 @@ export function GalleryPosts({
 	return (
 		<section
 			id="gallery-content"
+			data-snap-section
 			aria-labelledby="gallery-posts-heading"
 			className="scroll-mt-26 bg-background sm:scroll-mt-30"
 		>

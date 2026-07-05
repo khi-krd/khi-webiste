@@ -1,4 +1,8 @@
-import { AboutSection, AboutShell, aboutProseClass } from "@/components/about/about-shell";
+import {
+	AboutSection,
+	AboutShell,
+	aboutProseClass,
+} from "@/components/about/about-shell";
 import {
 	ScrollReveal,
 	ScrollRevealItem,
@@ -26,6 +30,7 @@ export function AboutMission({
 }: AboutMissionProps) {
 	return (
 		<AboutSection
+			data-snap-section
 			className={cn("pt-10 pb-8 sm:pt-12 sm:pb-10 lg:pt-14", className)}
 		>
 			<AboutShell>

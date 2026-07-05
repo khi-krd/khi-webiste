@@ -205,6 +205,7 @@ html[data-corners="rounded"]
 		background-color: var(--color-background);
 		text-rendering: optimizeLegibility;
 		-webkit-font-smoothing: antialiased;
+		scroll-padding-top: 6.5rem;
 
 		/* Font tokens — live in @layer base so locale overrides can win. */
 		--font-app-body: var(--font-vazirmatn);
@@ -220,6 +221,12 @@ html[data-corners="rounded"]
 		--font-app-body: var(--font-archivo);
 		--font-app-heading: var(--font-clash-display);
 		line-height: var(--leading-body-latin);
+	}
+
+	@media (min-width: 640px) {
+		html {
+			scroll-padding-top: 7.5rem;
+		}
 	}
 
 	html[data-script="arabic"] {

@@ -8,6 +8,7 @@ import {
 import { useSearchParams } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { useCallback, useEffect, useRef, useState, useTransition } from "react";
+import { useScrollToSection } from "@/components/providers/lenis-context";
 import { Badge } from "@/components/ui/badge";
 import { Select } from "@/components/ui/select";
 import { useRouter } from "@/i18n/navigation";
@@ -77,6 +78,7 @@ export function AudioFilterBar({
 	const [expanded, setExpanded] = useState(false);
 	const [query, setQuery] = useState(activeQuery ?? "");
 	const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+	const scrollToSection = useScrollToSection();
 
 	const hasActiveFilters = Boolean(
 		activeType || activeState || activeTopicId != null || activeQuery?.trim(),
@@ -107,7 +109,7 @@ export function AudioFilterBar({
 
 				const grid = document.getElementById(scrollTargetId);
 				if (grid && searchParams.toString()) {
-					grid.scrollIntoView({ behavior: "smooth", block: "start" });
+					scrollToSection(scrollTargetId);
 				}
 			});
 		},
@@ -119,6 +121,7 @@ export function AudioFilterBar({
 			activeTopicId,
 			query,
 			scrollTargetId,
+			scrollToSection,
 		],
 	);
 

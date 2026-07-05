@@ -25,6 +25,7 @@ export function DonateHero({
 	return (
 		<section
 			aria-labelledby="donate-hero-heading"
+			data-snap-section
 			className={cn(
 				"relative w-full overflow-hidden border-b border-border min-h-[68svh] sm:min-h-[72svh]",
 				className,

@@ -10,6 +10,7 @@ export async function ImageCollectionSection() {
 	return (
 		<section
 			className="cv-auto flex h-svh max-h-svh min-h-0 w-full flex-col overflow-hidden border-t border-border bg-background [--cv-intrinsic:100svh]"
+			data-snap-section
 			aria-labelledby="image-collection-heading"
 		>
 			<ImageCollectionShowcase

@@ -1,6 +1,7 @@
 "use client";
 
 import { useTransition } from "react";
+import { useScrollToSection } from "@/components/providers/lenis-context";
 import { useRouter } from "@/i18n/navigation";
 import { homeInsetClass } from "@/lib/layout";
 import { cn } from "@/lib/utils";
@@ -59,6 +60,7 @@ export function VideoGenrePills({
 }: VideoGenrePillsProps) {
 	const router = useRouter();
 	const [isPending, startTransition] = useTransition();
+	const scrollToSection = useScrollToSection();
 
 	const go = (genre: string | null) => {
 		startTransition(() => {
@@ -67,10 +69,7 @@ export function VideoGenrePills({
 				: basePath;
 			router.replace(href, { scroll: false });
 			if (scrollTargetId) {
-				document.getElementById(scrollTargetId)?.scrollIntoView({
-					behavior: "smooth",
-					block: "start",
-				});
+				scrollToSection(scrollTargetId);
 			}
 		});
 	};

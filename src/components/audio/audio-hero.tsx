@@ -63,7 +63,10 @@ export function AudioHero({
 	);
 
 	return (
-		<header className="relative overflow-hidden border-b border-border bg-surface">
+		<header
+			className="relative overflow-hidden border-b border-border bg-surface"
+			data-snap-section
+		>
 			{/* faint top light — the only background event */}
 			<div
 				aria-hidden

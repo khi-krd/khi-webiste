@@ -1,6 +1,7 @@
 "use client";
 
 import { useTransition } from "react";
+import { useScrollToSection } from "@/components/providers/lenis-context";
 import { Pagination } from "@/components/ui/pagination";
 import { useRouter } from "@/i18n/navigation";
 import { cn } from "@/lib/utils";
@@ -38,6 +39,7 @@ export function WritingsPagination({
 }: WritingsPaginationProps) {
 	const router = useRouter();
 	const [isPending, startTransition] = useTransition();
+	const scrollToSection = useScrollToSection();
 
 	const handlePageChange = (page: number) => {
 		startTransition(() => {
@@ -52,10 +54,7 @@ export function WritingsPagination({
 				{ scroll: false },
 			);
 
-			document.getElementById(scrollTargetId)?.scrollIntoView({
-				behavior: "smooth",
-				block: "start",
-			});
+			scrollToSection(scrollTargetId);
 		});
 	};
 

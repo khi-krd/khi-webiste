@@ -1,5 +1,4 @@
 import {
-	ArrowDownTrayIcon,
 	DocumentTextIcon,
 	FilmIcon,
 	MusicalNoteIcon,
@@ -25,16 +24,14 @@ type AudioAttachmentsProps = {
 	title: string;
 	attachments: SoundAttachment[];
 	untitledLabel: string;
-	downloadLabel: string;
 	typeLabels: Record<AttachmentType, string>;
 };
 
-/** Downloadable companion files (booklets, scans, clips) with type + size. */
+/** Companion files (PDFs, clips) listed for reference — no download offered. */
 export function AudioAttachments({
 	title,
 	attachments,
 	untitledLabel,
-	downloadLabel,
 	typeLabels,
 }: AudioAttachmentsProps) {
 	if (attachments.length === 0) {
@@ -78,24 +75,9 @@ export function AudioAttachments({
 									</p>
 								</div>
 
-								<Badge
-									variant="outline"
-									size="sm"
-									className="hidden sm:inline-flex"
-								>
+								<Badge variant="outline" size="sm">
 									{attachment.attachmentType}
 								</Badge>
-
-								<a
-									href={attachment.fileUrl ?? undefined}
-									target="_blank"
-									rel="noopener noreferrer"
-									download
-									aria-label={`${downloadLabel} — ${attachment.title?.trim() || untitledLabel}`}
-									className="inline-flex size-9 shrink-0 items-center justify-center border border-border-strong text-foreground transition-colors fine-hover:bg-sunken focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
-								>
-									<ArrowDownTrayIcon aria-hidden className="size-4" />
-								</a>
 							</div>
 						</li>
 					);

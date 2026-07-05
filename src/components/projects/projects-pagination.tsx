@@ -1,6 +1,7 @@
 "use client";
 
 import { useTransition } from "react";
+import { useScrollToSection } from "@/components/providers/lenis-context";
 import { Pagination } from "@/components/ui/pagination";
 import { useRouter } from "@/i18n/navigation";
 import { projectsHref } from "@/lib/projects-url";
@@ -45,6 +46,7 @@ export function ProjectsPagination({
 }: ProjectsPaginationProps) {
 	const router = useRouter();
 	const [isPending, startTransition] = useTransition();
+	const scrollToSection = useScrollToSection();
 
 	const handlePageChange = (page: number) => {
 		startTransition(() => {
@@ -53,10 +55,7 @@ export function ProjectsPagination({
 				{ scroll: false },
 			);
 
-			document.getElementById("projects-content")?.scrollIntoView({
-				behavior: "smooth",
-				block: "start",
-			});
+			scrollToSection("projects-content");
 		});
 	};
 

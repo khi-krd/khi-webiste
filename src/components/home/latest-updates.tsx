@@ -49,6 +49,7 @@ export async function LatestUpdates() {
 	return (
 		<section
 			className="cv-auto w-full bg-background py-12 [--cv-intrinsic:1600px] sm:py-16 lg:py-20"
+			data-snap-section
 			aria-labelledby="latest-updates-heading"
 		>
 			<ScrollRevealBlock className="mb-8 px-6 sm:mb-10 sm:px-8">

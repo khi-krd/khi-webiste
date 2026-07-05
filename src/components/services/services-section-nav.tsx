@@ -8,6 +8,7 @@ import {
 import { LayoutGroup } from "motion/react";
 import type { MouseEvent } from "react";
 import { useCallback, useEffect, useMemo, useState } from "react";
+import { useScrollToSection } from "@/components/providers/lenis-context";
 import { ServicesNavIndicator } from "@/components/services/services-motion";
 import { DirectionalIcon } from "@/components/ui/directional-icon";
 import { cn } from "@/lib/utils";
@@ -22,13 +23,6 @@ type ServicesSectionNavProps = {
 	navLabel: string;
 	className?: string;
 };
-
-function scrollToSection(id: string) {
-	const target = document.getElementById(id);
-	if (!target) return;
-
-	target.scrollIntoView({ behavior: "smooth", block: "start" });
-}
 
 type ServicesNavDotsProps = {
 	items: NavItem[];
@@ -278,6 +272,7 @@ export function ServicesSectionNav({
 	className,
 }: ServicesSectionNavProps) {
 	const [activeId, setActiveId] = useState(items[0]?.id ?? "");
+	const scrollToSection = useScrollToSection();
 
 	useEffect(() => {
 		const sections = items
@@ -309,10 +304,13 @@ export function ServicesSectionNav({
 		return () => observer.disconnect();
 	}, [items]);
 
-	const navigateTo = useCallback((id: string) => {
-		setActiveId(id);
-		scrollToSection(id);
-	}, []);
+	const navigateTo = useCallback(
+		(id: string) => {
+			setActiveId(id);
+			scrollToSection(id);
+		},
+		[scrollToSection],
+	);
 
 	const handleNavClick = useCallback(
 		(event: MouseEvent<HTMLAnchorElement>, id: string) => {

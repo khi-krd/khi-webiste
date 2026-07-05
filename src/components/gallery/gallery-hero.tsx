@@ -29,6 +29,7 @@ export function GalleryHero({
 	return (
 		<section
 			aria-labelledby="gallery-hero-heading"
+			data-snap-section
 			className="relative w-full bg-background"
 		>
 			<div className="relative z-10 grid min-h-svh grid-cols-1 grid-rows-[auto_minmax(32rem,1fr)] lg:grid-cols-[minmax(0,5fr)_minmax(0,6fr)] lg:grid-rows-1">

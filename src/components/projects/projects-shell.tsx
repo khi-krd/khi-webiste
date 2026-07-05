@@ -40,7 +40,11 @@ export function ProjectsShell({
 	nextLabel,
 }: ProjectsShellProps) {
 	return (
-		<section id="projects-content">
+		<section
+			id="projects-content"
+			data-snap-section
+			className="scroll-mt-26 sm:scroll-mt-30"
+		>
 			<ProjectsTagBar
 				tags={tags}
 				activeYear={activeYear}

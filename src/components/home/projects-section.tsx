@@ -11,6 +11,7 @@ export async function ProjectsSection() {
 	return (
 		<section
 			className="cv-auto w-full overflow-hidden border-t border-border bg-background py-12 [--cv-intrinsic:800px] sm:py-16 lg:py-20"
+			data-snap-section
 			aria-labelledby="projects-heading"
 			aria-roledescription="carousel"
 		>

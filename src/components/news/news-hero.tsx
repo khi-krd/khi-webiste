@@ -22,6 +22,7 @@ export function NewsHero({
 	return (
 		<section
 			aria-labelledby="news-hero-heading"
+			data-snap-section
 			className={cn(
 				"relative w-full overflow-hidden border-b border-border bg-background",
 				className,

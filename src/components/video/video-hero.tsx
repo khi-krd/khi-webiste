@@ -66,7 +66,10 @@ export function VideoHero({
 	);
 
 	return (
-		<header className="relative overflow-hidden border-b border-border/60 bg-surface">
+		<header
+			className="relative overflow-hidden border-b border-border/60 bg-surface"
+			data-snap-section
+		>
 			{/* faint top light — the only background event */}
 			<div
 				aria-hidden

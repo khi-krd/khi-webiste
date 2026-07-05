@@ -154,7 +154,7 @@ export async function FeaturedHero({
 		return (
 			<section
 				className={sectionClass}
-				data-scroll-section
+				data-snap-section
 				aria-label={t("regionLabel")}
 			>
 				<FeaturedCarousel
@@ -202,7 +202,7 @@ export async function FeaturedHero({
 			aria-roledescription="carousel"
 			aria-label={t("regionLabel")}
 			className={sectionClass}
-			data-scroll-section
+			data-snap-section
 		>
 			{compact ? null : (
 				<script type="application/ld+json">{JSON.stringify(jsonLd)}</script>

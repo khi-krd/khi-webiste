@@ -78,7 +78,11 @@ export default async function AudioPage({
 				items={memories}
 			/>
 
-			<div id="audio-content">
+			<div
+				id="audio-content"
+				data-snap-section
+				className="scroll-mt-26 sm:scroll-mt-30"
+			>
 				<AudioShell
 					title={t("grid.allTitle")}
 					cards={pageData.listing.items}

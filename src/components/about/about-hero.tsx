@@ -40,6 +40,7 @@ export function AboutHero({
 	return (
 		<>
 			<section
+				data-snap-section
 				className={cn(
 					"relative w-full overflow-hidden",
 					heightClass,

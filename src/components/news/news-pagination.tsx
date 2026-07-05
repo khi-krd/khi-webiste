@@ -1,6 +1,7 @@
 "use client";
 
 import { useTransition } from "react";
+import { useScrollToSection } from "@/components/providers/lenis-context";
 import { Pagination } from "@/components/ui/pagination";
 import { useRouter } from "@/i18n/navigation";
 import { buildNewsHref } from "@/lib/news-url";
@@ -29,6 +30,7 @@ export function NewsPagination({
 }: NewsPaginationProps) {
 	const router = useRouter();
 	const [isPending, startTransition] = useTransition();
+	const scrollToSection = useScrollToSection();
 
 	const handlePageChange = (page: number) => {
 		startTransition(() => {
@@ -41,10 +43,7 @@ export function NewsPagination({
 				{ scroll: false },
 			);
 
-			document.getElementById("news-grid")?.scrollIntoView({
-				behavior: "smooth",
-				block: "start",
-			});
+			scrollToSection("news-grid");
 		});
 	};
 

@@ -4,6 +4,7 @@
 import useEmblaCarousel from "embla-carousel-react";
 import type { PointerEvent as ReactPointerEvent } from "react";
 import { useCallback, useEffect, useRef, useState } from "react";
+import { useScrollToSection } from "@/components/providers/lenis-context";
 import { ServiceNavCard } from "@/components/services/service-nav-card";
 import type { ServiceItem } from "@/lib/mock/services";
 import { cn } from "@/lib/utils";
@@ -65,17 +66,19 @@ export function ServicesNavCarousel({
 		[emblaApi],
 	);
 
-	const handleCardActivate = useCallback((id: string) => {
-		if (dragState.current.active) {
-			dragState.current.active = false;
-			return;
-		}
+	const scrollToSection = useScrollToSection();
 
-		const target = document.getElementById(id);
-		if (!target) return;
+	const handleCardActivate = useCallback(
+		(id: string) => {
+			if (dragState.current.active) {
+				dragState.current.active = false;
+				return;
+			}
 
-		target.scrollIntoView({ behavior: "smooth", block: "start" });
-	}, []);
+			scrollToSection(id);
+		},
+		[scrollToSection],
+	);
 
 	const handleSlidePointerDown = useCallback(
 		(event: ReactPointerEvent<HTMLLIElement>) => {

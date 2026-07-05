@@ -72,7 +72,11 @@ export default async function VideosPage({
 
 			<VideoShortFilmsPromo />
 
-			<div id="videos-content">
+			<div
+				id="videos-content"
+				data-snap-section
+				className="scroll-mt-26 sm:scroll-mt-30"
+			>
 				<VideoShell
 					title={t("grid.allTitle")}
 					cards={pageData.listing.items}

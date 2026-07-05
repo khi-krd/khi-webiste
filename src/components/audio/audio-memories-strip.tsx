@@ -76,6 +76,7 @@ export function AudioMemoriesStrip({
 	return (
 		<section
 			aria-labelledby="audio-memories-heading"
+			data-snap-section
 			className={cn("w-full bg-background py-12 sm:py-16", className)}
 		>
 			<div className={homeInsetClass}>

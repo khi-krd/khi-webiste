@@ -60,6 +60,7 @@ export function NewsShell({
 	return (
 		<section
 			id="news-grid"
+			data-snap-section
 			className={cn(
 				"w-full border-t border-border bg-background py-12 sm:py-16 lg:py-20",
 				className,

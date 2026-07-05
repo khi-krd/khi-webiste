@@ -51,6 +51,7 @@ export async function VideoSection() {
 	return (
 		<section
 			className="cv-auto flex w-full flex-col overflow-hidden border-t border-border bg-background [--cv-intrinsic:1400px]"
+			data-snap-section
 			aria-labelledby="video-heading"
 		>
 			<ScrollRevealBlock className="shrink-0 px-6 pt-12 pb-8 sm:px-8 sm:pt-16 sm:pb-10 lg:pt-20">

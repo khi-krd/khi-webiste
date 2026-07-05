@@ -65,8 +65,9 @@ export function WritingsShell({
 	return (
 		<section
 			id={id}
+			data-snap-section
 			className={cn(
-				"w-full border-t border-border bg-background py-12 sm:py-16 lg:py-20",
+				"scroll-mt-26 w-full border-t border-border bg-background py-12 sm:scroll-mt-30 sm:py-16 lg:py-20",
 				className,
 			)}
 			aria-labelledby="writings-grid-heading"

@@ -21,6 +21,7 @@ export function ContactHero({
 	return (
 		<section
 			className={cn(homeIntroClass, className)}
+			data-snap-section
 			aria-labelledby="contact-hero-heading"
 		>
 			<ScrollReveal className="max-w-3xl text-start">

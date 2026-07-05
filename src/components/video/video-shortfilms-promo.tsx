@@ -56,6 +56,7 @@ export async function VideoShortFilmsPromo() {
 	return (
 		<section
 			className="border-y border-primary-foreground/20 bg-foreground py-12 text-primary-foreground sm:py-16"
+			data-snap-section
 			aria-labelledby="shortfilms-promo-heading"
 		>
 			<div className={homeInsetClass}>

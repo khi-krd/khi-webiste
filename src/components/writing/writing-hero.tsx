@@ -75,6 +75,7 @@ export function WritingHero({
 	return (
 		<header
 			aria-labelledby="writings-hero-heading"
+			data-snap-section
 			className="relative overflow-hidden border-b border-border"
 		>
 			<WritingHeroBackground textureUrl={textureUrl} />

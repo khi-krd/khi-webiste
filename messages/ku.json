@@ -440,9 +440,9 @@
 			"title": "Vîdyo"
 		},
 		"attachments": {
-			"title": "Çavkanî & daxistin",
+			"title": "Çavkanî",
+			"filesTitle": "Dosyayên din",
 			"untitled": "Pêveka bê sernav",
-			"download": "Daxe",
 			"types": {
 				"PDF": "Belgeya PDF",
 				"VIDEO": "Vîdyo",

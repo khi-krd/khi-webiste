@@ -1,90 +1,144 @@
 "use client";
 
 import Lenis from "lenis";
-import { useEffect, useLayoutEffect, useRef, useState } from "react";
+import Snap from "lenis/snap";
+import {
+	useCallback,
+	useEffect,
+	useLayoutEffect,
+	useRef,
+	useState,
+} from "react";
 import { usePathname } from "@/i18n/navigation";
-import { LenisContext } from "./lenis-context";
+import { discoverSnapSections } from "@/lib/scroll-sections";
+import { scrollToSection } from "@/lib/scroll-to-section";
+import { LenisContext, LenisSnapContext } from "./lenis-context";
 
 type Props = {
 	children: React.ReactNode;
 };
 
 const REDUCE_MOTION = "(prefers-reduced-motion: reduce)";
+const MIN_SNAP_SECTIONS = 2;
 
 /**
- * Smooth-scroll layer, exposed through {@link LenisContext} so the rest of the
- * app can coordinate with it (modal scroll-lock, route reset, anchor scroll).
+ * Smooth-scroll layer with section snapping, exposed through {@link LenisContext}
+ * and {@link LenisSnapContext} so the rest of the app can coordinate with it.
  *
- * - No section snapping / per-frame custom event: those caused the "hijacked"
- *   feel on weak mobile GPUs.
- * - Touch left native (`syncTouch: false`) so phones keep hardware-accelerated
- *   momentum and we never interpolate per touch frame.
- * - Disabled entirely under `prefers-reduced-motion: reduce`, and rebuilt live
- *   if that preference changes — when off, the context value is `null` and every
- *   consumer falls back to native scrolling.
+ * - Wheel and touch both run through Lenis (`syncTouch: true`).
+ * - `lenis/snap` settles free scroll onto nearest `[data-snap-section]` block.
+ * - Disabled entirely under `prefers-reduced-motion: reduce`.
  *
- * The instance lives in state set ONCE (consumers re-render only when it
- * appears/disappears, never per scroll frame). Scroll position never enters
- * React state — the header reads native `scrollY` (Lenis drives the real
- * document scroll).
+ * The instances live in state set ONCE (consumers re-render only when they
+ * appear/disappear, never per scroll frame).
  */
 export function LenisProvider({ children }: Props) {
 	const [lenis, setLenis] = useState<Lenis | null>(null);
+	const [snap, setSnap] = useState<Snap | null>(null);
 	const pathname = usePathname();
 	const firstRoute = useRef(true);
+	const snapRemoversRef = useRef<(() => void)[]>([]);
 
-	// Create/destroy Lenis, and rebuild when the reduced-motion preference flips.
+	const clearSnapSections = useCallback(() => {
+		for (const remove of snapRemoversRef.current) {
+			remove();
+		}
+		snapRemoversRef.current = [];
+	}, []);
+
+	const bindSnapSections = useCallback(
+		(snapInstance: Snap) => {
+			clearSnapSections();
+			const sections = discoverSnapSections();
+			if (sections.length < MIN_SNAP_SECTIONS) return;
+			const remove = snapInstance.addElements(sections, { align: "start" });
+			snapRemoversRef.current.push(remove);
+			snapInstance.resize();
+		},
+		[clearSnapSections],
+	);
+
+	// Create/destroy Lenis + Snap; rebuild when reduced-motion preference flips.
 	useEffect(() => {
 		const mq = window.matchMedia(REDUCE_MOTION);
 		let instance: Lenis | null = null;
+		let snapInstance: Snap | null = null;
 
 		const build = () => {
 			if (mq.matches) {
+				clearSnapSections();
+				snapInstance?.destroy();
+				snapInstance = null;
 				instance?.destroy();
 				instance = null;
+				setSnap(null);
 				setLenis(null);
 				return;
 			}
 			if (instance) return;
+
 			instance = new Lenis({
 				autoRaf: true,
 				smoothWheel: true,
-				syncTouch: false,
+				syncTouch: true,
+				syncTouchLerp: 0.075,
+				touchMultiplier: 1,
 				lerp: 0.1,
 				wheelMultiplier: 1,
 			});
+
+			snapInstance = new Snap(instance, {
+				type: "proximity",
+				distanceThreshold: "40%",
+				debounce: 120,
+				duration: 0.8,
+			});
+
 			setLenis(instance);
+			setSnap(snapInstance);
+
+			requestAnimationFrame(() => {
+				requestAnimationFrame(() => {
+					if (snapInstance) bindSnapSections(snapInstance);
+				});
+			});
 		};
 
 		build();
 		mq.addEventListener("change", build);
 		return () => {
 			mq.removeEventListener("change", build);
+			clearSnapSections();
+			snapInstance?.destroy();
 			instance?.destroy();
+			setSnap(null);
 			setLenis(null);
 		};
-	}, []);
+	}, [bindSnapSections, clearSnapSections]);
 
-	// Reset to top on route change. `immediate: true` (no tween) so it never
-	// competes visibly with the template enter transition or Next's own
-	// restoration. The first mount is skipped so we don't fight initial position
-	// (e.g. a deep link landing mid-page). `pathname` is a trigger-only dep — the
-	// reset runs WHEN the route changes; its value is never read in the body.
-	// biome-ignore lint/correctness/useExhaustiveDependencies: pathname is a trigger-only dependency (see note above)
+	// Reset to top on route change and rebind snap targets for the new page.
+	// biome-ignore lint/correctness/useExhaustiveDependencies: pathname is a trigger-only dependency
 	useLayoutEffect(() => {
 		if (firstRoute.current) {
 			firstRoute.current = false;
-			return;
-		}
-		if (lenis) {
+		} else if (lenis) {
 			lenis.scrollTo(0, { immediate: true });
 		} else {
 			window.scrollTo(0, 0);
 		}
-	}, [pathname, lenis]);
 
-	// In-page #hash links → smooth scroll through Lenis (offset clears the fixed
-	// header band). No-op when Lenis is null: the browser's native jump applies.
+		if (!snap) return;
+
+		const frame = requestAnimationFrame(() => {
+			requestAnimationFrame(() => {
+				bindSnapSections(snap);
+			});
+		});
+
+		return () => cancelAnimationFrame(frame);
+	}, [pathname, lenis, snap, bindSnapSections]);
+
+	// In-page #hash links → smooth scroll through Lenis.
 	useEffect(() => {
 		if (!lenis) return;
 		const onClick = (event: MouseEvent) => {
@@ -97,13 +151,17 @@ export function LenisProvider({ children }: Props) {
 			const target = document.getElementById(href.slice(1));
 			if (!target) return;
 			event.preventDefault();
-			lenis.scrollTo(target, { offset: -120 });
+			scrollToSection(target, lenis);
 		};
 		document.addEventListener("click", onClick);
 		return () => document.removeEventListener("click", onClick);
 	}, [lenis]);
 
 	return (
-		<LenisContext.Provider value={lenis}>{children}</LenisContext.Provider>
+		<LenisContext.Provider value={lenis}>
+			<LenisSnapContext.Provider value={snap}>
+				{children}
+			</LenisSnapContext.Provider>
+		</LenisContext.Provider>
 	);
 }

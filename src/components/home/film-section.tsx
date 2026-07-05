@@ -70,6 +70,7 @@ export async function FilmSection() {
 	return (
 		<section
 			className="cv-auto relative w-full overflow-hidden border-t border-primary-foreground/15 bg-foreground text-primary-foreground [--cv-intrinsic:680px]"
+			data-snap-section
 			aria-labelledby="film-heading"
 		>
 			<div

@@ -37,6 +37,7 @@ export function ProjectsHero({
 	return (
 		<section
 			aria-labelledby="projects-hero-heading"
+			data-snap-section
 			className="border-b border-border bg-background"
 		>
 			<div className="mx-auto max-w-[88rem] px-6 pt-30 pb-10 sm:px-8 sm:pt-34 sm:pb-12">

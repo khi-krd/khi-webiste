@@ -2,6 +2,7 @@ import { ArrowLeftIcon } from "@heroicons/react/24/outline";
 import NextImage from "next/image";
 import { getTranslations } from "next-intl/server";
 import { AudioAlbumVideo } from "@/components/audio/audio-album-video";
+import { AudioAttachmentSlider } from "@/components/audio/audio-attachment-slider";
 import { AudioAttachments } from "@/components/audio/audio-attachments";
 import { AudioBookletReader } from "@/components/audio/audio-booklet-reader";
 import { AudioBrochures } from "@/components/audio/audio-brochures";
@@ -156,6 +157,16 @@ export async function AudioPostView({ detail, locale }: AudioPostViewProps) {
 		}
 		return true;
 	});
+
+	const imageAttachments = downloadableAttachments.filter(
+		(attachment) =>
+			attachment.attachmentType === "IMAGE" && Boolean(attachment.fileUrl),
+	);
+	const fileAttachments = downloadableAttachments.filter(
+		(attachment) => attachment.attachmentType !== "IMAGE",
+	);
+	const hasSources =
+		imageAttachments.length > 0 || fileAttachments.length > 0;
 
 	return (
 		<article>
@@ -399,22 +410,48 @@ export async function AudioPostView({ detail, locale }: AudioPostViewProps) {
 						</ScrollRevealItem>
 					) : null}
 
-					{downloadableAttachments.length > 0 ? (
+					{hasSources ? (
 						<ScrollRevealItem>
-							<div className="mt-12 lg:mt-16">
-								<AudioAttachments
-									title={t("attachments.title")}
-									attachments={downloadableAttachments}
-									untitledLabel={t("attachments.untitled")}
-									downloadLabel={t("attachments.download")}
-									typeLabels={{
-										PDF: t("attachments.types.PDF"),
-										VIDEO: t("attachments.types.VIDEO"),
-										IMAGE: t("attachments.types.IMAGE"),
-										AUDIO: t("attachments.types.AUDIO"),
-										OTHER: t("attachments.types.OTHER"),
-									}}
-								/>
+							<div className="mt-12 space-y-12 lg:mt-16">
+								{imageAttachments.length > 0 ? (
+									<AudioAttachmentSlider
+										title={t("attachments.title")}
+										attachments={imageAttachments}
+										untitledLabel={t("attachments.untitled")}
+										openLabel={t("brochures.open")}
+										closeLabel={t("brochures.close")}
+										previousLabel={t("brochures.previous")}
+										nextLabel={t("brochures.next")}
+										metadataLabels={{
+											dimensions: t("brochures.metadata.dimensions"),
+											fileSize: t("brochures.metadata.fileSize"),
+											fileSizeBytes: t("brochures.metadata.fileSizeBytes"),
+											mimeType: t("brochures.metadata.mimeType"),
+											aspectRatio: t("brochures.metadata.aspectRatio"),
+											sortOrder: t("brochures.metadata.sortOrder"),
+											externalUrl: t("brochures.metadata.externalUrl"),
+											embedUrl: t("brochures.metadata.embedUrl"),
+										}}
+									/>
+								) : null}
+								{fileAttachments.length > 0 ? (
+									<AudioAttachments
+										title={
+											imageAttachments.length > 0
+												? t("attachments.filesTitle")
+												: t("attachments.title")
+										}
+										attachments={fileAttachments}
+										untitledLabel={t("attachments.untitled")}
+										typeLabels={{
+											PDF: t("attachments.types.PDF"),
+											VIDEO: t("attachments.types.VIDEO"),
+											IMAGE: t("attachments.types.IMAGE"),
+											AUDIO: t("attachments.types.AUDIO"),
+											OTHER: t("attachments.types.OTHER"),
+										}}
+									/>
+								) : null}
 							</div>
 						</ScrollRevealItem>
 					) : null}

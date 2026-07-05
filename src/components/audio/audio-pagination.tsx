@@ -1,6 +1,7 @@
 "use client";
 
 import { useTransition } from "react";
+import { useScrollToSection } from "@/components/providers/lenis-context";
 import { Pagination } from "@/components/ui/pagination";
 import { useRouter } from "@/i18n/navigation";
 import { buildAudioHref } from "@/lib/audio-url";
@@ -36,6 +37,7 @@ export function AudioPagination({
 }: AudioPaginationProps) {
 	const router = useRouter();
 	const [isPending, startTransition] = useTransition();
+	const scrollToSection = useScrollToSection();
 
 	const createHref = (page: number) =>
 		buildAudioHref({
@@ -50,10 +52,7 @@ export function AudioPagination({
 		startTransition(() => {
 			router.replace(createHref(page), { scroll: false });
 
-			document.getElementById(scrollTargetId)?.scrollIntoView({
-				behavior: "smooth",
-				block: "start",
-			});
+			scrollToSection(scrollTargetId);
 		});
 	};
 
