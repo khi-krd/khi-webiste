@@ -45,7 +45,7 @@ export function FeaturedSlide({
 						sizes="100vw"
 						priority={isPriority}
 						placeholder={slide.image.blurDataURL ? "blur" : "empty"}
-						blurDataURL={slide.image.blurDataURL}
+						blurDataURL={slide.image.blurDataURL ?? undefined}
 						className="object-cover"
 					/>
 				</div>
