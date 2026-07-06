@@ -42,14 +42,16 @@ export function ServicesHero({
 		>
 			<div className="absolute inset-0 isolate">
 				<div className="absolute inset-0 [&_img]:h-full [&_img]:w-full [&_img]:object-cover [&_img]:brightness-[0.72] [&_img]:contrast-[1.12] [&_img]:saturate-[0.58]">
-					<NextImage
-						src={heroMedia.url}
-						alt={heroMedia.alt ?? ""}
-						fill
-						sizes="100vw"
-						priority
-						className="object-cover"
-					/>
+					{heroMedia.url ? (
+						<NextImage
+							src={heroMedia.url}
+							alt={heroMedia.alt ?? ""}
+							fill
+							sizes="100vw"
+							priority
+							className="object-cover"
+						/>
+					) : null}
 				</div>
 
 				<div
