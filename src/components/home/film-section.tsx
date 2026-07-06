@@ -97,7 +97,7 @@ export async function FilmSection() {
 						</div>
 
 						<Link
-							href={buildVideoHref({ type: "FILM" })}
+							href={buildVideoHref({})}
 							variant="nav"
 							className={filmCtaClass}
 						>

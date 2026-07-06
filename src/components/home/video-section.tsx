@@ -69,7 +69,7 @@ export async function VideoSection() {
 						</div>
 
 						<Link
-							href={buildVideoHref({ type: "VIDEO_CLIP" })}
+							href={buildVideoHref({})}
 							variant="nav"
 							className={viewAllClass}
 						>

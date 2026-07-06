@@ -213,7 +213,7 @@ export function VideoFilterBar({
 					{TYPE_OPTIONS.map((option) => (
 						<CellPill
 							key={option.key}
-							active={activeType === option.value}
+							active={(activeType ?? null) === option.value}
 							onClick={() => pushFilters({ type: option.value })}
 						>
 							{t(option.key)}

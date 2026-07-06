@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import { redirect } from "next/navigation";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { VideoHero } from "@/components/video/video-hero";
 import { VideoShell } from "@/components/video/video-shell";
@@ -43,10 +42,6 @@ export default async function VideosPage({
 	const pageData = await loadVideoPageData(locale, t, {
 		searchParams: resolvedSearchParams,
 	});
-
-	if (pageData.redirectToShortFilms) {
-		redirect("/videos/shortfilms");
-	}
 
 	const heroCovers = [
 		...new Set(

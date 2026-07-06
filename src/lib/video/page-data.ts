@@ -3,7 +3,6 @@ import {
 	getVideoTopics,
 	VIDEO_GRID_PAGE_SIZE,
 } from "@/lib/api/videos";
-import { SHORT_FILMS_TOPIC_ID } from "@/lib/mock/videos";
 import {
 	parseVideoMemories,
 	parseVideoTopicId,
@@ -38,15 +37,10 @@ export async function loadVideoPageData(
 	const activeQuery = searchParams.q?.trim() || null;
 	const page = Math.max(1, Number.parseInt(searchParams.page ?? "1", 10) || 1);
 
-	// Short films live on their own hub — redirect topic filter to that page.
-	const redirectToShortFilms =
-		activeTopicId === SHORT_FILMS_TOPIC_ID && !activeType && !activeMemories;
-
 	const [listing, topics] = await Promise.all([
 		getVideoListing(locale, {
 			videoType: activeType,
-			topicId: activeTopicId === SHORT_FILMS_TOPIC_ID ? null : activeTopicId,
-			excludeTopicId: SHORT_FILMS_TOPIC_ID,
+			topicId: activeTopicId,
 			memories: activeMemories,
 			query: activeQuery,
 			page,
@@ -55,26 +49,17 @@ export async function loadVideoPageData(
 		getVideoTopics(locale),
 	]);
 
-	const catalogTopics = topics.filter(
-		(topic) => topic.id !== SHORT_FILMS_TOPIC_ID,
-	);
-
 	const hasFilters = Boolean(
-		activeType ||
-			(activeTopicId != null && activeTopicId !== SHORT_FILMS_TOPIC_ID) ||
-			activeMemories ||
-			activeQuery,
+		activeType || activeTopicId != null || activeMemories || activeQuery,
 	);
 
 	return {
 		activeType,
-		activeTopicId:
-			activeTopicId === SHORT_FILMS_TOPIC_ID ? null : activeTopicId,
+		activeTopicId,
 		activeMemories,
 		activeQuery,
 		listing,
-		topics: catalogTopics,
-		redirectToShortFilms,
+		topics,
 		// Featured bento only leads page 1 of the unfiltered catalogue.
 		showFeatured: page === 1 && !hasFilters,
 		noResultsMessage: hasFilters ? t("grid.noResults") : t("grid.empty"),
