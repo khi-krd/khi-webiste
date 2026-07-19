@@ -42,6 +42,9 @@ const NAV_KEY_TO_SECTION: Record<string, ClientSearchSectionKey> = {
 	gallery: "imageCollections",
 };
 
+/** Max secondary links shown per mega-menu section. */
+export const NAV_MENU_MAX_ITEMS = 8;
+
 /** Kinds shown as mega-menu secondary links per section. */
 const NAV_MENU_KINDS: Record<ClientSearchSectionKey, ReadonlySet<SearchTaxonomyKind>> =
 	{
@@ -52,6 +55,39 @@ const NAV_MENU_KINDS: Record<ClientSearchSectionKey, ReadonlySet<SearchTaxonomyK
 		projects: new Set(["tag"]),
 		imageCollections: new Set(["tag"]),
 	};
+
+type NavMenuLinkLike = {
+	label: string;
+	href: string;
+};
+
+/**
+ * Drops duplicate labels/hrefs (case-insensitive) and caps length for mega-menu panels.
+ */
+export function limitNavMenuLinks<T extends NavMenuLinkLike>(
+	links: T[],
+	max = NAV_MENU_MAX_ITEMS,
+): T[] {
+	const seenLabels = new Set<string>();
+	const seenHrefs = new Set<string>();
+	const unique: T[] = [];
+
+	for (const link of links) {
+		const labelKey = normalizeTaxonomyQuery(link.label);
+		const hrefKey = normalizeTaxonomyQuery(link.href);
+		if (seenLabels.has(labelKey) || seenHrefs.has(hrefKey)) {
+			continue;
+		}
+		seenLabels.add(labelKey);
+		seenHrefs.add(hrefKey);
+		unique.push(link);
+		if (unique.length >= max) {
+			break;
+		}
+	}
+
+	return unique;
+}
 
 const ARCHIVE_SECTION_KEYS = new Set<ClientSearchSectionKey>([
 	"projects",
@@ -90,6 +126,7 @@ export function getSectionKeyForNavKey(
 /**
  * Taxonomy links for a mega-menu secondary panel / nav search children.
  * Returns [] for Services/About (no section) or when the catalog has no matches.
+ * Dedupes by label/href and caps at {@link NAV_MENU_MAX_ITEMS}.
  */
 export function getNavMenuTaxonomyItems(
 	navKey: string,
@@ -101,9 +138,10 @@ export function getNavMenuTaxonomyItems(
 	}
 
 	const kinds = NAV_MENU_KINDS[sectionKey];
-	return catalog.filter(
+	const filtered = catalog.filter(
 		(item) => item.sectionKey === sectionKey && kinds.has(item.kind),
 	);
+	return limitNavMenuLinks(filtered);
 }
 
 export function normalizeTaxonomyQuery(value: string): string {

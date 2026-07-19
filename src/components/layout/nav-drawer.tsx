@@ -30,7 +30,10 @@ import {
 	fetchTaxonomyCatalog,
 	type SearchTaxonomyItem,
 } from "@/lib/search/client";
-import { getNavMenuTaxonomyItems } from "@/lib/search/taxonomy-types";
+import {
+	getNavMenuTaxonomyItems,
+	limitNavMenuLinks,
+} from "@/lib/search/taxonomy-types";
 import { useScrollLock } from "@/lib/use-scroll-lock";
 import { cn } from "@/lib/utils";
 
@@ -164,24 +167,26 @@ function resolveSecondaryLinks(
 		}));
 
 		if (item.key === "video") {
-			return [
+			return limitNavMenuLinks([
 				{
 					id: "video-shortfilms",
 					href: "/videos/shortfilms",
 					label: t("videoSubShortFilms"),
 				},
 				...links,
-			];
+			]);
 		}
 
-		return links;
+		return limitNavMenuLinks(links);
 	}
 
-	return item.children.map((child) => ({
-		id: child.key,
-		href: child.href,
-		label: t(child.key),
-	}));
+	return limitNavMenuLinks(
+		item.children.map((child) => ({
+			id: child.key,
+			href: child.href,
+			label: t(child.key),
+		})),
+	);
 }
 
 type NavSecondaryPanelProps = {

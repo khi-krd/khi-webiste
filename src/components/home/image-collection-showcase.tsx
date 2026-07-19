@@ -47,8 +47,8 @@ function BentoRevealItem({
 	const ref = useRef<HTMLDivElement>(null);
 	useInViewReveal(ref, {
 		y: 0,
-		scale: 0.97,
-		duration: 0.45,
+		scale: 0.985,
+		duration: 0.7,
 		margin: "-5% 0px -2% 0px",
 	});
 

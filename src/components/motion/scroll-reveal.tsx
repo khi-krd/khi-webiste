@@ -15,12 +15,13 @@ import {
 	useRef,
 } from "react";
 
-const revealEase = [0.22, 1, 0.36, 1] as const;
+/** Soft deceleration — longer settle than a standard ease-out. */
+const revealEase = [0.16, 1, 0.3, 1] as const;
 
 /** Wait for route enter (`template.tsx`) before scroll/section reveals begin. */
-export const PAGE_TRANSITION_DELAY = 0.14;
+export const PAGE_TRANSITION_DELAY = 0.12;
 
-export const PAGE_TRANSITION_DURATION = 0.32;
+export const PAGE_TRANSITION_DURATION = 0.38;
 
 const DEFAULT_MARGIN = "-10% 0px -6% 0px" as const;
 const FOOTER_MARGIN = "-4% 0px -2% 0px" as const;
@@ -60,9 +61,9 @@ type UseInViewRevealOptions = {
 export function useInViewReveal(
 	ref: RefObject<HTMLElement | null>,
 	{
-		y = 26,
+		y = 20,
 		scale,
-		duration = 0.7,
+		duration = 0.9,
 		delay,
 		margin = DEFAULT_MARGIN,
 		extraDelay = 0,
@@ -137,7 +138,7 @@ type ScrollRevealProps = {
 export function ScrollReveal({
 	children,
 	className,
-	stagger = 0.08,
+	stagger = 0.1,
 	delayChildren = PAGE_TRANSITION_DELAY,
 }: ScrollRevealProps) {
 	const indexRef = useRef(0);
@@ -173,7 +174,7 @@ export function ScrollRevealItem({
 	...rest
 }: ScrollRevealItemProps) {
 	const ref = useRef<HTMLDivElement>(null);
-	useInViewReveal(ref, { y: 26, duration: 0.7 });
+	useInViewReveal(ref, { y: 20, duration: 0.9 });
 
 	return (
 		<div ref={ref} className={className} style={style} {...rest}>
@@ -197,8 +198,8 @@ export function ScrollRevealBlock({
 }: ScrollRevealBlockProps) {
 	const ref = useRef<HTMLDivElement>(null);
 	useInViewReveal(ref, {
-		y: 28,
-		duration: 0.65,
+		y: 22,
+		duration: 0.95,
 		delay: PAGE_TRANSITION_DELAY,
 		extraDelay: delay,
 	});
@@ -220,7 +221,7 @@ export function FooterReveal({ children, className }: FooterRevealProps) {
 	return (
 		<ScrollReveal
 			className={className}
-			stagger={0.12}
+			stagger={0.14}
 			delayChildren={PAGE_TRANSITION_DELAY}
 		>
 			{children}
@@ -239,8 +240,8 @@ export function FooterRevealItem({
 }: FooterRevealItemProps) {
 	const ref = useRef<HTMLDivElement>(null);
 	useInViewReveal(ref, {
-		y: 48,
-		duration: 0.8,
+		y: 36,
+		duration: 1,
 		margin: FOOTER_MARGIN,
 	});
 
@@ -260,7 +261,7 @@ type UseMountRevealOptions = {
 /** Mount-time staggered reveal (hero content already in view). */
 export function useMountReveal(
 	ref: RefObject<HTMLElement | null>,
-	{ y = 24, duration = 0.65, delay }: UseMountRevealOptions = {},
+	{ y = 18, duration = 0.85, delay }: UseMountRevealOptions = {},
 ) {
 	const stagger = useContext(RevealStaggerContext);
 	const delayRef = useRef(0);

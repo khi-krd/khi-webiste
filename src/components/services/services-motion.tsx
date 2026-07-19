@@ -47,7 +47,7 @@ export function ServicesHeroBlock({
 	className,
 }: ServicesHeroBlockProps) {
 	const ref = useRef<HTMLDivElement>(null);
-	useMountReveal(ref, { y: 24, duration: 0.65 });
+	useMountReveal(ref, { y: 18, duration: 0.85 });
 
 	return (
 		<div ref={ref} className={className}>
@@ -69,8 +69,8 @@ export function ServicesReveal({
 }: ServicesRevealProps) {
 	const ref = useRef<HTMLDivElement>(null);
 	useInViewReveal(ref, {
-		y: 28,
-		duration: 0.65,
+		y: 22,
+		duration: 0.95,
 		delay: PAGE_TRANSITION_DELAY,
 		extraDelay: delay,
 		margin: "-8% 0px -6% 0px",

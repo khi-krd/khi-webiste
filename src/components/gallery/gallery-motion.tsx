@@ -33,8 +33,8 @@ export function GalleryRevealItem({
 }: GalleryMotionProps) {
 	const ref = useRef<HTMLDivElement>(null);
 	useInViewReveal(ref, {
-		y: 26,
-		duration: 0.7,
+		y: 20,
+		duration: 0.9,
 		margin: "-12% 0px -8% 0px",
 	});
 
