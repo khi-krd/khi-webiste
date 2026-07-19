@@ -14,8 +14,8 @@ import { WritingRow } from "@/components/home/writing-row";
 import {
 	getLatestUpdates,
 	type LatestUpdateCategory,
-} from "@/lib/home/latest-updates";
-import { getProjects } from "@/lib/project/types";
+} from "@/lib/mock/latest-updates";
+import { getProjects } from "@/lib/mock/projects";
 import { getWritings } from "@/lib/mock/writings";
 import type { HeroSlide } from "@/types/content";
 
