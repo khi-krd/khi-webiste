@@ -48,7 +48,6 @@ function ClipStill({
 		);
 	}
 
-	// Distinct still from the clip’s own file — never reuse the parent cover.
 	if (clip.url && MEDIA_FILE_PATTERN.test(clip.url)) {
 		return (
 			<video
@@ -74,6 +73,10 @@ function ClipStill({
 	);
 }
 
+/**
+ * Same-page clip gallery: every clip is a peer tile; the active one is marked
+ * and plays in the player above.
+ */
 export function VideoClipList({
 	clips,
 	activeClipNumber,

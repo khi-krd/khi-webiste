@@ -184,7 +184,6 @@ export async function VideoDetailView({
 							poster={detail.coverUrl}
 							noSourceLabel={t("detail.noSource")}
 							aside={metaAside}
-							videoId={detail.id}
 							clips={detail.clips}
 							activeClipNumber={detail.activeClipNumber}
 							clipLabels={{

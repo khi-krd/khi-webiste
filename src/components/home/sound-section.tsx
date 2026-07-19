@@ -5,7 +5,7 @@ import {
 } from "@/components/home/sound-section-cards";
 import { SoundSectionContent } from "@/components/home/sound-section-content";
 import { SoundSectionVideo } from "@/components/home/sound-section-video";
-import { getAudioCarousel } from "@/lib/api/audio";
+import { getAudioCarousel, getSoundReklamVideo } from "@/lib/api/audio";
 import { formatDuration } from "@/lib/audio/format";
 import { soundTypeLabel } from "@/lib/audio/sound-types";
 import { cn } from "@/lib/utils";
@@ -21,10 +21,11 @@ export async function SoundSection({
 	className,
 }: SoundSectionProps = {}) {
 	const locale = await getLocale();
-	const [t, audioT, cards] = await Promise.all([
+	const [t, audioT, cards, reklam] = await Promise.all([
 		getTranslations("Sound"),
 		getTranslations("Audio"),
 		getAudioCarousel(locale, compact ? 3 : undefined),
+		getSoundReklamVideo(),
 	]);
 
 	const cardItems: SoundSectionCardItem[] = cards.map((card) => {
@@ -55,7 +56,7 @@ export async function SoundSection({
 				className,
 			)}
 		>
-			<SoundSectionVideo />
+			<SoundSectionVideo src={reklam?.videoUrl ?? null} />
 
 			{/* Warm ink wash + legibility scrims (stacked; strongest at bottom + text side). */}
 			<div

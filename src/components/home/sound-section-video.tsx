@@ -3,12 +3,14 @@
 import { useEffect, useState } from "react";
 import { cn } from "@/lib/utils";
 
-const WAVE_VIDEO_SRC = "/video/wave.mp4";
-
 const mediaFilterClass =
 	"h-full w-full object-cover brightness-[0.72] contrast-[1.15] saturate-[0.55]";
 
-export function SoundSectionVideo() {
+type SoundSectionVideoProps = {
+	src: string | null;
+};
+
+export function SoundSectionVideo({ src }: SoundSectionVideoProps) {
 	const [prefersReducedMotion, setPrefersReducedMotion] = useState(false);
 
 	useEffect(() => {
@@ -19,11 +21,11 @@ export function SoundSectionVideo() {
 		return () => mediaQuery.removeEventListener("change", updatePreference);
 	}, []);
 
+	const showVideo = src != null && !prefersReducedMotion;
+
 	return (
 		<div className="absolute inset-0 isolate" aria-hidden>
-			{prefersReducedMotion ? (
-				<div className="absolute inset-0 bg-foreground" />
-			) : (
+			{showVideo ? (
 				<video
 					autoPlay
 					className={cn("absolute inset-0", mediaFilterClass)}
@@ -31,9 +33,11 @@ export function SoundSectionVideo() {
 					muted
 					playsInline
 					preload="metadata"
-					src={WAVE_VIDEO_SRC}
+					src={src}
 					tabIndex={-1}
 				/>
+			) : (
+				<div className="absolute inset-0 bg-foreground" />
 			)}
 		</div>
 	);

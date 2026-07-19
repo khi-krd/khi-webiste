@@ -114,6 +114,18 @@ export const SoundTopicSchema = z.object({
 
 export type SoundTopic = z.infer<typeof SoundTopicSchema>;
 
+/** Single global sound-section background video (`GET .../sound-reklam-video`). */
+export const SoundReklamVideoSchema = z.object({
+	id: z.number(),
+	videoUrl: z.string().url(),
+	sizeBytes: z.number().optional(),
+	mimeType: z.string().optional(),
+	createdAt: z.string().optional(),
+	updatedAt: z.string().optional(),
+});
+
+export type SoundReklamVideo = z.infer<typeof SoundReklamVideoSchema>;
+
 export const SoundTracksPageSchema = z.object({
 	content: z.array(SoundTrackSchema),
 	pageable: PageableSchema.optional(),

@@ -45,3 +45,21 @@ export function toVidstackSrc(src: string): string {
 export function getYouTubePosterUrl(videoId: string): string {
 	return `https://i.ytimg.com/vi/${videoId}/hqdefault.jpg`;
 }
+
+const MEDIA_FILE_PATTERN = /\.(mp4|webm|ogg|ogv|mov|m4v|m3u8|mpd)(\?|#|$)/i;
+
+export type PlayableSourceKind = "vidstack" | "iframe";
+
+/** Classify a URL for the detail player (Vidstack file/YouTube vs raw iframe). */
+export function classifyPlayableSource(
+	url: string | null | undefined,
+): { kind: PlayableSourceKind; src: string } | null {
+	const trimmed = url?.trim();
+	if (!trimmed) {
+		return null;
+	}
+	if (parseYouTubeVideoId(trimmed) || MEDIA_FILE_PATTERN.test(trimmed)) {
+		return { kind: "vidstack", src: trimmed };
+	}
+	return { kind: "iframe", src: trimmed };
+}

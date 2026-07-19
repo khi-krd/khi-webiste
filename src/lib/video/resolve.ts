@@ -1,4 +1,4 @@
-import { parseYouTubeVideoId } from "@/components/ui/video-player/video-source";
+import { classifyPlayableSource } from "@/components/ui/video-player/video-source";
 import { SHORT_FILMS_TOPIC_ID } from "@/lib/mock/videos";
 import { plainTextFromRichContent } from "@/lib/rich-text";
 import type {
@@ -13,6 +13,8 @@ import type {
 	VideoHighlightClip,
 	VideoPlayerKind,
 } from "@/types/video";
+
+export const classifySource = classifyPlayableSource;
 
 const EXCERPT_MAX_LENGTH = 120;
 
@@ -116,24 +118,6 @@ function sortedClips(video: Video): Video["videoClipItems"] {
 	return [...video.videoClipItems].sort((a, b) => a.clipNumber - b.clipNumber);
 }
 
-const MEDIA_FILE_PATTERN = /\.(mp4|webm|ogg|ogv|mov|m4v|m3u8|mpd)(\?|#|$)/i;
-
-/** Classify a single URL into a player kind, or null if blank. */
-function classifySource(
-	url: string | null | undefined,
-): { kind: Exclude<VideoPlayerKind, "none">; src: string } | null {
-	const trimmed = url?.trim();
-	if (!trimmed) {
-		return null;
-	}
-	// Vidstack natively handles YouTube and direct media files.
-	if (parseYouTubeVideoId(trimmed) || MEDIA_FILE_PATTERN.test(trimmed)) {
-		return { kind: "vidstack", src: trimmed };
-	}
-	// Anything else (Vimeo, generic embed pages) → raw iframe.
-	return { kind: "iframe", src: trimmed };
-}
-
 /**
  * Resolve which source the detail player should mount.
  * FILM follows the source priority (direct → external → embed).
@@ -152,7 +136,7 @@ export function resolveVideoPlayer(
 			clipNumber != null
 				? (clips.find((clip) => clip.clipNumber === clipNumber) ?? clips[0])
 				: clips[0];
-		const classified = classifySource(resolveClipUrl(selected));
+		const classified = classifyPlayableSource(resolveClipUrl(selected));
 		return classified
 			? { playerKind: classified.kind, playableSrc: classified.src }
 			: { playerKind: "none", playableSrc: null };
@@ -163,7 +147,7 @@ export function resolveVideoPlayer(
 		video.sourceExternalUrl,
 		video.sourceEmbedUrl,
 	]) {
-		const classified = classifySource(candidate);
+		const classified = classifyPlayableSource(candidate);
 		if (classified) {
 			return { playerKind: classified.kind, playableSrc: classified.src };
 		}
@@ -385,7 +369,8 @@ export function resolveVideoDetail(
 
 	return {
 		id: video.id,
-		title: activeClip?.title || content.title,
+		// One post → one title/description; clips are a gallery, not separate pages.
+		title: content.title,
 		description: content.description?.trim() ?? "",
 		coverUrl: resolveVideoCoverUrl(locale, video),
 		videoType: video.videoType,
@@ -397,10 +382,7 @@ export function resolveVideoDetail(
 		location: firstNonBlank(content.location),
 		contentLanguages: video.contentLanguages,
 		durationSeconds:
-			activeClip?.durationSeconds ??
-			video.durationSeconds ??
-			totalClipDuration(video) ??
-			null,
+			video.durationSeconds ?? totalClipDuration(video) ?? null,
 		resolution: firstNonBlank(video.resolution),
 		fileFormat: firstNonBlank(video.fileFormat),
 		publishmentDate: firstNonBlank(video.publishmentDate),

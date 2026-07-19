@@ -29,15 +29,18 @@ import {
 import type {
 	ResolvedAudioCard,
 	ResolvedAudioDetail,
+	SoundReklamVideo,
 	SoundTrack,
 	TrackState,
 } from "@/types/audio";
 import {
+	SoundReklamVideoSchema,
 	SoundTopicSchema,
 	SoundTrackSchema,
 } from "@/types/audio";
 
 const SOUND_TRACKS_ENDPOINT = "/api/v1/sound-tracks";
+const SOUND_REKLAM_VIDEO_ENDPOINT = `${SOUND_TRACKS_ENDPOINT}/sound-reklam-video`;
 const SOUND_TRACKS_TAG = "sound-tracks";
 
 export const AUDIO_GRID_PAGE_SIZE = 12;
@@ -443,6 +446,19 @@ export async function getAudioTopics(
 export async function getAudioSoundTypes(locale: string): Promise<string[]> {
 	const allItems = await getAllAudioCards(locale);
 	return [...new Set(allItems.map((item) => item.soundType))];
+}
+
+/** Homepage sound-section background video (`GET .../sound-reklam-video`). */
+export async function getSoundReklamVideo(): Promise<SoundReklamVideo | null> {
+	if (!getApiBaseUrl()) {
+		return null;
+	}
+
+	return apiFetch(SOUND_REKLAM_VIDEO_ENDPOINT, {
+		schema: SoundReklamVideoSchema,
+		tags: [SOUND_TRACKS_TAG, "sound-reklam-video"],
+		revalidate: DEFAULT_REVALIDATE,
+	});
 }
 
 // re-exported for server components that resolve topic labels themselves

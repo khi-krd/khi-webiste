@@ -13,17 +13,13 @@ import {
 import { DirectionalIcon } from "@/components/ui/directional-icon";
 import { Link } from "@/components/ui/link";
 import { getVideoListing } from "@/lib/api/videos";
-import { buildVideoHref } from "@/lib/video-url";
 import { formatDuration } from "@/lib/video/format";
-import {
-	isShortFilm,
-	shortFilmDetailHref,
-	videoDetailHref,
-} from "@/lib/video/resolve";
+import { shortFilmDetailHref } from "@/lib/video/resolve";
 import type { ResolvedVideoCard } from "@/types/video";
 
 const FILM_COUNT = 5;
 const GRID_COUNT = 4;
+const SHORT_FILMS_HREF = "/videos/shortfilms";
 
 const filmCtaClass =
 	"group/film-cta relative inline-flex h-10 w-fit shrink-0 items-center gap-2.5 overflow-hidden border border-primary-foreground/50 bg-primary-foreground/8 px-5 font-heading text-small font-semibold text-primary-foreground no-underline backdrop-blur-[2px] transition-[color,gap,box-shadow,background-color,border-color] duration-300 ease-out before:absolute before:inset-0 before:z-0 before:origin-bottom before:scale-y-0 before:bg-primary-foreground before:transition-transform before:duration-300 before:ease-[cubic-bezier(0.22,1,0.36,1)] fine-hover:gap-3.5 fine-hover:border-primary-foreground fine-hover:text-foreground fine-hover:shadow-[0_12px_36px_-14px_rgba(0,0,0,0.55)] fine-hover:before:scale-y-100 motion-reduce:before:transition-none motion-reduce:fine-hover:before:scale-y-100 motion-reduce:fine-hover:gap-2.5";
@@ -34,9 +30,7 @@ function toFilmItem(
 ): FilmCardItem {
 	return {
 		id: card.id,
-		href: isShortFilm(card.topicId)
-			? shortFilmDetailHref(card.id)
-			: videoDetailHref(card.id),
+		href: shortFilmDetailHref(card.id),
 		title: card.title,
 		subtitle: card.subtitle,
 		topicLabel: card.topicName ?? categoryLabel,
@@ -96,7 +90,7 @@ export async function FilmSection() {
 						</div>
 
 						<Link
-							href={buildVideoHref({})}
+							href={SHORT_FILMS_HREF}
 							variant="nav"
 							className={filmCtaClass}
 						>

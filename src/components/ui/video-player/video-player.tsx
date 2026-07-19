@@ -23,6 +23,8 @@ export type VideoPlayerProps = {
 	poster?: string;
 	posterAlt?: string;
 	variant?: VideoPlayerVariant;
+	/** Start playback immediately (e.g. after a gallery clip switch). */
+	autoPlay?: boolean;
 	className?: string;
 };
 
@@ -32,6 +34,7 @@ export function VideoPlayer({
 	poster,
 	posterAlt,
 	variant = "minimal",
+	autoPlay = false,
 	className,
 }: VideoPlayerProps) {
 	const trimmedSrc = src.trim();
@@ -61,8 +64,9 @@ export function VideoPlayer({
 				src={resolvedSrc}
 				poster={poster}
 				playsInline
+				autoPlay={autoPlay}
 				streamType="on-demand"
-				load="idle"
+				load={autoPlay ? "eager" : "idle"}
 			>
 				<Layout embed={embed} poster={poster} posterAlt={posterAlt} />
 			</MediaPlayer>

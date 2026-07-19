@@ -2,15 +2,14 @@
 
 import { FilmIcon } from "@heroicons/react/24/outline";
 import NextImage from "next/image";
-import { type ReactNode, useTransition } from "react";
+import { type ReactNode, useState } from "react";
 import { VideoPlayer } from "@/components/ui/video-player";
+import { classifyPlayableSource } from "@/components/ui/video-player/video-source";
 import {
 	VideoClipList,
 	type VideoClipListLabels,
 } from "@/components/video/video-clip-list";
-import { useRouter } from "@/i18n/navigation";
 import { cn } from "@/lib/utils";
-import { videoDetailHref } from "@/lib/video/resolve";
 import type { ResolvedVideoClip, VideoPlayerKind } from "@/types/video";
 
 type VideoPlayerFrameProps = {
@@ -23,9 +22,8 @@ type VideoPlayerFrameProps = {
 	variant?: "default" | "cinema";
 	/** Optional sidebar (metadata) rendered beside the player. */
 	aside?: ReactNode;
-	/** Parent video id — required when a multi-clip playlist is shown. */
-	videoId?: number;
 	clips?: ResolvedVideoClip[];
+	/** Initial gallery selection (e.g. from `?clip=` deep-link). */
 	activeClipNumber?: number | null;
 	clipLabels?: VideoClipListLabels;
 };
@@ -84,7 +82,7 @@ function NoSource({
 
 /**
  * Player frame for FILM and VIDEO_CLIP detail pages.
- * When multiple clips are present, shows a playlist synced to `?clip=`.
+ * Multiple clips are a same-page gallery: click a tile to play it on top.
  */
 export function VideoPlayerFrame({
 	playerKind,
@@ -95,50 +93,71 @@ export function VideoPlayerFrame({
 	className,
 	variant = "default",
 	aside,
-	videoId,
 	clips = [],
 	activeClipNumber = null,
 	clipLabels,
 }: VideoPlayerFrameProps) {
-	const router = useRouter();
-	const [isPending, startTransition] = useTransition();
 	const isCinema = variant === "cinema";
-	const isClipSeries = clips.length > 1 && videoId != null && clipLabels != null;
+	const isGallery = clips.length > 1 && clipLabels != null;
 
-	const activeClip = isClipSeries
-		? (clips.find((clip) => clip.clipNumber === activeClipNumber) ?? clips[0])
+	const initialClipNumber =
+		activeClipNumber ?? clips[0]?.clipNumber ?? null;
+	const [selectedClipNumber, setSelectedClipNumber] = useState(
+		initialClipNumber,
+	);
+	/** Autoplay only after the user picks a gallery tile — not on first paint. */
+	const [autoPlaySelected, setAutoPlaySelected] = useState(false);
+
+	const activeClip = isGallery
+		? (clips.find((clip) => clip.clipNumber === selectedClipNumber) ??
+			clips[0] ??
+			null)
 		: null;
-	const playerTitle =
-		activeClip != null ? `${title} — ${activeClip.title}` : title;
+
+	const gallerySource = activeClip
+		? classifyPlayableSource(activeClip.url)
+		: null;
+	const surfaceKind: VideoPlayerKind = isGallery
+		? (gallerySource?.kind ?? "none")
+		: playerKind;
+	const surfaceSrc = isGallery ? (gallerySource?.src ?? null) : playableSrc;
+	/**
+	 * In gallery mode never reuse the parent cover — it made every clip look
+	 * like the first one was still “active”. Prefer the clip still, else none
+	 * so Vidstack shows the selected file’s own frame.
+	 */
+	const surfacePoster = isGallery
+		? (activeClip?.coverUrl ?? undefined)
+		: (poster ?? undefined);
 
 	const handleClipSelect = (clipNumber: number) => {
-		if (videoId == null || clipNumber === activeClipNumber) {
+		if (clipNumber === selectedClipNumber) {
 			return;
 		}
-		startTransition(() => {
-			router.replace(videoDetailHref(videoId, clipNumber), { scroll: false });
-		});
+		setSelectedClipNumber(clipNumber);
+		setAutoPlaySelected(true);
 	};
 
 	let surface: ReactNode;
 
-	if (playerKind === "vidstack" && playableSrc) {
+	if (surfaceKind === "vidstack" && surfaceSrc) {
 		surface = (
 			<VideoPlayer
-				key={playableSrc}
-				src={playableSrc}
-				title={playerTitle}
-				poster={poster ?? undefined}
+				key={`clip-${selectedClipNumber ?? "single"}-${surfaceSrc}`}
+				src={surfaceSrc}
+				title={title}
+				poster={surfacePoster}
 				variant="full"
+				autoPlay={isGallery && autoPlaySelected}
 			/>
 		);
-	} else if (playerKind === "iframe" && playableSrc) {
+	} else if (surfaceKind === "iframe" && surfaceSrc) {
 		surface = (
 			<PlayerSurface cinema={isCinema}>
 				<iframe
-					key={playableSrc}
-					src={playableSrc}
-					title={playerTitle}
+					key={`clip-${selectedClipNumber ?? "single"}-${surfaceSrc}`}
+					src={surfaceSrc}
+					title={title}
 					loading="lazy"
 					allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; fullscreen"
 					allowFullScreen
@@ -148,18 +167,22 @@ export function VideoPlayerFrame({
 		);
 	} else {
 		surface = (
-			<NoSource poster={poster} label={noSourceLabel} cinema={isCinema} />
+			<NoSource
+				poster={surfacePoster ?? poster}
+				label={noSourceLabel}
+				cinema={isCinema}
+			/>
 		);
 	}
 
 	const clipList =
-		isClipSeries && clipLabels ? (
+		isGallery && clipLabels && activeClip != null ? (
 			<VideoClipList
 				clips={clips}
-				activeClipNumber={activeClip?.clipNumber ?? clips[0].clipNumber}
+				activeClipNumber={activeClip.clipNumber}
 				onSelect={handleClipSelect}
 				labels={clipLabels}
-				className={cn("mt-6 sm:mt-8", isPending && "opacity-70")}
+				className="mt-6 sm:mt-8"
 			/>
 		) : null;
 
@@ -178,7 +201,6 @@ export function VideoPlayerFrame({
 				<div className="min-w-0">{surface}</div>
 				<div className="min-w-0 lg:sticky lg:top-24">{aside}</div>
 			</div>
-			{/* Full-width under player + meta so 2–3+ clips can sit in one row. */}
 			{clipList}
 		</div>
 	);
