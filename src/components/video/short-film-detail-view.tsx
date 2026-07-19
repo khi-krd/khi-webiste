@@ -214,6 +214,14 @@ export async function ShortFilmDetailView({
 							noSourceLabel={t("detail.noSource")}
 							variant="cinema"
 							className="overflow-hidden rounded-md ring-1 ring-primary-foreground/15"
+							clips={detail.clips}
+							activeClipNumber={detail.activeClipNumber}
+							sceneLabels={{
+								title: t("shortfilms.detail.scenes"),
+								play: t("shortfilms.detail.playScene"),
+								nowPlaying: t("shortfilms.detail.nowScreening"),
+								scene: t("shortfilms.detail.scene"),
+							}}
 						/>
 					</ScrollRevealItem>
 
@@ -325,7 +333,7 @@ export async function ShortFilmDetailView({
 					</ScrollReveal>
 				) : null}
 
-				{detail.highlights.length > 0 ? (
+				{detail.highlights.length > 0 && detail.clips.length <= 1 ? (
 					<ScrollReveal>
 						<ScrollRevealItem>
 							<section className="mt-12 border-t border-primary-foreground/20 pt-12 sm:mt-16">

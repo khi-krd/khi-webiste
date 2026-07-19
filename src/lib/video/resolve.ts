@@ -120,8 +120,9 @@ function sortedClips(video: Video): Video["videoClipItems"] {
 
 /**
  * Resolve which source the detail player should mount.
- * FILM follows the source priority (direct → external → embed).
- * VIDEO_CLIP plays a single clip (optional clipNumber, else the first).
+ * VIDEO_CLIP always plays a clip (optional clipNumber, else the first).
+ * FILM prefers the film source (direct → external → embed); when a clip is
+ * requested or the film has no main source, fall back to videoClipItems.
  */
 export function resolveVideoPlayer(
 	video: Video,
@@ -130,16 +131,25 @@ export function resolveVideoPlayer(
 	playerKind: VideoPlayerKind;
 	playableSrc: string | null;
 } {
+	const clips = sortedClips(video) ?? [];
+	const selectedClip =
+		clipNumber != null
+			? (clips.find((clip) => clip.clipNumber === clipNumber) ?? clips[0])
+			: clips[0];
+
 	if (video.videoType === "VIDEO_CLIP") {
-		const clips = sortedClips(video) ?? [];
-		const selected =
-			clipNumber != null
-				? (clips.find((clip) => clip.clipNumber === clipNumber) ?? clips[0])
-				: clips[0];
-		const classified = classifyPlayableSource(resolveClipUrl(selected));
+		const classified = classifyPlayableSource(resolveClipUrl(selectedClip));
 		return classified
 			? { playerKind: classified.kind, playableSrc: classified.src }
 			: { playerKind: "none", playableSrc: null };
+	}
+
+	// Multi-scene FILM: honor an explicit scene deep-link first.
+	if (clipNumber != null && selectedClip) {
+		const classified = classifyPlayableSource(resolveClipUrl(selectedClip));
+		if (classified) {
+			return { playerKind: classified.kind, playableSrc: classified.src };
+		}
 	}
 
 	for (const candidate of [
@@ -152,6 +162,15 @@ export function resolveVideoPlayer(
 			return { playerKind: classified.kind, playableSrc: classified.src };
 		}
 	}
+
+	// No main source — play the first scene if the film is a multi-part reel.
+	if (selectedClip) {
+		const classified = classifyPlayableSource(resolveClipUrl(selectedClip));
+		if (classified) {
+			return { playerKind: classified.kind, playableSrc: classified.src };
+		}
+	}
+
 	return { playerKind: "none", playableSrc: null };
 }
 

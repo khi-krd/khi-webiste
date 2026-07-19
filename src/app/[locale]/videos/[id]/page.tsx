@@ -65,7 +65,9 @@ export default async function VideoDetailPage({
 	if (!detail) notFound();
 
 	if (isShortFilm(detail.topicId)) {
-		redirect(shortFilmDetailHref(videoId));
+		const clipQuery =
+			clipNumber != null ? `?clip=${clipNumber}` : "";
+		redirect(`${shortFilmDetailHref(videoId)}${clipQuery}`);
 	}
 
 	const relatedListing = await getVideoListing(locale, {

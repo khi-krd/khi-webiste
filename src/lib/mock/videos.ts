@@ -4,8 +4,9 @@ import type { Video, VideoTopic } from "@/types/video";
  * Demo Videos in raw API shape — used whenever `API_BASE_URL` is unset or the
  * upstream call fails (mirrors `lib/mock/audio.ts`). The set is intentionally
  * varied to exercise every branch of the UI: FILM via direct MP4, YouTube, and
- * a non-YouTube embed (iframe fallback); VIDEO_CLIP playlists; album-of-memories
- * tint; a null cover (glyph fallback); and a record with no Kurmanji content.
+ * a non-YouTube embed (iframe fallback); FILM multi-scene reels; VIDEO_CLIP
+ * playlists; album-of-memories tint; a null cover (glyph fallback); and a
+ * record with no Kurmanji content.
  */
 
 export const DEMO_VIDEO_TOPICS: VideoTopic[] = [
@@ -121,36 +122,38 @@ const RAW_VIDEOS: Video[] = [
 				photoUrl: "/menu/5.jpg",
 			},
 		],
-		highlightClips: [
+		videoClipItems: [
 			{
+				clipNumber: 1,
+				url: SAMPLE_MP4,
+				durationSeconds: 180,
 				titleCkb: "سەرەتای گەشت",
 				titleKmr: "Destpêka gerê",
-				thumbnailUrl: "/menu/4.jpg",
-				url: SAMPLE_MP4,
+				coverUrl: "/menu/4.jpg",
 			},
 			{
+				clipNumber: 2,
+				url: SAMPLE_MP4,
+				durationSeconds: 210,
 				titleCkb: "لە ناو کێڵگەکان",
 				titleKmr: "Di nav zeviyan de",
-				thumbnailUrl: "/menu/1.jpg",
-				url: SAMPLE_MP4,
+				coverUrl: "/menu/1.jpg",
 			},
 			{
-				titleCkb: "کۆتایی ڕۆژ",
-				titleKmr: "Dawiya rojê",
-				thumbnailUrl: "/menu/6.jpg",
+				clipNumber: 3,
 				url: SAMPLE_MP4,
-			},
-			{
+				durationSeconds: 165,
 				titleCkb: "دیمەنی شاخ",
 				titleKmr: "Dîmena çiya",
-				thumbnailUrl: "/gallery/1.jpg",
-				url: SAMPLE_MP4,
+				coverUrl: "/gallery/1.jpg",
 			},
 			{
-				titleCkb: "ژیانی گوند",
-				titleKmr: "Jiyana gund",
-				thumbnailUrl: "/news/1.jpg",
+				clipNumber: 4,
 				url: SAMPLE_MP4,
+				durationSeconds: 165,
+				titleCkb: "کۆتایی ڕۆژ",
+				titleKmr: "Dawiya rojê",
+				coverUrl: "/menu/6.jpg",
 			},
 		],
 	}),

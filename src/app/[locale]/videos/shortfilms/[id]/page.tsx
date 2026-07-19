@@ -11,6 +11,7 @@ import { RELATED_VIDEOS_VISIBLE } from "@/components/video/video-related-grid";
 
 type ShortFilmDetailPageProps = {
 	params: Promise<{ locale: string; id: string }>;
+	searchParams: Promise<{ clip?: string }>;
 };
 
 function parseVideoId(raw: string): number | null {
@@ -18,14 +19,22 @@ function parseVideoId(raw: string): number | null {
 	return Number.isInteger(parsed) && parsed > 0 ? parsed : null;
 }
 
+function parseClipNumber(raw: string | undefined): number | null {
+	if (!raw) return null;
+	const parsed = Number.parseInt(raw, 10);
+	return Number.isInteger(parsed) && parsed > 0 ? parsed : null;
+}
+
 export async function generateMetadata({
 	params,
+	searchParams,
 }: ShortFilmDetailPageProps): Promise<Metadata> {
 	const { locale, id } = await params;
+	const { clip } = await searchParams;
 	const videoId = parseVideoId(id);
 	if (videoId == null) notFound();
 
-	const detail = await getVideoById(locale, videoId);
+	const detail = await getVideoById(locale, videoId, parseClipNumber(clip));
 	if (!detail || detail.topicId !== SHORT_FILMS_TOPIC_ID) notFound();
 
 	return {
@@ -36,14 +45,16 @@ export async function generateMetadata({
 
 export default async function ShortFilmDetailPage({
 	params,
+	searchParams,
 }: ShortFilmDetailPageProps) {
 	const { locale, id } = await params;
+	const { clip } = await searchParams;
 	setRequestLocale(locale);
 
 	const videoId = parseVideoId(id);
 	if (videoId == null) notFound();
 
-	const detail = await getVideoById(locale, videoId);
+	const detail = await getVideoById(locale, videoId, parseClipNumber(clip));
 	if (!detail || detail.topicId !== SHORT_FILMS_TOPIC_ID) notFound();
 
 	const relatedListing = await getVideoListing(locale, {

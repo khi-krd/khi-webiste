@@ -6,6 +6,10 @@ import { type ReactNode, useState } from "react";
 import { VideoPlayer } from "@/components/ui/video-player";
 import { classifyPlayableSource } from "@/components/ui/video-player/video-source";
 import {
+	FilmSceneList,
+	type FilmSceneListLabels,
+} from "@/components/video/film-scene-list";
+import {
 	VideoClipList,
 	type VideoClipListLabels,
 } from "@/components/video/video-clip-list";
@@ -26,6 +30,8 @@ type VideoPlayerFrameProps = {
 	/** Initial gallery selection (e.g. from `?clip=` deep-link). */
 	activeClipNumber?: number | null;
 	clipLabels?: VideoClipListLabels;
+	/** Cinema reel labels — used when `variant="cinema"` and multiple clips. */
+	sceneLabels?: FilmSceneListLabels;
 };
 
 /** Shared 16:9 frame for the non-Vidstack states (iframe embed / no source). */
@@ -96,9 +102,12 @@ export function VideoPlayerFrame({
 	clips = [],
 	activeClipNumber = null,
 	clipLabels,
+	sceneLabels,
 }: VideoPlayerFrameProps) {
 	const isCinema = variant === "cinema";
-	const isGallery = clips.length > 1 && clipLabels != null;
+	const hasGalleryLabels =
+		(isCinema && sceneLabels != null) || (!isCinema && clipLabels != null);
+	const isGallery = clips.length > 1 && hasGalleryLabels;
 
 	const initialClipNumber =
 		activeClipNumber ?? clips[0]?.clipNumber ?? null;
@@ -176,14 +185,24 @@ export function VideoPlayerFrame({
 	}
 
 	const clipList =
-		isGallery && clipLabels && activeClip != null ? (
-			<VideoClipList
-				clips={clips}
-				activeClipNumber={activeClip.clipNumber}
-				onSelect={handleClipSelect}
-				labels={clipLabels}
-				className="mt-6 sm:mt-8"
-			/>
+		isGallery && activeClip != null ? (
+			isCinema && sceneLabels ? (
+				<FilmSceneList
+					scenes={clips}
+					activeSceneNumber={activeClip.clipNumber}
+					onSelect={handleClipSelect}
+					labels={sceneLabels}
+					className="mt-6 sm:mt-8"
+				/>
+			) : clipLabels ? (
+				<VideoClipList
+					clips={clips}
+					activeClipNumber={activeClip.clipNumber}
+					onSelect={handleClipSelect}
+					labels={clipLabels}
+					className="mt-6 sm:mt-8"
+				/>
+			) : null
 		) : null;
 
 	if (!aside) {

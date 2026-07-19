@@ -193,7 +193,7 @@ export type ResolvedVideoDetail = {
 	/** Source fed to the player (FILM source, or the selected clip). */
 	playableSrc: string | null;
 	clips: ResolvedVideoClip[];
-	/** Clip currently selected for playback (VIDEO_CLIP only). */
+	/** Clip/scene currently selected for playback (gallery when length > 1). */
 	activeClipNumber: number | null;
 	cast: ResolvedVideoCastMember[];
 	highlights: ResolvedVideoHighlight[];
