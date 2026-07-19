@@ -371,6 +371,7 @@ const RAW_VIDEOS: Video[] = [
 				durationSeconds: 320,
 				titleCkb: "لاوک",
 				titleKmr: "Lawik",
+				coverUrl: "/menu/4.jpg",
 			},
 			{
 				clipNumber: 2,
@@ -378,6 +379,7 @@ const RAW_VIDEOS: Video[] = [
 				durationSeconds: 280,
 				titleCkb: "حەیران",
 				titleKmr: "Heyran",
+				coverUrl: "/menu/1.jpg",
 			},
 			{
 				clipNumber: 3,
@@ -385,6 +387,7 @@ const RAW_VIDEOS: Video[] = [
 				durationSeconds: 410,
 				titleCkb: "پەستێ",
 				titleKmr: "Pestê",
+				coverUrl: "/menu/6.jpg",
 			},
 			{
 				clipNumber: 4,
@@ -392,6 +395,7 @@ const RAW_VIDEOS: Video[] = [
 				durationSeconds: 365,
 				titleCkb: "لاوژە",
 				titleKmr: "Lawje",
+				coverUrl: "/gallery/1.jpg",
 			},
 		],
 		fileFormat: "mp4",

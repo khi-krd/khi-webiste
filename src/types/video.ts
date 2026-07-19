@@ -24,6 +24,12 @@ export const VideoClipItemSchema = z.object({
 	durationSeconds: z.number().int().nullish(),
 	titleCkb: z.string().nullish(),
 	titleKmr: z.string().nullish(),
+	/** Per-clip still — prefer over the parent video cover. */
+	coverUrl: z.string().nullish(),
+	thumbnailUrl: z.string().nullish(),
+	ckbCoverUrl: z.string().nullish(),
+	kmrCoverUrl: z.string().nullish(),
+	imageUrl: z.string().nullish(),
 });
 
 export type VideoClipItem = z.infer<typeof VideoClipItemSchema>;
@@ -125,6 +131,8 @@ export type ResolvedVideoClip = {
 	title: string;
 	url: string;
 	durationSeconds: number | null;
+	/** Clip-specific still; null when the API only sent a playable URL. */
+	coverUrl: string | null;
 };
 
 export type ResolvedVideoCard = {

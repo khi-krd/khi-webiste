@@ -290,6 +290,11 @@ function normalizeVideoClip(raw: unknown): unknown {
 			clip.durationSeconds ?? clip.duration_seconds ?? null,
 		titleCkb: clip.titleCkb ?? clip.title_ckb ?? null,
 		titleKmr: clip.titleKmr ?? clip.title_kmr ?? null,
+		coverUrl: clip.coverUrl ?? clip.cover_url ?? null,
+		thumbnailUrl: clip.thumbnailUrl ?? clip.thumbnail_url ?? null,
+		ckbCoverUrl: clip.ckbCoverUrl ?? clip.ckb_cover_url ?? null,
+		kmrCoverUrl: clip.kmrCoverUrl ?? clip.kmr_cover_url ?? null,
+		imageUrl: clip.imageUrl ?? clip.image_url ?? null,
 	};
 }
 

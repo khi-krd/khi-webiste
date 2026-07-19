@@ -214,6 +214,28 @@ function resolveHighlight(
 	};
 }
 
+function resolveClipCoverUrl(
+	locale: string,
+	clip: NonNullable<Video["videoClipItems"]>[number],
+): string | null {
+	if (locale === "ckb") {
+		return firstNonBlank(
+			clip.ckbCoverUrl,
+			clip.kmrCoverUrl,
+			clip.coverUrl,
+			clip.thumbnailUrl,
+			clip.imageUrl,
+		);
+	}
+	return firstNonBlank(
+		clip.kmrCoverUrl,
+		clip.ckbCoverUrl,
+		clip.coverUrl,
+		clip.thumbnailUrl,
+		clip.imageUrl,
+	);
+}
+
 function resolveClip(
 	locale: string,
 	clip: NonNullable<Video["videoClipItems"]>[number],
@@ -228,6 +250,7 @@ function resolveClip(
 		title: title ?? String(clip.clipNumber),
 		url: resolveClipUrl(clip) ?? "",
 		durationSeconds: clip.durationSeconds ?? null,
+		coverUrl: resolveClipCoverUrl(locale, clip),
 	};
 }
 
@@ -326,6 +349,7 @@ export function resolveVideoCards(
 			...base,
 			title: clip.title || base.title,
 			durationSeconds: clip.durationSeconds,
+			coverUrl: clip.coverUrl ?? base.coverUrl,
 			clipCount: null,
 			clipNumber: clip.clipNumber,
 		}));

@@ -159,7 +159,7 @@ export function VideoPlayerFrame({
 				activeClipNumber={activeClip?.clipNumber ?? clips[0].clipNumber}
 				onSelect={handleClipSelect}
 				labels={clipLabels}
-				className={cn("mt-6", isPending && "opacity-70")}
+				className={cn("mt-6 sm:mt-8", isPending && "opacity-70")}
 			/>
 		) : null;
 
@@ -175,12 +175,11 @@ export function VideoPlayerFrame({
 	return (
 		<div className={cn(className)}>
 			<div className="grid items-start gap-5 lg:grid-cols-[minmax(0,1fr)_minmax(16rem,22rem)] lg:gap-6">
-				<div className="min-w-0">
-					{surface}
-					{clipList}
-				</div>
+				<div className="min-w-0">{surface}</div>
 				<div className="min-w-0 lg:sticky lg:top-24">{aside}</div>
 			</div>
+			{/* Full-width under player + meta so 2–3+ clips can sit in one row. */}
+			{clipList}
 		</div>
 	);
 }
