@@ -176,8 +176,6 @@ export function AudioBookletReader({
 							isFullscreen ? "min-h-0 flex-1" : VIEWPORT_HEIGHT_CLASS,
 						)}
 						ref={emblaRef}
-						data-lenis-prevent-horizontal
-						data-lenis-prevent-touch
 					>
 						<ul
 							className={cn(

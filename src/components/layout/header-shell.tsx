@@ -4,9 +4,9 @@ import { motion, useReducedMotion } from "motion/react";
 import { useEffect, useState } from "react";
 
 /** Always show the bar when within this distance of the document top. */
-const AT_TOP_THRESHOLD = 32;
+const AT_TOP_THRESHOLD = 96;
 
-/** Do not hide until the user has scrolled past the hero/header band. */
+/** Do not hide until the user has scrolled past the header band. */
 const HIDE_AFTER_THRESHOLD = 96;
 
 /** Ignore sub-pixel jitter so the bar doesn't flicker on tiny movements. */
@@ -20,8 +20,8 @@ type Props = {
 };
 
 /**
- * Fixed header that slides down on first paint, then hides while scrolling down
- * and reappears when the user scrolls up.
+ * Sticky header at the top of the page (in document flow, not an overlay).
+ * Hides while scrolling down and reappears on scroll up or when back at the top.
  */
 export function HeaderShell({ children }: Props) {
 	const reduceMotion = useReducedMotion();
@@ -68,6 +68,7 @@ export function HeaderShell({ children }: Props) {
 			window.requestAnimationFrame(update);
 		};
 
+		update();
 		window.addEventListener("scroll", onScroll, { passive: true });
 		return () => window.removeEventListener("scroll", onScroll);
 	}, []);
@@ -76,7 +77,7 @@ export function HeaderShell({ children }: Props) {
 
 	return (
 		<motion.header
-			className="fixed inset-x-0 top-0 z-50 p-5"
+			className="sticky top-0 z-50 border-b border-border/60 bg-background/90 backdrop-blur-[48px]"
 			initial={reduceMotion ? false : { y: "-100%" }}
 			animate={{ y: isVisible || reduceMotion ? 0 : "-100%" }}
 			transition={
@@ -84,9 +85,7 @@ export function HeaderShell({ children }: Props) {
 					? { duration: 0 }
 					: {
 							duration: introDone ? SCROLL_DURATION : INTRO_DURATION,
-							ease: introDone
-								? "easeOut"
-								: ([0.22, 1, 0.36, 1] as const),
+							ease: introDone ? "easeOut" : ([0.22, 1, 0.36, 1] as const),
 						}
 			}
 			onAnimationComplete={() => {

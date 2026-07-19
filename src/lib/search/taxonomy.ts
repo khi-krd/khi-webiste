@@ -3,7 +3,7 @@ import "server-only";
 import { getTranslations } from "next-intl/server";
 import { getAudioSoundTypes, getAudioTopics } from "@/lib/api/audio";
 import { getGalleryPosts } from "@/lib/api/gallery";
-import { getNews, NEWS_CATEGORIES } from "@/lib/api/news";
+import { getNews, getNewsCategories } from "@/lib/api/news";
 import { getProjectListItems, getProjectTags } from "@/lib/api/projects";
 import { getVideoTopics } from "@/lib/api/videos";
 import { buildAudioHref } from "@/lib/audio-url";
@@ -55,24 +55,24 @@ export async function getSearchTaxonomy(
 	locale: string,
 ): Promise<SearchTaxonomyItem[]> {
 	const [
-		tNews,
 		tNav,
 		tWritings,
 		tVideo,
 		tAudio,
 		newsItems,
+		newsCategories,
 		projectItems,
 		videoTopics,
 		audioTopics,
 		audioSoundTypes,
 		galleryPosts,
 	] = await Promise.all([
-		getTranslations({ locale, namespace: "News" }),
 		getTranslations({ locale, namespace: "Nav" }),
 		getTranslations({ locale, namespace: "Writings" }),
 		getTranslations({ locale, namespace: "Video" }),
 		getTranslations({ locale, namespace: "Audio" }),
 		getNews(locale),
+		getNewsCategories(locale),
 		getProjectListItems(locale),
 		getVideoTopics(locale),
 		getAudioTopics(locale),
@@ -83,15 +83,14 @@ export async function getSearchTaxonomy(
 	const items: SearchTaxonomyItem[] = [];
 	const seen = new Set<string>();
 
-	for (const category of NEWS_CATEGORIES) {
-		const label = tNews(`categories.${category}`);
+	for (const category of newsCategories) {
 		pushUniqueItem(items, seen, {
-			id: `news-category-${category}`,
-			label,
+			id: `news-category-${category.key}`,
+			label: category.label,
 			kind: "category",
 			sectionKey: "news",
-			href: buildNewsHref({ category }),
-			searchText: `${label} ${category}`,
+			href: buildNewsHref({ category: category.key }),
+			searchText: `${category.label} ${category.key}`,
 		});
 	}
 

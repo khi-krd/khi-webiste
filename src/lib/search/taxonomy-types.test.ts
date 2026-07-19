@@ -1,6 +1,8 @@
 import { describe, expect, it } from "vitest";
 import {
 	filterTaxonomyItems,
+	getNavMenuTaxonomyItems,
+	getSectionKeyForNavKey,
 	type SearchTaxonomyItem,
 } from "@/lib/search/taxonomy-types";
 
@@ -14,12 +16,44 @@ const sampleItems: SearchTaxonomyItem[] = [
 		searchText: "Culture culture",
 	},
 	{
+		id: "news-tag-kurdistan",
+		label: "Kurdistan",
+		kind: "tag",
+		sectionKey: "news",
+		href: "/news?q=Kurdistan",
+		searchText: "Kurdistan",
+	},
+	{
 		id: "projects-tag-oral",
 		label: "Oral history",
 		kind: "tag",
 		sectionKey: "projects",
 		href: "/projects?tag=Oral%20history",
 		searchText: "Oral history",
+	},
+	{
+		id: "videos-topic-2",
+		label: "Documentaries",
+		kind: "topic",
+		sectionKey: "videos",
+		href: "/videos?topic=2",
+		searchText: "Documentaries",
+	},
+	{
+		id: "videos-type-FILM",
+		label: "Film",
+		kind: "type",
+		sectionKey: "videos",
+		href: "/videos?type=FILM",
+		searchText: "Film FILM",
+	},
+	{
+		id: "writings-category-literature",
+		label: "Literature",
+		kind: "category",
+		sectionKey: "writings",
+		href: "/writings/literature",
+		searchText: "Literature literature",
 	},
 	{
 		id: "writings-genre-POETRY",
@@ -45,5 +79,45 @@ describe("filterTaxonomyItems", () => {
 	it("respects library scope", () => {
 		expect(filterTaxonomyItems(sampleItems, "poetry", "library")).toHaveLength(1);
 		expect(filterTaxonomyItems(sampleItems, "culture", "library")).toHaveLength(0);
+	});
+});
+
+describe("getSectionKeyForNavKey", () => {
+	it("maps collection nav keys to search sections", () => {
+		expect(getSectionKeyForNavKey("news")).toBe("news");
+		expect(getSectionKeyForNavKey("video")).toBe("videos");
+		expect(getSectionKeyForNavKey("sound")).toBe("soundTracks");
+		expect(getSectionKeyForNavKey("gallery")).toBe("imageCollections");
+	});
+
+	it("returns null for non-taxonomy sections", () => {
+		expect(getSectionKeyForNavKey("services")).toBeNull();
+		expect(getSectionKeyForNavKey("about")).toBeNull();
+	});
+});
+
+describe("getNavMenuTaxonomyItems", () => {
+	it("returns categories for news, excluding tags", () => {
+		const items = getNavMenuTaxonomyItems("news", sampleItems);
+		expect(items.map((item) => item.id)).toEqual(["news-category-culture"]);
+	});
+
+	it("returns topics and types for video", () => {
+		const items = getNavMenuTaxonomyItems("video", sampleItems);
+		expect(items.map((item) => item.id)).toEqual([
+			"videos-topic-2",
+			"videos-type-FILM",
+		]);
+	});
+
+	it("returns categories for writings, excluding genres", () => {
+		const items = getNavMenuTaxonomyItems("writings", sampleItems);
+		expect(items.map((item) => item.id)).toEqual([
+			"writings-category-literature",
+		]);
+	});
+
+	it("returns empty for services", () => {
+		expect(getNavMenuTaxonomyItems("services", sampleItems)).toEqual([]);
 	});
 });

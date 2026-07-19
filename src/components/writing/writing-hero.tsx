@@ -1,11 +1,8 @@
-import { ArrowDownIcon, ArrowRightIcon } from "@heroicons/react/24/outline";
 import NextImage from "next/image";
 import {
 	ScrollReveal,
 	ScrollRevealItem,
 } from "@/components/motion/scroll-reveal";
-import { DirectionalIcon } from "@/components/ui/directional-icon";
-import { Link } from "@/components/ui/link";
 import { WRITINGS_STILL } from "@/lib/mock/public-stills";
 import { cn } from "@/lib/utils";
 
@@ -13,18 +10,10 @@ type WritingHeroProps = {
 	eyebrow: string;
 	title: string;
 	titleEmphasis?: string;
-	cta: string;
-	learnMore: string;
 	/** Optional soft texture — one image only, heavily diffused. */
 	textureUrl?: string | null;
 	showEmphasisItalic?: boolean;
 };
-
-const primaryCtaClass =
-	"group/cta relative mt-6 inline-flex h-11 items-center gap-2.5 overflow-hidden bg-primary px-7 font-heading text-small font-semibold text-primary-foreground no-underline transition-[gap,box-shadow] duration-300 ease-out fine-hover:gap-3.5 fine-hover:shadow-[0_12px_32px_-14px_rgba(26,24,19,0.5)]";
-
-const learnMoreClass =
-	"mt-3 inline-flex items-center gap-1.5 text-small text-muted no-underline transition-colors duration-200 fine-hover:text-foreground";
 
 function WritingHeroBackground({ textureUrl }: { textureUrl?: string | null }) {
 	return (
@@ -67,15 +56,12 @@ export function WritingHero({
 	eyebrow,
 	title,
 	titleEmphasis,
-	cta,
-	learnMore,
 	textureUrl = WRITINGS_STILL,
 	showEmphasisItalic = false,
 }: WritingHeroProps) {
 	return (
 		<header
 			aria-labelledby="writings-hero-heading"
-			data-snap-section
 			className="relative overflow-hidden border-b border-border"
 		>
 			<WritingHeroBackground textureUrl={textureUrl} />
@@ -110,30 +96,6 @@ export function WritingHero({
 								</span>
 							) : null}
 						</h1>
-					</ScrollRevealItem>
-
-					<ScrollRevealItem>
-						<div className="mt-2 flex flex-col items-center">
-							<Link
-								href="#writings-content"
-								variant="nav"
-								className={primaryCtaClass}
-							>
-								<span className="relative z-1">{cta}</span>
-								<DirectionalIcon
-									icon={ArrowRightIcon}
-									className="relative z-1 size-4"
-								/>
-							</Link>
-							<Link
-								href="#writings-content"
-								variant="nav"
-								className={learnMoreClass}
-							>
-								{learnMore}
-								<ArrowDownIcon className="size-3.5" aria-hidden />
-							</Link>
-						</div>
 					</ScrollRevealItem>
 				</ScrollReveal>
 			</div>

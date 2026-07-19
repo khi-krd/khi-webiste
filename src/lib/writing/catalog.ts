@@ -1,4 +1,3 @@
-import { buildGridFileMetaLabel } from "@/components/writing/writing-card";
 import type { WritingCategoryCarouselItem } from "@/components/writing/writing-category-carousel";
 import type { WritingGridCardProps } from "@/components/writing/writing-grid-card";
 import {
@@ -20,12 +19,6 @@ export function buildCategoryCarouselItems(
 
 export function buildWritingGridCards(
 	items: ResolvedWritingCard[],
-	labels: {
-		translateGenre: (genre: BookGenre) => string;
-		instituteBadgeLabel: string;
-		downloadLabel: string;
-		pagesCountLabel: (count: number) => string;
-	},
 ): WritingGridCardProps[] {
 	return items.map((item) => ({
 		id: item.id,
@@ -34,10 +27,7 @@ export function buildWritingGridCards(
 		coverUrl: item.coverUrl,
 		seriesName: item.seriesName,
 		topicName: item.topicName,
-		publishedByInstitute: item.publishedByInstitute,
-		instituteBadgeLabel: labels.instituteBadgeLabel,
 		fileUrl: item.fileUrl,
-		fileMetaLabel: buildGridFileMetaLabel(item, labels.pagesCountLabel),
 	}));
 }
 

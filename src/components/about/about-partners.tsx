@@ -31,7 +31,6 @@ export function AboutPartners({
 	return (
 		<AboutSection
 			bordered
-			data-snap-section
 			className={className}
 			aria-labelledby="partners-heading"
 		>

@@ -1,12 +1,12 @@
 "use client";
 
 import { ArrowRightIcon } from "@heroicons/react/24/outline";
-import { motion, useReducedMotion } from "motion/react";
-import type { ReactNode } from "react";
+import { useRef } from "react";
 import { ImageCollectionCard } from "@/components/home/image-collection-card";
 import {
-	PAGE_TRANSITION_DELAY,
+	ScrollReveal,
 	ScrollRevealBlock,
+	useInViewReveal,
 } from "@/components/motion/scroll-reveal";
 import { DirectionalIcon } from "@/components/ui/directional-icon";
 import { Link } from "@/components/ui/link";
@@ -21,9 +21,6 @@ import {
 	HOME_IMAGE_BENTO_TRAY_CLASS,
 } from "@/lib/home/image-bento";
 import type { ImageCollectionItem } from "@/lib/mock/image-collection";
-
-const revealEase = [0.22, 1, 0.36, 1] as const;
-const viewport = { once: true, margin: "-5% 0px -2% 0px" } as const;
 
 const viewAllClass =
 	"group/viewall relative inline-flex h-10 w-fit shrink-0 items-center gap-2.5 overflow-hidden border border-foreground px-5 font-heading text-small font-semibold text-foreground no-underline transition-[color,gap,box-shadow] duration-300 ease-out before:absolute before:inset-0 before:z-0 before:origin-bottom before:scale-y-0 before:bg-foreground before:transition-transform before:duration-300 before:ease-[cubic-bezier(0.22,1,0.36,1)] fine-hover:gap-3.5 fine-hover:text-primary-foreground fine-hover:shadow-[0_8px_24px_-12px_rgba(26,24,19,0.35)] fine-hover:before:scale-y-100 motion-reduce:before:transition-none motion-reduce:fine-hover:before:scale-y-100 motion-reduce:fine-hover:gap-2.5";
@@ -40,83 +37,45 @@ type ImageCollectionShowcaseProps = {
 	copy: ImageCollectionShowcaseCopy;
 };
 
-type BentoRevealItemProps = {
-	children: ReactNode;
+function BentoRevealItem({
+	children,
+	className,
+}: {
+	children: React.ReactNode;
 	className?: string;
-	index: number;
-};
-
-function BentoRevealItem({ children, className, index }: BentoRevealItemProps) {
-	const reduceMotion = useReducedMotion();
-
-	if (reduceMotion) {
-		return <div className={className}>{children}</div>;
-	}
+}) {
+	const ref = useRef<HTMLDivElement>(null);
+	useInViewReveal(ref, {
+		y: 0,
+		scale: 0.97,
+		duration: 0.45,
+		margin: "-5% 0px -2% 0px",
+	});
 
 	return (
-		<motion.div
-			className={className}
-			variants={{
-				hidden: { opacity: 0, scale: 0.97 },
-				visible: {
-					opacity: 1,
-					scale: 1,
-					transition: {
-						duration: 0.45,
-						ease: revealEase,
-						delay: index * 0.02,
-					},
-				},
-			}}
-		>
+		<div ref={ref} className={className}>
 			{children}
-		</motion.div>
+		</div>
 	);
 }
 
 function ImageCollectionBento({ items }: { items: ImageCollectionItem[] }) {
-	const reduceMotion = useReducedMotion();
 	const tiles = items.slice(0, HOME_IMAGE_BENTO_COUNT);
-
-	const grid = (
-		<>
-			{tiles.map((item, index) => (
-				<BentoRevealItem
-					key={item.id}
-					index={index}
-					className={HOME_IMAGE_BENTO_CELL_CLASS}
-				>
-					<ImageCollectionCard item={item} priority={index < 4} />
-				</BentoRevealItem>
-			))}
-		</>
-	);
-
-	const gridInner = reduceMotion ? (
-		<div className={HOME_IMAGE_BENTO_GRID_CLASS}>{grid}</div>
-	) : (
-		<motion.div
-			className={HOME_IMAGE_BENTO_GRID_CLASS}
-			initial="hidden"
-			whileInView="visible"
-			viewport={viewport}
-			variants={{
-				hidden: {},
-				visible: {
-					transition: {
-						staggerChildren: 0.02,
-						delayChildren: PAGE_TRANSITION_DELAY,
-					},
-				},
-			}}
-		>
-			{grid}
-		</motion.div>
-	);
 
 	return (
 		<div className={HOME_IMAGE_BENTO_TRAY_CLASS}>
-			<div className={HOME_IMAGE_BENTO_GRID_WRAPPER_CLASS}>{gridInner}</div>
+			<div className={HOME_IMAGE_BENTO_GRID_WRAPPER_CLASS}>
+				<ScrollReveal className={HOME_IMAGE_BENTO_GRID_CLASS} stagger={0.02}>
+					{tiles.map((item, index) => (
+						<BentoRevealItem
+							key={item.id}
+							className={HOME_IMAGE_BENTO_CELL_CLASS}
+						>
+							<ImageCollectionCard item={item} priority={index < 5} />
+						</BentoRevealItem>
+					))}
+				</ScrollReveal>
+			</div>
 		</div>
 	);
 }

@@ -3,6 +3,7 @@ import {
 	galleryPhotoSurfaceClass,
 	galleryStripTrayClass,
 } from "@/components/gallery/gallery-album-item";
+import { GalleryFilterBar } from "@/components/gallery/gallery-filter-bar";
 import {
 	GalleryReveal,
 	GalleryRevealItem,
@@ -29,6 +30,9 @@ type GalleryPostsProps = {
 	indexOffset: number;
 	currentPage: number;
 	totalPages: number;
+	activeQuery?: string | null;
+	activeType?: string | null;
+	noResultsMessage: string;
 	paginationLabel: string;
 	previousLabel: string;
 	nextLabel: string;
@@ -77,7 +81,7 @@ function PostRow({
 					<RichText
 						content={post.description}
 						compact
-						className="mt-5 line-clamp-3 max-w-md text-muted"
+						className="mt-5 line-clamp-3 max-w-md text-justify text-muted"
 					/>
 				</GalleryRevealItem>
 
@@ -127,6 +131,9 @@ export function GalleryPosts({
 	indexOffset,
 	currentPage,
 	totalPages,
+	activeQuery,
+	activeType,
+	noResultsMessage,
 	paginationLabel,
 	previousLabel,
 	nextLabel,
@@ -134,7 +141,6 @@ export function GalleryPosts({
 	return (
 		<section
 			id="gallery-content"
-			data-snap-section
 			aria-labelledby="gallery-posts-heading"
 			className="scroll-mt-26 bg-background sm:scroll-mt-30"
 		>
@@ -158,27 +164,42 @@ export function GalleryPosts({
 				<h2 id="gallery-posts-heading" className="display-title mt-8">
 					{title}
 				</h2>
-				<p className="mt-6 max-w-xl text-body leading-relaxed text-primary-foreground/70">
+				<p className="mt-6 max-w-xl text-justify text-body leading-relaxed text-primary-foreground/70">
 					{description}
 				</p>
 			</div>
 
 			<div className={cn("pb-16 lg:pb-24", homeInsetClass)}>
-				<div>
-					{posts.map((post, index) => (
-						<PostRow key={post.id} post={post} index={indexOffset + index} />
-					))}
-				</div>
-
-				<div className="flex justify-center border-t border-border pt-8 lg:pt-10">
-					<GalleryPagination
-						currentPage={currentPage}
-						totalPages={totalPages}
-						label={paginationLabel}
-						previousLabel={previousLabel}
-						nextLabel={nextLabel}
+				<div className="pt-8 lg:pt-10">
+					<GalleryFilterBar
+						activeQuery={activeQuery}
+						activeType={activeType}
 					/>
 				</div>
+
+				{posts.length === 0 ? (
+					<p className="mt-10 max-w-xl text-body text-muted">{noResultsMessage}</p>
+				) : (
+					<div>
+						{posts.map((post, index) => (
+							<PostRow key={post.id} post={post} index={indexOffset + index} />
+						))}
+					</div>
+				)}
+
+				{totalPages > 1 ? (
+					<div className="flex justify-center border-t border-border pt-8 lg:pt-10">
+						<GalleryPagination
+							currentPage={currentPage}
+							totalPages={totalPages}
+							activeQuery={activeQuery}
+							activeType={activeType}
+							label={paginationLabel}
+							previousLabel={previousLabel}
+							nextLabel={nextLabel}
+						/>
+					</div>
+				) : null}
 			</div>
 		</section>
 	);

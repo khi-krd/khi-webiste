@@ -3,22 +3,63 @@
 import { PlayIcon } from "@heroicons/react/24/solid";
 import {
 	Controls,
-	Gesture,
 	MediaProvider,
 	PlayButton,
 	Poster,
 	Spinner,
 	TimeSlider,
+	useMediaRemote,
 	useMediaState,
 	VolumeSlider,
 } from "@vidstack/react";
-import type { ReactNode } from "react";
+import {
+	type PointerEvent as ReactPointerEvent,
+	type ReactNode,
+	useRef,
+} from "react";
 
 export type KhiVideoPlayerLayoutProps = {
 	poster?: string;
 	posterAlt?: string;
 	embed?: "file" | "youtube";
 };
+
+const DBL_CLICK_MS = 280;
+
+/**
+ * Immediate play/pause on center click.
+ * Vidstack's Gesture waits ~250ms to disambiguate double-clicks; we bypass that.
+ */
+function PlaybackToggleLayer({
+	allowFullscreenDblClick,
+}: {
+	allowFullscreenDblClick: boolean;
+}) {
+	const remote = useMediaRemote();
+	const lastClickAt = useRef(0);
+
+	const onPointerUp = (event: ReactPointerEvent<HTMLDivElement>) => {
+		if (event.button !== 0) return;
+
+		const now = Date.now();
+		const isDoubleClick =
+			allowFullscreenDblClick && now - lastClickAt.current < DBL_CLICK_MS;
+		lastClickAt.current = now;
+
+		remote.togglePaused(event.nativeEvent);
+		if (isDoubleClick) {
+			remote.toggleFullscreen("prefer-media", event.nativeEvent);
+		}
+	};
+
+	return (
+		<div
+			className="khi-player__gesture"
+			onPointerUp={onPointerUp}
+			aria-hidden
+		/>
+	);
+}
 
 export function PlayerMedia({
 	poster,
@@ -38,30 +79,20 @@ export function PlayerMedia({
 					crossOrigin={isYouTube ? "anonymous" : undefined}
 				/>
 			) : null}
-			{isYouTube ? null : (
-				<>
-					<Gesture
-						className="khi-player__gesture"
-						event="pointerup"
-						action="toggle:paused"
-					/>
-					<Gesture
-						className="khi-player__gesture"
-						event="dblpointerup"
-						action="toggle:fullscreen"
-					/>
-				</>
-			)}
+			{/* YouTube iframe uses pointer-events: none; playback is API-driven. */}
+			<PlaybackToggleLayer allowFullscreenDblClick={!isYouTube} />
 		</>
 	);
 }
 
 export function CenterPlayButton() {
 	const started = useMediaState("started");
+	const paused = useMediaState("paused");
 	const ended = useMediaState("ended");
 	const isIdle = !started;
+	const show = isIdle || paused || ended;
 
-	if (!isIdle && !ended) return null;
+	if (!show) return null;
 
 	return (
 		<div
@@ -70,7 +101,6 @@ export function CenterPlayButton() {
 					? "khi-player__center-play khi-player__center-play--idle"
 					: "khi-player__center-play"
 			}
-			aria-hidden
 		>
 			<PlayButton className="khi-player__center-play-btn">
 				<span className="khi-player__center-play-ring" aria-hidden />

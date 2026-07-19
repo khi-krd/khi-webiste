@@ -1,4 +1,4 @@
-import { ArrowLeftIcon } from "@heroicons/react/24/outline";
+import { ArrowLeftIcon, ArrowRightIcon } from "@heroicons/react/24/outline";
 import NextImage from "next/image";
 import { getTranslations } from "next-intl/server";
 import { AudioAlbumVideo } from "@/components/audio/audio-album-video";
@@ -6,6 +6,7 @@ import { AudioAttachmentSlider } from "@/components/audio/audio-attachment-slide
 import { AudioAttachments } from "@/components/audio/audio-attachments";
 import { AudioBookletReader } from "@/components/audio/audio-booklet-reader";
 import { AudioBrochures } from "@/components/audio/audio-brochures";
+import { AudioCard, type AudioCardProps } from "@/components/audio/audio-card";
 import { AudioPlayButton } from "@/components/audio/audio-play-button";
 import {
 	type AudioStat,
@@ -21,11 +22,12 @@ import {
 	ScrollRevealItem,
 } from "@/components/motion/scroll-reveal";
 import { Badge } from "@/components/ui/badge";
-import { TaxonomyBadgeLink } from "@/components/ui/taxonomy-badge-link";
 import { DirectionalIcon } from "@/components/ui/directional-icon";
 import { Link } from "@/components/ui/link";
 import { RichText } from "@/components/ui/rich-text";
+import { TaxonomyBadgeLink } from "@/components/ui/taxonomy-badge-link";
 import { formatDuration, formatFileSize } from "@/lib/audio/format";
+import { audioDetailHref } from "@/lib/audio/resolve";
 import { soundTypeLabel } from "@/lib/audio/sound-types";
 import { homeInsetClass } from "@/lib/layout";
 import {
@@ -34,11 +36,14 @@ import {
 	audioTopicHref,
 } from "@/lib/search/taxonomy-href";
 import { cn } from "@/lib/utils";
-import type { ResolvedAudioDetail } from "@/types/audio";
+import type { ResolvedAudioCard, ResolvedAudioDetail } from "@/types/audio";
 
 type AudioPostViewProps = {
 	detail: ResolvedAudioDetail;
 	locale: string;
+	previous: ResolvedAudioCard | null;
+	next: ResolvedAudioCard | null;
+	related: ResolvedAudioCard[];
 };
 
 function MetaCell({
@@ -49,7 +54,7 @@ function MetaCell({
 	children: React.ReactNode;
 }) {
 	return (
-		<div className="min-w-0">
+		<div className="min-w-0 text-start">
 			<dt className="label font-medium text-muted">{label}</dt>
 			<dd className="mt-0.5 text-small leading-snug text-foreground">
 				{children}
@@ -66,6 +71,42 @@ function MetaRow({ children }: { children: React.ReactNode }) {
 	);
 }
 
+function AdjacentLink({
+	item,
+	label,
+	direction,
+}: {
+	item: ResolvedAudioCard;
+	label: string;
+	direction: "previous" | "next";
+}) {
+	const isNext = direction === "next";
+
+	return (
+		<Link
+			href={audioDetailHref(item.id)}
+			variant="nav"
+			className={cn(
+				"group flex flex-col gap-3 py-8 no-underline sm:py-10",
+				isNext &&
+					"items-end border-t border-border text-end sm:border-t-0 sm:border-s sm:ps-8",
+				!isNext && "items-start text-start sm:pe-8",
+			)}
+		>
+			<span className="label flex items-center gap-2 font-medium">
+				<DirectionalIcon
+					icon={isNext ? ArrowRightIcon : ArrowLeftIcon}
+					className="size-3.5"
+				/>
+				{label}
+			</span>
+			<span className="font-heading text-h3 font-bold text-foreground underline decoration-transparent decoration-2 underline-offset-4 transition-[text-decoration-color] duration-300 group-fine:decoration-current">
+				{item.title}
+			</span>
+		</Link>
+	);
+}
+
 function formatDate(locale: string, iso: string): string {
 	try {
 		return new Intl.DateTimeFormat(locale, {
@@ -78,7 +119,42 @@ function formatDate(locale: string, iso: string): string {
 	}
 }
 
-export async function AudioPostView({ detail, locale }: AudioPostViewProps) {
+function toAudioCardProps(
+	card: ResolvedAudioCard,
+	t: (key: string, values?: Record<string, number>) => string,
+): AudioCardProps {
+	const typeLabel = soundTypeLabel((key) => t(key), card.soundType);
+	const metaLabel =
+		card.trackState === "MULTI"
+			? `${typeLabel} · ${t("card.albumTracks", { count: card.totalTracks ?? 0 })}`
+			: typeLabel;
+
+	return {
+		id: card.id,
+		title: card.title,
+		subtitle: card.subtitle,
+		coverUrl: card.coverUrl,
+		hoverCoverUrl: card.hoverCoverUrl,
+		metaLabel,
+		instituteLabel: card.thisProjectOfInstitute
+			? t("card.instituteBadge")
+			: null,
+		durationLabel: formatDuration(card.totalDurationSeconds),
+		yearLabel:
+			card.publishmentYear != null ? String(card.publishmentYear) : null,
+		memories: card.albumOfMemories,
+		memoriesLabel: card.albumOfMemories ? t("memories.badge") : null,
+		queue: card.queue,
+	};
+}
+
+export async function AudioPostView({
+	detail,
+	locale,
+	previous,
+	next,
+	related,
+}: AudioPostViewProps) {
 	const t = await getTranslations("Audio");
 
 	const typeLabel = soundTypeLabel((key) => t(key), detail.soundType);
@@ -122,6 +198,8 @@ export async function AudioPostView({ detail, locale }: AudioPostViewProps) {
 					: detail.albumName
 				: null,
 		fileDetails: t("post.fileDetails"),
+		techSection: t("post.techSection"),
+		contentSection: t("post.contentSection"),
 		externalLink: t("post.externalLink"),
 		channelLabels: {
 			STEREO: t("channel.STEREO"),
@@ -133,6 +211,9 @@ export async function AudioPostView({ detail, locale }: AudioPostViewProps) {
 			sampleRate: t("tech.sampleRate"),
 			audioChannel: t("tech.audioChannel"),
 			size: t("tech.size"),
+			duration: t("tech.duration"),
+			form: t("tech.form"),
+			genre: t("tech.genre"),
 			recordingVenue: t("tech.recordingVenue"),
 			year: t("tech.year"),
 		},
@@ -168,9 +249,11 @@ export async function AudioPostView({ detail, locale }: AudioPostViewProps) {
 	const hasSources =
 		imageAttachments.length > 0 || fileAttachments.length > 0;
 
+	const relatedCards = related.map((card) => toAudioCardProps(card, t));
+
 	return (
 		<article>
-			<div className={cn("pt-30 pb-10 sm:pt-34 lg:pb-12", homeInsetClass)}>
+			<div className={cn("pt-10 pb-10 sm:pt-12 lg:pb-16", homeInsetClass)}>
 				<ScrollReveal>
 					<ScrollRevealItem>
 						<Link
@@ -229,7 +312,7 @@ export async function AudioPostView({ detail, locale }: AudioPostViewProps) {
 							</div>
 
 							{/* content column */}
-							<div className="min-w-0">
+							<div className="min-w-0 text-start">
 								<div className="flex flex-wrap items-center gap-2">
 									{detail.thisProjectOfInstitute ? (
 										<Badge variant="solid" size="sm">
@@ -266,10 +349,12 @@ export async function AudioPostView({ detail, locale }: AudioPostViewProps) {
 								) : null}
 
 								{detail.description ? (
-									<RichText
-										content={detail.description}
-										className="mt-5 max-w-prose text-body leading-relaxed text-foreground/90"
-									/>
+									<div className="audio-article-body mt-5 max-w-prose">
+										<RichText
+											content={detail.description}
+											className="text-body leading-relaxed text-foreground/90"
+										/>
+									</div>
 								) : null}
 
 								{detail.queue.length > 0 ? (
@@ -458,7 +543,7 @@ export async function AudioPostView({ detail, locale }: AudioPostViewProps) {
 
 					{detail.tags.length > 0 || detail.keywords.length > 0 ? (
 						<ScrollRevealItem>
-							<div className="mt-12 space-y-6 border-t border-border pt-8 lg:mt-16">
+							<div className="mt-12 space-y-6 border-t border-border pt-8 text-start lg:mt-16">
 								{detail.tags.length > 0 ? (
 									<div>
 										<p className="label font-medium">{t("post.tags")}</p>
@@ -498,7 +583,7 @@ export async function AudioPostView({ detail, locale }: AudioPostViewProps) {
 					) : null}
 
 					<ScrollRevealItem>
-						<footer className="mt-12 flex flex-wrap items-center justify-between gap-4 border-t border-border pt-6 lg:mt-16">
+						<footer className="mt-12 flex flex-wrap items-center justify-between gap-4 border-t border-border pt-6 text-start lg:mt-16">
 							<p className="text-label text-muted">
 								{t("post.published")}: {formatDate(locale, detail.createdAt)}
 								{detail.updatedAt !== detail.createdAt ? (
@@ -513,6 +598,55 @@ export async function AudioPostView({ detail, locale }: AudioPostViewProps) {
 							</Link>
 						</footer>
 					</ScrollRevealItem>
+
+					{previous || next ? (
+						<ScrollRevealItem>
+							<nav
+								aria-label={t("post.navLabel")}
+								className="mt-12 border-t border-border sm:mt-16"
+							>
+								<div className="grid sm:grid-cols-2">
+									{previous ? (
+										<AdjacentLink
+											item={previous}
+											label={t("post.previous")}
+											direction="previous"
+										/>
+									) : (
+										<div aria-hidden className="hidden sm:block" />
+									)}
+									{next ? (
+										<AdjacentLink
+											item={next}
+											label={t("post.next")}
+											direction="next"
+										/>
+									) : null}
+								</div>
+							</nav>
+						</ScrollRevealItem>
+					) : null}
+
+					{relatedCards.length > 0 ? (
+						<ScrollRevealItem>
+							<section
+								aria-labelledby="audio-related-heading"
+								className="mt-12 border-t border-border pt-10 text-start sm:mt-16 sm:pt-12"
+							>
+								<h2
+									id="audio-related-heading"
+									className="font-heading text-h2 font-bold text-balance"
+								>
+									{t("post.related")}
+								</h2>
+								<div className="mt-6 grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4">
+									{relatedCards.map((card) => (
+										<AudioCard key={card.id} {...card} />
+									))}
+								</div>
+							</section>
+						</ScrollRevealItem>
+					) : null}
 				</ScrollReveal>
 			</div>
 		</article>

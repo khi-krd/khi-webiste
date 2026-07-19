@@ -1,9 +1,17 @@
 import type { Metadata } from "next";
 import { getTranslations, setRequestLocale } from "next-intl/server";
-import { VideoHero } from "@/components/video/video-hero";
+import {
+	VideoHero,
+	type VideoHeroStill,
+} from "@/components/video/video-hero";
 import { VideoShell } from "@/components/video/video-shell";
 import { VideoShortFilmsPromo } from "@/components/video/video-shortfilms-promo";
 import { loadVideoPageData } from "@/lib/video/page-data";
+import {
+	isShortFilm,
+	shortFilmDetailHref,
+	videoDetailHref,
+} from "@/lib/video/resolve";
 
 export async function generateMetadata({
 	params,
@@ -43,15 +51,21 @@ export default async function VideosPage({
 		searchParams: resolvedSearchParams,
 	});
 
-	const heroCovers = [
-		...new Set(
-			pageData.listing.items.flatMap((item) =>
-				[item.coverUrl, item.hoverCoverUrl].filter((cover): cover is string =>
-					Boolean(cover),
-				),
-			),
-		),
-	].slice(0, 6);
+	const seenCovers = new Set<string>();
+	const heroStills: VideoHeroStill[] = [];
+	for (const item of pageData.listing.items) {
+		const src = item.coverUrl ?? item.hoverCoverUrl;
+		if (!src || seenCovers.has(src)) continue;
+		seenCovers.add(src);
+		heroStills.push({
+			src,
+			title: item.title,
+			href: isShortFilm(item.topicId)
+				? shortFilmDetailHref(item.id)
+				: videoDetailHref(item.id),
+		});
+		if (heroStills.length >= 5) break;
+	}
 
 	return (
 		<main className="bg-background">
@@ -60,8 +74,7 @@ export default async function VideosPage({
 				title={t("page.hero.title")}
 				titleEmphasis={t("page.hero.titleEmphasis")}
 				description={t("page.hero.description")}
-				cta={t("page.hero.cta")}
-				covers={heroCovers}
+				stills={heroStills}
 				showEmphasisItalic={locale === "ku"}
 			/>
 
@@ -69,7 +82,6 @@ export default async function VideosPage({
 
 			<div
 				id="videos-content"
-				data-snap-section
 				className="scroll-mt-26 sm:scroll-mt-30"
 			>
 				<VideoShell

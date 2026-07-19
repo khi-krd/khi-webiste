@@ -10,7 +10,11 @@ import { NewsPagination } from "@/components/news/news-pagination";
 import { NewsSidebarPanel } from "@/components/news/news-sidebar-panel";
 import { Divider } from "@/components/ui/divider";
 import { homeInsetClass } from "@/lib/layout";
-import type { NewsCategory, NewsItem } from "@/lib/mock/news";
+import {
+	type NewsCategoryOption,
+	type NewsItem,
+	newsItemCategoryLabel,
+} from "@/lib/mock/news";
 import { cn } from "@/lib/utils";
 
 type NewsShellProps = {
@@ -20,7 +24,7 @@ type NewsShellProps = {
 	locale: string;
 	sectionTitle: string;
 	sectionDescription?: string;
-	categoryLabels: Record<NewsCategory, string>;
+	categories: NewsCategoryOption[];
 	currentPage: number;
 	totalPages: number;
 	activeCategory?: string | null;
@@ -41,7 +45,7 @@ export function NewsShell({
 	locale,
 	sectionTitle,
 	sectionDescription,
-	categoryLabels,
+	categories,
 	currentPage,
 	totalPages,
 	activeCategory,
@@ -60,7 +64,6 @@ export function NewsShell({
 	return (
 		<section
 			id="news-grid"
-			data-snap-section
 			className={cn(
 				"w-full border-t border-border bg-background py-12 sm:py-16 lg:py-20",
 				className,
@@ -91,9 +94,9 @@ export function NewsShell({
 			>
 				<div className="min-w-0">
 					<NewsFilterBar
+						categories={categories}
 						activeCategory={activeCategory}
 						activeQuery={activeQuery}
-						categoryLabels={categoryLabels}
 						className="mb-8 sm:mb-10"
 					/>
 
@@ -113,7 +116,7 @@ export function NewsShell({
 									<NewsCard
 										item={item}
 										variant="square"
-										categoryLabel={categoryLabels[item.category]}
+										categoryLabel={newsItemCategoryLabel(item, categories)}
 										className="min-h-64 sm:min-h-72"
 									/>
 								</ScrollRevealItem>
@@ -141,7 +144,7 @@ export function NewsShell({
 							title={featuredLabel}
 							items={featured}
 							locale={locale}
-							categoryLabels={categoryLabels}
+							categories={categories}
 						/>
 
 						<Divider />
@@ -150,7 +153,7 @@ export function NewsShell({
 							title={latestLabel}
 							items={latest}
 							locale={locale}
-							categoryLabels={categoryLabels}
+							categories={categories}
 						/>
 					</div>
 				</aside>

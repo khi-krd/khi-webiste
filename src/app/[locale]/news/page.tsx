@@ -8,9 +8,8 @@ import {
 	getFeaturedNews,
 	getLatestNews,
 	getNews,
-	isValidCategory,
-	NEWS_CATEGORIES,
-	type NewsCategory,
+	getNewsCategories,
+	isKnownCategory,
 	paginateNews,
 } from "@/lib/api/news";
 
@@ -46,16 +45,18 @@ export default async function NewsPage({
 	setRequestLocale(locale);
 
 	const t = await getTranslations("News");
+	const categories = await getNewsCategories(locale);
 	const activeCategory =
-		category && isValidCategory(category) ? category : null;
+		category && isKnownCategory(category, categories) ? category : null;
 	const activeQuery = q?.trim() || null;
 	const page = Math.max(1, Number.parseInt(pageParam ?? "1", 10) || 1);
 
-	const categoryLabels = Object.fromEntries(
-		NEWS_CATEGORIES.map((key) => [key, t(`categories.${key}`)]),
-	) as Record<NewsCategory, string>;
+	const activeCategoryLabel = activeCategory
+		? (categories.find((entry) => entry.key === activeCategory)?.label ??
+			activeCategory)
+		: null;
 
-	const allNews = await getNews(locale, activeQuery);
+	const allNews = await getNews(locale, activeQuery, activeCategory);
 	const filtered = filterNews(allNews, {
 		category: activeCategory,
 		query: activeQuery,
@@ -65,14 +66,14 @@ export default async function NewsPage({
 	const featuredItems = await getFeaturedNews(locale);
 	const latestItems = await getLatestNews(locale);
 
-	const sectionTitle = activeCategory
+	const sectionTitle = activeCategoryLabel
 		? t("sections.filtered", {
-				category: categoryLabels[activeCategory],
+				category: activeCategoryLabel,
 			})
 		: t("sections.allNews");
 
 	return (
-		<main className="-mt-26 sm:-mt-30">
+		<main>
 			<NewsHero
 				eyebrow={t("hero.eyebrow")}
 				title={t("hero.title")}
@@ -81,7 +82,7 @@ export default async function NewsPage({
 
 			<NewsBento
 				locale={locale}
-				categoryLabels={categoryLabels}
+				categories={categories}
 				spotlightLabel={t("sections.spotlight")}
 			/>
 
@@ -92,7 +93,7 @@ export default async function NewsPage({
 				locale={locale}
 				sectionTitle={sectionTitle}
 				sectionDescription={t("sections.browseDescription")}
-				categoryLabels={categoryLabels}
+				categories={categories}
 				currentPage={currentPage}
 				totalPages={totalPages}
 				activeCategory={activeCategory}

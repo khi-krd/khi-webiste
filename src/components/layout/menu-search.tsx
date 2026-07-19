@@ -7,13 +7,7 @@ import { type FormEvent, useEffect, useMemo, useState } from "react";
 import { DirectionalIcon } from "@/components/ui/directional-icon";
 import { Input } from "@/components/ui/input";
 import { Link } from "@/components/ui/link";
-import {
-	NAV_ITEMS,
-	SEARCH_SCOPE_NAV_KEYS,
-	SEARCH_SCOPE_SUGGESTION_KEYS,
-	SEARCH_SCOPES,
-	type SearchScope,
-} from "@/config/site";
+import { NAV_ITEMS, SEARCH_SUGGESTION_KEYS } from "@/config/site";
 import {
 	type ClientSearchItem,
 	type ClientSearchSectionKey,
@@ -23,12 +17,16 @@ import {
 	filterTaxonomyCatalog,
 	groupSearchItems,
 } from "@/lib/search/client";
-import { groupTaxonomyItems } from "@/lib/search/taxonomy-types";
+import {
+	getNavMenuTaxonomyItems,
+	groupTaxonomyItems,
+} from "@/lib/search/taxonomy-types";
 import { cn } from "@/lib/utils";
 
 /** Min characters before we filter the catalog or flag a too-short query. */
 const MIN_QUERY_LENGTH = 2;
 const SEARCH_DEBOUNCE_MS = 300;
+const SEARCH_SCOPE = "main" as const;
 
 type NavSearchResult = {
 	id: string;
@@ -42,15 +40,12 @@ type NavSearchResult = {
 type MenuSearchProps = {
 	onBack: () => void;
 	onNavigate: () => void;
+	/** Shared catalog from NavDrawer — avoids a second fetch. */
+	taxonomyCatalog?: SearchTaxonomyItem[] | null;
+	taxonomyUnavailable?: boolean;
 };
 
 const LAYOUT_MS = 400;
-
-const SEARCH_SCOPE_LABEL_KEYS = {
-	main: "searchScopeMain",
-	archive: "searchScopeArchive",
-	library: "searchScopeLibrary",
-} as const satisfies Record<SearchScope, string>;
 
 const SEARCH_SECTION_LABEL_KEYS: Record<ClientSearchSectionKey, string> = {
 	projects: "projects",
@@ -82,21 +77,54 @@ function normalizeSearchText(value: string) {
 
 function buildSearchIndex(
 	t: ReturnType<typeof useTranslations<"Nav">>,
+	taxonomyCatalog: SearchTaxonomyItem[] | null,
 ): NavSearchResult[] {
 	return NAV_ITEMS.flatMap((item) => {
 		const parentLabel = t(item.key);
 		const parentDescription = t(item.descriptionKey);
 		const parentSearchText = `${parentLabel} ${parentDescription}`;
 
-		return [
-			{
-				id: item.key,
-				href: item.href,
-				label: parentLabel,
+		const parent: NavSearchResult = {
+			id: item.key,
+			href: item.href,
+			label: parentLabel,
+			navKey: item.key,
+			searchText: parentSearchText,
+		};
+
+		const taxonomyChildren = getNavMenuTaxonomyItems(
+			item.key,
+			taxonomyCatalog ?? [],
+		);
+
+		let children: NavSearchResult[];
+
+		if (taxonomyChildren.length > 0) {
+			children = taxonomyChildren.map((entry) => ({
+				id: entry.id,
+				href: entry.href,
+				label: entry.label,
+				parentLabel,
 				navKey: item.key,
-				searchText: parentSearchText,
-			},
-			...item.children.map((child) => {
+				searchText: `${entry.searchText} ${parentSearchText}`,
+			}));
+
+			if (item.key === "video") {
+				const shortFilmsLabel = t("videoSubShortFilms");
+				children = [
+					{
+						id: "video-shortfilms",
+						href: "/videos/shortfilms",
+						label: shortFilmsLabel,
+						parentLabel,
+						navKey: item.key,
+						searchText: `${shortFilmsLabel} ${parentSearchText}`,
+					},
+					...children,
+				];
+			}
+		} else {
+			children = item.children.map((child) => {
 				const childLabel = t(child.key);
 				return {
 					id: `${item.key}-${child.key}`,
@@ -106,32 +134,21 @@ function buildSearchIndex(
 					navKey: item.key,
 					searchText: `${childLabel} ${parentSearchText}`,
 				};
-			}),
-		];
+			});
+		}
+
+		return [parent, ...children];
 	});
-}
-
-function isInSearchScope(navKey: string, scope: SearchScope): boolean {
-	if (scope === "main") {
-		return true;
-	}
-
-	return SEARCH_SCOPE_NAV_KEYS[scope].includes(navKey);
 }
 
 function filterNavSearchResults(
 	index: NavSearchResult[],
 	query: string,
-	scope: SearchScope,
 ): NavSearchResult[] {
 	const normalizedQuery = normalizeSearchText(query);
 	if (!normalizedQuery) return [];
 
 	return index.filter((entry) => {
-		if (!isInSearchScope(entry.navKey, scope)) {
-			return false;
-		}
-
 		const haystack = [entry.searchText, entry.label, entry.parentLabel].filter(
 			(value): value is string => Boolean(value),
 		);
@@ -348,33 +365,48 @@ function NavFallbackResultsList({
 }
 
 /** In-overlay search — API results when available; nav catalog fallback otherwise. */
-export function MenuSearch({ onBack, onNavigate }: MenuSearchProps) {
+export function MenuSearch({
+	onBack,
+	onNavigate,
+	taxonomyCatalog: taxonomyCatalogProp,
+	taxonomyUnavailable: taxonomyUnavailableProp,
+}: MenuSearchProps) {
 	const t = useTranslations("Nav");
 	const locale = useLocale();
 	const reduceMotion = useReducedMotion();
 	const [isExpanded, setIsExpanded] = useState(false);
 
 	const [query, setQuery] = useState("");
-	const [scope, setScope] = useState<SearchScope>("main");
 	const [submitted, setSubmitted] = useState(false);
 	const [apiResults, setApiResults] = useState<ClientSearchItem[] | null>(null);
 	const [isLoading, setIsLoading] = useState(false);
 	const [contentSearchUnavailable, setContentSearchUnavailable] = useState(false);
-	const [taxonomyCatalog, setTaxonomyCatalog] = useState<
+	const [localTaxonomyCatalog, setLocalTaxonomyCatalog] = useState<
 		SearchTaxonomyItem[] | null
 	>(null);
-	const [taxonomyUnavailable, setTaxonomyUnavailable] = useState(false);
+	const [localTaxonomyUnavailable, setLocalTaxonomyUnavailable] = useState(false);
+
+	const useParentTaxonomy = taxonomyCatalogProp !== undefined;
+	const taxonomyCatalog = useParentTaxonomy
+		? taxonomyCatalogProp
+		: localTaxonomyCatalog;
+	const taxonomyUnavailable = useParentTaxonomy
+		? Boolean(taxonomyUnavailableProp)
+		: localTaxonomyUnavailable;
 
 	const trimmedQuery = query.trim();
 	const hasQuery = trimmedQuery.length > 0;
 	const isSearching = trimmedQuery.length >= MIN_QUERY_LENGTH;
 	const showError = submitted && trimmedQuery.length < MIN_QUERY_LENGTH;
 
-	const searchIndex = useMemo(() => buildSearchIndex(t), [t]);
+	const searchIndex = useMemo(
+		() => buildSearchIndex(t, taxonomyCatalog),
+		[t, taxonomyCatalog],
+	);
 
 	const navFallbackResults = useMemo((): NavSearchResult[] => {
 		if (!isSearching) {
-			return SEARCH_SCOPE_SUGGESTION_KEYS[scope].flatMap((key) => {
+			return SEARCH_SUGGESTION_KEYS.flatMap((key) => {
 				const item = NAV_ITEMS.find((entry) => entry.key === key);
 				if (!item) return [];
 
@@ -390,8 +422,8 @@ export function MenuSearch({ onBack, onNavigate }: MenuSearchProps) {
 			});
 		}
 
-		return filterNavSearchResults(searchIndex, trimmedQuery, scope);
-	}, [isSearching, scope, searchIndex, t, trimmedQuery]);
+		return filterNavSearchResults(searchIndex, trimmedQuery);
+	}, [isSearching, searchIndex, t, trimmedQuery]);
 
 	const groupedApiResults = useMemo(() => {
 		if (!apiResults) {
@@ -404,8 +436,8 @@ export function MenuSearch({ onBack, onNavigate }: MenuSearchProps) {
 		if (!taxonomyCatalog || !isSearching) {
 			return [];
 		}
-		return filterTaxonomyCatalog(taxonomyCatalog, trimmedQuery, scope);
-	}, [isSearching, scope, taxonomyCatalog, trimmedQuery]);
+		return filterTaxonomyCatalog(taxonomyCatalog, trimmedQuery, SEARCH_SCOPE);
+	}, [isSearching, taxonomyCatalog, trimmedQuery]);
 
 	const groupedTaxonomyResults = useMemo(
 		() => groupTaxonomyItems(filteredTaxonomyResults),
@@ -413,20 +445,24 @@ export function MenuSearch({ onBack, onNavigate }: MenuSearchProps) {
 	);
 
 	useEffect(() => {
+		if (useParentTaxonomy) {
+			return;
+		}
+
 		let cancelled = false;
 
 		void fetchTaxonomyCatalog(locale).then(({ items, unavailable }) => {
 			if (cancelled) {
 				return;
 			}
-			setTaxonomyCatalog(items);
-			setTaxonomyUnavailable(unavailable);
+			setLocalTaxonomyCatalog(items);
+			setLocalTaxonomyUnavailable(unavailable);
 		});
 
 		return () => {
 			cancelled = true;
 		};
-	}, [locale]);
+	}, [locale, useParentTaxonomy]);
 
 	useEffect(() => {
 		if (!isSearching) {
@@ -443,7 +479,7 @@ export function MenuSearch({ onBack, onNavigate }: MenuSearchProps) {
 				const { items, unavailable } = await fetchGlobalSearch(
 					trimmedQuery,
 					locale,
-					scope,
+					SEARCH_SCOPE,
 				);
 				if (controller.signal.aborted) {
 					return;
@@ -465,7 +501,7 @@ export function MenuSearch({ onBack, onNavigate }: MenuSearchProps) {
 			controller.abort();
 			window.clearTimeout(timeoutId);
 		};
-	}, [isSearching, locale, scope, trimmedQuery]);
+	}, [isSearching, locale, trimmedQuery]);
 
 	useEffect(() => {
 		if (!hasQuery && !isSearching) {
@@ -547,54 +583,22 @@ export function MenuSearch({ onBack, onNavigate }: MenuSearchProps) {
 							{t("searchLabel")}
 						</label>
 
-						<div className="flex flex-col gap-3 sm:flex-row sm:items-stretch">
-							<Input
-								id="menu-search-input"
-								name="q"
-								type="search"
-								variant="overlay"
-								fieldSize="lg"
-								autoFocus
-								autoComplete="off"
-								spellCheck={false}
-								placeholder={t("searchPlaceholder")}
-								value={query}
-								onChange={(event) => setQuery(event.target.value)}
-								aria-invalid={showError ? true : undefined}
-								aria-describedby={showError ? "menu-search-error" : undefined}
-								className="min-w-0 flex-1"
-							/>
-
-							<div
-								role="radiogroup"
-								aria-label={t("searchScopeLabel")}
-								className="flex shrink-0 gap-1.5 sm:gap-2"
-							>
-								{SEARCH_SCOPES.map((option) => {
-									const isActive = scope === option;
-									const labelKey = SEARCH_SCOPE_LABEL_KEYS[option];
-
-									return (
-										<button
-											key={option}
-											type="button"
-											role="radio"
-											aria-checked={isActive}
-											onClick={() => setScope(option)}
-											className={cn(
-												"shrink-0 border px-3 py-2.5 font-heading text-small font-semibold transition-[color,background-color,border-color] duration-200 sm:px-3.5 sm:py-3",
-												isActive
-													? "border-primary-foreground bg-primary-foreground text-foreground"
-													: "border-primary-foreground/35 bg-transparent text-primary-foreground/80 fine-hover:border-primary-foreground/60 fine-hover:text-primary-foreground",
-												!isActive && overlayTextShadow,
-											)}
-										>
-											{t(labelKey)}
-										</button>
-									);
-								})}
-							</div>
-						</div>
+						<Input
+							id="menu-search-input"
+							name="q"
+							type="search"
+							variant="overlay"
+							fieldSize="lg"
+							autoFocus
+							autoComplete="off"
+							spellCheck={false}
+							placeholder={t("searchPlaceholder")}
+							value={query}
+							onChange={(event) => setQuery(event.target.value)}
+							aria-invalid={showError ? true : undefined}
+							aria-describedby={showError ? "menu-search-error" : undefined}
+							className="w-full min-w-0"
+						/>
 
 						{showError && (
 							<p

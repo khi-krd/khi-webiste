@@ -49,14 +49,14 @@ export function VideoPosterCard({
 				className,
 			)}
 		>
-			<div className="relative aspect-[2/3] w-full overflow-hidden">
+			<div className="relative aspect-video w-full overflow-hidden">
 				{coverUrl ? (
 					<NextImage
 						src={coverUrl}
 						alt=""
 						fill
-						sizes="(max-width: 640px) 45vw, (max-width: 1024px) 30vw, 13rem"
-						className="object-cover brightness-[0.92] transition-[filter,transform] duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] group-fine:scale-[1.05] group-fine:brightness-100 motion-reduce:transition-none motion-reduce:duration-0 motion-reduce:group-fine:scale-100"
+						sizes="(max-width: 640px) 100vw, 33vw"
+						className="absolute inset-0 size-full object-cover object-center brightness-[0.92] transition-[filter,transform] duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] group-fine:scale-[1.05] group-fine:brightness-100 motion-reduce:transition-none motion-reduce:duration-0 motion-reduce:group-fine:scale-100"
 					/>
 				) : (
 					<div
@@ -99,12 +99,12 @@ export function VideoPosterCard({
 					</span>
 				) : null}
 
-				<div className="absolute inset-x-0 bottom-0 z-1 p-3">
-					<h3 className="font-heading text-small font-semibold leading-snug text-balance text-primary-foreground line-clamp-2">
+				<div className="absolute inset-x-0 bottom-0 z-1 p-3.5 sm:p-4">
+					<h3 className="font-heading text-body font-semibold leading-snug text-balance text-primary-foreground line-clamp-2 sm:text-h3">
 						{title}
 					</h3>
 					{subtitle ? (
-						<p className="mt-0.5 line-clamp-1 text-label text-primary-foreground/70">
+						<p className="mt-1 line-clamp-1 text-label text-primary-foreground/70 sm:text-small">
 							{subtitle}
 						</p>
 					) : null}

@@ -45,7 +45,7 @@ export default async function ProjectDetailPage({
 	const t = await getTranslations("ProjectsPage");
 
 	return (
-		<main className="-mt-26 bg-background sm:-mt-30">
+		<main className="bg-background">
 			<ProjectDetailView
 				detail={detail}
 				backLabel={t("detail.back")}

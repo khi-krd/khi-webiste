@@ -1,46 +1,56 @@
-import { ArrowRightIcon } from "@heroicons/react/24/outline";
 import NextImage from "next/image";
 import {
 	ScrollReveal,
 	ScrollRevealBlock,
 	ScrollRevealItem,
 } from "@/components/motion/scroll-reveal";
-import { DirectionalIcon } from "@/components/ui/directional-icon";
 import { Link } from "@/components/ui/link";
 import { RichText } from "@/components/ui/rich-text";
+import { audioDetailHref } from "@/lib/audio/resolve";
 import { cn } from "@/lib/utils";
+
+export type AudioHeroCover = {
+	id: number;
+	coverUrl: string;
+	title: string;
+};
 
 type AudioHeroProps = {
 	eyebrow: string;
 	title: string;
 	titleEmphasis?: string;
 	description?: string;
-	cta: string;
 	/** Real cover art from the catalogue — the hero's only visual. */
-	covers?: (string | null)[];
+	covers?: AudioHeroCover[];
 	showEmphasisItalic?: boolean;
 };
 
-const primaryCtaClass =
-	"group/cta relative mt-7 inline-flex h-11 items-center gap-2.5 overflow-hidden bg-primary px-7 font-heading text-small font-semibold text-primary-foreground no-underline transition-[gap,box-shadow] duration-300 ease-out fine-hover:gap-3.5 fine-hover:shadow-[0_12px_32px_-14px_rgba(26,24,19,0.5)]";
-
-function HeroCover({ src, sizeClass }: { src: string; sizeClass: string }) {
+function HeroCover({
+	cover,
+	sizeClass,
+}: {
+	cover: AudioHeroCover;
+	sizeClass: string;
+}) {
 	return (
-		<div
+		<Link
+			href={audioDetailHref(cover.id)}
+			variant="nav"
+			aria-label={cover.title}
 			className={cn(
-				"relative shrink-0 overflow-hidden border border-border bg-sunken",
+				"group/cover relative shrink-0 overflow-hidden border border-border bg-sunken no-underline transition-[border-color,box-shadow] duration-300 fine-hover:border-foreground/30 fine-hover:shadow-[0_12px_28px_-16px_rgba(26,24,19,0.45)]",
 				sizeClass,
 			)}
 		>
 			<NextImage
-				src={src}
+				src={cover.coverUrl}
 				alt=""
 				fill
 				priority
 				sizes="14rem"
-				className="object-cover brightness-[0.96] saturate-[0.92]"
+				className="object-cover brightness-[0.96] saturate-[0.92] transition-[filter,transform] duration-500 ease-out group-fine/cover:scale-[1.04] group-fine/cover:brightness-100 group-fine/cover:saturate-100"
 			/>
-		</div>
+		</Link>
 	);
 }
 
@@ -54,18 +64,14 @@ export function AudioHero({
 	title,
 	titleEmphasis,
 	description,
-	cta,
 	covers = [],
 	showEmphasisItalic = false,
 }: AudioHeroProps) {
-	const [coverA, coverB, coverC] = covers.filter((cover): cover is string =>
-		Boolean(cover),
-	);
+	const [coverA, coverB, coverC] = covers;
 
 	return (
 		<header
 			className="relative overflow-hidden border-b border-border bg-surface"
-			data-snap-section
 		>
 			{/* faint top light — the only background event */}
 			<div
@@ -110,33 +116,16 @@ export function AudioHero({
 							/>
 						</ScrollRevealItem>
 					) : null}
-
-					<ScrollRevealItem>
-						<Link
-							href="#audio-content"
-							variant="nav"
-							className={primaryCtaClass}
-						>
-							<span className="relative z-1">{cta}</span>
-							<DirectionalIcon
-								icon={ArrowRightIcon}
-								className="relative z-1 size-4"
-							/>
-						</Link>
-					</ScrollRevealItem>
 				</ScrollReveal>
 
 				{coverA ? (
-					<ScrollRevealBlock
-						aria-hidden
-						className="hidden items-end gap-3 lg:flex lg:gap-4"
-					>
+					<ScrollRevealBlock className="hidden items-end gap-3 lg:flex lg:gap-4">
 						{coverB ? (
-							<HeroCover src={coverB} sizeClass="size-28 xl:size-32" />
+							<HeroCover cover={coverB} sizeClass="size-28 xl:size-32" />
 						) : null}
-						<HeroCover src={coverA} sizeClass="size-44 xl:size-52" />
+						<HeroCover cover={coverA} sizeClass="size-44 xl:size-52" />
 						{coverC ? (
-							<HeroCover src={coverC} sizeClass="size-24 xl:size-28" />
+							<HeroCover cover={coverC} sizeClass="size-24 xl:size-28" />
 						) : null}
 					</ScrollRevealBlock>
 				) : null}

@@ -43,14 +43,27 @@ pdfjs.GlobalWorkerOptions.workerSrc = "/pdf/pdf.worker.min.mjs";
 const MIN_ZOOM = 0.75;
 const MAX_ZOOM = 2.5;
 const ZOOM_STEP = 0.25;
+const WHEEL_ZOOM_FACTOR = 0.0015;
 const FIT_EPSILON = 0.01;
 const VIEWPORT_PADDING_Y = 32;
 const VIEWPORT_PADDING_Y_MOBILE = 16;
 const VIEWPORT_PADDING_X = 48;
 const VIEWPORT_PADDING_X_MOBILE = 8;
 const SWIPE_THRESHOLD_PX = 48;
+const DRAG_PAN_THRESHOLD_PX = 4;
 const FULLSCREEN_CHROME_HEIGHT = 140;
 const SPREAD_PAGE_GAP = 12;
+
+function clampZoom(value: number): number {
+	return Math.min(MAX_ZOOM, Math.max(MIN_ZOOM, value));
+}
+
+function touchDistance(
+	a: Pick<Touch, "clientX" | "clientY">,
+	b: Pick<Touch, "clientX" | "clientY">,
+): number {
+	return Math.hypot(a.clientX - b.clientX, a.clientY - b.clientY);
+}
 
 const INLINE_VIEWPORT_CLASS = "h-[28rem] min-h-[50dvh] sm:h-[28rem] sm:min-h-0";
 const FULLSCREEN_VIEWPORT_CLASS = "min-h-0 flex-1";
@@ -391,6 +404,8 @@ type PdfReaderViewportProps = {
 	viewportClassName: string;
 	pageContainerClassName: string;
 	viewportRef: React.RefObject<HTMLDivElement | null>;
+	zoom: number;
+	onZoomChange: (zoom: number) => void;
 	onSwipeNavigate?: (direction: 1 | -1) => void;
 	enableSwipe?: boolean;
 	isMobile?: boolean;
@@ -465,6 +480,8 @@ function PdfReaderViewport({
 	viewportClassName,
 	pageContainerClassName,
 	viewportRef,
+	zoom,
+	onZoomChange,
 	onSwipeNavigate,
 	enableSwipe = false,
 	isMobile = false,
@@ -475,6 +492,21 @@ function PdfReaderViewport({
 	labels,
 }: PdfReaderViewportProps) {
 	const swipeStartRef = useRef<{ x: number; y: number } | null>(null);
+	const pinchRef = useRef<{ startDistance: number; startZoom: number } | null>(
+		null,
+	);
+	const pointerDragRef = useRef<{
+		pointerId: number;
+		startX: number;
+		startY: number;
+		originScrollLeft: number;
+		originScrollTop: number;
+		active: boolean;
+	} | null>(null);
+	const lastWheelNavAtRef = useRef(0);
+	const zoomRef = useRef(zoom);
+	zoomRef.current = zoom;
+
 	const hasPageSize =
 		(pageRenderSize.width ?? 0) > 0 || (pageRenderSize.height ?? 0) > 0;
 	const canRenderPages = documentReady && isViewportReady && hasPageSize;
@@ -484,6 +516,8 @@ function PdfReaderViewport({
 	const [hasDisplayedOnce, setHasDisplayedOnce] = useState(
 		initialDisplayComplete,
 	);
+	const [isPinching, setIsPinching] = useState(false);
+	const [isDragPanning, setIsDragPanning] = useState(false);
 
 	useEffect(() => {
 		setRenderedPages(new Set());
@@ -520,36 +554,17 @@ function PdfReaderViewport({
 	const showSpinner =
 		!loadError && !hasDisplayedOnce && (!canRenderPages || !allPagesRendered);
 
-	const handleTouchStart = useCallback(
-		(event: React.TouchEvent<HTMLDivElement>) => {
-			if (!enableSwipe || event.touches.length !== 1) {
-				swipeStartRef.current = null;
+	const navigateFromSwipe = useCallback(
+		(deltaX: number, deltaY: number) => {
+			if (!enableSwipe || !onSwipeNavigate) {
 				return;
 			}
-			const touch = event.touches[0];
-			swipeStartRef.current = { x: touch.clientX, y: touch.clientY };
-		},
-		[enableSwipe],
-	);
-
-	const handleTouchEnd = useCallback(
-		(event: React.TouchEvent<HTMLDivElement>) => {
-			if (!enableSwipe || !onSwipeNavigate || !swipeStartRef.current) {
-				return;
-			}
-
-			const touch = event.changedTouches[0];
-			const deltaX = touch.clientX - swipeStartRef.current.x;
-			const deltaY = touch.clientY - swipeStartRef.current.y;
-			swipeStartRef.current = null;
-
 			if (
 				Math.abs(deltaX) < SWIPE_THRESHOLD_PX ||
 				Math.abs(deltaX) <= Math.abs(deltaY)
 			) {
 				return;
 			}
-
 			const rtl = document.documentElement.dir === "rtl";
 			const forward = deltaX < 0;
 			onSwipeNavigate(forward === rtl ? -1 : 1);
@@ -557,19 +572,217 @@ function PdfReaderViewport({
 		[enableSwipe, onSwipeNavigate],
 	);
 
+	const handleWheel = useCallback(
+		(event: WheelEvent) => {
+			if (event.ctrlKey || event.metaKey) {
+				event.preventDefault();
+				const next = clampZoom(
+					zoomRef.current - event.deltaY * WHEEL_ZOOM_FACTOR,
+				);
+				if (Math.abs(next - zoomRef.current) > FIT_EPSILON / 2) {
+					onZoomChange(next);
+				}
+				return;
+			}
+
+			if (
+				enableSwipe &&
+				onSwipeNavigate &&
+				Math.abs(event.deltaX) > Math.abs(event.deltaY) &&
+				Math.abs(event.deltaX) > 12
+			) {
+				const now = Date.now();
+				if (now - lastWheelNavAtRef.current < 450) {
+					return;
+				}
+				lastWheelNavAtRef.current = now;
+				event.preventDefault();
+				const rtl = document.documentElement.dir === "rtl";
+				const forward = event.deltaX > 0;
+				onSwipeNavigate(forward === rtl ? -1 : 1);
+			}
+		},
+		[enableSwipe, onSwipeNavigate, onZoomChange],
+	);
+
+	const handleTouchStart = useCallback(
+		(event: React.TouchEvent<HTMLDivElement>) => {
+			if (event.touches.length === 2) {
+				const [a, b] = [event.touches[0], event.touches[1]];
+				pinchRef.current = {
+					startDistance: Math.max(touchDistance(a, b), 1),
+					startZoom: zoomRef.current,
+				};
+				swipeStartRef.current = null;
+				setIsPinching(true);
+				return;
+			}
+
+			pinchRef.current = null;
+			setIsPinching(false);
+
+			if (event.touches.length === 1) {
+				const touch = event.touches[0];
+				swipeStartRef.current = { x: touch.clientX, y: touch.clientY };
+			} else {
+				swipeStartRef.current = null;
+			}
+		},
+		[],
+	);
+
+	const handleTouchMove = useCallback(
+		(event: React.TouchEvent<HTMLDivElement>) => {
+			if (event.touches.length === 2 && pinchRef.current) {
+				const [a, b] = [event.touches[0], event.touches[1]];
+				const distance = Math.max(touchDistance(a, b), 1);
+				const scale = distance / pinchRef.current.startDistance;
+				onZoomChange(clampZoom(pinchRef.current.startZoom * scale));
+			}
+		},
+		[onZoomChange],
+	);
+
+	const handleTouchEnd = useCallback(
+		(event: React.TouchEvent<HTMLDivElement>) => {
+			if (event.touches.length < 2) {
+				pinchRef.current = null;
+				setIsPinching(false);
+			}
+
+			if (event.touches.length !== 0 || !swipeStartRef.current) {
+				if (event.touches.length === 0) {
+					swipeStartRef.current = null;
+				}
+				return;
+			}
+
+			const touch = event.changedTouches[0];
+			const deltaX = touch.clientX - swipeStartRef.current.x;
+			const deltaY = touch.clientY - swipeStartRef.current.y;
+			swipeStartRef.current = null;
+			navigateFromSwipe(deltaX, deltaY);
+		},
+		[navigateFromSwipe],
+	);
+
+	const endPointerDrag = useCallback(
+		(event: React.PointerEvent<HTMLDivElement>) => {
+			const drag = pointerDragRef.current;
+			if (!drag || drag.pointerId !== event.pointerId) {
+				return;
+			}
+			pointerDragRef.current = null;
+			setIsDragPanning(false);
+
+			const node = viewportRef.current;
+			if (node?.hasPointerCapture(event.pointerId)) {
+				node.releasePointerCapture(event.pointerId);
+			}
+		},
+		[viewportRef],
+	);
+
+	const handlePointerDown = useCallback(
+		(event: React.PointerEvent<HTMLDivElement>) => {
+			if (event.pointerType !== "mouse" || event.button !== 0) {
+				return;
+			}
+			const target = event.target;
+			if (
+				target instanceof Element &&
+				target.closest("a, button, input, textarea, select, [role='button']")
+			) {
+				return;
+			}
+			const node = viewportRef.current;
+			if (!node) {
+				return;
+			}
+			pointerDragRef.current = {
+				pointerId: event.pointerId,
+				startX: event.clientX,
+				startY: event.clientY,
+				originScrollLeft: node.scrollLeft,
+				originScrollTop: node.scrollTop,
+				active: false,
+			};
+		},
+		[viewportRef],
+	);
+
+	const handlePointerMove = useCallback(
+		(event: React.PointerEvent<HTMLDivElement>) => {
+			const drag = pointerDragRef.current;
+			const node = viewportRef.current;
+			if (!drag || drag.pointerId !== event.pointerId || !node) {
+				return;
+			}
+
+			const deltaX = event.clientX - drag.startX;
+			const deltaY = event.clientY - drag.startY;
+
+			if (!drag.active) {
+				if (
+					Math.hypot(deltaX, deltaY) < DRAG_PAN_THRESHOLD_PX
+				) {
+					return;
+				}
+				drag.active = true;
+				setIsDragPanning(true);
+				node.setPointerCapture(event.pointerId);
+			}
+
+			event.preventDefault();
+			node.scrollLeft = drag.originScrollLeft - deltaX;
+			node.scrollTop = drag.originScrollTop - deltaY;
+		},
+		[viewportRef],
+	);
+
+	// Non-passive listeners so pinch/Ctrl+wheel zoom can preventDefault.
+	useEffect(() => {
+		const node = viewportRef.current;
+		if (!node) {
+			return;
+		}
+
+		const onTouchMove = (event: TouchEvent) => {
+			if (event.touches.length === 2 && pinchRef.current) {
+				event.preventDefault();
+			}
+		};
+
+		node.addEventListener("wheel", handleWheel, { passive: false });
+		node.addEventListener("touchmove", onTouchMove, { passive: false });
+		return () => {
+			node.removeEventListener("wheel", handleWheel);
+			node.removeEventListener("touchmove", onTouchMove);
+		};
+	}, [handleWheel, viewportRef]);
+
 	return (
 		<div
 			ref={viewportRef}
 			className={cn(
-				"relative overflow-auto bg-sunken",
+				"writing-pdf-viewer__viewport relative overflow-auto bg-sunken",
+				isPinching && "writing-pdf-viewer__viewport--pinching",
+				isDragPanning && "writing-pdf-viewer__viewport--panning",
 				enableSwipe && "writing-pdf-viewer__viewport--swipeable",
 				viewportClassName,
 			)}
 			onTouchStart={handleTouchStart}
+			onTouchMove={handleTouchMove}
 			onTouchEnd={handleTouchEnd}
 			onTouchCancel={() => {
 				swipeStartRef.current = null;
+				pinchRef.current = null;
+				setIsPinching(false);
 			}}
+			onPointerDown={handlePointerDown}
+			onPointerMove={handlePointerMove}
+			onPointerUp={endPointerDrag}
+			onPointerCancel={endPointerDrag}
 			tabIndex={0}
 			role="region"
 			aria-label={title}
@@ -661,8 +874,8 @@ export function WritingPdfViewer({
 	);
 	const [pageNumber, setPageNumber] = useState(1);
 	const [numPages, setNumPages] = useState(0);
-	const [fitMode, setFitMode] = useState<FitMode>("height");
-	const [twoPageSpread, setTwoPageSpread] = useState(true);
+	const [fitMode, setFitMode] = useState<FitMode>("width");
+	const [twoPageSpread, setTwoPageSpread] = useState(false);
 	const [zoom, setZoom] = useState(1);
 	const [loadError, setLoadError] = useState(false);
 	const [documentReady, setDocumentReady] = useState(false);
@@ -732,7 +945,8 @@ export function WritingPdfViewer({
 		setDocumentReady(false);
 		setIsDisplayReady(false);
 		setIsReaderActive(false);
-		setFitMode("height");
+		setFitMode("width");
+		setTwoPageSpread(false);
 		setZoom(1);
 		stablePageRenderSizeRef.current = {};
 	}, [defaultOffer]);
@@ -746,7 +960,7 @@ export function WritingPdfViewer({
 		setLoadError(false);
 		setDocumentReady(false);
 		setIsDisplayReady(false);
-		setFitMode("height");
+		setFitMode("width");
 		setZoom(1);
 		stablePageRenderSizeRef.current = {};
 	}, []);
@@ -954,10 +1168,9 @@ export function WritingPdfViewer({
 					coverUrl={coverUrl}
 					readLabel={t("readButton")}
 					onStart={() => {
-						if (isMobile) {
-							setFitMode("width");
-							setTwoPageSpread(false);
-						}
+						setFitMode("width");
+						setTwoPageSpread(false);
+						setZoom(1);
 						setIsReaderActive(true);
 					}}
 				/>
@@ -971,7 +1184,7 @@ export function WritingPdfViewer({
 		twoPageSpread,
 		onToggleSpread: toggleSpread,
 		onZoomOut: () =>
-			setZoom((current) => Math.max(MIN_ZOOM, current - ZOOM_STEP)),
+			setZoom((current) => clampZoom(current - ZOOM_STEP)),
 		onFitWidth: () => {
 			setFitMode("width");
 			setZoom(1);
@@ -981,7 +1194,7 @@ export function WritingPdfViewer({
 			setZoom(1);
 		},
 		onZoomIn: () =>
-			setZoom((current) => Math.min(MAX_ZOOM, current + ZOOM_STEP)),
+			setZoom((current) => clampZoom(current + ZOOM_STEP)),
 		labels: toolbarLabels,
 	};
 
@@ -1009,6 +1222,8 @@ export function WritingPdfViewer({
 				documentReady,
 				isViewportReady,
 				loadError,
+				zoom,
+				onZoomChange: (value: number) => setZoom(clampZoom(value)),
 				onSwipeNavigate: goToPage,
 				enableSwipe: canSwipeNavigate && numPages > 1,
 				isMobile,
@@ -1019,6 +1234,14 @@ export function WritingPdfViewer({
 				labels: viewportLabels,
 			}
 		: null;
+
+	const pageContainerClassName = isMobile
+		? "max-w-none"
+		: effectiveTwoPageSpread
+			? "max-w-4xl sm:max-w-5xl lg:max-w-6xl"
+			: effectiveFitMode === "width"
+				? "max-w-none"
+				: "max-w-2xl sm:max-w-3xl";
 
 	return (
 		<div className={cn("writing-pdf-viewer", className)}>
@@ -1038,13 +1261,7 @@ export function WritingPdfViewer({
 							<PdfReaderViewport
 								{...viewportProps}
 								viewportClassName={INLINE_VIEWPORT_CLASS}
-								pageContainerClassName={
-									isMobile
-										? "max-w-none"
-										: effectiveTwoPageSpread
-											? "max-w-3xl sm:max-w-4xl"
-											: "max-w-xl sm:max-w-2xl"
-								}
+								pageContainerClassName={pageContainerClassName}
 								viewportRef={inlineViewportRef}
 							/>
 						) : null
@@ -1080,7 +1297,7 @@ export function WritingPdfViewer({
 											? "max-w-none"
 											: effectiveTwoPageSpread
 												? "max-w-6xl xl:max-w-7xl"
-												: "max-w-5xl xl:max-w-6xl"
+												: "max-w-none"
 									}
 									viewportRef={fullscreenViewportRef}
 								/>

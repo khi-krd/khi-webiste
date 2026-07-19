@@ -1,5 +1,4 @@
 @import "tailwindcss";
-@import "lenis/dist/lenis.css";
 
 /* Hover-only utilities — avoid sticky :hover on touch (buttons look "active" after tap). */
 @custom-variant fine-hover {
@@ -205,7 +204,7 @@ html[data-corners="rounded"]
 		background-color: var(--color-background);
 		text-rendering: optimizeLegibility;
 		-webkit-font-smoothing: antialiased;
-		scroll-padding-top: 6.5rem;
+		scroll-padding-top: 5rem;
 
 		/* Font tokens — live in @layer base so locale overrides can win. */
 		--font-app-body: var(--font-vazirmatn);
@@ -225,7 +224,7 @@ html[data-corners="rounded"]
 
 	@media (min-width: 640px) {
 		html {
-			scroll-padding-top: 7.5rem;
+			scroll-padding-top: 6rem;
 		}
 	}
 
@@ -548,6 +547,35 @@ html[data-corners="rounded"]
 	.project-article-body .prose :is(h2, h3, h4) {
 		font-family: var(--font-heading);
 		margin-block-start: 2.2em;
+	}
+
+	/* News detail — wider title + justified body copy. */
+	.news-post-title {
+		font-family: var(--font-heading);
+		font-size: clamp(2.75rem, 5.5vw + 1rem, 5.75rem);
+		font-weight: 700;
+		line-height: 1.02;
+		text-wrap: balance;
+	}
+	:is(:lang(ku), :lang(en)) .news-post-title {
+		letter-spacing: 0.03em;
+		text-transform: uppercase;
+	}
+	:lang(ckb) .news-post-title {
+		line-height: var(--leading-heading-arabic);
+	}
+
+	.news-article-body .prose,
+	.news-article-body .prose :is(p, li) {
+		text-align: justify;
+		text-justify: inter-word;
+	}
+
+	/* Audio detail — justified body copy aligned to reading direction. */
+	.audio-article-body .prose,
+	.audio-article-body .prose :is(p, li) {
+		text-align: justify;
+		text-justify: inter-word;
 	}
 
 }

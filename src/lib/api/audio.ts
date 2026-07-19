@@ -293,6 +293,104 @@ export async function getAudioTrackById(
 	});
 }
 
+const RELATED_AUDIO_LIMIT = 4;
+
+/** Prev/next neighbours in the catalogue (newest-first order). */
+export async function getAudioNeighbors(
+	locale: string,
+	id: number,
+): Promise<{
+	previous: ResolvedAudioCard | null;
+	next: ResolvedAudioCard | null;
+}> {
+	const allItems = sortAudioTracks(await getAllAudioCards(locale));
+	const index = allItems.findIndex((item) => item.id === id);
+	if (index < 0) {
+		return { previous: null, next: null };
+	}
+	return {
+		previous: index > 0 ? (allItems[index - 1] ?? null) : null,
+		next: index < allItems.length - 1 ? (allItems[index + 1] ?? null) : null,
+	};
+}
+
+/**
+ * Related catalogue cards ranked by shared tags/keywords, topic, and type.
+ * Fills with recent peers when scored matches are scarce.
+ */
+export async function getRelatedAudio(
+	locale: string,
+	detail: ResolvedAudioDetail,
+	options?: {
+		limit?: number;
+		excludeIds?: ReadonlyArray<number>;
+	},
+): Promise<ResolvedAudioCard[]> {
+	const limit = options?.limit ?? RELATED_AUDIO_LIMIT;
+	const allItems = await getAllAudioCards(locale);
+	const exclude = new Set<number>([
+		detail.id,
+		...(options?.excludeIds ?? []),
+	]);
+	const tagSet = new Set(
+		[...detail.tags, ...detail.keywords]
+			.map((tag) => tag.trim().toLowerCase())
+			.filter(Boolean),
+	);
+
+	const ranked = allItems
+		.filter((entry) => !exclude.has(entry.id))
+		.map((entry) => {
+			const sharedTags = [...entry.tags, ...entry.keywords].filter((tag) =>
+				tagSet.has(tag.trim().toLowerCase()),
+			).length;
+			const sameTopic =
+				detail.topicId != null && entry.topicId === detail.topicId ? 1 : 0;
+			const sameType = entry.soundType === detail.soundType ? 1 : 0;
+			const sameMemories =
+				detail.albumOfMemories && entry.albumOfMemories ? 1 : 0;
+			return {
+				entry,
+				score: sharedTags * 10 + sameTopic * 5 + sameType * 3 + sameMemories,
+			};
+		})
+		.sort((a, b) => {
+			if (b.score !== a.score) {
+				return b.score - a.score;
+			}
+			return b.entry.createdAt.localeCompare(a.entry.createdAt);
+		});
+
+	const results: ResolvedAudioCard[] = [];
+	const used = new Set(exclude);
+
+	for (const { entry, score } of ranked) {
+		if (results.length >= limit) {
+			break;
+		}
+		if (score <= 0 || used.has(entry.id)) {
+			continue;
+		}
+		results.push(entry);
+		used.add(entry.id);
+	}
+
+	if (results.length < limit) {
+		for (const item of sortAudioTracks(allItems)) {
+			if (results.length >= limit) {
+				break;
+			}
+			if (used.has(item.id)) {
+				continue;
+			}
+			results.push(item);
+			used.add(item.id);
+		}
+	}
+
+	return results;
+}
+
 export type AudioTopicOption = {
 	id: number;
 	name: string;

@@ -49,7 +49,6 @@ export async function SoundSection({
 	return (
 		<section
 			aria-labelledby="sound-heading"
-			data-snap-section
 			className={cn(
 				"cv-auto relative w-full overflow-hidden border-t border-border [--cv-intrinsic:1000px]",
 				compact ? "min-h-128 sm:min-h-160" : "min-h-svh",

@@ -48,7 +48,7 @@ export default async function ProjectsPage({
 	});
 
 	return (
-		<main className="-mt-26 bg-background sm:-mt-30">
+		<main className="bg-background">
 			<VisuallyHidden as="h1">{t("pageTitle")}</VisuallyHidden>
 
 			<ProjectsHero
@@ -72,7 +72,6 @@ export default async function ProjectsPage({
 				activeTag={pageData.activeTag}
 				activeQuery={pageData.activeQuery}
 				previewLabel={t("grid.preview")}
-				tagsFilterLabel={t("filters.tags")}
 				noResultsMessage={t("grid.noResults")}
 				paginationLabel={t("pagination.label")}
 				previousLabel={t("pagination.previous")}

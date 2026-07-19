@@ -15,8 +15,6 @@ export type WritingCardProps = {
 	hoverCoverUrl: string | null;
 	genreLabels: string[];
 	topicName: string | null;
-	publishedByInstitute: boolean;
-	instituteBadgeLabel: string;
 	fileUrl: string | null;
 	downloadLabel: string;
 };
@@ -42,8 +40,6 @@ export function WritingCard({
 	hoverCoverUrl,
 	genreLabels,
 	topicName,
-	publishedByInstitute,
-	instituteBadgeLabel,
 	downloadLabel,
 }: WritingCardProps) {
 	const hasHoverCover =
@@ -54,7 +50,7 @@ export function WritingCard({
 
 	return (
 		<article className="group flex h-full w-full flex-col overflow-hidden border border-border bg-surface">
-			<div className="relative min-h-[22rem] flex-1 overflow-hidden sm:min-h-[24rem] lg:min-h-[26rem]">
+			<div className="relative aspect-[4/3] w-full overflow-hidden">
 				<div className="absolute inset-0">
 					{coverUrl ? (
 						<>
@@ -83,11 +79,6 @@ export function WritingCard({
 
 				<div className="relative z-1 flex h-full flex-col justify-between p-5 text-primary-foreground sm:p-6">
 					<div className="space-y-2">
-						{publishedByInstitute ? (
-							<p className="label text-primary-foreground/70">
-								{instituteBadgeLabel}
-							</p>
-						) : null}
 						<div>
 							<p className="font-heading text-h3 font-bold leading-tight">
 								{writer || title}
@@ -106,7 +97,7 @@ export function WritingCard({
 
 					<div className="space-y-4">
 						{excerpt ? (
-							<p className="line-clamp-4 text-small leading-relaxed text-primary-foreground/88">
+							<p className="line-clamp-3 text-small leading-relaxed text-primary-foreground/88 sm:line-clamp-4">
 								{excerpt}
 							</p>
 						) : null}
@@ -150,21 +141,6 @@ export function buildFileMetaLabel(
 	const size = formatFileSize(card.fileSizeBytes);
 	if (size) {
 		parts.push(size);
-	}
-	return parts.length > 0 ? parts.join(" · ") : null;
-}
-
-/** Grid listing meta — format and page count only (no file size). */
-export function buildGridFileMetaLabel(
-	card: Pick<FileMetaInput, "fileFormat" | "pageCount">,
-	pagesLabel: (count: number) => string,
-): string | null {
-	const parts: string[] = [];
-	if (card.fileFormat) {
-		parts.push(card.fileFormat);
-	}
-	if (card.pageCount != null && card.pageCount > 0) {
-		parts.push(pagesLabel(card.pageCount));
 	}
 	return parts.length > 0 ? parts.join(" · ") : null;
 }

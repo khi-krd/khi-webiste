@@ -124,13 +124,44 @@ export function normalizeWritingRecord(raw: unknown): unknown {
 	};
 }
 
+const AUDIO_CONTAINER_TYPES = new Set([
+	"MP3",
+	"WAV",
+	"OGG",
+	"AAC",
+	"FLAC",
+	"M4A",
+	"WEBM",
+]);
+
+function asOptionalString(value: unknown): string | null {
+	if (value == null) {
+		return null;
+	}
+	if (typeof value === "string") {
+		const trimmed = value.trim();
+		return trimmed.length > 0 ? trimmed : null;
+	}
+	if (typeof value === "number" && Number.isFinite(value)) {
+		return String(value);
+	}
+	return null;
+}
+
 function normalizeSoundFile(raw: unknown): unknown {
 	const file = asRecord(raw);
 	if (!file) return raw;
 
-	const fileType = String(file.fileType ?? file.file_type ?? "AUDIO").toUpperCase();
+	const rawFileType = String(file.fileType ?? file.file_type ?? "AUDIO")
+		.trim()
+		.toUpperCase();
 	const normalizedType =
-		fileType === "VIDEO" || fileType === "OTHER" ? fileType : "AUDIO";
+		rawFileType === "VIDEO" || rawFileType === "OTHER"
+			? rawFileType
+			: "AUDIO";
+	const fileFormat =
+		asOptionalString(file.fileFormat ?? file.file_format) ??
+		(AUDIO_CONTAINER_TYPES.has(rawFileType) ? rawFileType : null);
 
 	return {
 		...file,
@@ -141,14 +172,33 @@ function normalizeSoundFile(raw: unknown): unknown {
 		fileType: normalizedType,
 		publishmentYear:
 			file.publishmentYear ?? file.publishment_year ?? null,
-		fileFormat: file.fileFormat ?? file.file_format ?? null,
-		bitRate: file.bitRate ?? file.bit_rate ?? null,
-		sampleRate: file.sampleRate ?? file.sample_rate ?? null,
+		fileFormat,
+		sizeBytes: file.sizeBytes ?? file.size_bytes ?? null,
+		durationSeconds:
+			file.durationSeconds ?? file.duration_seconds ?? null,
+		durationMinutes:
+			file.durationMinutes ?? file.duration_minutes ?? null,
+		bitRate: asOptionalString(file.bitRate ?? file.bit_rate),
+		sampleRate: asOptionalString(file.sampleRate ?? file.sample_rate),
 		audioChannel: file.audioChannel ?? file.audio_channel ?? null,
-		form: file.form ?? null,
-		genre: file.genre ?? null,
-		recordingVenue: file.recordingVenue ?? file.recording_venue ?? null,
-		brochures: Array.isArray(file.brochures) ? file.brochures : [],
+		form: asOptionalString(file.form),
+		genre: asOptionalString(file.genre),
+		recordingVenue: asOptionalString(
+			file.recordingVenue ?? file.recording_venue,
+		),
+		brochures: Array.isArray(file.brochures)
+			? file.brochures.map((brochure) => {
+					const item = asRecord(brochure);
+					if (!item) return brochure;
+					return {
+						...item,
+						imageUrl: item.imageUrl ?? item.image_url ?? null,
+						caption: item.caption ?? null,
+						brochureOrder:
+							item.brochureOrder ?? item.brochure_order ?? null,
+					};
+				})
+			: [],
 	};
 }
 

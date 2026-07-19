@@ -8,6 +8,10 @@ import {
 import type { SearchType } from "@/types/search";
 
 export type { ClientSearchSectionKey, SearchTaxonomyItem } from "@/lib/search/taxonomy-types";
+export {
+	getNavMenuTaxonomyItems,
+	getSectionKeyForNavKey,
+} from "@/lib/search/taxonomy-types";
 
 export type ClientSearchItem = {
 	id: string;

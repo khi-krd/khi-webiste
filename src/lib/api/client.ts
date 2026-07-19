@@ -1,19 +1,45 @@
 import "server-only";
-import { z } from "zod";
 import type { ZodType } from "zod";
+import { z } from "zod";
 import { getApiBaseUrl } from "@/lib/api/config";
 
-function parseRevalidateSeconds(): number {
-	const raw = process.env.REVALIDATE_SECONDS?.trim();
-	if (!raw) {
-		return 600;
+/**
+ * Cache policy for upstream CMS fetches.
+ *
+ * - `API_REVALIDATE_SECONDS=0` or `no-store` (or unset) → `cache: "no-store"`
+ * - positive integer → ISR with that TTL (seconds) + cache tags
+ *
+ * Also accepts legacy `REVALIDATE_SECONDS` as a fallback alias.
+ */
+type CachePolicy =
+	| { mode: "no-store" }
+	| { mode: "revalidate"; seconds: number };
+
+function parseCachePolicy(): CachePolicy {
+	const raw =
+		process.env.API_REVALIDATE_SECONDS?.trim() ??
+		process.env.REVALIDATE_SECONDS?.trim();
+
+	// Fresh by default: CMS writes must appear without waiting for an ISR window
+	// or a browser cache clear. Opt into ISR with a positive TTL.
+	if (!raw || raw === "0" || /^no-?store$/i.test(raw)) {
+		return { mode: "no-store" };
 	}
 
 	const parsed = Number.parseInt(raw, 10);
-	return Number.isFinite(parsed) && parsed > 0 ? parsed : 600;
+	if (!Number.isFinite(parsed) || parsed <= 0) {
+		return { mode: "no-store" };
+	}
+
+	return { mode: "revalidate", seconds: parsed };
 }
 
-export const DEFAULT_REVALIDATE = parseRevalidateSeconds();
+const CACHE_POLICY = parseCachePolicy();
+
+/** Seconds used when ISR is enabled; `0` means no-store (default). */
+export const DEFAULT_REVALIDATE =
+	CACHE_POLICY.mode === "revalidate" ? CACHE_POLICY.seconds : 0;
+
 export const DEFAULT_PAGE_SIZE = 20;
 export const BULK_FETCH_SIZE = 200;
 
@@ -33,7 +59,7 @@ function logApiParseFailure(path: string, error: z.ZodError): void {
 	);
 }
 
-export type ParsePageItemsOptions<T> = {
+export type ParsePageItemsOptions<_T = unknown> = {
 	normalizeItem?: (item: unknown) => unknown;
 	onItemError?: (item: unknown, error: z.ZodError) => void;
 };
@@ -88,10 +114,33 @@ export type ParsedApiPage<T> = {
 	empty: boolean;
 };
 
+type FetchCacheInput = {
+	tags?: string[];
+	revalidate?: number;
+	/** Force bypass even when ISR env TTL is set. */
+	noStore?: boolean;
+};
+
+/** Build Next.js fetch cache options from env policy + per-call overrides. */
+export function buildFetchCacheOptions({
+	tags = [],
+	revalidate = DEFAULT_REVALIDATE,
+	noStore = false,
+}: FetchCacheInput = {}): RequestInit {
+	if (noStore || CACHE_POLICY.mode === "no-store" || revalidate <= 0) {
+		return { cache: "no-store" };
+	}
+
+	return {
+		next: { revalidate, tags },
+	};
+}
+
 type ApiFetchPageOptions<T extends ZodType> = {
 	itemSchema: T;
 	tags?: string[];
 	revalidate?: number;
+	noStore?: boolean;
 	searchParams?: Record<string, string | number | undefined>;
 	normalizeItem?: (item: unknown) => unknown;
 };
@@ -102,6 +151,7 @@ export async function apiFetchPage<T extends ZodType>(
 		itemSchema,
 		tags = [],
 		revalidate = DEFAULT_REVALIDATE,
+		noStore = false,
 		searchParams,
 		normalizeItem,
 	}: ApiFetchPageOptions<T>,
@@ -121,9 +171,10 @@ export async function apiFetchPage<T extends ZodType>(
 			}
 		}
 
-		const response = await fetch(endpoint, {
-			next: { revalidate, tags },
-		});
+		const response = await fetch(
+			endpoint,
+			buildFetchCacheOptions({ tags, revalidate, noStore }),
+		);
 
 		if (!response.ok) {
 			if (isDevelopment) {
@@ -218,11 +269,7 @@ export async function apiFetch<T extends z.ZodType>(
 
 		const response = await fetch(
 			endpoint,
-			noStore
-				? { cache: "no-store" }
-				: {
-						next: { revalidate, tags },
-					},
+			buildFetchCacheOptions({ tags, revalidate, noStore }),
 		);
 
 		if (!response.ok) {
@@ -250,6 +297,7 @@ export async function apiFetch<T extends z.ZodType>(
 type ApiFetchRawOptions = {
 	tags?: string[];
 	revalidate?: number;
+	noStore?: boolean;
 	searchParams?: Record<string, string | number | undefined>;
 };
 
@@ -279,22 +327,13 @@ async function apiMutate<T extends z.ZodType>(
 
 	try {
 		const endpoint = new URL(path, apiBaseUrl);
-		const response = await fetch(
-			endpoint,
-			noStore
-				? {
-						method,
-						headers: { "Content-Type": "application/json" },
-						body: JSON.stringify(body),
-						cache: "no-store",
-					}
-				: {
-						method,
-						headers: { "Content-Type": "application/json" },
-						body: JSON.stringify(body),
-						next: { revalidate, tags },
-					},
-		);
+		const cacheOptions = buildFetchCacheOptions({ tags, revalidate, noStore });
+		const response = await fetch(endpoint, {
+			method,
+			headers: { "Content-Type": "application/json" },
+			body: JSON.stringify(body),
+			...cacheOptions,
+		});
 
 		if (!response.ok) {
 			return null;
@@ -339,6 +378,7 @@ export async function apiFetchRaw(
 	{
 		tags = [],
 		revalidate = DEFAULT_REVALIDATE,
+		noStore = false,
 		searchParams,
 	}: ApiFetchRawOptions = {},
 ): Promise<unknown | null> {
@@ -357,9 +397,10 @@ export async function apiFetchRaw(
 			}
 		}
 
-		const response = await fetch(endpoint, {
-			next: { revalidate, tags },
-		});
+		const response = await fetch(
+			endpoint,
+			buildFetchCacheOptions({ tags, revalidate, noStore }),
+		);
 
 		if (!response.ok) {
 			return null;

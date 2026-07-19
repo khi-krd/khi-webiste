@@ -19,7 +19,8 @@ import { formatDuration } from "@/lib/video/format";
 import { shortFilmDetailHref } from "@/lib/video/resolve";
 import type { ResolvedVideoCard } from "@/types/video";
 
-const PREVIEW_COUNT = 6;
+/** Enough posters for a dense 2–3 row shelf on common breakpoints. */
+const PREVIEW_COUNT = 12;
 
 function toPoster(card: ResolvedVideoCard): VideoPosterCardProps {
 	return {
@@ -55,27 +56,26 @@ export async function VideoShortFilmsPromo() {
 
 	return (
 		<section
-			className="border-y border-primary-foreground/20 bg-foreground py-12 text-primary-foreground sm:py-16"
-			data-snap-section
+			className="border-y border-primary-foreground/20 bg-foreground py-8 text-primary-foreground sm:py-10"
 			aria-labelledby="shortfilms-promo-heading"
 		>
 			<div className={homeInsetClass}>
 				<ScrollRevealBlock>
-					<div className="flex flex-col gap-6 sm:flex-row sm:items-end sm:justify-between">
+					<div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
 						<div className="max-w-xl">
 							<p className="text-label font-medium text-primary-foreground/60">
 								{t("shortfilms.hero.eyebrow")}
 							</p>
 							<h2
 								id="shortfilms-promo-heading"
-								className="mt-2 font-heading text-h2 font-bold leading-tight text-balance sm:text-h1"
+								className="mt-1.5 font-heading text-h2 font-bold leading-tight text-balance sm:text-h1"
 							>
 								{t("shortfilms.promo.title")}
 							</h2>
-							<p className="mt-3 text-body text-primary-foreground/75">
+							<p className="mt-2 text-body text-primary-foreground/75">
 								{t("shortfilms.promo.description")}
 							</p>
-							<p className="mt-4 text-label text-primary-foreground/55">
+							<p className="mt-2 text-label text-primary-foreground/55">
 								{t("shortfilms.promo.count", {
 									count: totalCount,
 									formatted: String(totalCount),
@@ -90,16 +90,14 @@ export async function VideoShortFilmsPromo() {
 					</div>
 				</ScrollRevealBlock>
 
+				{/* Dense 2–3 row shelf of short-film posters */}
 				<ScrollReveal
 					className={cn(
-						"mt-8 flex gap-3 overflow-x-auto pb-2 sm:mt-10 sm:gap-4",
+						"mt-5 grid grid-cols-2 gap-2 sm:mt-6 sm:grid-cols-3 sm:gap-3 lg:grid-cols-4 xl:grid-cols-6",
 					)}
 				>
 					{posters.map((card) => (
-						<ScrollRevealItem
-							key={card.id}
-							className="w-36 shrink-0 sm:w-40 lg:w-44"
-						>
+						<ScrollRevealItem key={card.id}>
 							<VideoPosterCard {...card} />
 						</ScrollRevealItem>
 					))}

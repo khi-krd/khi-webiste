@@ -12,6 +12,8 @@ export type AudioTracklistLabels = {
 	title: string;
 	subheading: string | null;
 	fileDetails: string;
+	techSection: string;
+	contentSection: string;
 	externalLink: string;
 	channelLabels: Record<"STEREO" | "MONO", string>;
 	techLabels: {
@@ -20,6 +22,9 @@ export type AudioTracklistLabels = {
 		sampleRate: string;
 		audioChannel: string;
 		size: string;
+		duration: string;
+		form: string;
+		genre: string;
 		recordingVenue: string;
 		year: string;
 	};
@@ -32,12 +37,36 @@ type AudioTracklistProps = {
 	className?: string;
 };
 
-function TechPair({ label, value }: { label: string; value: string }) {
+type MetaEntry = { key: string; label: string; value: string; ltr?: boolean };
+
+function MetaSection({
+	heading,
+	entries,
+}: {
+	heading: string;
+	entries: MetaEntry[];
+}) {
+	if (entries.length === 0) {
+		return null;
+	}
+
 	return (
-		<div className="flex flex-col gap-0.5">
-			<dt className="text-label text-muted">{label}</dt>
-			<dd className="text-small text-foreground">{value}</dd>
-		</div>
+		<section className="text-start">
+			<h3 className="label font-medium text-muted">{heading}</h3>
+			<dl className="mt-2 flex flex-wrap gap-x-8 gap-y-3">
+				{entries.map((entry) => (
+					<div key={entry.key} className="min-w-0">
+						<dt className="text-label text-muted">{entry.label}</dt>
+						<dd
+							dir={entry.ltr ? "ltr" : undefined}
+							className="mt-0.5 text-small font-medium text-foreground"
+						>
+							{entry.value}
+						</dd>
+					</div>
+				))}
+			</dl>
+		</section>
 	);
 }
 
@@ -45,10 +74,84 @@ function trackNo(index: number): string {
 	return String(index + 1).padStart(2, "0");
 }
 
+function buildTechnicalEntries(
+	row: ResolvedAudioFileRow,
+	labels: AudioTracklistLabels,
+): MetaEntry[] {
+	const durationLabel = formatDuration(row.durationSeconds);
+
+	return [
+		durationLabel && {
+			key: "duration",
+			label: labels.techLabels.duration,
+			value: durationLabel,
+			ltr: true,
+		},
+		row.sizeBytes != null &&
+			row.sizeBytes > 0 && {
+				key: "size",
+				label: labels.techLabels.size,
+				value: formatFileSize(row.sizeBytes) ?? "",
+				ltr: true,
+			},
+		row.bitRate && {
+			key: "bitRate",
+			label: labels.techLabels.bitRate,
+			value: row.bitRate,
+			ltr: true,
+		},
+		row.sampleRate && {
+			key: "sampleRate",
+			label: labels.techLabels.sampleRate,
+			value: row.sampleRate,
+			ltr: true,
+		},
+		row.audioChannel && {
+			key: "audioChannel",
+			label: labels.techLabels.audioChannel,
+			value: labels.channelLabels[row.audioChannel],
+		},
+		row.fileFormat && {
+			key: "fileFormat",
+			label: labels.techLabels.fileFormat,
+			value: row.fileFormat,
+			ltr: true,
+		},
+	].filter(Boolean) as MetaEntry[];
+}
+
+function buildContentEntries(
+	row: ResolvedAudioFileRow,
+	labels: AudioTracklistLabels,
+): MetaEntry[] {
+	return [
+		row.publishmentYear != null && {
+			key: "year",
+			label: labels.techLabels.year,
+			value: String(row.publishmentYear),
+			ltr: true,
+		},
+		row.form && {
+			key: "form",
+			label: labels.techLabels.form,
+			value: row.form,
+		},
+		row.genre && {
+			key: "genre",
+			label: labels.techLabels.genre,
+			value: row.genre,
+		},
+		row.recordingVenue && {
+			key: "recordingVenue",
+			label: labels.techLabels.recordingVenue,
+			value: row.recordingVenue,
+		},
+	].filter(Boolean) as MetaEntry[];
+}
+
 /**
- * Ordered file rows with play controls and a per-row native `<details>` for
- * technical metadata. The play queue covers playable files only, so row →
- * queue indices are mapped by file id.
+ * Ordered file rows with play controls. Technical + content metadata sits
+ * behind a collapsed “show more” details toggle (mirrors the admin editor).
  */
 export function AudioTracklist({
 	fileRows,
@@ -66,7 +169,7 @@ export function AudioTracklist({
 
 	return (
 		<section aria-label={labels.title} className={className}>
-			<div className="flex flex-wrap items-baseline justify-between gap-2">
+			<div className="flex flex-wrap items-baseline justify-between gap-2 text-start">
 				<h2 className="font-heading text-h3 font-bold">{labels.title}</h2>
 				{labels.subheading ? (
 					<p className="text-small text-muted">{labels.subheading}</p>
@@ -77,45 +180,10 @@ export function AudioTracklist({
 				{fileRows.map((row, index) => {
 					const queueIndex = queueIndexByFileId.get(row.id);
 					const durationLabel = formatDuration(row.durationSeconds);
-					const chipItems = [row.form, row.genre].filter(Boolean) as string[];
-					const techEntries: { key: string; label: string; value: string }[] = [
-						row.fileFormat && {
-							key: "fileFormat",
-							label: labels.techLabels.fileFormat,
-							value: row.fileFormat,
-						},
-						row.bitRate && {
-							key: "bitRate",
-							label: labels.techLabels.bitRate,
-							value: row.bitRate,
-						},
-						row.sampleRate && {
-							key: "sampleRate",
-							label: labels.techLabels.sampleRate,
-							value: row.sampleRate,
-						},
-						row.audioChannel && {
-							key: "audioChannel",
-							label: labels.techLabels.audioChannel,
-							value: labels.channelLabels[row.audioChannel],
-						},
-						row.sizeBytes != null &&
-							row.sizeBytes > 0 && {
-								key: "size",
-								label: labels.techLabels.size,
-								value: formatFileSize(row.sizeBytes) ?? "",
-							},
-						row.recordingVenue && {
-							key: "recordingVenue",
-							label: labels.techLabels.recordingVenue,
-							value: row.recordingVenue,
-						},
-						row.publishmentYear != null && {
-							key: "year",
-							label: labels.techLabels.year,
-							value: String(row.publishmentYear),
-						},
-					].filter(Boolean) as { key: string; label: string; value: string }[];
+					const technicalEntries = buildTechnicalEntries(row, labels);
+					const contentEntries = buildContentEntries(row, labels);
+					const hasDetails =
+						technicalEntries.length > 0 || contentEntries.length > 0;
 
 					return (
 						<li
@@ -138,7 +206,7 @@ export function AudioTracklist({
 										target="_blank"
 										rel="noopener noreferrer"
 										aria-label={`${labels.externalLink} — ${row.title}`}
-										className="inline-flex size-9 shrink-0 items-center justify-center border border-border-strong text-foreground transition-colors fine-hover:bg-sunken focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
+										className="inline-flex size-9 shrink-0 items-center justify-center border border-border-strong text-foreground transition-colors fine-hover:bg-sunken focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
 									>
 										<ArrowTopRightOnSquareIcon aria-hidden className="size-4" />
 									</a>
@@ -153,6 +221,7 @@ export function AudioTracklist({
 
 								<span
 									aria-hidden
+									dir="ltr"
 									className="label hidden w-6 shrink-0 font-medium tabular-nums sm:inline"
 								>
 									{trackNo(index)}
@@ -170,15 +239,9 @@ export function AudioTracklist({
 									</span>
 								) : null}
 
-								<p className="min-w-0 flex-1 text-body font-medium text-foreground">
+								<p className="min-w-0 flex-1 text-start text-body font-medium text-foreground">
 									{row.title}
 								</p>
-
-								{chipItems.length > 0 ? (
-									<span className="label hidden shrink-0 text-muted md:inline">
-										{chipItems.join(" · ")}
-									</span>
-								) : null}
 
 								{durationLabel ? (
 									<span
@@ -190,24 +253,25 @@ export function AudioTracklist({
 								) : null}
 							</div>
 
-							{techEntries.length > 0 ? (
-								<details className="group/details mt-2 ps-12 sm:ps-[4.75rem]">
-									<summary className="inline-flex cursor-pointer list-none items-center gap-1 text-label text-muted transition-colors fine-hover:text-foreground [&::-webkit-details-marker]:hidden">
+							{hasDetails ? (
+								<details className="group/details mt-3">
+									<summary className="inline-flex cursor-pointer list-none items-center gap-1.5 text-label text-muted transition-colors fine-hover:text-foreground [&::-webkit-details-marker]:hidden">
 										<ChevronDownIcon
 											aria-hidden
-											className="size-3 transition-transform group-open/details:rotate-180"
+											className="size-3.5 shrink-0 transition-transform group-open/details:rotate-180"
 										/>
 										{labels.fileDetails}
 									</summary>
-									<dl className="mt-3 grid grid-cols-2 gap-x-6 gap-y-3 sm:grid-cols-3 lg:grid-cols-4">
-										{techEntries.map((entry) => (
-											<TechPair
-												key={entry.key}
-												label={entry.label}
-												value={entry.value}
-											/>
-										))}
-									</dl>
+									<div className="mt-3 space-y-4 border-t border-border pt-3">
+										<MetaSection
+											heading={labels.techSection}
+											entries={technicalEntries}
+										/>
+										<MetaSection
+											heading={labels.contentSection}
+											entries={contentEntries}
+										/>
+									</div>
 								</details>
 							) : null}
 						</li>

@@ -84,7 +84,10 @@ function resolveBilingualStrings(
 }
 
 /** Locale-relative detail path consumed by the i18n-aware `Link`. */
-export function videoDetailHref(id: number): string {
+export function videoDetailHref(id: number, clipNumber?: number | null): string {
+	if (clipNumber != null && clipNumber > 0) {
+		return `/videos/${id}?clip=${clipNumber}`;
+	}
 	return `/videos/${id}`;
 }
 
@@ -133,16 +136,23 @@ function classifySource(
 
 /**
  * Resolve which source the detail player should mount.
- * FILM follows the source priority (direct → external → embed); VIDEO_CLIP
- * plays its first clip and the client frame swaps between the rest.
+ * FILM follows the source priority (direct → external → embed).
+ * VIDEO_CLIP plays a single clip (optional clipNumber, else the first).
  */
-export function resolveVideoPlayer(video: Video): {
+export function resolveVideoPlayer(
+	video: Video,
+	clipNumber?: number | null,
+): {
 	playerKind: VideoPlayerKind;
 	playableSrc: string | null;
 } {
 	if (video.videoType === "VIDEO_CLIP") {
-		const first = sortedClips(video)?.[0];
-		const classified = classifySource(resolveClipUrl(first));
+		const clips = sortedClips(video) ?? [];
+		const selected =
+			clipNumber != null
+				? (clips.find((clip) => clip.clipNumber === clipNumber) ?? clips[0])
+				: clips[0];
+		const classified = classifySource(resolveClipUrl(selected));
 		return classified
 			? { playerKind: classified.kind, playableSrc: classified.src }
 			: { playerKind: "none", playableSrc: null };
@@ -252,6 +262,8 @@ export function resolveVideoCard(
 	}
 
 	const description = content.description?.trim() ?? "";
+	const clips = sortedClips(video) ?? [];
+	const singleClip = video.videoType === "VIDEO_CLIP" ? clips[0] : null;
 
 	return {
 		id: video.id,
@@ -266,11 +278,13 @@ export function resolveVideoCard(
 		albumOfMemories: video.albumOfMemories,
 		topicId: video.topicId ?? null,
 		topicName: resolveVideoTopicName(locale, video),
-		durationSeconds: video.durationSeconds ?? totalClipDuration(video),
-		clipCount:
-			video.videoType === "VIDEO_CLIP"
-				? (video.videoClipItems?.length ?? 0)
-				: null,
+		durationSeconds:
+			singleClip?.durationSeconds ??
+			video.durationSeconds ??
+			totalClipDuration(video),
+		/** Clips are standalone videos — never expose a playlist count. */
+		clipCount: null,
+		clipNumber: singleClip?.clipNumber ?? null,
 		year: publishmentYear(video),
 		tags: resolveBilingualStrings(locale, video.tagsCkb, video.tagsKmr),
 		keywords: resolveBilingualStrings(
@@ -282,19 +296,59 @@ export function resolveVideoCard(
 	};
 }
 
+/**
+ * Expand VIDEO_CLIP parents so every clip appears as its own listing card.
+ * FILM records stay one card. Ensures the catalogue shows all clips.
+ */
+export function resolveVideoCards(
+	locale: string,
+	video: Video,
+): ResolvedVideoCard[] {
+	const base = resolveVideoCard(locale, video);
+	if (!base) {
+		return [];
+	}
+
+	if (video.videoType !== "VIDEO_CLIP") {
+		return [base];
+	}
+
+	const clips = (sortedClips(video) ?? []).map((clip) =>
+		resolveClip(locale, clip),
+	);
+	if (clips.length <= 1) {
+		return [base];
+	}
+
+	return clips
+		.filter((clip) => clip.url.trim().length > 0)
+		.map((clip) => ({
+			...base,
+			title: clip.title || base.title,
+			durationSeconds: clip.durationSeconds,
+			clipCount: null,
+			clipNumber: clip.clipNumber,
+		}));
+}
+
 export function resolveVideoDetail(
 	locale: string,
 	video: Video,
+	clipNumber?: number | null,
 ): ResolvedVideoDetail | null {
 	const content = resolveVideoContent(locale, video);
 	if (!content?.title) {
 		return null;
 	}
 
-	const { playerKind, playableSrc } = resolveVideoPlayer(video);
 	const clips = (sortedClips(video) ?? []).map((clip) =>
 		resolveClip(locale, clip),
 	);
+	const activeClip =
+		clipNumber != null
+			? (clips.find((clip) => clip.clipNumber === clipNumber) ?? null)
+			: null;
+	const { playerKind, playableSrc } = resolveVideoPlayer(video, clipNumber);
 
 	const cast = (video.castMembers ?? [])
 		.map((member) => resolveCastMember(locale, member))
@@ -307,7 +361,7 @@ export function resolveVideoDetail(
 
 	return {
 		id: video.id,
-		title: content.title,
+		title: activeClip?.title || content.title,
 		description: content.description?.trim() ?? "",
 		coverUrl: resolveVideoCoverUrl(locale, video),
 		videoType: video.videoType,
@@ -318,7 +372,11 @@ export function resolveVideoDetail(
 		producer: firstNonBlank(content.producer),
 		location: firstNonBlank(content.location),
 		contentLanguages: video.contentLanguages,
-		durationSeconds: video.durationSeconds ?? totalClipDuration(video) ?? null,
+		durationSeconds:
+			activeClip?.durationSeconds ??
+			video.durationSeconds ??
+			totalClipDuration(video) ??
+			null,
 		resolution: firstNonBlank(video.resolution),
 		fileFormat: firstNonBlank(video.fileFormat),
 		publishmentDate: firstNonBlank(video.publishmentDate),
@@ -326,6 +384,7 @@ export function resolveVideoDetail(
 		playerKind,
 		playableSrc,
 		clips,
+		activeClipNumber: activeClip?.clipNumber ?? clips[0]?.clipNumber ?? null,
 		cast,
 		highlights,
 		tags: resolveBilingualStrings(locale, video.tagsCkb, video.tagsKmr),

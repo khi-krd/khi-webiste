@@ -1,11 +1,15 @@
 "use client";
 
 import { motion, useReducedMotion } from "motion/react";
-import type { ReactNode } from "react";
-import { PAGE_TRANSITION_DELAY } from "@/components/motion/scroll-reveal";
+import { type ReactNode, useCallback, useMemo, useRef } from "react";
+import {
+	PAGE_TRANSITION_DELAY,
+	RevealStaggerContext,
+	revealEase,
+	useInViewReveal,
+	useMountReveal,
+} from "@/components/motion/scroll-reveal";
 import { cn } from "@/lib/utils";
-
-const revealEase = [0.22, 1, 0.36, 1] as const;
 
 type ServicesHeroMotionProps = {
 	children: ReactNode;
@@ -16,29 +20,20 @@ export function ServicesHeroMotion({
 	children,
 	className,
 }: ServicesHeroMotionProps) {
-	const reduceMotion = useReducedMotion();
+	const indexRef = useRef(0);
 
-	if (reduceMotion) {
-		return <div className={className}>{children}</div>;
-	}
+	const nextDelay = useCallback(() => {
+		const i = indexRef.current;
+		indexRef.current += 1;
+		return PAGE_TRANSITION_DELAY + i * 0.1;
+	}, []);
+
+	const value = useMemo(() => ({ nextDelay }), [nextDelay]);
 
 	return (
-		<motion.div
-			className={className}
-			initial="hidden"
-			animate="visible"
-			variants={{
-				hidden: {},
-				visible: {
-					transition: {
-						staggerChildren: 0.1,
-						delayChildren: PAGE_TRANSITION_DELAY,
-					},
-				},
-			}}
-		>
-			{children}
-		</motion.div>
+		<RevealStaggerContext.Provider value={value}>
+			<div className={className}>{children}</div>
+		</RevealStaggerContext.Provider>
 	);
 }
 
@@ -51,26 +46,13 @@ export function ServicesHeroBlock({
 	children,
 	className,
 }: ServicesHeroBlockProps) {
-	const reduceMotion = useReducedMotion();
-
-	if (reduceMotion) {
-		return <div className={className}>{children}</div>;
-	}
+	const ref = useRef<HTMLDivElement>(null);
+	useMountReveal(ref, { y: 24, duration: 0.65 });
 
 	return (
-		<motion.div
-			className={className}
-			variants={{
-				hidden: { opacity: 0, y: 24 },
-				visible: {
-					opacity: 1,
-					y: 0,
-					transition: { duration: 0.65, ease: revealEase },
-				},
-			}}
-		>
+		<div ref={ref} className={className}>
 			{children}
-		</motion.div>
+		</div>
 	);
 }
 
@@ -85,26 +67,19 @@ export function ServicesReveal({
 	className,
 	delay = 0,
 }: ServicesRevealProps) {
-	const reduceMotion = useReducedMotion();
-
-	if (reduceMotion) {
-		return <div className={className}>{children}</div>;
-	}
+	const ref = useRef<HTMLDivElement>(null);
+	useInViewReveal(ref, {
+		y: 28,
+		duration: 0.65,
+		delay: PAGE_TRANSITION_DELAY,
+		extraDelay: delay,
+		margin: "-8% 0px -6% 0px",
+	});
 
 	return (
-		<motion.div
-			className={className}
-			initial={{ opacity: 0, y: 28 }}
-			whileInView={{ opacity: 1, y: 0 }}
-			viewport={{ once: true, margin: "-8% 0px -6% 0px" }}
-			transition={{
-				duration: 0.65,
-				ease: revealEase,
-				delay: PAGE_TRANSITION_DELAY + delay,
-			}}
-		>
+		<div ref={ref} className={className}>
 			{children}
-		</motion.div>
+		</div>
 	);
 }
 

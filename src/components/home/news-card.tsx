@@ -16,7 +16,7 @@ export type NewsCardVariant =
 export type NewsCardOverlayTone = "default" | "light";
 
 type NewsCardProps = {
-	item: LatestUpdateItem;
+	item: Pick<LatestUpdateItem, "slug" | "title" | "excerpt" | "image">;
 	variant: NewsCardVariant;
 	categoryLabel: string;
 	className?: string;

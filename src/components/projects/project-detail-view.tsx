@@ -112,7 +112,7 @@ export function ProjectDetailView({
 
 	return (
 		<article className={cn(homeInsetClass, "pb-16 sm:pb-20")}>
-			<ScrollRevealBlock className="pt-30 sm:pt-34">
+			<ScrollRevealBlock className="pt-10 sm:pt-12">
 				<Link
 					href={projectsHref()}
 					className="group inline-flex w-fit items-center gap-2 no-underline"

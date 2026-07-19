@@ -7,6 +7,7 @@ import { getVideoById, getVideoListing } from "@/lib/api/videos";
 import { SHORT_FILMS_TOPIC_ID } from "@/lib/mock/videos";
 import { formatDuration } from "@/lib/video/format";
 import { shortFilmDetailHref } from "@/lib/video/resolve";
+import { RELATED_VIDEOS_VISIBLE } from "@/components/video/video-related-grid";
 
 type ShortFilmDetailPageProps = {
 	params: Promise<{ locale: string; id: string }>;
@@ -47,11 +48,11 @@ export default async function ShortFilmDetailPage({
 
 	const relatedListing = await getVideoListing(locale, {
 		topicId: SHORT_FILMS_TOPIC_ID,
-		size: 12,
+		size: RELATED_VIDEOS_VISIBLE + 2,
 	});
 	const relatedShortFilms: VideoPosterCardProps[] = relatedListing.items
 		.filter((card) => card.id !== videoId)
-		.slice(0, 8)
+		.slice(0, RELATED_VIDEOS_VISIBLE)
 		.map((card) => ({
 			id: card.id,
 			title: card.title,
@@ -63,7 +64,7 @@ export default async function ShortFilmDetailPage({
 		}));
 
 	return (
-		<main className="-mt-26 bg-foreground sm:-mt-30">
+		<main className="bg-foreground">
 			<ShortFilmDetailView
 				detail={detail}
 				locale={locale}

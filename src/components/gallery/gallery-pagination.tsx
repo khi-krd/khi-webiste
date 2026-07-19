@@ -1,24 +1,22 @@
 "use client";
 
 import { useTransition } from "react";
-import { useScrollToSection } from "@/components/providers/lenis-context";
+import { useScrollToSection } from "@/lib/use-scroll-to-section";
 import { Pagination } from "@/components/ui/pagination";
 import { useRouter } from "@/i18n/navigation";
+import { buildGalleryHref } from "@/lib/gallery-url";
 import { cn } from "@/lib/utils";
 
 type GalleryPaginationProps = {
 	currentPage: number;
 	totalPages: number;
+	activeQuery?: string | null;
+	activeType?: string | null;
 	label: string;
 	previousLabel: string;
 	nextLabel: string;
 	className?: string;
 };
-
-/** Page 1 keeps the clean /gallery URL; deeper pages use ?page=N. */
-function hrefFor(page: number) {
-	return page > 1 ? `/gallery?page=${page}` : "/gallery";
-}
 
 /**
  * Gallery pager — the ui/Pagination primitive wired for client navigation
@@ -28,6 +26,8 @@ function hrefFor(page: number) {
 export function GalleryPagination({
 	currentPage,
 	totalPages,
+	activeQuery,
+	activeType,
 	label,
 	previousLabel,
 	nextLabel,
@@ -36,6 +36,13 @@ export function GalleryPagination({
 	const router = useRouter();
 	const [isPending, startTransition] = useTransition();
 	const scrollToSection = useScrollToSection();
+
+	const hrefFor = (page: number) =>
+		buildGalleryHref({
+			q: activeQuery,
+			type: activeType,
+			page,
+		});
 
 	const handlePageChange = (page: number) => {
 		startTransition(() => {

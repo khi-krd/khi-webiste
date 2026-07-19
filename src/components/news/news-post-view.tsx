@@ -1,9 +1,11 @@
+import { NewsCard } from "@/components/home/news-card";
 import { NewsCoverMedia } from "@/components/news/news-cover-media";
 import { NewsMediaGallery } from "@/components/news/news-media-gallery";
 import { ArrowLeftIcon, ArrowRightIcon } from "@heroicons/react/24/outline";
 import {
 	ScrollReveal,
 	ScrollRevealBlock,
+	ScrollRevealItem,
 } from "@/components/motion/scroll-reveal";
 import { DirectionalIcon } from "@/components/ui/directional-icon";
 import { RichText } from "@/components/ui/rich-text";
@@ -11,7 +13,10 @@ import { TaxonomyBadgeLink } from "@/components/ui/taxonomy-badge-link";
 import { Link } from "@/i18n/navigation";
 import { newsDetailHref } from "@/lib/content/href";
 import { homeInsetClass } from "@/lib/layout";
-import type { NewsItem } from "@/lib/mock/news";
+import {
+	type NewsItem,
+	newsItemCategoryLabel,
+} from "@/lib/mock/news";
 import { isRichTextEmpty } from "@/lib/rich-text";
 import { newsCategoryHref, newsTagHref } from "@/lib/search/taxonomy-href";
 import { cn } from "@/lib/utils";
@@ -30,6 +35,8 @@ type NewsPostViewProps = {
 	lightboxNextLabel: string;
 	previous: NewsItem | null;
 	next: NewsItem | null;
+	related: NewsItem[];
+	relatedLabel: string;
 	navLabel: string;
 	previousLabel: string;
 	nextLabel: string;
@@ -72,8 +79,7 @@ function AdjacentLink({
 
 /**
  * Blog-style news article — cover beside a long-form rich-text body,
- * tags strip, optional media gallery, prev/next navigation.
- * Mirrors {@link ProjectDetailView} layout flow.
+ * tags strip, optional media gallery, prev/next navigation, related by tags.
  */
 export function NewsPostView({
 	item,
@@ -89,6 +95,8 @@ export function NewsPostView({
 	lightboxNextLabel,
 	previous,
 	next,
+	related,
+	relatedLabel,
 	navLabel,
 	previousLabel,
 	nextLabel,
@@ -105,7 +113,7 @@ export function NewsPostView({
 
 	return (
 		<article className={cn(homeInsetClass, "pb-16 sm:pb-20")}>
-			<ScrollRevealBlock className="pt-30 sm:pt-34">
+			<ScrollRevealBlock className="pt-10 sm:pt-12">
 				<Link
 					href="/news"
 					className="group inline-flex w-fit items-center gap-2 no-underline"
@@ -119,7 +127,7 @@ export function NewsPostView({
 					</span>
 				</Link>
 
-				<div className="mt-10 grid gap-10 lg:grid-cols-[minmax(0,22rem)_minmax(0,1fr)] lg:items-start lg:gap-14 xl:grid-cols-[minmax(0,26rem)_minmax(0,1fr)] xl:gap-20">
+				<div className="mt-10 grid gap-10 lg:grid-cols-[minmax(0,32rem)_minmax(0,1fr)] lg:items-start lg:gap-12 xl:grid-cols-[minmax(0,38rem)_minmax(0,1fr)] xl:gap-16">
 					<div className="min-w-0 lg:sticky lg:top-32 lg:self-start">
 						<div className="overflow-hidden border border-border bg-sunken">
 							<NewsCoverMedia
@@ -133,10 +141,10 @@ export function NewsPostView({
 								nextLabel={lightboxNextLabel}
 								className={cn(
 									coverKind === "IMAGE"
-										? "aspect-[4/5] w-full"
+										? "aspect-[4/3] w-full"
 										: "min-h-64 w-full sm:min-h-80",
 								)}
-								sizes="(max-width: 1024px) 100vw, 26rem"
+								sizes="(max-width: 1024px) 100vw, 38rem"
 								imageClassName="brightness-[0.94] saturate-[0.9]"
 							/>
 						</div>
@@ -157,18 +165,18 @@ export function NewsPostView({
 							) : null}
 						</div>
 
-						<h1 className="display-title mt-5 text-balance">{item.title}</h1>
+						<h1 className="news-post-title mt-5 text-balance">{item.title}</h1>
 
 						{authorLabel ? (
 							<p className="mt-3 text-lead text-muted">{authorLabel}</p>
 						) : null}
 
 						{bodyContent ? (
-							<div className="project-article-body mt-8 border-t border-border pt-8 sm:mt-10 sm:pt-10">
+							<div className="project-article-body news-article-body mt-8 border-t border-border pt-8 sm:mt-10 sm:pt-10">
 								{item.description ? (
 									<RichText content={item.description} />
 								) : (
-									<p className="text-body leading-relaxed text-foreground">
+									<p className="text-body leading-relaxed text-justify text-foreground">
 										{item.excerpt}
 									</p>
 								)}
@@ -231,6 +239,32 @@ export function NewsPostView({
 					</div>
 				</nav>
 			)}
+
+			{related.length > 0 ? (
+				<section
+					aria-labelledby="news-related-heading"
+					className="mt-12 border-t border-border pt-10 sm:mt-16 sm:pt-12"
+				>
+					<h2
+						id="news-related-heading"
+						className="font-heading text-h2 font-bold text-balance"
+					>
+						{relatedLabel}
+					</h2>
+					<ScrollReveal className="mt-6 grid grid-cols-1 gap-3 sm:grid-cols-2 sm:gap-4 lg:grid-cols-3">
+						{related.map((relatedItem) => (
+							<ScrollRevealItem key={relatedItem.id}>
+								<NewsCard
+									item={relatedItem}
+									variant="square"
+									categoryLabel={newsItemCategoryLabel(relatedItem)}
+									className="min-h-56 sm:min-h-64"
+								/>
+							</ScrollRevealItem>
+						))}
+					</ScrollReveal>
+				</section>
+			) : null}
 		</article>
 	);
 }

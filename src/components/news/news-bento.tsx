@@ -5,20 +5,24 @@ import {
 	ScrollRevealItem,
 } from "@/components/motion/scroll-reveal";
 import { NewsEditorialCard } from "@/components/news/news-editorial-card";
-import { getBentoNews, type NewsCategory } from "@/lib/api/news";
+import { getBentoNews } from "@/lib/api/news";
 import { homeInsetClass } from "@/lib/layout";
+import {
+	type NewsCategoryOption,
+	newsItemCategoryLabel,
+} from "@/lib/mock/news";
 import { cn } from "@/lib/utils";
 
 type NewsBentoProps = {
 	locale: string;
-	categoryLabels: Record<NewsCategory, string>;
+	categories: NewsCategoryOption[];
 	spotlightLabel: string;
 	className?: string;
 };
 
 export async function NewsBento({
 	locale,
-	categoryLabels,
+	categories,
 	spotlightLabel,
 	className,
 }: NewsBentoProps) {
@@ -50,12 +54,12 @@ export async function NewsBento({
 			</ScrollRevealBlock>
 
 			<div className={homeInsetClass}>
-				<ScrollReveal className="grid grid-cols-1 gap-3 sm:grid-cols-2 sm:gap-4 lg:grid-cols-12 lg:grid-rows-[minmax(18rem,1fr)_minmax(18rem,1fr)] lg:gap-4">
+				<ScrollReveal className="grid grid-cols-1 gap-3 sm:gap-4 sm:grid-cols-2 lg:grid-cols-12 lg:grid-rows-[minmax(18rem,1fr)_minmax(18rem,1fr)] lg:gap-4">
 					<ScrollRevealItem className="sm:col-span-2 lg:col-span-7 lg:row-span-2">
 						<NewsCard
 							item={hero}
 							variant="featured"
-							categoryLabel={categoryLabels[hero.category]}
+							categoryLabel={newsItemCategoryLabel(hero, categories)}
 							className="h-full"
 						/>
 					</ScrollRevealItem>
@@ -68,7 +72,7 @@ export async function NewsBento({
 										<NewsCard
 											item={item}
 											variant="small"
-											categoryLabel={categoryLabels[item.category]}
+											categoryLabel={newsItemCategoryLabel(item, categories)}
 										/>
 									</ScrollRevealItem>
 								))}
@@ -83,7 +87,10 @@ export async function NewsBento({
 							<ScrollRevealItem className="sm:col-span-2 lg:col-span-5">
 								<NewsEditorialCard
 									item={editorial}
-									categoryLabel={categoryLabels[editorial.category]}
+									categoryLabel={newsItemCategoryLabel(
+										editorial,
+										categories,
+									)}
 								/>
 							</ScrollRevealItem>
 						) : null}
@@ -98,7 +105,7 @@ export async function NewsBento({
 								<NewsCard
 									item={wide}
 									variant="wide"
-									categoryLabel={categoryLabels[wide.category]}
+									categoryLabel={newsItemCategoryLabel(wide, categories)}
 								/>
 							</ScrollRevealItem>
 						) : null}

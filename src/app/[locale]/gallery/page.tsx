@@ -9,6 +9,7 @@ import {
 	paginateGalleryPosts,
 	filterGalleryPosts,
 } from "@/lib/api/gallery";
+import { isGalleryCollectionType } from "@/lib/gallery-url";
 
 export async function generateMetadata({
 	params,
@@ -26,7 +27,7 @@ export async function generateMetadata({
 
 type GalleryPageProps = {
 	params: Promise<{ locale: string }>;
-	searchParams: Promise<{ page?: string; q?: string }>;
+	searchParams: Promise<{ page?: string; q?: string; type?: string }>;
 };
 
 export default async function GalleryPage({
@@ -34,14 +35,19 @@ export default async function GalleryPage({
 	searchParams,
 }: GalleryPageProps) {
 	const { locale } = await params;
-	const { page: pageParam, q } = await searchParams;
+	const { page: pageParam, q, type } = await searchParams;
 	setRequestLocale(locale);
 
 	const t = await getTranslations("Gallery");
 	const columns = await getGalleryHeroColumns(locale);
 
+	const activeType = isGalleryCollectionType(type) ? type : null;
 	const page = Math.max(1, Number.parseInt(pageParam ?? "1", 10) || 1);
-	const allPosts = filterGalleryPosts(await getGalleryPosts(locale), q);
+	const allPosts = filterGalleryPosts(
+		await getGalleryPosts(locale),
+		q,
+		activeType,
+	);
 	const { items, totalPages, currentPage } = paginateGalleryPosts(
 		allPosts,
 		page,
@@ -54,15 +60,14 @@ export default async function GalleryPage({
 	}));
 
 	return (
-		<main className="-mt-26 sm:-mt-30">
+		<main>
 			<GalleryHero
 				eyebrow={t("hero.eyebrow")}
 				title={t("hero.title")}
-				cta={t("hero.cta")}
 				columns={columns}
 			/>
 
-			{/* Carries the #gallery-content anchor the hero CTA scrolls to. */}
+			{/* Carries the #gallery-content anchor for in-page scroll targets. */}
 			<GalleryPosts
 				eyebrow={t("posts.eyebrow")}
 				title={t("posts.title")}
@@ -72,6 +77,9 @@ export default async function GalleryPage({
 				indexOffset={(currentPage - 1) * GALLERY_POSTS_PER_PAGE}
 				currentPage={currentPage}
 				totalPages={totalPages}
+				activeQuery={q}
+				activeType={activeType}
+				noResultsMessage={t("search.noResults")}
 				paginationLabel={t("posts.pagination.label")}
 				previousLabel={t("posts.pagination.previous")}
 				nextLabel={t("posts.pagination.next")}

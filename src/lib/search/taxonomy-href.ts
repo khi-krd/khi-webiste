@@ -1,6 +1,4 @@
 import { buildGalleryHref } from "@/lib/gallery-url";
-import type { NewsCategory } from "@/lib/mock/news";
-import { isValidCategory } from "@/lib/mock/news";
 import { buildNewsHref } from "@/lib/news-url";
 import { projectsHref } from "@/lib/projects-url";
 import { buildAudioHref } from "@/lib/audio-url";
@@ -9,9 +7,9 @@ import { isBookGenre } from "@/lib/writing/genres";
 import { buildWritingsHref } from "@/lib/writings-url";
 import type { VideoType } from "@/types/video";
 
-export function newsCategoryHref(category: NewsCategory | string): string {
-	return isValidCategory(category)
-		? buildNewsHref({ category })
+export function newsCategoryHref(category: string): string {
+	return category.trim()
+		? buildNewsHref({ category: category.trim() })
 		: buildNewsHref({});
 }
 

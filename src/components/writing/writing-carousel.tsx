@@ -126,8 +126,6 @@ export function WritingCarousel({
 					<div
 						className="touch-pan-y overflow-hidden"
 						ref={emblaRef}
-						data-lenis-prevent-horizontal
-						data-lenis-prevent-touch
 					>
 						<ScrollRevealBlock>
 							<ul className="flex touch-pan-y">

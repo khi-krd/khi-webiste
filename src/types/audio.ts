@@ -22,8 +22,8 @@ export type AttachmentType = z.infer<typeof AttachmentTypeSchema>;
 export const BrochureSchema = z.object({
 	id: z.number(),
 	imageUrl: z.string().nullish(),
-	caption: z.string().nullable(),
-	brochureOrder: z.number().nullable(),
+	caption: z.string().nullish(),
+	brochureOrder: z.number().nullish(),
 });
 
 export type Brochure = z.infer<typeof BrochureSchema>;
@@ -34,7 +34,7 @@ export const SoundTrackFileSchema = z.object({
 	externalUrl: z.string().nullish(),
 	embedUrl: z.string().nullish(),
 	thumbUrl: z.string().nullish().optional(),
-	title: z.string().nullable(),
+	title: z.string().nullish(),
 	fileType: SoundFileTypeSchema.default("AUDIO"),
 	publishmentYear: z.number().int().nullish(),
 	fileFormat: z.string().nullish(),
@@ -43,7 +43,7 @@ export const SoundTrackFileSchema = z.object({
 	durationMinutes: z.number().nullish(),
 	bitRate: z.string().nullish(),
 	sampleRate: z.string().nullish(),
-	audioChannel: AudioChannelSchema.nullable(),
+	audioChannel: AudioChannelSchema.nullish(),
 	form: z.string().nullish(),
 	genre: z.string().nullish(),
 	recordingVenue: z.string().nullish(),
@@ -55,7 +55,7 @@ export type SoundTrackFile = z.infer<typeof SoundTrackFileSchema>;
 export const SoundAttachmentSchema = z.object({
 	id: z.number(),
 	fileUrl: z.string().nullish(),
-	title: z.string().nullable(),
+	title: z.string().nullish(),
 	attachmentType: AttachmentTypeSchema.default("OTHER"),
 	sizeBytes: z.number().nullish(),
 	mimeType: z.string().nullish(),
@@ -65,8 +65,8 @@ export const SoundAttachmentSchema = z.object({
 export type SoundAttachment = z.infer<typeof SoundAttachmentSchema>;
 
 export const SoundContentSchema = z.object({
-	title: z.string().nullable(),
-	description: z.string().nullable(),
+	title: z.string().nullish(),
+	description: z.string().nullish(),
 });
 
 export type SoundContent = z.infer<typeof SoundContentSchema>;
@@ -86,19 +86,19 @@ export const SoundTrackSchema = z.object({
 	ckbContent: SoundContentSchema.nullish(),
 	kmrContent: SoundContentSchema.nullish(),
 	locations: z.array(z.string()).optional().default([]),
-	reader: z.string().nullable().optional(),
+	reader: z.string().nullish(),
 	directors: z.array(z.string()).optional().default([]),
-	terms: z.string().nullable(),
+	terms: z.string().nullish(),
 	thisProjectOfInstitute: z.boolean(),
 	tags: BilingualSetSchema.default({ ckb: [], kmr: [] }),
 	keywords: BilingualSetSchema.default({ ckb: [], kmr: [] }),
 	files: z.array(SoundTrackFileSchema).default([]),
-	totalDurationSeconds: z.number().nullable(),
-	totalSizeBytes: z.number().nullable(),
-	albumName: z.string().nullable(),
-	publishmentYear: z.number().int().nullable(),
-	cdNumber: z.number().int().nullable(),
-	totalTracks: z.number().int().nullable(),
+	totalDurationSeconds: z.number().nullish(),
+	totalSizeBytes: z.number().nullish(),
+	albumName: z.string().nullish(),
+	publishmentYear: z.number().int().nullish(),
+	cdNumber: z.number().int().nullish(),
+	totalTracks: z.number().int().nullish(),
 	attachments: z.array(SoundAttachmentSchema).default([]),
 	createdAt: z.string().optional(),
 	updatedAt: z.string().optional(),
@@ -108,8 +108,8 @@ export type SoundTrack = z.infer<typeof SoundTrackSchema>;
 
 export const SoundTopicSchema = z.object({
 	id: z.number(),
-	nameCkb: z.string().nullable(),
-	nameKmr: z.string().nullable(),
+	nameCkb: z.string().nullish(),
+	nameKmr: z.string().nullish(),
 });
 
 export type SoundTopic = z.infer<typeof SoundTopicSchema>;

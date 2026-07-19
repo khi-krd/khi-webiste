@@ -61,12 +61,7 @@ export async function loadWritingsPageData(
 		sort: activeSort,
 	});
 
-	const gridCards = buildWritingGridCards(listing.items, {
-		translateGenre: (genre) => t(`genres.${genre}`),
-		instituteBadgeLabel: t("carousel.instituteBadge"),
-		downloadLabel: t("carousel.download"),
-		pagesCountLabel: (count) => t("carousel.pagesCount", { count }),
-	});
+	const gridCards = buildWritingGridCards(listing.items);
 
 	const categoryCarouselItems = buildCategoryCarouselItems(categoryLabels);
 

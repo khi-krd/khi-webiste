@@ -33,7 +33,6 @@ export function HomeSection({
 	return (
 		<section
 			className={cn(homeSectionClass, className)}
-			data-snap-section
 			{...props}
 		>
 			{children}

@@ -4,7 +4,6 @@ import { AudioFilterBar } from "@/components/audio/audio-filter-bar";
 import { AudioPagination } from "@/components/audio/audio-pagination";
 import {
 	ScrollReveal,
-	ScrollRevealBlock,
 	ScrollRevealItem,
 } from "@/components/motion/scroll-reveal";
 import { formatDuration } from "@/lib/audio/format";
@@ -20,7 +19,6 @@ type TopicOption = {
 
 type AudioShellProps = {
 	id?: string;
-	title: string;
 	cards: ResolvedAudioCard[];
 	currentPage: number;
 	totalPages: number;
@@ -37,7 +35,6 @@ type AudioShellProps = {
 
 export async function AudioShell({
 	id = "audio-grid",
-	title,
 	cards,
 	currentPage,
 	totalPages,
@@ -87,18 +84,9 @@ export async function AudioShell({
 				"w-full border-t border-border bg-background py-12 sm:py-16 lg:py-20",
 				className,
 			)}
-			aria-labelledby="audio-grid-heading"
+			aria-label={t("grid.allTitle")}
 		>
 			<div className={homeInsetClass}>
-				<ScrollRevealBlock>
-					<h2
-						id="audio-grid-heading"
-						className="font-heading text-display font-bold leading-[1.05] text-balance"
-					>
-						{title}
-					</h2>
-				</ScrollRevealBlock>
-
 				<AudioFilterBar
 					soundTypes={soundTypes}
 					topics={topics}
@@ -108,7 +96,6 @@ export async function AudioShell({
 					activeQuery={activeQuery}
 					itemCount={totalElements}
 					scrollTargetId={id}
-					className="mt-8 sm:mt-10"
 				/>
 
 				{isEmpty ? (

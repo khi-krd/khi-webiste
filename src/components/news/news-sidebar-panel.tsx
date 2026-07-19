@@ -1,13 +1,17 @@
 import { ScrollRevealBlock } from "@/components/motion/scroll-reveal";
 import { NewsSidebarCard } from "@/components/news/news-sidebar-card";
-import type { NewsCategory, NewsItem } from "@/lib/mock/news";
+import {
+	type NewsCategoryOption,
+	type NewsItem,
+	newsItemCategoryLabel,
+} from "@/lib/mock/news";
 import { cn } from "@/lib/utils";
 
 type NewsSidebarPanelProps = {
 	title: string;
 	items: NewsItem[];
 	locale: string;
-	categoryLabels: Record<NewsCategory, string>;
+	categories: NewsCategoryOption[];
 	className?: string;
 };
 
@@ -15,7 +19,7 @@ export function NewsSidebarPanel({
 	title,
 	items,
 	locale,
-	categoryLabels,
+	categories,
 	className,
 }: NewsSidebarPanelProps) {
 	return (
@@ -28,7 +32,7 @@ export function NewsSidebarPanel({
 						<ScrollRevealBlock delay={Math.min(index * 0.08, 0.32)}>
 							<NewsSidebarCard
 								item={item}
-								categoryLabel={categoryLabels[item.category]}
+								categoryLabel={newsItemCategoryLabel(item, categories)}
 								locale={locale}
 							/>
 						</ScrollRevealBlock>

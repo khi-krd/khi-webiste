@@ -1,7 +1,19 @@
 "use client";
 
-import { motion, useReducedMotion } from "motion/react";
-import type { ComponentPropsWithoutRef, CSSProperties, ReactNode } from "react";
+import { animate, inView } from "motion";
+import {
+	type ComponentPropsWithoutRef,
+	type CSSProperties,
+	createContext,
+	type ReactNode,
+	type RefObject,
+	useCallback,
+	useContext,
+	useEffect,
+	useLayoutEffect,
+	useMemo,
+	useRef,
+} from "react";
 
 const revealEase = [0.22, 1, 0.36, 1] as const;
 
@@ -10,42 +22,138 @@ export const PAGE_TRANSITION_DELAY = 0.14;
 
 export const PAGE_TRANSITION_DURATION = 0.32;
 
-const viewport = { once: true, margin: "-10% 0px -6% 0px" } as const;
+const DEFAULT_MARGIN = "-10% 0px -6% 0px" as const;
+const FOOTER_MARGIN = "-4% 0px -2% 0px" as const;
+
+/** Root-margin values accepted by Motion `inView` (typed template literals). */
+export type RevealMargin =
+	| typeof DEFAULT_MARGIN
+	| typeof FOOTER_MARGIN
+	| "-12% 0px -8% 0px"
+	| "-8% 0px -6% 0px"
+	| "-5% 0px -2% 0px";
+
+function prefersReducedMotion(): boolean {
+	if (typeof window === "undefined") return false;
+	return window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+}
+
+type RevealStagger = {
+	/** Claim the next stagger slot; returns delay in seconds. */
+	nextDelay: () => number;
+};
+
+const RevealStaggerContext = createContext<RevealStagger | null>(null);
+
+type UseInViewRevealOptions = {
+	y?: number;
+	scale?: number;
+	duration?: number;
+	/** Absolute delay; when omitted, uses stagger context or PAGE_TRANSITION_DELAY. */
+	delay?: number;
+	margin?: RevealMargin;
+	/** Extra delay on top of the resolved base delay. */
+	extraDelay?: number;
+};
+
+/** Imperative fade/slide (or scale) reveal tied to viewport entry — once. */
+export function useInViewReveal(
+	ref: RefObject<HTMLElement | null>,
+	{
+		y = 26,
+		scale,
+		duration = 0.7,
+		delay,
+		margin = DEFAULT_MARGIN,
+		extraDelay = 0,
+	}: UseInViewRevealOptions = {},
+) {
+	const stagger = useContext(RevealStaggerContext);
+	const delayRef = useRef(0);
+	const claimedRef = useRef(false);
+
+	useLayoutEffect(() => {
+		if (claimedRef.current) return;
+		claimedRef.current = true;
+		delayRef.current =
+			(delay ?? stagger?.nextDelay() ?? PAGE_TRANSITION_DELAY) + extraDelay;
+	}, [delay, extraDelay, stagger]);
+
+	useEffect(() => {
+		const el = ref.current;
+		if (!el || prefersReducedMotion()) return;
+
+		el.style.opacity = "0";
+		el.style.transform =
+			scale !== undefined
+				? `translateY(${y}px) scale(${scale})`
+				: `translateY(${y}px)`;
+
+		let cancelled = false;
+		let animControls: { stop: () => void } | undefined;
+
+		const unobserve = inView(
+			el,
+			() => {
+				if (cancelled) return;
+				el.style.willChange = "transform, opacity";
+				const keyframes =
+					scale !== undefined
+						? { opacity: 1, y: 0, scale: 1 }
+						: { opacity: 1, y: 0 };
+				animControls = animate(el, keyframes, {
+					duration,
+					ease: revealEase,
+					delay: delayRef.current,
+					onComplete: () => {
+						el.style.willChange = "";
+					},
+				});
+				unobserve();
+			},
+			{ margin },
+		);
+
+		return () => {
+			cancelled = true;
+			animControls?.stop();
+			unobserve();
+			el.style.willChange = "";
+		};
+	}, [ref, y, scale, duration, margin]);
+}
 
 type ScrollRevealProps = {
 	children: ReactNode;
 	className?: string;
+	stagger?: number;
+	delayChildren?: number;
 };
 
 /**
  * Scroll-reveal orchestrator with staggered children.
- * Variants propagate to every <ScrollRevealItem> in the subtree.
+ * Child {@link ScrollRevealItem}s claim stagger slots and animate via `inView`.
  */
-export function ScrollReveal({ children, className }: ScrollRevealProps) {
-	const reduceMotion = useReducedMotion();
+export function ScrollReveal({
+	children,
+	className,
+	stagger = 0.08,
+	delayChildren = PAGE_TRANSITION_DELAY,
+}: ScrollRevealProps) {
+	const indexRef = useRef(0);
 
-	if (reduceMotion) {
-		return <div className={className}>{children}</div>;
-	}
+	const nextDelay = useCallback(() => {
+		const i = indexRef.current;
+		indexRef.current += 1;
+		return delayChildren + i * stagger;
+	}, [delayChildren, stagger]);
+
+	const value = useMemo(() => ({ nextDelay }), [nextDelay]);
 
 	return (
-		<motion.div
-			className={className}
-			initial="hidden"
-			whileInView="visible"
-			viewport={viewport}
-			variants={{
-				hidden: {},
-				visible: {
-					transition: {
-						staggerChildren: 0.08,
-						delayChildren: PAGE_TRANSITION_DELAY,
-					},
-				},
-			}}
-		>
-			{children}
-		</motion.div>
+		<RevealStaggerContext.Provider value={value}>
+			<div className={className}>{children}</div>
+		</RevealStaggerContext.Provider>
 	);
 }
 
@@ -64,32 +172,13 @@ export function ScrollRevealItem({
 	style,
 	...rest
 }: ScrollRevealItemProps) {
-	const reduceMotion = useReducedMotion();
-
-	if (reduceMotion) {
-		return (
-			<div className={className} style={style} {...rest}>
-				{children}
-			</div>
-		);
-	}
+	const ref = useRef<HTMLDivElement>(null);
+	useInViewReveal(ref, { y: 26, duration: 0.7 });
 
 	return (
-		<motion.div
-			className={className}
-			style={style}
-			{...rest}
-			variants={{
-				hidden: { opacity: 0, y: 26 },
-				visible: {
-					opacity: 1,
-					y: 0,
-					transition: { duration: 0.7, ease: revealEase },
-				},
-			}}
-		>
+		<div ref={ref} className={className} style={style} {...rest}>
 			{children}
-		</motion.div>
+		</div>
 	);
 }
 
@@ -106,30 +195,20 @@ export function ScrollRevealBlock({
 	className,
 	delay = 0,
 }: ScrollRevealBlockProps) {
-	const reduceMotion = useReducedMotion();
-
-	if (reduceMotion) {
-		return <div className={className}>{children}</div>;
-	}
+	const ref = useRef<HTMLDivElement>(null);
+	useInViewReveal(ref, {
+		y: 28,
+		duration: 0.65,
+		delay: PAGE_TRANSITION_DELAY,
+		extraDelay: delay,
+	});
 
 	return (
-		<motion.div
-			className={className}
-			initial={{ opacity: 0, y: 28 }}
-			whileInView={{ opacity: 1, y: 0 }}
-			viewport={viewport}
-			transition={{
-				duration: 0.65,
-				ease: revealEase,
-				delay: PAGE_TRANSITION_DELAY + delay,
-			}}
-		>
+		<div ref={ref} className={className}>
 			{children}
-		</motion.div>
+		</div>
 	);
 }
-
-const footerViewport = { once: true, margin: "-4% 0px -2% 0px" } as const;
 
 type FooterRevealProps = {
 	children: ReactNode;
@@ -138,30 +217,14 @@ type FooterRevealProps = {
 
 /** Slide-up reveal for the site footer — staggered children on scroll. */
 export function FooterReveal({ children, className }: FooterRevealProps) {
-	const reduceMotion = useReducedMotion();
-
-	if (reduceMotion) {
-		return <div className={className}>{children}</div>;
-	}
-
 	return (
-		<motion.div
+		<ScrollReveal
 			className={className}
-			initial="hidden"
-			whileInView="visible"
-			viewport={footerViewport}
-			variants={{
-				hidden: {},
-				visible: {
-					transition: {
-						staggerChildren: 0.12,
-						delayChildren: PAGE_TRANSITION_DELAY,
-					},
-				},
-			}}
+			stagger={0.12}
+			delayChildren={PAGE_TRANSITION_DELAY}
 		>
 			{children}
-		</motion.div>
+		</ScrollReveal>
 	);
 }
 
@@ -170,26 +233,71 @@ type FooterRevealItemProps = {
 	className?: string;
 };
 
-export function FooterRevealItem({ children, className }: FooterRevealItemProps) {
-	const reduceMotion = useReducedMotion();
-
-	if (reduceMotion) {
-		return <div className={className}>{children}</div>;
-	}
+export function FooterRevealItem({
+	children,
+	className,
+}: FooterRevealItemProps) {
+	const ref = useRef<HTMLDivElement>(null);
+	useInViewReveal(ref, {
+		y: 48,
+		duration: 0.8,
+		margin: FOOTER_MARGIN,
+	});
 
 	return (
-		<motion.div
-			className={className}
-			variants={{
-				hidden: { opacity: 0, y: 48 },
-				visible: {
-					opacity: 1,
-					y: 0,
-					transition: { duration: 0.8, ease: revealEase },
-				},
-			}}
-		>
+		<div ref={ref} className={className}>
 			{children}
-		</motion.div>
+		</div>
 	);
 }
+
+type UseMountRevealOptions = {
+	y?: number;
+	duration?: number;
+	delay?: number;
+};
+
+/** Mount-time staggered reveal (hero content already in view). */
+export function useMountReveal(
+	ref: RefObject<HTMLElement | null>,
+	{ y = 24, duration = 0.65, delay }: UseMountRevealOptions = {},
+) {
+	const stagger = useContext(RevealStaggerContext);
+	const delayRef = useRef(0);
+	const claimedRef = useRef(false);
+
+	useLayoutEffect(() => {
+		if (claimedRef.current) return;
+		claimedRef.current = true;
+		delayRef.current = delay ?? stagger?.nextDelay() ?? PAGE_TRANSITION_DELAY;
+	}, [delay, stagger]);
+
+	useEffect(() => {
+		const el = ref.current;
+		if (!el || prefersReducedMotion()) return;
+
+		el.style.opacity = "0";
+		el.style.transform = `translateY(${y}px)`;
+		el.style.willChange = "transform, opacity";
+
+		const controls = animate(
+			el,
+			{ opacity: 1, y: 0 },
+			{
+				duration,
+				ease: revealEase,
+				delay: delayRef.current,
+				onComplete: () => {
+					el.style.willChange = "";
+				},
+			},
+		);
+
+		return () => {
+			controls.stop();
+			el.style.willChange = "";
+		};
+	}, [ref, y, duration]);
+}
+
+export { prefersReducedMotion, RevealStaggerContext, revealEase };

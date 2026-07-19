@@ -8,7 +8,7 @@ import {
 import { LayoutGroup } from "motion/react";
 import type { MouseEvent } from "react";
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { useScrollToSection } from "@/components/providers/lenis-context";
+import { useScrollToSection } from "@/lib/use-scroll-to-section";
 import { ServicesNavIndicator } from "@/components/services/services-motion";
 import { DirectionalIcon } from "@/components/ui/directional-icon";
 import { cn } from "@/lib/utils";
@@ -126,7 +126,7 @@ function ServicesMobileNav({
 	return (
 		<nav
 			className={cn(
-				"sticky top-26 z-20 border-b border-border bg-background/98 backdrop-blur-[3px] lg:hidden",
+				"sticky top-16 z-20 border-b border-border bg-background/98 backdrop-blur-[3px] sm:top-20 lg:hidden",
 				className,
 			)}
 			aria-label={navLabel}

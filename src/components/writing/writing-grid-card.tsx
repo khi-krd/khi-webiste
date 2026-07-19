@@ -9,10 +9,7 @@ export type WritingGridCardProps = {
 	coverUrl: string | null;
 	seriesName: string | null;
 	topicName: string | null;
-	publishedByInstitute: boolean;
-	instituteBadgeLabel: string;
 	fileUrl: string | null;
-	fileMetaLabel: string | null;
 	className?: string;
 };
 
@@ -35,9 +32,6 @@ export function WritingGridCard({
 	coverUrl,
 	seriesName,
 	topicName,
-	publishedByInstitute,
-	instituteBadgeLabel,
-	fileMetaLabel,
 	className,
 }: WritingGridCardProps) {
 	const subtitle = seriesName ?? topicName;
@@ -54,7 +48,7 @@ export function WritingGridCard({
 				variant="nav"
 				className="flex h-full flex-col no-underline text-inherit"
 			>
-				<div className="relative aspect-[3/4] w-full overflow-hidden bg-sunken">
+				<div className="relative aspect-[4/3] w-full overflow-hidden bg-sunken">
 					{coverUrl ? (
 						<CoverImage src={coverUrl} alt="" />
 					) : (
@@ -70,9 +64,6 @@ export function WritingGridCard({
 				</div>
 
 				<div className="flex flex-1 flex-col gap-1.5 px-4 py-4 sm:px-5 sm:py-5">
-					{publishedByInstitute ? (
-						<p className="label text-muted">{instituteBadgeLabel}</p>
-					) : null}
 					<h3 className="font-heading text-h3 font-bold leading-snug text-balance">
 						{title}
 					</h3>
@@ -83,12 +74,6 @@ export function WritingGridCard({
 						<p className="text-small text-foreground/80">{writer}</p>
 					) : null}
 				</div>
-
-				{fileMetaLabel ? (
-					<p className="border-t border-border bg-sunken px-4 py-2.5 label text-muted sm:px-5">
-						{fileMetaLabel}
-					</p>
-				) : null}
 			</Link>
 		</article>
 	);

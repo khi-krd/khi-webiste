@@ -7,7 +7,7 @@ import type {
 } from "@/lib/mock/gallery";
 import type { ImageCollectionItem } from "@/lib/mock/image-collection";
 import type { ImageAlbumItem, ImageCollection } from "@/types/gallery";
-import { resolveContentSlug } from "@/lib/content/href";
+import { galleryDetailHref, resolveContentSlug } from "@/lib/content/href";
 
 type GalleryAspect = GalleryHeroImage["aspect"];
 
@@ -256,6 +256,7 @@ export function resolveGalleryHeroColumns(
 				title: post.title,
 				aspect: aspectFromRatio(ratio),
 				image: { url: cover, alt: post.title },
+				href: galleryDetailHref(post.id),
 			};
 			if (post.topicName) {
 				heroImage.categoryLabel = post.topicName;

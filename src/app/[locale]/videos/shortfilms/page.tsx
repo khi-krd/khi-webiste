@@ -111,7 +111,7 @@ export default async function ShortFilmsPage({
 	const more = [...allShort].reverse();
 
 	return (
-		<main className="-mt-26 bg-foreground pb-16 text-primary-foreground sm:-mt-30 sm:pb-20">
+		<main className="bg-foreground pb-16 text-primary-foreground sm:pb-20">
 			<VideoCinemaHero
 				id={featuredCard.id}
 				eyebrow={t("shortfilms.featuredEyebrow")}

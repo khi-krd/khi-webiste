@@ -24,7 +24,6 @@ export function ServiceSection({
 	return (
 		<section
 			id={service.id}
-			data-snap-section
 			className={cn("scroll-mt-36 sm:scroll-mt-40 lg:scroll-mt-36", className)}
 			aria-labelledby={`${service.id}-heading`}
 		>

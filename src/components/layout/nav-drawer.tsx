@@ -26,6 +26,11 @@ import { DirectionalIcon } from "@/components/ui/directional-icon";
 import { DrawnBorder } from "@/components/ui/drawn-border";
 import { Link } from "@/components/ui/link";
 import { NAV_DEFAULT_IMAGE, NAV_ITEMS, type NavItem } from "@/config/site";
+import {
+	fetchTaxonomyCatalog,
+	type SearchTaxonomyItem,
+} from "@/lib/search/client";
+import { getNavMenuTaxonomyItems } from "@/lib/search/taxonomy-types";
 import { useScrollLock } from "@/lib/use-scroll-lock";
 import { cn } from "@/lib/utils";
 
@@ -135,13 +140,63 @@ function NavBackground({
 	);
 }
 
+type SecondaryLink = {
+	id: string;
+	href: string;
+	label: string;
+};
+
+function resolveSecondaryLinks(
+	item: NavItem,
+	taxonomyCatalog: SearchTaxonomyItem[] | null,
+	t: ReturnType<typeof useTranslations<"Nav">>,
+): SecondaryLink[] {
+	const taxonomyItems = getNavMenuTaxonomyItems(
+		item.key,
+		taxonomyCatalog ?? [],
+	);
+
+	if (taxonomyItems.length > 0) {
+		const links = taxonomyItems.map((entry) => ({
+			id: entry.id,
+			href: entry.href,
+			label: entry.label,
+		}));
+
+		if (item.key === "video") {
+			return [
+				{
+					id: "video-shortfilms",
+					href: "/videos/shortfilms",
+					label: t("videoSubShortFilms"),
+				},
+				...links,
+			];
+		}
+
+		return links;
+	}
+
+	return item.children.map((child) => ({
+		id: child.key,
+		href: child.href,
+		label: t(child.key),
+	}));
+}
+
 type NavSecondaryPanelProps = {
 	item: NavItem;
 	onNavigate: () => void;
+	taxonomyCatalog: SearchTaxonomyItem[] | null;
 };
 
-function NavSecondaryPanel({ item, onNavigate }: NavSecondaryPanelProps) {
+function NavSecondaryPanel({
+	item,
+	onNavigate,
+	taxonomyCatalog,
+}: NavSecondaryPanelProps) {
 	const t = useTranslations("Nav");
+	const links = resolveSecondaryLinks(item, taxonomyCatalog, t);
 
 	return (
 		<div className="text-start">
@@ -173,13 +228,13 @@ function NavSecondaryPanel({ item, onNavigate }: NavSecondaryPanelProps) {
 				</h3>
 
 				<ul className="flex flex-col">
-					{item.children.map((child) => (
+					{links.map((link) => (
 						<li
-							key={child.key}
+							key={link.id}
 							className="border-b border-primary-foreground/15 last:border-b-0"
 						>
 							<Link
-								href={child.href}
+								href={link.href}
 								variant="nav"
 								onClick={onNavigate}
 								className={cn(
@@ -187,7 +242,7 @@ function NavSecondaryPanel({ item, onNavigate }: NavSecondaryPanelProps) {
 									overlayTextShadow,
 								)}
 							>
-								{t(child.key)}
+								{link.label}
 							</Link>
 						</li>
 					))}
@@ -232,6 +287,10 @@ export function NavDrawer({
 	const [activeKey, setActiveKey] = useState<string | null>(null);
 
 	const [overlayMounted, setOverlayMounted] = useState(false);
+	const [taxonomyCatalog, setTaxonomyCatalog] = useState<
+		SearchTaxonomyItem[] | null
+	>(null);
+	const [taxonomyUnavailable, setTaxonomyUnavailable] = useState(false);
 	const internalTriggerRef = useRef<HTMLButtonElement>(null);
 	const triggerRef = externalTriggerRef ?? internalTriggerRef;
 	const closeRef = useRef<HTMLButtonElement>(null);
@@ -240,6 +299,27 @@ export function NavDrawer({
 	useEffect(() => {
 		setOverlayMounted(true);
 	}, []);
+
+	useEffect(() => {
+		if (!open) {
+			return;
+		}
+
+		let cancelled = false;
+
+		void fetchTaxonomyCatalog(locale).then(({ items, unavailable }) => {
+			if (cancelled) {
+				return;
+			}
+			setTaxonomyCatalog(items);
+			setTaxonomyUnavailable(unavailable);
+		});
+
+		return () => {
+			cancelled = true;
+		};
+	}, [open, locale]);
+
 	const itemTriggerRefs = useRef<Record<string, HTMLButtonElement | null>>({});
 	const wasOpen = useRef(false);
 
@@ -454,6 +534,8 @@ export function NavDrawer({
 														<MenuSearch
 															onBack={() => onViewChange("nav")}
 															onNavigate={close}
+															taxonomyCatalog={taxonomyCatalog}
+															taxonomyUnavailable={taxonomyUnavailable}
 														/>
 													</Container>
 												</motion.div>
@@ -596,6 +678,7 @@ export function NavDrawer({
 																				<NavSecondaryPanel
 																					item={activeItem}
 																					onNavigate={close}
+																					taxonomyCatalog={taxonomyCatalog}
 																				/>
 																			</motion.div>
 																		)
@@ -702,6 +785,7 @@ export function NavDrawer({
 																			<NavSecondaryPanel
 																				item={activeItem}
 																				onNavigate={close}
+																				taxonomyCatalog={taxonomyCatalog}
 																			/>
 																		</motion.div>
 																	</AnimatePresence>

@@ -120,7 +120,7 @@ export function GalleryPostView({
 	return (
 		<article>
 			<ScrollRevealBlock
-				className={cn("pt-30 pb-10 sm:pt-34 lg:pb-12", homeInsetClass)}
+				className={cn("pt-10 pb-10 sm:pt-12 lg:pb-12", homeInsetClass)}
 			>
 				<Link
 					href="/gallery"
@@ -156,7 +156,7 @@ export function GalleryPostView({
 
 				<RichText
 					content={post.description}
-					className="mt-6 max-w-xl [&>p]:text-muted"
+					className="mt-6 max-w-xl text-justify [&>p]:text-justify [&>p]:text-muted"
 				/>
 
 				{hasCredits && (

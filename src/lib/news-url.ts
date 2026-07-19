@@ -1,5 +1,3 @@
-import { isValidCategory } from "@/lib/mock/news";
-
 export type NewsUrlParams = {
 	category?: string | null;
 	q?: string | null;
@@ -13,8 +11,8 @@ export function buildNewsHref({
 }: NewsUrlParams): "/news" | `/news?${string}` {
 	const params = new URLSearchParams();
 
-	if (category && isValidCategory(category)) {
-		params.set("category", category);
+	if (category?.trim()) {
+		params.set("category", category.trim());
 	}
 	if (q?.trim()) {
 		params.set("q", q.trim());

@@ -107,8 +107,6 @@ export function AudioAttachmentSlider({
 			<div
 				className={emblaViewportClass}
 				ref={emblaRef}
-				data-lenis-prevent-horizontal
-				data-lenis-prevent-touch
 			>
 				<ul
 					className={emblaContainerClass}

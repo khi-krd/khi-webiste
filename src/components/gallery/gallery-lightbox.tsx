@@ -15,6 +15,7 @@ import {
 } from "@/components/gallery/gallery-album-item";
 import { DirectionalIcon } from "@/components/ui/directional-icon";
 import { useScrollLock } from "@/lib/use-scroll-lock";
+import { cn } from "@/lib/utils";
 
 export type { GalleryLightboxItem };
 
@@ -67,6 +68,10 @@ function MetadataRow({
 			<dd className="text-small text-muted sm:text-end">{children}</dd>
 		</div>
 	);
+}
+
+function thumbSrc(item: GalleryLightboxItem): string | null {
+	return item.imageUrl ?? null;
 }
 
 export function useGalleryLightbox() {
@@ -129,6 +134,7 @@ export function GalleryLightbox({
 			item.context !== headline &&
 			(item.caption != null || item.context !== collectionTitle),
 	);
+	const showThumbs = items.length > 1 && items.some((entry) => thumbSrc(entry));
 
 	return (
 		// biome-ignore lint/a11y/noStaticElementInteractions: keyboard nav on the dialog container (focus is trapped inside it)
@@ -139,49 +145,89 @@ export function GalleryLightbox({
 			aria-label={headline}
 			className="m-auto max-h-[98svh] w-[min(98vw,180rem)] border border-border bg-background text-foreground backdrop:bg-foreground/85"
 		>
-			{item && (
+			{item && activeIndex !== null && (
 				<div className="grid max-h-[inherit] grid-rows-[minmax(0,1fr)_auto] lg:grid-cols-[minmax(0,1fr)_22rem] lg:grid-rows-1">
-					<div className="relative h-[62svh] bg-sunken sm:h-[68svh] lg:h-[min(90svh,100%)] lg:min-h-[85svh]">
-						{item.imageUrl ? (
-							<NextImage
-								key={item.id}
-								src={item.imageUrl}
-								alt={
-									item.alt ??
-									item.caption ??
-									`${collectionTitle} — ${frameNo(activeIndex ?? 0)}`
-								}
-								fill
-								sizes="(max-width: 1023px) 98vw, 90vw"
-								className="object-contain"
-							/>
-						) : item.embedUrl ? (
-							<iframe
-								title={item.caption ?? collectionTitle}
-								src={item.embedUrl}
-								className="absolute inset-0 size-full border-0"
-								allowFullScreen
-							/>
-						) : (
-							<div className="flex size-full items-center justify-center p-6 text-center text-small text-muted">
-								{item.externalUrl ? (
-									<a
-										href={item.externalUrl}
-										target="_blank"
-										rel="noopener noreferrer"
-										className="underline underline-offset-2"
-									>
-										{item.externalUrl}
-									</a>
-								) : null}
-							</div>
-						)}
+					<div className="flex min-h-0 flex-col bg-sunken">
+						<div className="relative h-[52svh] sm:h-[58svh] lg:h-[min(78svh,100%)] lg:min-h-[70svh]">
+							{item.imageUrl ? (
+								<NextImage
+									key={item.id}
+									src={item.imageUrl}
+									alt={
+										item.alt ??
+										item.caption ??
+										`${collectionTitle} — ${frameNo(activeIndex)}`
+									}
+									fill
+									sizes="(max-width: 1023px) 98vw, 90vw"
+									className="object-contain"
+								/>
+							) : item.embedUrl ? (
+								<iframe
+									title={item.caption ?? collectionTitle}
+									src={item.embedUrl}
+									className="absolute inset-0 size-full border-0"
+									allowFullScreen
+								/>
+							) : (
+								<div className="flex size-full items-center justify-center p-6 text-center text-small text-muted">
+									{item.externalUrl ? (
+										<a
+											href={item.externalUrl}
+											target="_blank"
+											rel="noopener noreferrer"
+											className="underline underline-offset-2"
+										>
+											{item.externalUrl}
+										</a>
+									) : null}
+								</div>
+							)}
+						</div>
+
+						{showThumbs ? (
+							<ul className="flex gap-2 overflow-x-auto border-t border-border bg-background px-3 py-2.5 scrollbar-none sm:px-4">
+								{items.map((thumb, index) => {
+									const src = thumbSrc(thumb);
+									if (!src) return null;
+									const isActive = index === activeIndex;
+
+									return (
+										<li key={thumb.id} className="w-16 shrink-0 sm:w-20">
+											<button
+												type="button"
+												onClick={() => onActiveIndexChange(index)}
+												aria-pressed={isActive}
+												aria-label={
+													thumb.caption ??
+													`${collectionTitle} — ${frameNo(index)}`
+												}
+												className={cn(
+													"relative block aspect-4/3 w-full overflow-hidden border transition-[border-color,opacity] duration-200",
+													isActive
+														? "border-foreground opacity-100"
+														: "border-border opacity-75 fine-hover:border-border-strong fine-hover:opacity-100",
+												)}
+											>
+												<NextImage
+													src={src}
+													alt=""
+													fill
+													sizes="80px"
+													className="object-cover"
+												/>
+											</button>
+										</li>
+									);
+								})}
+							</ul>
+						) : null}
 					</div>
 
 					<div className="flex min-h-0 flex-col gap-5 overflow-y-auto border-t border-border p-5 lg:border-t-0 lg:border-s lg:p-6">
 						<div className="flex items-center justify-between gap-3">
 							<p className="label font-medium">
-								{frameNo(activeIndex ?? 0)}
+								{frameNo(activeIndex)}
 								<span className="text-muted">
 									{" "}
 									/ {frameNo(items.length - 1)}
@@ -204,7 +250,7 @@ export function GalleryLightbox({
 						)}
 
 						{showDescription && (
-							<p className="text-small leading-relaxed text-muted">
+							<p className="text-justify text-small leading-relaxed text-muted">
 								{item.description}
 							</p>
 						)}

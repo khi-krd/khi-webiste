@@ -2,31 +2,32 @@
 
 import { FilmIcon } from "@heroicons/react/24/outline";
 import NextImage from "next/image";
-import { useState } from "react";
+import { type ReactNode, useTransition } from "react";
 import { VideoPlayer } from "@/components/ui/video-player";
 import {
 	VideoClipList,
 	type VideoClipListLabels,
 } from "@/components/video/video-clip-list";
+import { useRouter } from "@/i18n/navigation";
 import { cn } from "@/lib/utils";
-import type {
-	ResolvedVideoClip,
-	VideoPlayerKind,
-	VideoType,
-} from "@/types/video";
+import { videoDetailHref } from "@/lib/video/resolve";
+import type { ResolvedVideoClip, VideoPlayerKind } from "@/types/video";
 
 type VideoPlayerFrameProps = {
-	videoType: VideoType;
 	playerKind: VideoPlayerKind;
 	playableSrc: string | null;
 	title: string;
 	poster: string | null;
-	clips: ResolvedVideoClip[];
-	clipLabels: VideoClipListLabels;
 	noSourceLabel: string;
 	className?: string;
 	variant?: "default" | "cinema";
-	hideClipList?: boolean;
+	/** Optional sidebar (metadata) rendered beside the player. */
+	aside?: ReactNode;
+	/** Parent video id — required when a multi-clip playlist is shown. */
+	videoId?: number;
+	clips?: ResolvedVideoClip[];
+	activeClipNumber?: number | null;
+	clipLabels?: VideoClipListLabels;
 };
 
 /** Shared 16:9 frame for the non-Vidstack states (iframe embed / no source). */
@@ -34,14 +35,16 @@ function PlayerSurface({
 	children,
 	cinema = false,
 }: {
-	children: React.ReactNode;
+	children: ReactNode;
 	cinema?: boolean;
 }) {
 	return (
 		<div
 			className={cn(
 				"relative aspect-video w-full overflow-hidden bg-foreground",
-				cinema ? "rounded-none border-0" : "rounded-md border border-border-strong",
+				cinema
+					? "rounded-none border-0"
+					: "rounded-md border border-border-strong",
 			)}
 		>
 			{children}
@@ -79,43 +82,52 @@ function NoSource({
 	);
 }
 
+/**
+ * Player frame for FILM and VIDEO_CLIP detail pages.
+ * When multiple clips are present, shows a playlist synced to `?clip=`.
+ */
 export function VideoPlayerFrame({
-	videoType,
 	playerKind,
 	playableSrc,
 	title,
 	poster,
-	clips,
-	clipLabels,
 	noSourceLabel,
 	className,
 	variant = "default",
-	hideClipList = false,
+	aside,
+	videoId,
+	clips = [],
+	activeClipNumber = null,
+	clipLabels,
 }: VideoPlayerFrameProps) {
+	const router = useRouter();
+	const [isPending, startTransition] = useTransition();
 	const isCinema = variant === "cinema";
-	const isClipSeries = videoType === "VIDEO_CLIP" && clips.length > 0;
-	const [activeClipNumber, setActiveClipNumber] = useState(
-		isClipSeries ? clips[0].clipNumber : 0,
-	);
+	const isClipSeries = clips.length > 1 && videoId != null && clipLabels != null;
 
-	let surface: React.ReactNode;
+	const activeClip = isClipSeries
+		? (clips.find((clip) => clip.clipNumber === activeClipNumber) ?? clips[0])
+		: null;
+	const playerTitle =
+		activeClip != null ? `${title} — ${activeClip.title}` : title;
 
-	if (isClipSeries) {
-		const activeClip =
-			clips.find((clip) => clip.clipNumber === activeClipNumber) ?? clips[0];
+	const handleClipSelect = (clipNumber: number) => {
+		if (videoId == null || clipNumber === activeClipNumber) {
+			return;
+		}
+		startTransition(() => {
+			router.replace(videoDetailHref(videoId, clipNumber), { scroll: false });
+		});
+	};
+
+	let surface: ReactNode;
+
+	if (playerKind === "vidstack" && playableSrc) {
 		surface = (
 			<VideoPlayer
-				src={activeClip.url}
-				title={`${title} — ${activeClip.title}`}
-				poster={poster ?? undefined}
-				variant="full"
-			/>
-		);
-	} else if (playerKind === "vidstack" && playableSrc) {
-		surface = (
-			<VideoPlayer
+				key={playableSrc}
 				src={playableSrc}
-				title={title}
+				title={playerTitle}
 				poster={poster ?? undefined}
 				variant="full"
 			/>
@@ -124,8 +136,9 @@ export function VideoPlayerFrame({
 		surface = (
 			<PlayerSurface cinema={isCinema}>
 				<iframe
+					key={playableSrc}
 					src={playableSrc}
-					title={title}
+					title={playerTitle}
 					loading="lazy"
 					allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; fullscreen"
 					allowFullScreen
@@ -139,18 +152,35 @@ export function VideoPlayerFrame({
 		);
 	}
 
+	const clipList =
+		isClipSeries && clipLabels ? (
+			<VideoClipList
+				clips={clips}
+				activeClipNumber={activeClip?.clipNumber ?? clips[0].clipNumber}
+				onSelect={handleClipSelect}
+				labels={clipLabels}
+				className={cn("mt-6", isPending && "opacity-70")}
+			/>
+		) : null;
+
+	if (!aside) {
+		return (
+			<div className={cn(className)}>
+				{surface}
+				{clipList}
+			</div>
+		);
+	}
+
 	return (
 		<div className={cn(className)}>
-			{surface}
-			{isClipSeries && !hideClipList ? (
-				<VideoClipList
-					clips={clips}
-					activeClipNumber={activeClipNumber}
-					onSelect={setActiveClipNumber}
-					labels={clipLabels}
-					className="mt-6"
-				/>
-			) : null}
+			<div className="grid items-start gap-5 lg:grid-cols-[minmax(0,1fr)_minmax(16rem,22rem)] lg:gap-6">
+				<div className="min-w-0">
+					{surface}
+					{clipList}
+				</div>
+				<div className="min-w-0 lg:sticky lg:top-24">{aside}</div>
+			</div>
 		</div>
 	);
 }

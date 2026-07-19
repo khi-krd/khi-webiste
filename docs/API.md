@@ -33,6 +33,10 @@ This document describes the REST API contract expected by **khi-website** (publi
 | Variable                 | Required         | Description                                                         |
 | ------------------------ | ---------------- | ------------------------------------------------------------------- |
 | `API_BASE_URL`           | Yes (production) | Base URL of the external REST API, e.g. `https://api.example.com`   |
+| `API_REVALIDATE_SECONDS` | No               | CMS fetch cache: `0` / `no-store` (default) = always fresh; positive = ISR TTL in seconds. Legacy alias: `REVALIDATE_SECONDS`. |
+| `REVALIDATION_SECRET`    | No (ISR)         | Secret for `POST /api/revalidate` on-demand tag/path invalidation   |
+| `CLOUDFLARE_ZONE_ID`     | No               | Optional; enables Cloudflare purge from `/api/revalidate`           |
+| `CLOUDFLARE_API_TOKEN`   | No               | Cloudflare API token with Cache Purge permission                    |
 | `USE_MOCK_DATA`          | No               | Mock policy mode — see values below (default: `off`)                |
 | `NEXT_PUBLIC_MEDIA_HOST` | Recommended (media) | Primary S3/CDN hostname; used for PDF proxy hints — `next/image` allows any HTTPS/HTTP host via wildcard `remotePatterns` |
 | `NEXT_PUBLIC_SITE_URL`   | Yes (SEO)        | Canonical site origin                                               |
@@ -47,7 +51,9 @@ This document describes the REST API contract expected by **khi-website** (publi
 
 **Request behaviour**
 
-- All fetches go through `src/lib/api/client.ts` with ISR (`revalidate: 600` by default).
+- All fetches go through `src/lib/api/client.ts`. By default they use `cache: "no-store"` so CMS writes appear immediately. Set `API_REVALIDATE_SECONDS` to a positive TTL to enable ISR with cache tags; then call `POST /api/revalidate` on publish (optional Cloudflare purge via `CLOUDFLARE_*` env vars).
+- HTML / API responses send `Cache-Control: no-store` (and Cloudflare-specific CDN headers) so browsers and edge do not keep stale pages.
+- **Cloudflare (dashboard, not in repo):** turn **Origin Cache Control** ON; do **not** use “Cache Everything” on HTML/locale routes; bypass cache for `/api/*`. Optional: set `CLOUDFLARE_ZONE_ID` + `CLOUDFLARE_API_TOKEN` and call `POST /api/revalidate` with `urls` after CMS writes to purge edge.
 - Responses may be a raw Spring page/DTO **or** wrapped as `{ success: true, data: … }` (see `unwrapApiPayload`).
 - Mock fallback depends on `USE_MOCK_DATA` mode (see table above). In `off` mode, failed requests return empty results rather than demo content.
 

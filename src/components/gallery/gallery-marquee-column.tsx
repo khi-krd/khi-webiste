@@ -4,6 +4,7 @@ import { galleryPhotoSurfaceClass } from "@/components/gallery/gallery-album-ite
 import { DirectionalIcon } from "@/components/ui/directional-icon";
 import { DrawnBorder } from "@/components/ui/drawn-border";
 import { Image } from "@/components/ui/image";
+import { Link } from "@/i18n/navigation";
 import type { GalleryHeroImage } from "@/lib/mock/gallery";
 import { cn } from "@/lib/utils";
 
@@ -26,7 +27,7 @@ function MarqueeCard({
 	priority?: boolean;
 	eager?: boolean;
 }) {
-	return (
+	const card = (
 		<figure className="group relative overflow-hidden">
 			<div className={cn("relative overflow-hidden", galleryPhotoSurfaceClass)}>
 				<Image
@@ -93,6 +94,20 @@ function MarqueeCard({
 				</figcaption>
 			</div>
 		</figure>
+	);
+
+	if (!item.href) {
+		return card;
+	}
+
+	return (
+		<Link
+			href={item.href}
+			className="block no-underline"
+			aria-label={item.title}
+		>
+			{card}
+		</Link>
 	);
 }
 

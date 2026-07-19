@@ -13,7 +13,7 @@ export async function GET(request: Request) {
 	try {
 		const response = await fetch(src, {
 			headers: { Accept: "application/pdf" },
-			next: { revalidate: 3600 },
+			cache: "no-store",
 		});
 
 		if (!response.ok) {
@@ -25,7 +25,7 @@ export async function GET(request: Request) {
 			headers: {
 				"Content-Type":
 					response.headers.get("content-type") ?? "application/pdf",
-				"Cache-Control": "private, max-age=3600",
+				"Cache-Control": "private, no-cache, no-store, must-revalidate",
 			},
 		});
 	} catch {

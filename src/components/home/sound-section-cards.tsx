@@ -27,18 +27,11 @@ type SoundSectionCardsProps = {
 	compact?: boolean;
 };
 
-function SoundSectionCard({
-	item,
-	index,
-}: {
-	item: SoundSectionCardItem;
-	index: number;
-}) {
+function SoundSectionCard({ item }: { item: SoundSectionCardItem }) {
 	const { state } = usePlayer();
 	const current = state.queue[state.index];
 	const isActive = item.queue.some((track) => track.fileId === current?.fileId);
 	const isPlaying = isActive && state.status === "playing";
-	const indexLabel = String(index + 1).padStart(2, "0");
 
 	const metaParts = [item.trackCountLabel].filter(Boolean);
 
@@ -50,21 +43,13 @@ function SoundSectionCard({
 				!isActive && "fine-hover:bg-primary-foreground/6",
 			)}
 		>
-			<span
-				dir="ltr"
-				aria-hidden
-				className="hidden shrink-0 pt-1.5 font-heading text-small font-bold tabular-nums text-primary-foreground/35 transition-colors duration-300 group-fine:text-primary-foreground/55 sm:block"
-			>
-				{indexLabel}
-			</span>
-
-			<div className="relative size-20 shrink-0 overflow-hidden rounded-md ring-1 ring-primary-foreground/20 sm:size-24">
+			<div className="relative size-32 shrink-0 overflow-hidden rounded-md ring-1 ring-primary-foreground/20 sm:size-40">
 				{item.coverUrl ? (
 					<NextImage
 						src={item.coverUrl}
 						alt=""
 						fill
-						sizes="(max-width: 640px) 5rem, 6rem"
+						sizes="(max-width: 640px) 8rem, 10rem"
 						className={cn(
 							"object-cover transition-[filter,transform] duration-500",
 							isActive
@@ -77,7 +62,7 @@ function SoundSectionCard({
 						aria-hidden
 						className="flex h-full w-full items-center justify-center bg-primary-foreground/8"
 					>
-						<span className="font-heading text-body font-bold text-primary-foreground/25">
+						<span className="font-heading text-title font-bold text-primary-foreground/25">
 							{item.title.charAt(0)}
 						</span>
 					</div>
@@ -96,7 +81,7 @@ function SoundSectionCard({
 						queue={item.queue}
 						size="overlay"
 						className={cn(
-							"absolute bottom-1 start-1 z-2 size-9 rounded-md border-0 bg-primary text-primary-foreground opacity-90 transition-opacity duration-300 fine-hover:opacity-100 [&_svg]:size-3.5",
+							"absolute bottom-1.5 start-1.5 z-2 size-10 rounded-md border-0 bg-primary text-primary-foreground opacity-90 transition-opacity duration-300 fine-hover:opacity-100 [&_svg]:size-4",
 							isPlaying && "opacity-100",
 						)}
 					/>
@@ -164,8 +149,8 @@ export function SoundSectionCards({
 							compact && "lg:grid-cols-2",
 						)}
 					>
-						{items.map((item, index) => (
-							<SoundSectionCard key={item.id} item={item} index={index} />
+						{items.map((item) => (
+							<SoundSectionCard key={item.id} item={item} />
 						))}
 					</div>
 				</div>

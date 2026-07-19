@@ -4,7 +4,7 @@
 import useEmblaCarousel from "embla-carousel-react";
 import type { PointerEvent as ReactPointerEvent } from "react";
 import { useCallback, useEffect, useRef, useState } from "react";
-import { useScrollToSection } from "@/components/providers/lenis-context";
+import { useScrollToSection } from "@/lib/use-scroll-to-section";
 import { ServiceNavCard } from "@/components/services/service-nav-card";
 import type { ServiceItem } from "@/lib/mock/services";
 import { cn } from "@/lib/utils";
@@ -111,8 +111,6 @@ export function ServicesNavCarousel({
 				<div
 					className="-mx-6 touch-pan-y overflow-hidden sm:-mx-8"
 					ref={emblaRef}
-					data-lenis-prevent-horizontal
-					data-lenis-prevent-touch
 				>
 					<ul className="flex touch-pan-y px-6 sm:px-8">
 						{items.map(({ service, title }) => (

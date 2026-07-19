@@ -19,7 +19,10 @@ export type NewsItem = {
 	excerpt: string;
 	/** Markdown or legacy HTML from the API — rendered on the detail page. */
 	description?: string;
-	category: NewsCategory;
+	/** Stable filter key (`category.ckbName` from API, or mock slug). */
+	category: string;
+	/** Localized label for display (from API bilingual names when available). */
+	categoryLabel?: string;
 	publishedAt: string;
 	featured?: boolean;
 	author?: string;
@@ -33,6 +36,12 @@ export type NewsItem = {
 	coverThumbnailUrl?: string | null;
 	mediaGallery?: MediaItem[];
 	tags?: string[];
+};
+
+/** Filter chip option derived from backend (or mock) taxonomy. */
+export type NewsCategoryOption = {
+	key: string;
+	label: string;
 };
 
 type LocaleCopy = NewsItem[];
@@ -445,14 +454,41 @@ export function isValidCategory(category: string): category is NewsCategory {
 	return (NEWS_CATEGORIES as string[]).includes(category);
 }
 
+export function isKnownCategory(
+	category: string,
+	options: readonly NewsCategoryOption[],
+): boolean {
+	const key = category.trim();
+	if (!key) {
+		return false;
+	}
+	return options.some((option) => option.key === key);
+}
+
+export function newsItemCategoryLabel(
+	item: Pick<NewsItem, "category" | "categoryLabel">,
+	options?: readonly NewsCategoryOption[],
+): string {
+	if (item.categoryLabel?.trim()) {
+		return item.categoryLabel.trim();
+	}
+	const match = options?.find((option) => option.key === item.category);
+	return match?.label ?? item.category;
+}
+
 export function filterNews(
 	items: NewsItem[],
 	{ category, query }: NewsFilter,
 ): NewsItem[] {
 	let result = items;
 
-	if (category && isValidCategory(category)) {
-		result = result.filter((item) => item.category === category);
+	if (category?.trim()) {
+		const key = category.trim();
+		result = result.filter(
+			(item) =>
+				item.category === key ||
+				item.categoryLabel?.trim() === key,
+		);
 	}
 
 	if (query?.trim()) {

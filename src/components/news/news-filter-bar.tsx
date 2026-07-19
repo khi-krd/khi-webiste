@@ -8,29 +8,26 @@ import {
 import { useSearchParams } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { useCallback, useEffect, useRef, useState, useTransition } from "react";
-import { useScrollToSection } from "@/components/providers/lenis-context";
+import { useScrollToSection } from "@/lib/use-scroll-to-section";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { useRouter } from "@/i18n/navigation";
-import {
-	isValidCategory,
-	NEWS_CATEGORIES,
-	type NewsCategory,
-} from "@/lib/mock/news";
+import type { NewsCategoryOption } from "@/lib/mock/news";
+import { isKnownCategory } from "@/lib/mock/news";
 import { buildNewsHref } from "@/lib/news-url";
 import { cn } from "@/lib/utils";
 
 type NewsFilterBarProps = {
+	categories: NewsCategoryOption[];
 	activeCategory?: string | null;
 	activeQuery?: string | null;
-	categoryLabels: Record<NewsCategory, string>;
 	className?: string;
 };
 
 export function NewsFilterBar({
+	categories,
 	activeCategory,
 	activeQuery,
-	categoryLabels,
 	className,
 }: NewsFilterBarProps) {
 	const t = useTranslations("News");
@@ -42,7 +39,11 @@ export function NewsFilterBar({
 	const scrollToSection = useScrollToSection();
 
 	const hasActiveCategory =
-		Boolean(activeCategory) && isValidCategory(activeCategory ?? "");
+		Boolean(activeCategory) &&
+		isKnownCategory(activeCategory ?? "", categories);
+	const activeCategoryLabel = hasActiveCategory
+		? categories.find((entry) => entry.key === activeCategory)?.label
+		: null;
 	const hasActiveQuery = Boolean(activeQuery?.trim());
 	const hasActiveFilters = hasActiveCategory || hasActiveQuery;
 
@@ -201,13 +202,13 @@ export function NewsFilterBar({
 					>
 						{t("filter.all")}
 					</CategoryPill>
-					{NEWS_CATEGORIES.map((category) => (
+					{categories.map((category) => (
 						<CategoryPill
-							key={category}
-							active={activeCategory === category}
-							onClick={() => handleCategory(category)}
+							key={category.key}
+							active={activeCategory === category.key}
+							onClick={() => handleCategory(category.key)}
 						>
-							{categoryLabels[category]}
+							{category.label}
 						</CategoryPill>
 					))}
 				</div>
@@ -215,9 +216,9 @@ export function NewsFilterBar({
 				{hasActiveFilters ? (
 					<div className="mt-4 flex flex-wrap items-center gap-2 border-t border-border pt-4">
 						<span className="text-label text-muted">{t("filter.active")}</span>
-						{activeCategory && isValidCategory(activeCategory) ? (
+						{activeCategoryLabel ? (
 							<Badge variant="outline" size="sm">
-								{categoryLabels[activeCategory]}
+								{activeCategoryLabel}
 							</Badge>
 						) : null}
 						{hasActiveQuery && activeQuery ? (

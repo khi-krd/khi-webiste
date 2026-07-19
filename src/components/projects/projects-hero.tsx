@@ -37,10 +37,9 @@ export function ProjectsHero({
 	return (
 		<section
 			aria-labelledby="projects-hero-heading"
-			data-snap-section
 			className="border-b border-border bg-background"
 		>
-			<div className="mx-auto max-w-[88rem] px-6 pt-30 pb-10 sm:px-8 sm:pt-34 sm:pb-12">
+			<div className="mx-auto max-w-[88rem] px-6 pt-10 pb-10 sm:px-8 sm:pt-12 sm:pb-12">
 				<div className="flex flex-col gap-8 lg:flex-row lg:items-start lg:justify-between lg:gap-16">
 					<nav aria-label={allYearsLabel} className="min-w-0">
 						<ul className="flex flex-wrap items-center gap-x-5 gap-y-2">

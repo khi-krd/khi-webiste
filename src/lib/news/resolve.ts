@@ -38,6 +38,14 @@ function resolveCategoryName(locale: string, news: News): string | null {
 	return firstNonBlank(news.category?.kmrName, news.category?.ckbName);
 }
 
+/**
+ * Stable filter key for `?category=` and `GET /search/category?name=`.
+ * Prefer CKB name (dashboard convention); fall back to KMR.
+ */
+export function resolveCategoryKey(news: News): string | null {
+	return firstNonBlank(news.category?.ckbName, news.category?.kmrName);
+}
+
 const CATEGORY_ALIASES: Record<string, NewsCategory> = {
 	culture: "culture",
 	çand: "culture",
@@ -57,13 +65,15 @@ const CATEGORY_ALIASES: Record<string, NewsCategory> = {
 	کۆمەڵگا: "society",
 };
 
-function mapCategory(locale: string, news: News): NewsCategory {
-	const name = resolveCategoryName(locale, news);
-	if (!name) {
+/** Map free-form backend category names onto homepage latest-update slots. */
+export function mapToLatestUpdateCategory(
+	categoryKey: string | null | undefined,
+): NewsCategory {
+	if (!categoryKey) {
 		return "culture";
 	}
 
-	const normalized = name.trim().toLowerCase();
+	const normalized = categoryKey.trim().toLowerCase();
 	const direct = CATEGORY_ALIASES[normalized];
 	if (direct) {
 		return direct;
@@ -105,13 +115,17 @@ export function resolveNewsItem(locale: string, news: News): NewsItem | null {
 			? (news.tags?.ckb ?? news.tags?.kmr ?? [])
 			: (news.tags?.kmr ?? news.tags?.ckb ?? []);
 
+	const categoryKey = resolveCategoryKey(news);
+	const categoryLabel = resolveCategoryName(locale, news);
+
 	return {
 		id: String(news.id),
 		slug: String(news.id),
 		title,
 		excerpt,
 		description,
-		category: mapCategory(locale, news),
+		category: categoryKey ?? "culture",
+		categoryLabel: categoryLabel ?? undefined,
 		publishedAt:
 			news.datePublished ?? news.createdAt ?? new Date().toISOString(),
 		coverMediaType: parseMediaKind(news.coverMediaType, coverUrl),

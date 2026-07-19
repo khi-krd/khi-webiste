@@ -3,7 +3,12 @@ import { notFound } from "next/navigation";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { WritingPostView } from "@/components/writing/writing-post-view";
 import { WritingsShell } from "@/components/writing/writings-shell";
-import { getWritingById, getWritingSeriesBooks } from "@/lib/api/writings";
+import {
+	getRelatedWritings,
+	getWritingById,
+	getWritingNeighbors,
+	getWritingSeriesBooks,
+} from "@/lib/api/writings";
 import {
 	WRITING_CATEGORY_NAV_KEYS,
 	type WritingCategorySlug,
@@ -84,7 +89,7 @@ export default async function WritingsSegmentPage({
 		});
 
 		return (
-			<main className="-mt-26 bg-background sm:-mt-30">
+			<main className="bg-background">
 				<WritingsShell
 					id="writings-content"
 					title={pageData.gridTitle}
@@ -103,7 +108,7 @@ export default async function WritingsSegmentPage({
 					paginationLabel={t("pagination.label")}
 					previousLabel={t("pagination.previous")}
 					nextLabel={t("pagination.next")}
-					className="border-t-0 pt-26 sm:pt-30"
+					className="border-t-0 pt-10 sm:pt-12"
 				/>
 			</main>
 		);
@@ -124,30 +129,42 @@ export default async function WritingsSegmentPage({
 			? await getWritingSeriesBooks(locale, detail.seriesId, detail.id)
 			: [];
 
+	const { previous, next } = await getWritingNeighbors(locale, detail.id);
+	const related = await getRelatedWritings(locale, detail, {
+		excludeIds: [previous?.id, next?.id].filter(
+			(id): id is number => typeof id === "number",
+		),
+	});
+
 	const genreLabels = Object.fromEntries(
 		BOOK_GENRES.map((genre) => [genre, t(`genres.${genre}`)]),
 	) as Record<BookGenre, string>;
 
 	return (
-		<main className="-mt-26 bg-background sm:-mt-30">
+		<main className="bg-background">
 			<WritingPostView
 				detail={detail}
 				seriesBooks={seriesBooks}
+				previous={previous}
+				next={next}
+				related={related}
 				genreLabels={genreLabels}
 				locale={locale}
 				backLabel={t("post.back")}
-				instituteBadgeLabel={t("carousel.instituteBadge")}
 				writerLabel={t("post.writer")}
 				seriesLabel={t("post.series")}
 				seriesVolumeLabel={(order, total) =>
 					t("post.seriesVolume", { order, total: total ?? order })
 				}
 				topicLabel={t("post.topic")}
-				tagsLabel={t("post.tags")}
 				keywordsLabel={t("post.keywords")}
 				previewTitle={t("post.preview.title")}
 				publishedLabel={t("post.published")}
 				updatedLabel={t("post.updated")}
+				navLabel={t("post.navLabel")}
+				previousLabel={t("post.previous")}
+				nextLabel={t("post.next")}
+				relatedLabel={t("post.related")}
 			/>
 		</main>
 	);

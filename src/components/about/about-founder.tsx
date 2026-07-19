@@ -19,7 +19,7 @@ export function AboutFounder({
 	className,
 }: AboutFounderProps) {
 	return (
-		<AboutSection bordered data-snap-section className={className}>
+		<AboutSection bordered className={className}>
 			<AboutShell className="lg:grid lg:grid-cols-[minmax(0,0.42fr)_minmax(0,1fr)] lg:items-start lg:gap-12 xl:gap-16">
 				<ScrollRevealBlock>
 					<Image

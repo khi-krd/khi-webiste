@@ -55,8 +55,27 @@
 	inset-inline: 0 !important;
 }
 
+.writing-pdf-viewer__viewport {
+	overscroll-behavior: contain;
+	touch-action: pan-x pan-y;
+	cursor: grab;
+}
+
+.writing-pdf-viewer__viewport--panning {
+	cursor: grabbing;
+	user-select: none;
+}
+
+.writing-pdf-viewer__viewport--panning * {
+	user-select: none !important;
+}
+
+.writing-pdf-viewer__viewport--pinching {
+	touch-action: none;
+}
+
 .writing-pdf-viewer__viewport--swipeable {
-	touch-action: pan-y pinch-zoom;
+	touch-action: pan-x pan-y;
 }
 
 .writing-pdf-scrubber__range {

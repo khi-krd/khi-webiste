@@ -1,7 +1,7 @@
 "use client";
 
 import { useTransition } from "react";
-import { useScrollToSection } from "@/components/providers/lenis-context";
+import { useScrollToSection } from "@/lib/use-scroll-to-section";
 import { useRouter } from "@/i18n/navigation";
 import { homeInsetClass } from "@/lib/layout";
 import { cn } from "@/lib/utils";

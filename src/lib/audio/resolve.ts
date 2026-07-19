@@ -169,6 +169,12 @@ function resolveFileRow(
 	totalFiles: number,
 	coverUrl: string | null,
 ): ResolvedAudioFileRow {
+	const durationSeconds =
+		file.durationSeconds ??
+		(file.durationMinutes != null && file.durationMinutes > 0
+			? Math.round(file.durationMinutes * 60)
+			: null);
+
 	return {
 		id: file.id,
 		title:
@@ -179,7 +185,7 @@ function resolveFileRow(
 		playable: isPlayable(file),
 		externalUrl: file.externalUrl ?? null,
 		embedUrl: file.embedUrl ?? null,
-		durationSeconds: file.durationSeconds ?? null,
+		durationSeconds,
 		sizeBytes: file.sizeBytes ?? null,
 		bitRate: file.bitRate ?? null,
 		sampleRate: file.sampleRate ?? null,
@@ -277,19 +283,19 @@ export function resolveAudioDetail(
 		reader: track.reader ?? null,
 		directors: track.directors,
 		locations: track.locations,
-		terms: track.terms,
+		terms: track.terms ?? null,
 		thisProjectOfInstitute: track.thisProjectOfInstitute,
 		contentLanguages: track.contentLanguages,
 		genre: firstNonBlank(...track.files.map((file) => file.genre)),
-		albumName: track.albumName,
+		albumName: track.albumName ?? null,
 		publishmentYear:
 			track.publishmentYear ?? track.files[0]?.publishmentYear ?? null,
-		cdNumber: track.cdNumber,
+		cdNumber: track.cdNumber ?? null,
 		totalTracks:
 			track.totalTracks ??
 			(track.trackState === "MULTI" ? track.files.length : null),
-		totalDurationSeconds: track.totalDurationSeconds,
-		totalSizeBytes: track.totalSizeBytes,
+		totalDurationSeconds: track.totalDurationSeconds ?? null,
+		totalSizeBytes: track.totalSizeBytes ?? null,
 		fileRows: track.files.map((file, index) =>
 			resolveFileRow(file, trackTitle, index, track.files.length, coverUrl),
 		),

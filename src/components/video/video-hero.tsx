@@ -1,36 +1,42 @@
-import { ArrowRightIcon } from "@heroicons/react/24/outline";
 import NextImage from "next/image";
 import {
 	ScrollReveal,
 	ScrollRevealBlock,
 	ScrollRevealItem,
 } from "@/components/motion/scroll-reveal";
-import { DirectionalIcon } from "@/components/ui/directional-icon";
 import { Link } from "@/components/ui/link";
 import { RichText } from "@/components/ui/rich-text";
 import { cn } from "@/lib/utils";
+
+export type VideoHeroStill = {
+	src: string;
+	href: string;
+	title: string;
+};
 
 type VideoHeroProps = {
 	eyebrow: string;
 	title: string;
 	titleEmphasis?: string;
 	description?: string;
-	cta: string;
-	/** Anchor or route the CTA points at. Defaults to the grid anchor. */
-	ctaHref?: string;
 	/** Real cover stills from the catalogue — the hero's only visual. */
-	covers?: (string | null)[];
+	stills?: VideoHeroStill[];
 	showEmphasisItalic?: boolean;
 };
 
-const primaryCtaClass =
-	"group/cta relative mt-7 inline-flex h-11 items-center gap-2.5 overflow-hidden bg-primary px-7 font-heading text-small font-semibold text-primary-foreground no-underline transition-[gap,box-shadow] duration-300 ease-out fine-hover:gap-3.5 fine-hover:shadow-[0_12px_32px_-14px_rgba(26,24,19,0.5)]";
-
-function HeroStill({ src, className }: { src: string; className?: string }) {
+function HeroStill({
+	src,
+	href,
+	title,
+	className,
+}: VideoHeroStill & { className?: string }) {
 	return (
-		<div
+		<Link
+			href={href}
+			variant="nav"
+			aria-label={title}
 			className={cn(
-				"relative overflow-hidden border border-border bg-sunken",
+				"group/still relative block overflow-hidden border border-border bg-sunken no-underline",
 				className,
 			)}
 		>
@@ -40,9 +46,9 @@ function HeroStill({ src, className }: { src: string; className?: string }) {
 				fill
 				priority
 				sizes="22rem"
-				className="object-cover brightness-[0.95] saturate-[0.9]"
+				className="object-cover brightness-[0.95] saturate-[0.9] transition-[filter,transform] duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] group-fine/still:scale-[1.03] group-fine/still:brightness-100 motion-reduce:transition-none motion-reduce:group-fine/still:scale-100"
 			/>
-		</div>
+		</Link>
 	);
 }
 
@@ -56,19 +62,14 @@ export function VideoHero({
 	title,
 	titleEmphasis,
 	description,
-	cta,
-	ctaHref = "#videos-content",
-	covers = [],
+	stills = [],
 	showEmphasisItalic = false,
 }: VideoHeroProps) {
-	const [stillA, stillB, stillC, stillD, stillE] = covers.filter(
-		(cover): cover is string => Boolean(cover),
-	);
+	const [stillA, stillB, stillC, stillD, stillE] = stills;
 
 	return (
 		<header
 			className="relative overflow-hidden border-b border-border/60 bg-surface"
-			data-snap-section
 		>
 			{/* faint top light — the only background event */}
 			<div
@@ -80,7 +81,7 @@ export function VideoHero({
 				className="pointer-events-none absolute inset-x-0 bottom-0 h-24 bg-linear-to-t from-background to-transparent"
 			/>
 
-			<div className="relative z-1 mx-auto max-w-7xl grid items-center gap-10 px-6 py-12 sm:px-8 sm:py-14 lg:grid-cols-[minmax(0,1fr)_auto] lg:gap-16 lg:py-16">
+			<div className="relative z-1 mx-auto max-w-7xl grid items-center gap-6 px-6 py-8 sm:gap-8 sm:px-8 sm:py-10 lg:grid-cols-[minmax(0,1fr)_auto] lg:gap-10 lg:py-12">
 				<ScrollReveal className="max-w-2xl text-start">
 					<ScrollRevealItem>
 						<p className="label font-medium text-muted">
@@ -92,14 +93,14 @@ export function VideoHero({
 					</ScrollRevealItem>
 
 					<ScrollRevealItem>
-						<h1 id="video-hero-heading" className="mt-4 text-balance">
+						<h1 id="video-hero-heading" className="mt-3 text-balance">
 							<span className="block font-heading text-[clamp(1.75rem,3.6vw,2.75rem)] font-bold leading-[1.12] text-foreground">
 								{title}
 							</span>
 							{titleEmphasis ? (
 								<span
 									className={cn(
-										"mt-1.5 block font-heading text-[clamp(1.25rem,2.2vw,1.75rem)] font-medium leading-[1.25] text-muted",
+										"mt-1 block font-heading text-[clamp(1.25rem,2.2vw,1.75rem)] font-medium leading-tight text-muted",
 										showEmphasisItalic && "italic",
 									)}
 								>
@@ -113,44 +114,31 @@ export function VideoHero({
 						<ScrollRevealItem>
 							<RichText
 								content={description}
-								className="mt-5 max-w-lg text-body leading-relaxed text-foreground/80"
+								className="mt-3 max-w-lg text-body leading-relaxed text-foreground/80"
 							/>
 						</ScrollRevealItem>
 					) : null}
-
-					<ScrollRevealItem>
-						<Link href={ctaHref} variant="nav" className={primaryCtaClass}>
-							<span className="relative z-1">{cta}</span>
-							<DirectionalIcon
-								icon={ArrowRightIcon}
-								className="relative z-1 size-4"
-							/>
-						</Link>
-					</ScrollRevealItem>
 				</ScrollReveal>
 
 				{stillA ? (
-					<ScrollRevealBlock
-						aria-hidden
-						className="hidden w-[26rem] shrink-0 flex-col gap-3 lg:flex xl:w-[30rem]"
-					>
-						<div className="flex gap-3">
-							<HeroStill src={stillA} className="aspect-video flex-[1.6]" />
+					<ScrollRevealBlock className="hidden w-[26rem] shrink-0 flex-col gap-2 lg:flex xl:w-[30rem]">
+						<div className="flex gap-2">
+							<HeroStill {...stillA} className="aspect-video flex-[1.6]" />
 							{stillB ? (
-								<HeroStill src={stillB} className="aspect-square flex-1" />
+								<HeroStill {...stillB} className="aspect-square flex-1" />
 							) : null}
 						</div>
-						<div className="flex gap-3">
+						<div className="flex gap-2">
 							{stillC ? (
-								<HeroStill src={stillC} className="aspect-[2.4/1] flex-[1.4]" />
+								<HeroStill {...stillC} className="aspect-[2.4/1] flex-[1.4]" />
 							) : null}
 							{stillD ? (
-								<HeroStill src={stillD} className="aspect-square flex-1" />
+								<HeroStill {...stillD} className="aspect-square flex-1" />
 							) : null}
 						</div>
 						{stillE ? (
 							<HeroStill
-								src={stillE}
+								{...stillE}
 								className="aspect-[2.4/1] w-2/3 self-end"
 							/>
 						) : null}
@@ -160,17 +148,14 @@ export function VideoHero({
 
 			{/* mobile film strip — catalogue stills scroll horizontally */}
 			{stillA ? (
-				<div
-					aria-hidden
-					className="relative z-1 flex gap-2 overflow-x-auto border-t border-border/60 px-6 py-4 sm:px-8 lg:hidden"
-				>
+				<div className="relative z-1 flex gap-2 overflow-x-auto border-t border-border/60 px-6 py-3 sm:px-8 lg:hidden">
 					{[stillA, stillB, stillC, stillD, stillE]
-						.filter((still): still is string => Boolean(still))
+						.filter((still): still is VideoHeroStill => Boolean(still))
 						.map((still) => (
 							<HeroStill
-								key={still}
-								src={still}
-								className="aspect-video w-44 shrink-0 sm:w-52"
+								key={`${still.href}-${still.src}`}
+								{...still}
+								className="aspect-video w-40 shrink-0 sm:w-48"
 							/>
 						))}
 				</div>

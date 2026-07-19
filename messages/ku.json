@@ -179,7 +179,8 @@
 			},
 			"navLabel": "Nûçeyên têkildar",
 			"previous": "Berê",
-			"next": "Piştî"
+			"next": "Piştî",
+			"related": "Nûçeyên din bi heman mijarê"
 		},
 		"pagination": {
 			"label": "Rûpelkirina nûçeyan",
@@ -206,6 +207,18 @@
 			"cta": "Projeyan bigere",
 			"count": "{count, plural, one {# proje} other {# proje}}"
 		},
+		"search": {
+			"placeholder": "Projeyan bigere…",
+			"submit": "Bibîne",
+			"label": "Lêgerîna projeyan",
+			"clear": "Lêgerînê paqij bike"
+		},
+		"filter": {
+			"all": "Hemû",
+			"clear": "Filtreyan paqij bike",
+			"label": "Li gorî etîketê filtir bike",
+			"active": "Tê xuyang kirin"
+		},
 		"filters": {
 			"years": "Sal",
 			"tags": "Etîket",
@@ -217,7 +230,7 @@
 			"description": "Projeyên bi şêweyekî stûnî hatine rêzkirin — her kartekeke şêwazek cuda ye, lê hemû ji bo hûragahiyan amade ne.",
 			"preview": "Pêşdîtin",
 			"count": "{count, plural, one {# encam} other {# encam}}",
-			"noResults": "Ji bo vê fîltreê tu proje nehat dîtin."
+			"noResults": "Ti proje bi lêgerîn an filtreya we re li hev nayên. Peyvek din biceribîne an filtreyan paqij bike."
 		},
 		"pagination": {
 			"label": "Rûpelkirina projeyan",
@@ -250,8 +263,20 @@
 		"hero": {
 			"eyebrow": "Arşîva dîmenî",
 			"title": "Mîrateya dîmenî ya zindî ya Kurdistanê bibîne",
-			"cta": "Berhevokê vekole",
 			"scrollDown": "Berjêr biçe"
+		},
+		"search": {
+			"placeholder": "Li gorî sernav, etîket an mijarê bigere…",
+			"submit": "Bibîne",
+			"label": "Di berhevokan de bigere",
+			"clear": "Lêgerînê paqij bike",
+			"noResults": "Tu berhevok bi lêgerîn an fîltreya te re li hev nayê. Peyvek din biceribîne an fîltreyan paqij bike."
+		},
+		"filter": {
+			"all": "Hemû",
+			"clear": "Fîltreyan paqij bike",
+			"label": "Li gorî cureyê filtir bike",
+			"active": "Tê xuyang kirin"
 		},
 		"posts": {
 			"eyebrow": "Pêrista arşîvê",
@@ -393,7 +418,11 @@
 			"tags": "Etîket",
 			"keywords": "Peyvên sereke",
 			"published": "Hat zêdekirin",
-			"updated": "Hat nûvekirin"
+			"updated": "Hat nûvekirin",
+			"navLabel": "Tomarên din",
+			"previous": "Tomara berê",
+			"next": "Tomara paşê",
+			"related": "Tomarên têkildar"
 		},
 		"stats": {
 			"duration": "Dirêjahiya giştî",
@@ -464,15 +493,12 @@
 			"hero": {
 				"eyebrow": "Nivîs",
 				"title": "Hin nivîs agahdar dikin.",
-				"titleEmphasis": "Yên din jî parastina nêrîna me li xwe ne.",
-				"cta": "Koleksiyonê bigere",
-				"learnMore": "Zêdetir bizane"
+				"titleEmphasis": "Yên din jî parastina nêrîna me li xwe ne."
 			}
 		},
 		"carousel": {
 			"empty": "Niha ti nivîs tune ne. Ji kerema xwe paşê dîsa serdan bikin.",
 			"download": "Bixwîne",
-			"instituteBadge": "EKK",
 			"paginationLabel": "Rûpelkirina nivîsan",
 			"autoplayLabel": "Bixweber diçe",
 			"previous": "Rûpela berê",
@@ -518,6 +544,10 @@
 			"downloads": "Daxistin",
 			"published": "Weşandin",
 			"updated": "Rojanekirin",
+			"navLabel": "Nivîsên din",
+			"previous": "Nivîsa berê",
+			"next": "Nivîsa paş",
+			"related": "Nivîsên din",
 			"languages": {
 				"ckb": "Soranî (CKB)",
 				"kmr": "Kurmancî (KMR)"
@@ -642,7 +672,7 @@
 		},
 		"typeBadge": {
 			"FILM": "Fîlm",
-			"VIDEO_CLIP": "Rêze"
+			"VIDEO_CLIP": "Klîp"
 		},
 		"card": {
 			"clipCount": "{formatted} {count, plural, one {klîp} other {klîp}}",
@@ -676,7 +706,8 @@
 			"tags": "Etîket",
 			"keywords": "Peyvên sereke",
 			"published": "Hat weşandin",
-			"updated": "Hat nûkirin"
+			"updated": "Hat nûkirin",
+			"related": "Vîdyo û klîpên din"
 		},
 		"films": {
 			"home": {

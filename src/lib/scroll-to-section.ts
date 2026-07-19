@@ -1,30 +1,23 @@
-import type Lenis from "lenis";
-
 type ScrollToSectionOptions = {
 	immediate?: boolean;
 };
 
-/** Smooth-scroll to a section element via Lenis, or native fallback. */
+function prefersReducedMotion(): boolean {
+	return window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+}
+
+/** Smooth-scroll to a section element via native scrollIntoView. */
 export function scrollToSection(
 	target: string | HTMLElement,
-	lenis: Lenis | null,
 	options?: ScrollToSectionOptions,
 ): void {
 	const el =
 		typeof target === "string" ? document.getElementById(target) : target;
 	if (!el) return;
 
-	if (lenis) {
-		lenis.scrollTo(el, {
-			offset: 0,
-			immediate: options?.immediate,
-			lock: true,
-		});
-		return;
-	}
-
+	const immediate = options?.immediate || prefersReducedMotion();
 	el.scrollIntoView({
-		behavior: options?.immediate ? "auto" : "smooth",
+		behavior: immediate ? "auto" : "smooth",
 		block: "start",
 	});
 }

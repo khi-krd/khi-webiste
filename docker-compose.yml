@@ -11,6 +11,11 @@ services:
       - "3000"
     environment:
       API_BASE_URL: ${API_BASE_URL}
+      # 0 = no-store (fresh CMS data); positive = ISR seconds — see docs/API.md
+      API_REVALIDATE_SECONDS: ${API_REVALIDATE_SECONDS:-0}
+      REVALIDATION_SECRET: ${REVALIDATION_SECRET:-}
+      CLOUDFLARE_ZONE_ID: ${CLOUDFLARE_ZONE_ID:-}
+      CLOUDFLARE_API_TOKEN: ${CLOUDFLARE_API_TOKEN:-}
       # off | full | auto — see docs/API.md
       USE_MOCK_DATA: ${USE_MOCK_DATA:-off}
     restart: unless-stopped

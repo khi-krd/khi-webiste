@@ -33,6 +33,26 @@ const SECTION_NAV_KEYS: Record<ClientSearchSectionKey, string> = {
 	imageCollections: "gallery",
 };
 
+const NAV_KEY_TO_SECTION: Record<string, ClientSearchSectionKey> = {
+	projects: "projects",
+	news: "news",
+	video: "videos",
+	writings: "writings",
+	sound: "soundTracks",
+	gallery: "imageCollections",
+};
+
+/** Kinds shown as mega-menu secondary links per section. */
+const NAV_MENU_KINDS: Record<ClientSearchSectionKey, ReadonlySet<SearchTaxonomyKind>> =
+	{
+		news: new Set(["category"]),
+		writings: new Set(["category"]),
+		videos: new Set(["topic", "type"]),
+		soundTracks: new Set(["topic", "type"]),
+		projects: new Set(["tag"]),
+		imageCollections: new Set(["tag"]),
+	};
+
 const ARCHIVE_SECTION_KEYS = new Set<ClientSearchSectionKey>([
 	"projects",
 	"news",
@@ -58,6 +78,32 @@ export function getTaxonomySectionNavKey(
 	sectionKey: ClientSearchSectionKey,
 ): string {
 	return SECTION_NAV_KEYS[sectionKey];
+}
+
+/** Maps a primary nav key (`video`, `sound`, …) to its search section, if any. */
+export function getSectionKeyForNavKey(
+	navKey: string,
+): ClientSearchSectionKey | null {
+	return NAV_KEY_TO_SECTION[navKey] ?? null;
+}
+
+/**
+ * Taxonomy links for a mega-menu secondary panel / nav search children.
+ * Returns [] for Services/About (no section) or when the catalog has no matches.
+ */
+export function getNavMenuTaxonomyItems(
+	navKey: string,
+	catalog: SearchTaxonomyItem[],
+): SearchTaxonomyItem[] {
+	const sectionKey = getSectionKeyForNavKey(navKey);
+	if (!sectionKey) {
+		return [];
+	}
+
+	const kinds = NAV_MENU_KINDS[sectionKey];
+	return catalog.filter(
+		(item) => item.sectionKey === sectionKey && kinds.has(item.kind),
+	);
 }
 
 export function normalizeTaxonomyQuery(value: string): string {

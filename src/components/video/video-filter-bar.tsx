@@ -8,7 +8,7 @@ import {
 import { useSearchParams } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { useCallback, useEffect, useRef, useState, useTransition } from "react";
-import { useScrollToSection } from "@/components/providers/lenis-context";
+import { useScrollToSection } from "@/lib/use-scroll-to-section";
 import { Badge } from "@/components/ui/badge";
 import { Select } from "@/components/ui/select";
 import { useRouter } from "@/i18n/navigation";
@@ -103,7 +103,7 @@ export function VideoFilterBar({
 			q?: string;
 		}) => {
 			startTransition(() => {
-				router.replace(
+				router.push(
 					buildVideoHref({
 						type: "type" in opts ? opts.type : activeType,
 						topic: "topic" in opts ? opts.topic : activeTopicId,
@@ -113,6 +113,7 @@ export function VideoFilterBar({
 					}),
 					{ scroll: false },
 				);
+				router.refresh();
 
 				const grid = document.getElementById(scrollTargetId);
 				if (grid && searchParams.toString()) {
@@ -155,7 +156,10 @@ export function VideoFilterBar({
 	const handleClearAll = () => {
 		if (debounceRef.current) clearTimeout(debounceRef.current);
 		setQuery("");
-		router.replace(buildVideoHref({}), { scroll: false });
+		startTransition(() => {
+			router.push(buildVideoHref({}), { scroll: false });
+			router.refresh();
+		});
 	};
 
 	useEffect(

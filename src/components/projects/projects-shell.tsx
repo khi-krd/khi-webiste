@@ -1,10 +1,11 @@
-import { ProjectCard } from "@/components/projects/project-card";
-import { ProjectsPagination } from "@/components/projects/projects-pagination";
-import { ProjectsTagBar } from "@/components/projects/projects-tag-bar";
 import {
 	ScrollReveal,
 	ScrollRevealItem,
 } from "@/components/motion/scroll-reveal";
+import { ProjectCard } from "@/components/projects/project-card";
+import { ProjectsClearFilters } from "@/components/projects/projects-clear-filters";
+import { ProjectsFilterBar } from "@/components/projects/projects-filter-bar";
+import { ProjectsPagination } from "@/components/projects/projects-pagination";
 import { EmptyState } from "@/components/ui/empty-state";
 import type { ProjectListItem } from "@/lib/mock/projects";
 
@@ -17,7 +18,6 @@ type ProjectsShellProps = {
 	activeTag: string | null;
 	activeQuery: string | null;
 	previewLabel: string;
-	tagsFilterLabel: string;
 	noResultsMessage: string;
 	paginationLabel: string;
 	previousLabel: string;
@@ -33,29 +33,39 @@ export function ProjectsShell({
 	activeTag,
 	activeQuery,
 	previewLabel,
-	tagsFilterLabel,
 	noResultsMessage,
 	paginationLabel,
 	previousLabel,
 	nextLabel,
 }: ProjectsShellProps) {
+	const hasFilters = Boolean(
+		activeYear || activeTag || activeQuery?.trim(),
+	);
+	const isEmpty = items.length === 0;
+
 	return (
 		<section
 			id="projects-content"
-			data-snap-section
 			className="scroll-mt-26 sm:scroll-mt-30"
 		>
-			<ProjectsTagBar
-				tags={tags}
-				activeYear={activeYear}
-				activeTag={activeTag}
-				activeQuery={activeQuery}
-				tagsLabel={tagsFilterLabel}
-			/>
-
 			<div className="mx-auto max-w-[88rem] px-6 py-12 sm:px-8 sm:py-16 lg:py-20">
-				{items.length === 0 ? (
-					<EmptyState title={noResultsMessage} />
+				<ProjectsFilterBar
+					tags={tags}
+					activeYear={activeYear}
+					activeTag={activeTag}
+					activeQuery={activeQuery}
+					className="mb-8 sm:mb-10"
+				/>
+
+				{isEmpty ? (
+					<div className="border border-border bg-surface px-6 py-12 text-center sm:px-10">
+						<p className="text-body text-muted">{noResultsMessage}</p>
+						{hasFilters ? (
+							<div className="mt-6 flex justify-center">
+								<ProjectsClearFilters />
+							</div>
+						) : null}
+					</div>
 				) : (
 					<ScrollReveal>
 						<ul className="grid grid-cols-1 gap-12 md:grid-cols-2 md:gap-x-10 lg:grid-cols-3 lg:gap-x-0 lg:divide-x lg:divide-border">
@@ -75,17 +85,19 @@ export function ProjectsShell({
 					</ScrollReveal>
 				)}
 
-				<ProjectsPagination
-					currentPage={currentPage}
-					totalPages={totalPages}
-					activeYear={activeYear}
-					activeTag={activeTag}
-					activeQuery={activeQuery}
-					label={paginationLabel}
-					previousLabel={previousLabel}
-					nextLabel={nextLabel}
-					className="mt-14 flex justify-center sm:mt-16"
-				/>
+				{!isEmpty && totalPages > 1 ? (
+					<ProjectsPagination
+						currentPage={currentPage}
+						totalPages={totalPages}
+						activeYear={activeYear}
+						activeTag={activeTag}
+						activeQuery={activeQuery}
+						label={paginationLabel}
+						previousLabel={previousLabel}
+						nextLabel={nextLabel}
+						className="mt-14 flex justify-center sm:mt-16"
+					/>
+				) : null}
 			</div>
 		</section>
 	);

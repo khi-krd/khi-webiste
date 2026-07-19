@@ -34,7 +34,6 @@ export function ServicesHero({
 	return (
 		<section
 			aria-labelledby="services-hero-heading"
-			data-snap-section
 			className={cn(
 				"relative w-full overflow-hidden border-b border-border min-h-svh",
 				className,

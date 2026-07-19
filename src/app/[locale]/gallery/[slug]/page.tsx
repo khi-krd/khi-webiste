@@ -47,7 +47,7 @@ export default async function GalleryPostPage({
 	const t = await getTranslations("Gallery");
 
 	return (
-		<main className="-mt-26 sm:-mt-30">
+		<main>
 			<GalleryPostView
 				detail={detail}
 				photosLabel={t("posts.photosCount", {

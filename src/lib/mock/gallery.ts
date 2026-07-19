@@ -17,6 +17,8 @@ export type GalleryHeroImage = {
 	categoryLabel?: string;
 	/** Ratio box the card crops into — varying these creates the masonry rhythm. */
 	aspect: GalleryAspect;
+	/** Collection detail path — marquee cards link through when set. */
+	href?: string;
 };
 
 export type GalleryHeroColumns = {
@@ -316,9 +318,25 @@ function build(
 export function getGalleryHeroColumns(locale: string): GalleryHeroColumns {
 	const copy = copyFor(locale);
 	const categoryLabels = categoryLabelsFor(locale);
+	const postIds = [
+		"the-mountain-keeps-us",
+		"threads-of-identity",
+		"made-by-hand",
+		"city-of-poets",
+		"the-radio-years",
+		"festivals-of-the-plain",
+		"doors-of-the-old-quarter",
+		"bread-and-salt",
+	];
+	const withHref = (items: GalleryHeroImage[]): GalleryHeroImage[] =>
+		items.map((item, index) => ({
+			...item,
+			href: `/gallery/${postIds[index % postIds.length]}`,
+		}));
+
 	return {
-		up: build(UP_BASE, copy, categoryLabels),
-		down: build(DOWN_BASE, copy, categoryLabels),
+		up: withHref(build(UP_BASE, copy, categoryLabels)),
+		down: withHref(build(DOWN_BASE, copy, categoryLabels)),
 	};
 }
 
@@ -777,18 +795,26 @@ export const GALLERY_POSTS_PER_PAGE = 4;
 export function filterGalleryPosts(
 	items: GalleryPost[],
 	query?: string | null,
+	type?: string | null,
 ): GalleryPost[] {
 	const trimmedQuery = query?.trim().toLowerCase();
-	if (!trimmedQuery) {
-		return items;
-	}
+	const trimmedType = type?.trim().toUpperCase();
 
-	return items.filter(
-		(item) =>
+	return items.filter((item) => {
+		if (trimmedType && item.collectionType !== trimmedType) {
+			return false;
+		}
+
+		if (!trimmedQuery) {
+			return true;
+		}
+
+		return (
 			item.title.toLowerCase().includes(trimmedQuery) ||
 			item.tags.some((tag) => tag.toLowerCase().includes(trimmedQuery)) ||
-			item.topicName?.toLowerCase().includes(trimmedQuery),
-	);
+			item.topicName?.toLowerCase().includes(trimmedQuery)
+		);
+	});
 }
 
 export function paginateGalleryPosts<T>(

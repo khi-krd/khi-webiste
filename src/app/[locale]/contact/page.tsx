@@ -37,7 +37,7 @@ export default async function ContactPage({
 	]);
 
 	return (
-		<main className="-mt-26 sm:-mt-30">
+		<main>
 			<VisuallyHidden as="h1">{t("pageTitle")}</VisuallyHidden>
 
 			<ContactHero

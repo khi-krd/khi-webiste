@@ -5,6 +5,7 @@ import {
 	ChevronRightIcon,
 	XMarkIcon,
 } from "@heroicons/react/24/outline";
+import { PlayIcon } from "@heroicons/react/24/solid";
 import NextImage from "next/image";
 import { useCallback } from "react";
 import { ProjectCoverMedia } from "@/components/projects/project-cover-media";
@@ -12,6 +13,7 @@ import { DirectionalIcon } from "@/components/ui/directional-icon";
 import { VideoPlayer } from "@/components/ui/video-player";
 import { useScrollLock } from "@/lib/use-scroll-lock";
 import type { MediaItem } from "@/types/media";
+import { cn } from "@/lib/utils";
 
 type NewsMediaModalProps = {
 	items: MediaItem[];
@@ -35,6 +37,12 @@ function isRemoteSrc(src: string): boolean {
 	return src.startsWith("http://") || src.startsWith("https://");
 }
 
+function thumbPreview(item: MediaItem): string | null {
+	if (item.thumbnailUrl) return item.thumbnailUrl;
+	if (item.kind === "IMAGE") return item.url;
+	return null;
+}
+
 function ModalMedia({
 	item,
 	articleTitle,
@@ -46,7 +54,7 @@ function ModalMedia({
 
 	if (item.kind === "IMAGE") {
 		return (
-			<div className="relative min-h-[min(62svh,40rem)] w-full bg-sunken">
+			<div className="relative min-h-[min(52svh,36rem)] w-full bg-sunken">
 				<NextImage
 					src={item.url}
 					alt={label}
@@ -117,6 +125,8 @@ export function NewsMediaModal({
 	};
 
 	const item = activeIndex === null ? null : items[activeIndex];
+	const showThumbs =
+		items.length > 1 && items.some((entry) => thumbPreview(entry));
 
 	return (
 		// biome-ignore lint/a11y/noStaticElementInteractions: keyboard nav on the dialog container (focus is trapped inside it)
@@ -149,12 +159,61 @@ export function NewsMediaModal({
 
 					<div className="min-h-0 flex-1 overflow-y-auto">
 						<ModalMedia item={item} articleTitle={articleTitle} />
+
+						{showThumbs ? (
+							<ul className="flex gap-2 overflow-x-auto border-t border-border px-3 py-2.5 scrollbar-none sm:px-4">
+								{items.map((thumb, index) => {
+									const src = thumbPreview(thumb);
+									if (!src) return null;
+									const isActive = index === activeIndex;
+
+									return (
+										<li key={`${thumb.url}-${index}`} className="w-16 shrink-0 sm:w-20">
+											<button
+												type="button"
+												onClick={() => onActiveIndexChange(index)}
+												aria-pressed={isActive}
+												aria-label={
+													thumb.caption ??
+													`${articleTitle} — ${frameNo(index)}`
+												}
+												className={cn(
+													"relative block aspect-4/3 w-full overflow-hidden border transition-[border-color,opacity] duration-200",
+													isActive
+														? "border-foreground opacity-100"
+														: "border-border opacity-75 fine-hover:border-border-strong fine-hover:opacity-100",
+												)}
+											>
+												<NextImage
+													src={src}
+													alt=""
+													fill
+													sizes="80px"
+													unoptimized={isRemoteSrc(src)}
+													className="object-cover"
+												/>
+												{thumb.kind === "VIDEO" ? (
+													<span className="pointer-events-none absolute inset-0 flex items-center justify-center bg-foreground/25">
+														<span className="inline-flex size-6 items-center justify-center bg-foreground/80 text-white">
+															<PlayIcon
+																className="size-3 translate-x-px"
+																aria-hidden
+															/>
+														</span>
+													</span>
+												) : null}
+											</button>
+										</li>
+									);
+								})}
+							</ul>
+						) : null}
 					</div>
 
 					{(item.caption || items.length > 1) && (
 						<div className="flex flex-col gap-4 border-t border-border px-4 py-4 sm:px-5">
 							{item.caption ? (
-								<p className="text-small leading-relaxed text-muted">
+								<p className="text-justify text-small leading-relaxed text-muted">
 									{item.caption}
 								</p>
 							) : null}

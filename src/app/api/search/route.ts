@@ -41,13 +41,25 @@ export async function GET(request: NextRequest) {
 				message: "Search unavailable",
 				data: null,
 			},
-			{ status: 503 },
+			{
+				status: 503,
+				headers: {
+					"Cache-Control": "private, no-cache, no-store, must-revalidate",
+				},
+			},
 		);
 	}
 
-	return NextResponse.json({
-		success: true,
-		message: "Search completed",
-		data: result,
-	});
+	return NextResponse.json(
+		{
+			success: true,
+			message: "Search completed",
+			data: result,
+		},
+		{
+			headers: {
+				"Cache-Control": "private, no-cache, no-store, must-revalidate",
+			},
+		},
+	);
 }

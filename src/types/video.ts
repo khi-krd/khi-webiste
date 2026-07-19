@@ -140,8 +140,10 @@ export type ResolvedVideoCard = {
 	topicId: number | null;
 	topicName: string | null;
 	durationSeconds: number | null;
-	/** Clip count for VIDEO_CLIP records (null for FILM). */
+	/** Always null — clips are standalone, never a playlist count. */
 	clipCount: number | null;
+	/** When set, the card deep-links to this clip on the parent video. */
+	clipNumber: number | null;
 	year: number | null;
 	tags: string[];
 	keywords: string[];
@@ -180,9 +182,11 @@ export type ResolvedVideoDetail = {
 	publishmentDate: string | null;
 	fileSizeMb: number | null;
 	playerKind: VideoPlayerKind;
-	/** Source fed to the player (FILM source, or the first clip for VIDEO_CLIP). */
+	/** Source fed to the player (FILM source, or the selected clip). */
 	playableSrc: string | null;
 	clips: ResolvedVideoClip[];
+	/** Clip currently selected for playback (VIDEO_CLIP only). */
+	activeClipNumber: number | null;
 	cast: ResolvedVideoCastMember[];
 	highlights: ResolvedVideoHighlight[];
 	tags: string[];

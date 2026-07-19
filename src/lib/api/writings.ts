@@ -301,3 +301,119 @@ export async function getWritingSeriesBooks(
 		getMockItems: () => getDemoWritingSeries(locale, seriesId, currentId),
 	});
 }
+
+const RELATED_WRITINGS_LIMIT = 4;
+
+/** Prev/next neighbours in the catalogue (newest-first order). */
+export async function getWritingNeighbors(
+	locale: string,
+	id: number,
+): Promise<{
+	previous: ResolvedWritingCard | null;
+	next: ResolvedWritingCard | null;
+}> {
+	const allItems = sortWritings(await getAllWritings(locale), "newest");
+	const index = allItems.findIndex((item) => item.id === id);
+	if (index < 0) {
+		return { previous: null, next: null };
+	}
+	return {
+		previous: index > 0 ? (allItems[index - 1] ?? null) : null,
+		next: index < allItems.length - 1 ? (allItems[index + 1] ?? null) : null,
+	};
+}
+
+/**
+ * Related catalogue cards ranked by shared genres, topic, series, and
+ * free-text genre vs detail tags/keywords. Fills with recent peers when scarce.
+ */
+export async function getRelatedWritings(
+	locale: string,
+	detail: ResolvedWritingDetail,
+	options?: {
+		limit?: number;
+		excludeIds?: ReadonlyArray<number>;
+	},
+): Promise<ResolvedWritingCard[]> {
+	const limit = options?.limit ?? RELATED_WRITINGS_LIMIT;
+	const allItems = await getAllWritings(locale);
+	const exclude = new Set<number>([
+		detail.id,
+		...(options?.excludeIds ?? []),
+	]);
+	const tagSet = new Set(
+		[...detail.tags, ...detail.keywords]
+			.map((tag) => tag.trim().toLowerCase())
+			.filter(Boolean),
+	);
+	const genreSet = new Set(detail.genres);
+	const topicKey = detail.topicName?.trim().toLowerCase() ?? "";
+	const seriesKey = detail.seriesName?.trim().toLowerCase() ?? "";
+
+	const ranked = allItems
+		.filter((entry) => !exclude.has(entry.id))
+		.map((entry) => {
+			const sharedGenres = entry.genres.filter((genre) =>
+				genreSet.has(genre),
+			).length;
+			const freeTextMatch =
+				entry.freeTextGenre != null &&
+				tagSet.has(entry.freeTextGenre.trim().toLowerCase())
+					? 1
+					: 0;
+			const sameTopic =
+				topicKey.length > 0 &&
+				entry.topicName?.trim().toLowerCase() === topicKey
+					? 1
+					: 0;
+			const sameSeries =
+				seriesKey.length > 0 &&
+				entry.seriesName?.trim().toLowerCase() === seriesKey
+					? 1
+					: 0;
+			return {
+				entry,
+				score:
+					sharedGenres * 8 +
+					freeTextMatch * 10 +
+					sameTopic * 5 +
+					sameSeries * 8,
+			};
+		})
+		.sort((a, b) => {
+			if (b.score !== a.score) {
+				return b.score - a.score;
+			}
+			return b.entry.id - a.entry.id;
+		});
+
+	const results: ResolvedWritingCard[] = [];
+	const used = new Set(exclude);
+
+	for (const { entry, score } of ranked) {
+		if (results.length >= limit) {
+			break;
+		}
+		if (score <= 0 || used.has(entry.id)) {
+			continue;
+		}
+		results.push(entry);
+		used.add(entry.id);
+	}
+
+	if (results.length < limit) {
+		for (const item of sortWritings(allItems, "newest")) {
+			if (results.length >= limit) {
+				break;
+			}
+			if (used.has(item.id)) {
+				continue;
+			}
+			results.push(item);
+			used.add(item.id);
+		}
+	}
+
+	return results;
+}
+

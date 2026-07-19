@@ -11,7 +11,7 @@ import { AudioPlayerProvider } from "@/components/audio/audio-player-context";
 import { Footer } from "@/components/layout/footer";
 import { Header } from "@/components/layout/header";
 import { RouteProgress } from "@/components/layout/route-progress";
-import { LenisProvider } from "@/components/providers/lenis-provider";
+import { NativeScroll } from "@/components/providers/native-scroll";
 import { routing } from "@/i18n/routing";
 import { archivo, clashDisplay, vazirmatn } from "@/lib/fonts";
 import { getBorderRadiusHtmlAttrs } from "@/lib/theme/border-radius";
@@ -89,15 +89,15 @@ export default async function LocaleLayout({ children, params }: Props) {
 				)}
 			>
 				<NextIntlClientProvider messages={messages}>
-					<LenisProvider>
+					<NativeScroll>
 						<RouteProgress />
 						<AudioPlayerProvider>
 							<Header />
-							<div className="pt-26 sm:pt-30">{children}</div>
+							{children}
 							<Footer />
 							<AudioPlayerBar />
 						</AudioPlayerProvider>
-					</LenisProvider>
+					</NativeScroll>
 				</NextIntlClientProvider>
 			</body>
 		</html>

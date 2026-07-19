@@ -4,11 +4,13 @@ import {
 	ScrollReveal,
 	ScrollRevealItem,
 } from "@/components/motion/scroll-reveal";
-import { TaxonomyBadgeLink } from "@/components/ui/taxonomy-badge-link";
 import { DirectionalIcon } from "@/components/ui/directional-icon";
 import { Link } from "@/components/ui/link";
 import { RichText } from "@/components/ui/rich-text";
+import { TaxonomyBadgeLink } from "@/components/ui/taxonomy-badge-link";
 import { VideoPlayerFrame } from "@/components/video/video-player-frame";
+import type { VideoPosterCardProps } from "@/components/video/video-poster-card";
+import { VideoRelatedGrid } from "@/components/video/video-related-grid";
 import { homeInsetClass } from "@/lib/layout";
 import {
 	videoMemoriesHref,
@@ -27,9 +29,10 @@ import type { ResolvedVideoDetail } from "@/types/video";
 type VideoDetailViewProps = {
 	detail: ResolvedVideoDetail;
 	locale: string;
+	relatedVideos?: VideoPosterCardProps[];
 };
 
-function MetaCell({
+function MetaRow({
 	label,
 	children,
 	ltr = false,
@@ -39,9 +42,12 @@ function MetaCell({
 	ltr?: boolean;
 }) {
 	return (
-		<div className="flex flex-col gap-2 py-5 sm:py-6">
-			<dt className="label font-medium">{label}</dt>
-			<dd className="text-small text-foreground" dir={ltr ? "ltr" : undefined}>
+		<div className="flex items-baseline justify-between gap-4 py-3">
+			<dt className="shrink-0 text-label text-muted">{label}</dt>
+			<dd
+				className="text-end text-small font-medium leading-snug text-foreground"
+				dir={ltr ? "ltr" : undefined}
+			>
 				{children}
 			</dd>
 		</div>
@@ -63,6 +69,7 @@ function formatDate(locale: string, iso: string): string {
 export async function VideoDetailView({
 	detail,
 	locale,
+	relatedVideos = [],
 }: VideoDetailViewProps) {
 	const t = await getTranslations("Video");
 
@@ -79,23 +86,80 @@ export async function VideoDetailView({
 		t(`detail.languages.${language}`),
 	);
 
-	const hasMeta = Boolean(
-		detail.director ||
-			detail.producer ||
-			detail.location ||
-			detail.topicName ||
-			durationLabel ||
-			detail.resolution ||
-			detail.fileFormat ||
-			publishedDateLabel ||
-			fileSizeLabel ||
-			languageLabels.length > 0,
-	);
+	const metaRows: {
+		label: string;
+		value: React.ReactNode;
+		ltr?: boolean;
+	}[] = [
+		detail.director
+			? { label: t("detail.director"), value: detail.director }
+			: null,
+		detail.producer
+			? { label: t("detail.producer"), value: detail.producer }
+			: null,
+		detail.location
+			? { label: t("detail.location"), value: detail.location }
+			: null,
+		detail.topicName
+			? {
+					label: t("detail.topic"),
+					value:
+						detail.topicId != null ? (
+							<Link
+								href={videoTopicHref(detail.topicId)}
+								className="underline decoration-border underline-offset-2 transition-colors fine-hover:decoration-foreground"
+							>
+								{detail.topicName}
+							</Link>
+						) : (
+							detail.topicName
+						),
+				}
+			: null,
+		durationLabel
+			? { label: t("detail.duration"), value: durationLabel, ltr: true }
+			: null,
+		detail.resolution
+			? { label: t("detail.resolution"), value: detail.resolution, ltr: true }
+			: null,
+		detail.fileFormat
+			? {
+					label: t("detail.fileFormat"),
+					value: detail.fileFormat.toUpperCase(),
+					ltr: true,
+				}
+			: null,
+		publishedDateLabel
+			? { label: t("detail.publishmentDate"), value: publishedDateLabel }
+			: null,
+		fileSizeLabel
+			? { label: t("detail.fileSize"), value: fileSizeLabel, ltr: true }
+			: null,
+		languageLabels.length > 0
+			? {
+					label: t("detail.languagesLabel"),
+					value: languageLabels.join(" · "),
+				}
+			: null,
+	].filter((row): row is NonNullable<typeof row> => row != null);
+
+	const metaAside =
+		metaRows.length > 0 ? (
+			<aside className="rounded-md border border-border bg-surface/60 p-4 sm:p-5">
+				<dl className="divide-y divide-border">
+					{metaRows.map((row) => (
+						<MetaRow key={row.label} label={row.label} ltr={row.ltr}>
+							{row.value}
+						</MetaRow>
+					))}
+				</dl>
+			</aside>
+		) : null;
 
 	return (
 		<article>
-			<div className={cn("pt-30 pb-10 sm:pt-34 lg:pb-12", homeInsetClass)}>
-				<ScrollReveal className="mx-auto max-w-5xl">
+			<div className={cn("pt-6 pb-8 sm:pt-8 lg:pb-10", homeInsetClass)}>
+				<ScrollReveal className="mx-auto max-w-6xl">
 					<ScrollRevealItem>
 						<Link
 							href="/videos"
@@ -113,19 +177,21 @@ export async function VideoDetailView({
 
 					<ScrollRevealItem>
 						<VideoPlayerFrame
-							className="mt-8"
-							videoType={detail.videoType}
+							className="mt-6"
 							playerKind={detail.playerKind}
 							playableSrc={detail.playableSrc}
 							title={detail.title}
 							poster={detail.coverUrl}
+							noSourceLabel={t("detail.noSource")}
+							aside={metaAside}
+							videoId={detail.id}
 							clips={detail.clips}
+							activeClipNumber={detail.activeClipNumber}
 							clipLabels={{
 								title: t("detail.clips"),
 								play: t("detail.playClip"),
 								nowPlaying: t("detail.nowPlaying"),
 							}}
-							noSourceLabel={t("detail.noSource")}
 						/>
 					</ScrollRevealItem>
 
@@ -174,75 +240,9 @@ export async function VideoDetailView({
 						) : null}
 					</ScrollRevealItem>
 
-					{hasMeta ? (
-						<ScrollRevealItem>
-							<dl className="mt-10 grid grid-cols-1 gap-x-8 border-t border-border sm:grid-cols-2 [&>*]:border-b [&>*]:border-border">
-								{detail.director ? (
-									<MetaCell label={t("detail.director")}>
-										{detail.director}
-									</MetaCell>
-								) : null}
-								{detail.producer ? (
-									<MetaCell label={t("detail.producer")}>
-										{detail.producer}
-									</MetaCell>
-								) : null}
-								{detail.location ? (
-									<MetaCell label={t("detail.location")}>
-										{detail.location}
-									</MetaCell>
-								) : null}
-								{detail.topicName ? (
-									<MetaCell label={t("detail.topic")}>
-										{detail.topicId != null ? (
-											<Link
-												href={videoTopicHref(detail.topicId)}
-												className="underline decoration-border underline-offset-2 transition-colors fine-hover:decoration-foreground"
-											>
-												{detail.topicName}
-											</Link>
-										) : (
-											detail.topicName
-										)}
-									</MetaCell>
-								) : null}
-								{durationLabel ? (
-									<MetaCell label={t("detail.duration")} ltr>
-										{durationLabel}
-									</MetaCell>
-								) : null}
-								{detail.resolution ? (
-									<MetaCell label={t("detail.resolution")} ltr>
-										{detail.resolution}
-									</MetaCell>
-								) : null}
-								{detail.fileFormat ? (
-									<MetaCell label={t("detail.fileFormat")} ltr>
-										{detail.fileFormat.toUpperCase()}
-									</MetaCell>
-								) : null}
-								{publishedDateLabel ? (
-									<MetaCell label={t("detail.publishmentDate")}>
-										{publishedDateLabel}
-									</MetaCell>
-								) : null}
-								{fileSizeLabel ? (
-									<MetaCell label={t("detail.fileSize")} ltr>
-										{fileSizeLabel}
-									</MetaCell>
-								) : null}
-								{languageLabels.length > 0 ? (
-									<MetaCell label={t("detail.languagesLabel")}>
-										{languageLabels.join(" · ")}
-									</MetaCell>
-								) : null}
-							</dl>
-						</ScrollRevealItem>
-					) : null}
-
 					{detail.tags.length > 0 || detail.keywords.length > 0 ? (
 						<ScrollRevealItem>
-							<div className="mt-12 space-y-6 border-t border-border pt-8">
+							<div className="mt-10 space-y-6 border-t border-border pt-8">
 								{detail.tags.length > 0 ? (
 									<div>
 										<p className="label font-medium">{t("detail.tags")}</p>
@@ -282,7 +282,7 @@ export async function VideoDetailView({
 					) : null}
 
 					<ScrollRevealItem>
-						<footer className="mt-12 flex flex-wrap items-center justify-between gap-4 border-t border-border pt-6">
+						<footer className="mt-10 flex flex-wrap items-center justify-between gap-4 border-t border-border pt-5">
 							<p className="text-label text-muted">
 								{t("detail.published")}: {formatDate(locale, detail.createdAt)}
 								{detail.updatedAt !== detail.createdAt ? (
@@ -298,6 +298,16 @@ export async function VideoDetailView({
 							</Link>
 						</footer>
 					</ScrollRevealItem>
+
+					{relatedVideos.length > 0 ? (
+						<ScrollRevealItem>
+							<VideoRelatedGrid
+								title={t("detail.related")}
+								cards={relatedVideos}
+								className="mt-10"
+							/>
+						</ScrollRevealItem>
+					) : null}
 				</ScrollReveal>
 			</div>
 		</article>

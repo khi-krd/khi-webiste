@@ -62,8 +62,6 @@ export default async function WritingsPage({
 			translateGenre,
 		),
 		topicName: item.topicName,
-		publishedByInstitute: item.publishedByInstitute,
-		instituteBadgeLabel: t("carousel.instituteBadge"),
 		fileUrl: item.fileUrl,
 		downloadLabel: t("carousel.download"),
 	}));
@@ -85,8 +83,6 @@ export default async function WritingsPage({
 						eyebrow={t("page.hero.eyebrow")}
 						title={t("page.hero.title")}
 						titleEmphasis={t("page.hero.titleEmphasis")}
-						cta={t("page.hero.cta")}
-						learnMore={t("page.hero.learnMore")}
 						textureUrl={heroTexture}
 						showEmphasisItalic={locale === "ku"}
 					/>

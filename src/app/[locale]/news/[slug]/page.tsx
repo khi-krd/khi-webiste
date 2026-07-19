@@ -2,7 +2,11 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { NewsPostView } from "@/components/news/news-post-view";
-import { getNewsBySlug } from "@/lib/api/news";
+import {
+	getNewsBySlug,
+	getRelatedNews,
+	isValidCategory,
+} from "@/lib/api/news";
 
 type NewsPostPageProps = {
 	params: Promise<{ locale: string; slug: string }>;
@@ -39,12 +43,22 @@ export default async function NewsPostPage({ params }: NewsPostPageProps) {
 	if (!detail) notFound();
 
 	const t = await getTranslations("News");
+	const related = await getRelatedNews(locale, detail.item, {
+		excludeIds: [detail.previous?.id, detail.next?.id].filter(
+			(id): id is string => Boolean(id),
+		),
+	});
 
 	return (
-		<main className="-mt-26 bg-background sm:-mt-30">
+		<main className="bg-background">
 			<NewsPostView
 				item={detail.item}
-				categoryLabel={t(`categories.${detail.item.category}`)}
+				categoryLabel={
+					detail.item.categoryLabel ??
+					(isValidCategory(detail.item.category)
+						? t(`categories.${detail.item.category}`)
+						: detail.item.category)
+				}
 				dateLabel={formatPublishmentDate(locale, detail.item.publishedAt)}
 				backLabel={t("post.back")}
 				authorLabel={
@@ -64,6 +78,8 @@ export default async function NewsPostPage({ params }: NewsPostPageProps) {
 				lightboxNextLabel={t("post.lightbox.next")}
 				previous={detail.previous}
 				next={detail.next}
+				related={related}
+				relatedLabel={t("post.related")}
 				navLabel={t("post.navLabel")}
 				previousLabel={t("post.previous")}
 				nextLabel={t("post.next")}

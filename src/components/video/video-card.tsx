@@ -17,16 +17,16 @@ export type VideoCardProps = {
 	coverUrl: string | null;
 	hoverCoverUrl: string | null;
 	videoType: VideoType;
-	/** Translated type word ("Film" / "Series"). */
+	/** Translated type word ("Film" / "Clip"). */
 	typeLabel: string;
 	topicLabel?: string | null;
 	/** Timecode, e.g. "12:00" — rendered LTR. */
 	durationLabel: string | null;
-	/** "4 clips" for VIDEO_CLIP records. */
-	clipCountLabel?: string | null;
 	yearLabel?: string | null;
 	memories?: boolean;
 	memoriesLabel?: string | null;
+	/** Override detail href (e.g. short-films route or clip deep-link). */
+	href?: string;
 	/** featured = full-bleed cinemascope hero with overlaid text. */
 	variant?: "featured" | "grid";
 	className?: string;
@@ -36,7 +36,7 @@ export type VideoCardProps = {
 const memoriesCoverClass = "sepia-[0.28] contrast-[0.97]";
 
 const imageBase =
-	"object-cover brightness-[0.93] saturate-[0.88] transition-[filter,transform] duration-700 ease-[cubic-bezier(0.22,1,0.36,1)] group-fine:scale-[1.04] group-fine:brightness-100 group-fine:saturate-100 motion-reduce:transition-none motion-reduce:duration-0 motion-reduce:group-fine:scale-100";
+	"absolute inset-0 size-full object-cover object-center brightness-[0.93] saturate-[0.88] transition-[filter,transform] duration-700 ease-[cubic-bezier(0.22,1,0.36,1)] group-fine:scale-[1.04] group-fine:brightness-100 group-fine:saturate-100 motion-reduce:transition-none motion-reduce:duration-0 motion-reduce:group-fine:scale-100";
 
 /** Square chip with a film-cell sprocket strip — the catalogue's signature mark. */
 function FrameChip({
@@ -126,7 +126,10 @@ function CoverLayer({
 						alt=""
 						fill
 						sizes={sizes}
-						className={cn("object-cover", memories && memoriesCoverClass)}
+						className={cn(
+							"absolute inset-0 size-full object-cover object-center",
+							memories && memoriesCoverClass,
+						)}
 					/>
 				</div>
 			) : null}
@@ -144,24 +147,24 @@ export function VideoCard({
 	typeLabel,
 	topicLabel,
 	durationLabel,
-	clipCountLabel,
 	yearLabel,
 	memories = false,
 	memoriesLabel,
+	href,
 	variant = "grid",
 	className,
 }: VideoCardProps) {
+	const detailHref = href ?? videoDetailHref(id);
 	const isFeatured = variant === "featured";
 	const isClip = videoType === "VIDEO_CLIP";
 	const TypeIcon = isClip ? RectangleStackIcon : FilmIcon;
-	const typeChipLabel = isClip ? (clipCountLabel ?? typeLabel) : typeLabel;
 	const footerMeta = [typeLabel, topicLabel].filter(Boolean).join(" · ");
 
 	const corners = (
 		<>
 			<FrameChip className="absolute top-0 start-0 z-2 border-s-0 border-t-0">
 				<TypeIcon className="size-3.5 text-muted" aria-hidden />
-				{typeChipLabel}
+				{typeLabel}
 			</FrameChip>
 			{memories && memoriesLabel ? (
 				<span className="label absolute top-0 end-0 z-2 border-b border-s border-border bg-surface/95 px-2 py-1 font-medium text-muted backdrop-blur-[1px]">
@@ -183,7 +186,7 @@ export function VideoCard({
 	if (isFeatured) {
 		return (
 			<Link
-				href={videoDetailHref(id)}
+				href={detailHref}
 				variant="nav"
 				aria-label={title}
 				className={cn(
@@ -225,13 +228,16 @@ export function VideoCard({
 
 	// Grid — 16:9 frame with the text block sitting below it.
 	return (
-		<article
+		<Link
+			href={detailHref}
+			variant="nav"
+			aria-label={title}
 			className={cn(
-				"group relative flex h-full w-full flex-col overflow-hidden border border-border bg-surface transition-[border-color,box-shadow] duration-300 fine-hover:border-foreground/30 fine-hover:shadow-[0_8px_24px_-12px_rgba(26,24,19,0.12)]",
+				"group relative flex h-full w-full flex-col items-stretch overflow-hidden border border-border bg-surface no-underline transition-[border-color,box-shadow] duration-300 fine-hover:border-foreground/30 fine-hover:shadow-[0_8px_24px_-12px_rgba(26,24,19,0.12)]",
 				className,
 			)}
 		>
-			<div className="relative aspect-video w-full overflow-hidden bg-sunken">
+			<div className="relative aspect-video w-full shrink-0 overflow-hidden bg-sunken">
 				<CoverLayer
 					coverUrl={coverUrl}
 					hoverCoverUrl={hoverCoverUrl}
@@ -243,22 +249,16 @@ export function VideoCard({
 				<PlayMark />
 			</div>
 
-			<div className="flex flex-1 flex-col gap-1.5 px-4 py-4 sm:px-5">
+			<div className="flex w-full flex-1 flex-col gap-1.5 px-4 py-4 text-start sm:px-5">
 				<p className="label text-muted">{footerMeta}</p>
-				<h3 className="font-heading text-h3 font-bold leading-snug text-balance">
-					<Link
-						href={videoDetailHref(id)}
-						variant="nav"
-						className="text-inherit no-underline after:absolute after:inset-0 after:z-1 after:content-['']"
-					>
-						{title}
-					</Link>
+				<h3 className="font-heading text-h3 font-bold leading-snug text-foreground">
+					{title}
 				</h3>
 				{subtitle ? (
 					<p className="text-small text-foreground/80">{subtitle}</p>
 				) : null}
 				{yearLabel ? <p className="label text-muted">{yearLabel}</p> : null}
 			</div>
-		</article>
+		</Link>
 	);
 }

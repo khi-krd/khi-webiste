@@ -21,7 +21,7 @@ import {
 	getDemoVideoById,
 } from "@/lib/mock/videos";
 import { filterVideos, paginateVideos, sortVideos } from "@/lib/video/filter";
-import { resolveVideoCard, resolveVideoDetail } from "@/lib/video/resolve";
+import { resolveVideoCards, resolveVideoDetail } from "@/lib/video/resolve";
 import type {
 	ResolvedVideoCard,
 	ResolvedVideoDetail,
@@ -120,8 +120,7 @@ function getMockVideoListingItems(
 	filters: VideoListingFilters,
 ): ResolvedVideoCard[] {
 	const allItems = getAllDemoVideos()
-		.map((video) => resolveVideoCard(locale, video))
-		.filter((item): item is ResolvedVideoCard => item != null);
+		.flatMap((video) => resolveVideoCards(locale, video));
 	return sortVideos(filterVideos(allItems, filters));
 }
 
@@ -150,9 +149,9 @@ async function resolveVideoListingItemsFromApi(
 			memories,
 		});
 		if (apiVideos) {
-			const allItems = apiVideos
-				.map((video) => resolveVideoCard(locale, video))
-				.filter((item): item is ResolvedVideoCard => item != null);
+			const allItems = apiVideos.flatMap((video) =>
+				resolveVideoCards(locale, video),
+			);
 			return sortVideos(
 				filterVideos(allItems, {
 					videoType,
@@ -170,9 +169,9 @@ async function resolveVideoListingItemsFromApi(
 		return [];
 	}
 
-	const allItems = apiVideos
-		.map((video) => resolveVideoCard(locale, video))
-		.filter((item): item is ResolvedVideoCard => item != null);
+	const allItems = apiVideos.flatMap((video) =>
+		resolveVideoCards(locale, video),
+	);
 	return sortVideos(
 		filterVideos(allItems, {
 			videoType,
@@ -189,9 +188,7 @@ export async function getAllVideoCards(
 	locale: string,
 ): Promise<ResolvedVideoCard[]> {
 	const videos = await getAllVideos();
-	return videos
-		.map((video) => resolveVideoCard(locale, video))
-		.filter((item): item is ResolvedVideoCard => item != null);
+	return videos.flatMap((video) => resolveVideoCards(locale, video));
 }
 
 export async function getVideoListing(
@@ -238,6 +235,7 @@ export async function getVideoListing(
 export async function getVideoById(
 	locale: string,
 	id: number,
+	clipNumber?: number | null,
 ): Promise<ResolvedVideoDetail | null> {
 	let apiDetail: ResolvedVideoDetail | null = null;
 
@@ -252,7 +250,7 @@ export async function getVideoById(
 			: null;
 
 		if (parsed?.success) {
-			const resolved = resolveVideoDetail(locale, parsed.data);
+			const resolved = resolveVideoDetail(locale, parsed.data, clipNumber);
 			if (resolved?.id === id) {
 				apiDetail = resolved;
 			}
@@ -263,7 +261,7 @@ export async function getVideoById(
 	return applyMockPolicyNullable({
 		apiValue: apiDetail,
 		getMockValue: () =>
-			demoVideo ? resolveVideoDetail(locale, demoVideo) : null,
+			demoVideo ? resolveVideoDetail(locale, demoVideo, clipNumber) : null,
 	});
 }
 

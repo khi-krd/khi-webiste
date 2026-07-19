@@ -87,7 +87,6 @@ export function UiPlaygroundToc({
 
 			<nav aria-label={jumpLabel} className="hidden lg:block">
 				<div
-					data-lenis-prevent
 					className="sticky top-10 h-[calc(100svh-3rem)] overflow-y-auto overscroll-contain py-2 pe-6 text-start [touch-action:pan-y]"
 				>
 					<p className="label mb-5">{jumpLabel}</p>

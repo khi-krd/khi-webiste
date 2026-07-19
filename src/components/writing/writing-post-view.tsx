@@ -1,12 +1,21 @@
-import { ArrowLeftIcon } from "@heroicons/react/24/outline";
+import {
+	ArrowLeftIcon,
+	ArrowRightIcon,
+} from "@heroicons/react/24/outline";
 import NextImage from "next/image";
-import { ScrollRevealBlock } from "@/components/motion/scroll-reveal";
+import {
+	ScrollReveal,
+	ScrollRevealBlock,
+	ScrollRevealItem,
+} from "@/components/motion/scroll-reveal";
 import { Badge } from "@/components/ui/badge";
 import { DirectionalIcon } from "@/components/ui/directional-icon";
 import { TaxonomyBadgeLink } from "@/components/ui/taxonomy-badge-link";
 import { Link } from "@/components/ui/link";
 import { RichText } from "@/components/ui/rich-text";
+import { WritingGridCard } from "@/components/writing/writing-grid-card";
 import { WritingPdfPreview } from "@/components/writing/writing-pdf-preview";
+import { buildWritingGridCards } from "@/lib/writing/catalog";
 import { homeInsetClass } from "@/lib/layout";
 import {
 	writingGenreHref,
@@ -16,24 +25,32 @@ import { cn } from "@/lib/utils";
 import type {
 	BookGenre,
 	ResolvedSeriesBook,
+	ResolvedWritingCard,
 	ResolvedWritingDetail,
 } from "@/types/writing";
+
+type WritingNeighbor = Pick<ResolvedWritingCard, "id" | "title">;
 
 type WritingPostViewProps = {
 	detail: ResolvedWritingDetail;
 	seriesBooks: ResolvedSeriesBook[];
+	previous: WritingNeighbor | null;
+	next: WritingNeighbor | null;
+	related: ResolvedWritingCard[];
 	genreLabels: Record<BookGenre, string>;
 	backLabel: string;
-	instituteBadgeLabel: string;
 	writerLabel: string;
 	seriesLabel: string;
 	seriesVolumeLabel: (order: number, total: number | null) => string;
 	topicLabel: string;
-	tagsLabel: string;
 	keywordsLabel: string;
 	previewTitle: string;
 	publishedLabel: string;
 	updatedLabel: string;
+	navLabel: string;
+	previousLabel: string;
+	nextLabel: string;
+	relatedLabel: string;
 	locale: string;
 };
 
@@ -54,6 +71,41 @@ function MetaCell({
 	);
 }
 
+function AdjacentLink({
+	item,
+	label,
+	direction,
+}: {
+	item: WritingNeighbor;
+	label: string;
+	direction: "previous" | "next";
+}) {
+	const isNext = direction === "next";
+
+	return (
+		<Link
+			href={`/writings/${item.id}`}
+			className={cn(
+				"group flex flex-col gap-3 py-8 no-underline sm:py-10",
+				isNext &&
+					"items-end border-t border-border text-end sm:border-t-0 sm:border-s sm:ps-8",
+				!isNext && "sm:pe-8",
+			)}
+		>
+			<span className="label flex items-center gap-2 font-medium">
+				<DirectionalIcon
+					icon={isNext ? ArrowRightIcon : ArrowLeftIcon}
+					className="size-3.5"
+				/>
+				{label}
+			</span>
+			<span className="font-heading text-h3 font-bold text-foreground underline decoration-transparent decoration-2 underline-offset-4 transition-[text-decoration-color] duration-300 group-fine:decoration-current">
+				{item.title}
+			</span>
+		</Link>
+	);
+}
+
 function formatDate(locale: string, iso: string): string {
 	try {
 		return new Intl.DateTimeFormat(locale, {
@@ -69,32 +121,38 @@ function formatDate(locale: string, iso: string): string {
 export function WritingPostView({
 	detail,
 	seriesBooks,
+	previous,
+	next,
+	related,
 	genreLabels,
 	backLabel,
-	instituteBadgeLabel,
 	writerLabel,
 	seriesLabel,
 	seriesVolumeLabel,
 	topicLabel,
-	tagsLabel,
 	keywordsLabel,
 	previewTitle,
 	publishedLabel,
 	updatedLabel,
+	navLabel,
+	previousLabel,
+	nextLabel,
+	relatedLabel,
 	locale,
 }: WritingPostViewProps) {
 	const hasMeta = Boolean(
 		detail.writer ||
 			detail.topicName ||
 			detail.seriesName ||
-			detail.tags.length ||
 			detail.keywords.length,
 	);
+
+	const relatedCards = buildWritingGridCards(related);
 
 	return (
 		<article>
 			<ScrollRevealBlock
-				className={cn("pt-30 pb-10 sm:pt-34 lg:pb-12", homeInsetClass)}
+				className={cn("pt-10 pb-10 sm:pt-12 lg:pb-12", homeInsetClass)}
 			>
 				<Link
 					href="/writings"
@@ -109,15 +167,15 @@ export function WritingPostView({
 					</span>
 				</Link>
 
-				<div className="mt-10 grid gap-10 lg:grid-cols-[minmax(0,20rem)_minmax(0,1fr)] lg:items-start lg:gap-14 xl:grid-cols-[minmax(0,24rem)_minmax(0,1fr)] xl:gap-20">
-					<div className="relative aspect-[3/4] w-full max-w-sm overflow-hidden border border-border bg-sunken lg:sticky lg:top-32">
+				<div className="mt-10 grid gap-10 lg:grid-cols-[minmax(0,28rem)_minmax(0,1fr)] lg:items-start lg:gap-14 xl:grid-cols-[minmax(0,32rem)_minmax(0,1fr)] xl:gap-20">
+					<div className="relative aspect-[4/3] w-full max-w-lg overflow-hidden border border-border bg-sunken lg:sticky lg:top-32 lg:max-w-none">
 						{detail.coverUrl ? (
 							<NextImage
 								src={detail.coverUrl}
 								alt=""
 								fill
 								priority
-								sizes="(max-width: 1024px) 80vw, 24rem"
+								sizes="(max-width: 1024px) 80vw, 32rem"
 								className="object-cover brightness-[0.94] saturate-[0.9]"
 							/>
 						) : (
@@ -134,11 +192,6 @@ export function WritingPostView({
 
 					<div className="min-w-0">
 						<div className="flex flex-wrap items-center gap-2">
-							{detail.publishedByInstitute ? (
-								<Badge variant="outline" size="sm">
-									{instituteBadgeLabel}
-								</Badge>
-							) : null}
 							{detail.genres.map((genre) => (
 								<TaxonomyBadgeLink
 									key={genre}
@@ -195,6 +248,21 @@ export function WritingPostView({
 								className="mt-8 max-w-2xl"
 							/>
 						) : null}
+
+						{detail.tags.length > 0 ? (
+							<div className="mt-6 flex max-w-2xl flex-wrap gap-1.5">
+								{detail.tags.map((tag) => (
+									<TaxonomyBadgeLink
+										key={tag}
+										href={writingTagHref(tag)}
+										variant="subtle"
+										size="sm"
+									>
+										{tag}
+									</TaxonomyBadgeLink>
+								))}
+							</div>
+						) : null}
 					</div>
 				</div>
 
@@ -217,25 +285,6 @@ export function WritingPostView({
 								className="border-t border-border lg:border-t-0 lg:border-s lg:ps-6"
 							>
 								{detail.seriesName}
-							</MetaCell>
-						) : null}
-						{detail.tags.length > 0 ? (
-							<MetaCell
-								label={tagsLabel}
-								className="border-t border-border sm:col-span-2 lg:col-span-1"
-							>
-								<span className="flex flex-wrap gap-1.5">
-									{detail.tags.map((tag) => (
-										<TaxonomyBadgeLink
-											key={tag}
-											href={writingTagHref(tag)}
-											variant="subtle"
-											size="sm"
-										>
-											{tag}
-										</TaxonomyBadgeLink>
-									))}
-								</span>
 							</MetaCell>
 						) : null}
 						{detail.keywords.length > 0 ? (
@@ -332,6 +381,58 @@ export function WritingPostView({
 								</li>
 							))}
 						</ol>
+					</section>
+				</ScrollRevealBlock>
+			) : null}
+
+			{(previous || next) && (
+				<nav
+					aria-label={navLabel}
+					className={cn("border-t border-border", homeInsetClass)}
+				>
+					<div className="grid sm:grid-cols-2">
+						{previous ? (
+							<AdjacentLink
+								item={previous}
+								label={previousLabel}
+								direction="previous"
+							/>
+						) : (
+							<div aria-hidden className="hidden sm:block" />
+						)}
+						{next ? (
+							<AdjacentLink
+								item={next}
+								label={nextLabel}
+								direction="next"
+							/>
+						) : null}
+					</div>
+				</nav>
+			)}
+
+			{relatedCards.length > 0 ? (
+				<ScrollRevealBlock>
+					<section
+						aria-labelledby="writing-related-heading"
+						className={cn(
+							"border-t border-border py-12 sm:py-16",
+							homeInsetClass,
+						)}
+					>
+						<h2
+							id="writing-related-heading"
+							className="font-heading text-h2 font-bold text-balance"
+						>
+							{relatedLabel}
+						</h2>
+						<ScrollReveal className="mt-6 grid grid-cols-1 gap-3 sm:grid-cols-2 sm:gap-4 lg:grid-cols-4">
+							{relatedCards.map((card) => (
+								<ScrollRevealItem key={card.id}>
+									<WritingGridCard {...card} />
+								</ScrollRevealItem>
+							))}
+						</ScrollReveal>
 					</section>
 				</ScrollRevealBlock>
 			) : null}

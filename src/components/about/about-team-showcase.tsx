@@ -45,7 +45,7 @@ export function AboutTeamShowcase({
 	className,
 }: AboutTeamShowcaseProps) {
 	return (
-		<AboutSection bordered data-snap-section className={className}>
+		<AboutSection bordered className={className}>
 			<AboutShell>
 				<ScrollRevealBlock className="flex flex-col gap-12 sm:gap-14 lg:gap-16">
 					{offices.map((office) => (

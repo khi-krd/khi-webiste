@@ -9,16 +9,10 @@ import { DirectionalIcon } from "@/components/ui/directional-icon";
 import { Link } from "@/components/ui/link";
 import { RichText } from "@/components/ui/rich-text";
 import { VideoPlayerFrame } from "@/components/video/video-player-frame";
-import {
-	VideoPosterCard,
-	type VideoPosterCardProps,
-} from "@/components/video/video-poster-card";
+import { VideoRelatedGrid } from "@/components/video/video-related-grid";
+import type { VideoPosterCardProps } from "@/components/video/video-poster-card";
 import { homeInsetClass } from "@/lib/layout";
-import {
-	videoTagHref,
-	videoTopicHref,
-	videoTypeHref,
-} from "@/lib/search/taxonomy-href";
+import { videoTagHref, videoTopicHref } from "@/lib/search/taxonomy-href";
 import { cn } from "@/lib/utils";
 import { formatDuration, formatPublishmentDate } from "@/lib/video/format";
 import type {
@@ -213,20 +207,12 @@ export async function ShortFilmDetailView({
 				<ScrollReveal className="grid items-stretch gap-8 lg:grid-cols-[minmax(0,1.05fr)_minmax(17rem,24rem)] lg:gap-8 xl:grid-cols-[minmax(0,1.1fr)_minmax(19rem,26rem)] xl:gap-10">
 					<ScrollRevealItem className="min-w-0">
 						<VideoPlayerFrame
-							videoType={detail.videoType}
 							playerKind={detail.playerKind}
 							playableSrc={detail.playableSrc}
 							title={detail.title}
 							poster={detail.coverUrl}
-							clips={detail.clips}
-							clipLabels={{
-								title: t("detail.clips"),
-								play: t("detail.playClip"),
-								nowPlaying: t("detail.nowPlaying"),
-							}}
 							noSourceLabel={t("detail.noSource")}
 							variant="cinema"
-							hideClipList
 							className="overflow-hidden rounded-md ring-1 ring-primary-foreground/15"
 						/>
 					</ScrollRevealItem>
@@ -234,29 +220,23 @@ export async function ShortFilmDetailView({
 					<ScrollRevealItem className="flex min-w-0">
 						<aside className="flex w-full flex-col justify-between gap-6 rounded-md border border-primary-foreground/15 bg-primary-foreground/3 p-5 sm:p-6 lg:sticky lg:top-24 lg:self-start">
 							<div className="flex flex-col gap-4">
-								<div className="flex flex-wrap items-center gap-2">
-									<Link
-										href={videoTypeHref(detail.videoType, "/videos/shortfilms")}
-										className="label rounded-md border border-primary-foreground/25 bg-primary-foreground/8 px-2 py-0.5 font-medium text-primary-foreground/90 transition-opacity fine-hover:opacity-80"
-									>
-										{t(`typeBadge.${detail.videoType}`)}
-									</Link>
-									{detail.topicName && detail.topicId != null ? (
+								{detail.topicName ? (
+									detail.topicId != null ? (
 										<Link
 											href={videoTopicHref(
 												detail.topicId,
 												"/videos/shortfilms",
 											)}
-											className="text-label text-primary-foreground/55 underline decoration-primary-foreground/25 underline-offset-2 transition-colors fine-hover:text-primary-foreground/80 fine-hover:decoration-primary-foreground/50"
+											className="w-fit text-label text-primary-foreground/55 underline decoration-primary-foreground/25 underline-offset-2 transition-colors fine-hover:text-primary-foreground/80 fine-hover:decoration-primary-foreground/50"
 										>
 											{detail.topicName}
 										</Link>
-									) : detail.topicName ? (
+									) : (
 										<span className="text-label text-primary-foreground/55">
 											{detail.topicName}
 										</span>
-									) : null}
-								</div>
+									)
+								) : null}
 
 								<h2 className="font-heading text-h2 font-bold leading-[1.12] text-balance text-primary-foreground xl:text-h1">
 									{detail.title}
@@ -316,12 +296,9 @@ export async function ShortFilmDetailView({
 					<ScrollReveal>
 						<ScrollRevealItem>
 							<section className="border-t border-primary-foreground/20 pt-10 sm:pt-12">
-								<SectionHeading>
-									{t("shortfilms.detail.description")}
-								</SectionHeading>
 								<RichText
 									content={detail.description}
-									className="mt-4 max-w-prose text-body leading-relaxed text-primary-foreground/85"
+									className="max-w-prose text-body leading-relaxed text-primary-foreground/85"
 								/>
 							</section>
 						</ScrollRevealItem>
@@ -369,25 +346,12 @@ export async function ShortFilmDetailView({
 				) : null}
 
 				{relatedShortFilms.length > 0 ? (
-					<ScrollReveal>
-						<ScrollRevealItem>
-							<section className="mt-12 border-t border-primary-foreground/20 pt-12 sm:mt-16">
-								<SectionHeading>
-									{t("shortfilms.detail.related")}
-								</SectionHeading>
-								<div className="mt-5 flex gap-3 overflow-x-auto pb-2 sm:gap-4">
-									{relatedShortFilms.map((card) => (
-										<div
-											key={card.id}
-											className="w-36 shrink-0 sm:w-40 lg:w-44"
-										>
-											<VideoPosterCard {...card} />
-										</div>
-									))}
-								</div>
-							</section>
-						</ScrollRevealItem>
-					</ScrollReveal>
+					<VideoRelatedGrid
+						title={t("shortfilms.detail.related")}
+						cards={relatedShortFilms}
+						dark
+						className="mt-10 sm:mt-12"
+					/>
 				) : null}
 			</div>
 		</article>

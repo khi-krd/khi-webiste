@@ -48,13 +48,22 @@ export default async function AudioPage({
 		getAlbumOfMemories(locale),
 	]);
 
-	const heroCovers = [
-		...new Set(
-			[...pageData.listing.items, ...memories]
-				.map((item) => item.coverUrl)
-				.filter((cover): cover is string => Boolean(cover)),
-		),
-	].slice(0, 3);
+	const heroCovers: { id: number; coverUrl: string; title: string }[] = [];
+	const seenCoverUrls = new Set<string>();
+	for (const item of [...pageData.listing.items, ...memories]) {
+		if (!item.coverUrl || seenCoverUrls.has(item.coverUrl)) {
+			continue;
+		}
+		seenCoverUrls.add(item.coverUrl);
+		heroCovers.push({
+			id: item.id,
+			coverUrl: item.coverUrl,
+			title: item.title,
+		});
+		if (heroCovers.length >= 3) {
+			break;
+		}
+	}
 
 	return (
 		<main className="bg-background">
@@ -65,7 +74,6 @@ export default async function AudioPage({
 						title={t("page.hero.title")}
 						titleEmphasis={t("page.hero.titleEmphasis")}
 						description={t("page.hero.description")}
-						cta={t("page.hero.cta")}
 						covers={heroCovers}
 						showEmphasisItalic={locale === "ku"}
 					/>
@@ -80,11 +88,9 @@ export default async function AudioPage({
 
 			<div
 				id="audio-content"
-				data-snap-section
 				className="scroll-mt-26 sm:scroll-mt-30"
 			>
 				<AudioShell
-					title={t("grid.allTitle")}
 					cards={pageData.listing.items}
 					currentPage={pageData.listing.currentPage}
 					totalPages={pageData.listing.totalPages}

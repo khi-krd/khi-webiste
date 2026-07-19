@@ -49,7 +49,7 @@ export default async function DonatePage({
 	const amountPresets = getAmountPresets();
 
 	return (
-		<main className="-mt-26 sm:-mt-30">
+		<main>
 			<VisuallyHidden as="h1">{t("pageTitle")}</VisuallyHidden>
 
 			<DonateHero
