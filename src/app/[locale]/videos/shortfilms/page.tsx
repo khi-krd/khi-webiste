@@ -6,9 +6,12 @@ import type { VideoPosterCardProps } from "@/components/video/video-poster-card"
 import { VideoPosterRail } from "@/components/video/video-poster-rail";
 import { getVideoById, getVideoListing } from "@/lib/api/videos";
 import { homeInsetClass } from "@/lib/layout";
-import { SHORT_FILMS_TOPIC_ID } from "@/lib/mock/videos";
+import { pickFeaturedCard } from "@/lib/video/filter";
 import { formatDuration } from "@/lib/video/format";
-import { shortFilmDetailHref } from "@/lib/video/resolve";
+import {
+	SHORT_FILM_LISTING_FILTERS,
+	shortFilmDetailHref,
+} from "@/lib/video/resolve";
 import type { ResolvedVideoCard } from "@/types/video";
 
 const GENRE_PILL_LIMIT = 8;
@@ -39,6 +42,7 @@ function toPoster(card: ResolvedVideoCard): VideoPosterCardProps {
 		title: card.title,
 		subtitle: card.subtitle,
 		coverUrl: card.coverUrl,
+		previewVideoUrl: card.previewVideoUrl,
 		durationLabel: formatDuration(card.durationSeconds),
 		href: shortFilmDetailHref(card.id),
 		dark: true,
@@ -77,7 +81,8 @@ export default async function ShortFilmsPage({
 
 	const allShort = (
 		await getVideoListing(locale, {
-			topicId: SHORT_FILMS_TOPIC_ID,
+			...SHORT_FILM_LISTING_FILTERS,
+			query: activeGenre,
 			size: 100,
 		})
 	).items;
@@ -95,11 +100,7 @@ export default async function ShortFilmsPage({
 	}
 
 	const genres = collectGenres(allShort);
-	const trending = activeGenre
-		? allShort.filter((card) => card.tags.includes(activeGenre))
-		: allShort;
-	const featuredCard =
-		activeGenre && trending.length > 0 ? trending[0] : allShort[0];
+	const featuredCard = pickFeaturedCard(allShort) ?? allShort[0];
 	const featuredDetail = await getVideoById(locale, featuredCard.id);
 	const continueWatching: VideoPosterCardProps[] = allShort
 		.slice(0, CONTINUE_WATCHING_COUNT)
@@ -118,6 +119,9 @@ export default async function ShortFilmsPage({
 				title={featuredDetail?.title ?? featuredCard.title}
 				description={featuredDetail?.description ?? featuredCard.excerpt}
 				coverUrl={featuredDetail?.coverUrl ?? featuredCard.coverUrl}
+				previewVideoUrl={
+					featuredDetail?.previewVideoUrl ?? featuredCard.previewVideoUrl
+				}
 				hoverCoverUrl={
 					featuredCard.hoverCoverUrl ?? featuredDetail?.coverUrl ?? null
 				}
@@ -138,7 +142,7 @@ export default async function ShortFilmsPage({
 				<VideoPosterRail
 					id="shortfilms-trending"
 					title={t("shortfilms.trending")}
-					cards={trending.map(toPoster)}
+					cards={allShort.map(toPoster)}
 					emptyLabel={t("shortfilms.empty")}
 					dark
 					cardWidthClass="w-44 sm:w-48 lg:w-52"

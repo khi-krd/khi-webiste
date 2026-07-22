@@ -76,6 +76,8 @@ export type VideoTopic = z.infer<typeof VideoTopicSchema>;
 
 export const VideoSchema = z.object({
 	id: z.number(),
+	featured: z.boolean().optional().default(false),
+	featuredOrder: z.number().int().nullable().optional(),
 	videoType: VideoTypeSchema,
 	albumOfMemories: z.boolean(),
 	ckbCoverUrl: z.string().nullish(),
@@ -137,11 +139,15 @@ export type ResolvedVideoClip = {
 
 export type ResolvedVideoCard = {
 	id: number;
+	featured: boolean;
+	featuredOrder: number | null;
 	title: string;
 	/** Director — the card's quiet sub-line. */
 	subtitle: string | null;
 	excerpt: string;
 	coverUrl: string | null;
+	/** Direct media URL used as a thumbnail when `coverUrl` is missing. */
+	previewVideoUrl: string | null;
 	hoverCoverUrl: string | null;
 	videoType: VideoType;
 	albumOfMemories: boolean;
@@ -176,6 +182,8 @@ export type ResolvedVideoDetail = {
 	title: string;
 	description: string;
 	coverUrl: string | null;
+	/** Direct media URL used as a thumbnail when `coverUrl` is missing. */
+	previewVideoUrl: string | null;
 	videoType: VideoType;
 	albumOfMemories: boolean;
 	topicId: number | null;

@@ -1,3 +1,5 @@
+"use client";
+
 import {
 	FilmIcon,
 	PlayIcon,
@@ -5,6 +7,7 @@ import {
 } from "@heroicons/react/24/solid";
 import NextImage from "next/image";
 import { Link } from "@/components/ui/link";
+import { VideoStillPreview } from "@/components/video/video-still-preview-lazy";
 import { cn } from "@/lib/utils";
 import { videoDetailHref } from "@/lib/video/resolve";
 import type { VideoType } from "@/types/video";
@@ -15,6 +18,7 @@ export type VideoCardProps = {
 	/** Director — the card's quiet sub-line. */
 	subtitle: string | null;
 	coverUrl: string | null;
+	previewVideoUrl?: string | null;
 	hoverCoverUrl: string | null;
 	videoType: VideoType;
 	/** Translated type word ("Film" / "Clip"). */
@@ -81,18 +85,20 @@ function PlayMark({ large = false }: { large?: boolean }) {
 
 function CoverLayer({
 	coverUrl,
+	previewVideoUrl = null,
 	hoverCoverUrl,
 	title,
 	memories,
 	sizes,
 }: {
 	coverUrl: string | null;
+	previewVideoUrl?: string | null;
 	hoverCoverUrl: string | null;
 	title: string;
 	memories: boolean;
 	sizes: string;
 }) {
-	if (!coverUrl) {
+	if (!coverUrl && !previewVideoUrl) {
 		return (
 			<div
 				aria-hidden
@@ -109,13 +115,21 @@ function CoverLayer({
 
 	return (
 		<>
-			<NextImage
-				src={coverUrl}
-				alt=""
-				fill
-				sizes={sizes}
-				className={cn(imageBase, memories && memoriesCoverClass)}
-			/>
+			{coverUrl ? (
+				<NextImage
+					src={coverUrl}
+					alt=""
+					fill
+					sizes={sizes}
+					className={cn(imageBase, memories && memoriesCoverClass)}
+				/>
+			) : previewVideoUrl ? (
+				<VideoStillPreview
+					src={previewVideoUrl}
+					sizes={sizes}
+					className={cn(imageBase, memories && memoriesCoverClass)}
+				/>
+			) : null}
 			{showHoverCover && hoverCoverUrl ? (
 				<div
 					aria-hidden
@@ -142,6 +156,7 @@ export function VideoCard({
 	title,
 	subtitle,
 	coverUrl,
+	previewVideoUrl = null,
 	hoverCoverUrl,
 	videoType,
 	typeLabel,
@@ -197,6 +212,7 @@ export function VideoCard({
 				<div className="relative aspect-video w-full sm:aspect-[2.4/1]">
 					<CoverLayer
 						coverUrl={coverUrl}
+						previewVideoUrl={previewVideoUrl}
 						hoverCoverUrl={hoverCoverUrl}
 						title={title}
 						memories={memories}
@@ -240,6 +256,7 @@ export function VideoCard({
 			<div className="relative aspect-video w-full shrink-0 overflow-hidden bg-sunken">
 				<CoverLayer
 					coverUrl={coverUrl}
+					previewVideoUrl={previewVideoUrl}
 					hoverCoverUrl={hoverCoverUrl}
 					title={title}
 					memories={memories}

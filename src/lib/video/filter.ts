@@ -51,8 +51,41 @@ export function filterVideos(
 	return result;
 }
 
+function featuredSortKey(order: number | null): number {
+	return order ?? Number.MAX_SAFE_INTEGER;
+}
+
+/** Featured items first (lower `featuredOrder` wins), then newest. */
 export function sortVideos(items: ResolvedVideoCard[]): ResolvedVideoCard[] {
-	return [...items].sort((a, b) => b.createdAt.localeCompare(a.createdAt));
+	return [...items].sort((a, b) => {
+		if (a.featured !== b.featured) {
+			return a.featured ? -1 : 1;
+		}
+		if (a.featured && b.featured) {
+			const orderDiff =
+				featuredSortKey(a.featuredOrder) - featuredSortKey(b.featuredOrder);
+			if (orderDiff !== 0) {
+				return orderDiff;
+			}
+		}
+		return b.createdAt.localeCompare(a.createdAt);
+	});
+}
+
+export function pickFeaturedCard(
+	items: ResolvedVideoCard[],
+): ResolvedVideoCard | null {
+	const featured = items.filter((item) => item.featured);
+	if (featured.length === 0) {
+		return null;
+	}
+	return sortVideos(featured)[0] ?? null;
+}
+
+export function cardIdentity(card: ResolvedVideoCard): string {
+	return card.clipNumber != null
+		? `${card.id}-${card.clipNumber}`
+		: String(card.id);
 }
 
 export function paginateVideos(

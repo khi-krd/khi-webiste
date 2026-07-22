@@ -4,7 +4,7 @@ import { ServiceLayoutShell } from "@/components/services/service-layout-shell";
 import { ServiceMediaGallery } from "@/components/services/service-media-gallery";
 
 export function StackedLayout({ service, title, body }: ServiceLayoutProps) {
-	const gallery = buildServiceGallery(service, "video");
+	const gallery = buildServiceGallery(service);
 
 	return (
 		<ServiceLayoutShell
@@ -16,7 +16,6 @@ export function StackedLayout({ service, title, body }: ServiceLayoutProps) {
 					slides={gallery.slides}
 					defaultIndex={gallery.defaultIndex}
 					title={title}
-					mainClassName="max-w-4xl"
 				/>
 			}
 		/>

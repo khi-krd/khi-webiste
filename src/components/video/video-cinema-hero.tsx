@@ -1,6 +1,5 @@
 import { ChevronRightIcon } from "@heroicons/react/24/outline";
 import { PlayIcon } from "@heroicons/react/24/solid";
-import NextImage from "next/image";
 import {
 	ScrollReveal,
 	ScrollRevealItem,
@@ -8,7 +7,7 @@ import {
 import { DirectionalIcon } from "@/components/ui/directional-icon";
 import { Link } from "@/components/ui/link";
 import { RichText } from "@/components/ui/rich-text";
-import { cn } from "@/lib/utils";
+import { VideoCinemaHeroBackground } from "@/components/video/video-cinema-hero-background";
 import { shortFilmDetailHref } from "@/lib/video/resolve";
 
 type VideoCinemaHeroProps = {
@@ -17,6 +16,7 @@ type VideoCinemaHeroProps = {
 	title: string;
 	description: string;
 	coverUrl: string | null;
+	previewVideoUrl?: string | null;
 	hoverCoverUrl?: string | null;
 	watchNowLabel: string;
 	detailsLabel: string;
@@ -40,6 +40,7 @@ export function VideoCinemaHero({
 	title,
 	description,
 	coverUrl,
+	previewVideoUrl = null,
 	hoverCoverUrl,
 	watchNowLabel,
 	detailsLabel,
@@ -49,31 +50,11 @@ export function VideoCinemaHero({
 
 	return (
 		<section className="group relative min-h-[clamp(32rem,65svh,44rem)] w-full overflow-hidden bg-foreground">
-			{coverUrl ? (
-				<NextImage
-					src={coverUrl}
-					alt=""
-					fill
-					priority
-					sizes="100vw"
-					className={cn(
-						"object-cover object-center",
-						hoverCoverUrl &&
-							hoverCoverUrl !== coverUrl &&
-							"transition-opacity duration-700 group-fine:opacity-0 motion-reduce:transition-none",
-					)}
-				/>
-			) : null}
-			{hoverCoverUrl && hoverCoverUrl !== coverUrl ? (
-				<NextImage
-					src={hoverCoverUrl}
-					alt=""
-					fill
-					priority
-					sizes="100vw"
-					className="object-cover object-center opacity-0 transition-opacity duration-700 group-fine:opacity-100 motion-reduce:opacity-100"
-				/>
-			) : null}
+			<VideoCinemaHeroBackground
+				coverUrl={coverUrl}
+				previewVideoUrl={previewVideoUrl}
+				hoverCoverUrl={hoverCoverUrl}
+			/>
 
 			{/* scrims — bottom + overall darken, both direction-agnostic */}
 			<div aria-hidden className="absolute inset-0 bg-foreground/30" />

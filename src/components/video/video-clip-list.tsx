@@ -4,6 +4,7 @@ import { PlayIcon, SpeakerWaveIcon } from "@heroicons/react/24/solid";
 import NextImage from "next/image";
 import { cn } from "@/lib/utils";
 import { formatDuration } from "@/lib/video/format";
+import { VideoStillPreview } from "@/components/video/video-still-preview-lazy";
 import type { ResolvedVideoClip } from "@/types/video";
 
 export type VideoClipListLabels = {
@@ -17,6 +18,7 @@ type VideoClipListProps = {
 	activeClipNumber: number;
 	onSelect: (clipNumber: number) => void;
 	labels: VideoClipListLabels;
+	fallbackCoverUrl?: string | null;
 	className?: string;
 };
 
@@ -25,9 +27,11 @@ const MEDIA_FILE_PATTERN = /\.(mp4|webm|ogg|ogv|mov|m4v|m3u8|mpd)(\?|#|$)/i;
 function ClipStill({
 	clip,
 	isActive,
+	fallbackCoverUrl,
 }: {
 	clip: ResolvedVideoClip;
 	isActive: boolean;
+	fallbackCoverUrl?: string | null;
 }) {
 	const mediaClass = cn(
 		"absolute inset-0 size-full object-cover object-center transition-[filter,transform] duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] motion-reduce:transition-none",
@@ -50,26 +54,17 @@ function ClipStill({
 
 	if (clip.url && MEDIA_FILE_PATTERN.test(clip.url)) {
 		return (
-			<video
-				src={`${clip.url}#t=0.5`}
-				muted
-				playsInline
-				preload="metadata"
-				aria-hidden
+			<VideoStillPreview
+				src={clip.url}
+				fallbackCoverUrl={clip.coverUrl ?? fallbackCoverUrl}
+				sizes="(max-width: 640px) 100vw, 33vw"
 				className={mediaClass}
 			/>
 		);
 	}
 
 	return (
-		<div
-			aria-hidden
-			className="flex h-full w-full items-center justify-center bg-sunken"
-		>
-			<span className="font-heading text-h1 font-bold text-foreground/10">
-				{clip.clipNumber}
-			</span>
-		</div>
+		<div aria-hidden className="h-full w-full bg-sunken" />
 	);
 }
 
@@ -82,6 +77,7 @@ export function VideoClipList({
 	activeClipNumber,
 	onSelect,
 	labels,
+	fallbackCoverUrl = null,
 	className,
 }: VideoClipListProps) {
 	if (clips.length === 0) {
@@ -121,7 +117,11 @@ export function VideoClipList({
 								)}
 							>
 								<div className="relative aspect-video w-full overflow-hidden">
-									<ClipStill clip={clip} isActive={isActive} />
+									<ClipStill
+										clip={clip}
+										isActive={isActive}
+										fallbackCoverUrl={fallbackCoverUrl}
+									/>
 
 									<div
 										aria-hidden
@@ -163,12 +163,11 @@ export function VideoClipList({
 									</span>
 
 									<div className="absolute inset-x-0 bottom-0 z-1 p-3 sm:p-3.5">
-										<span className="mb-1 block text-label tabular-nums text-primary-foreground/65">
-											{clip.clipNumber}
-										</span>
-										<span className="block font-heading text-small font-semibold leading-snug text-balance text-primary-foreground line-clamp-2 sm:text-body">
-											{clip.title}
-										</span>
+										{clip.title ? (
+											<span className="block font-heading text-small font-semibold leading-snug text-balance text-primary-foreground line-clamp-2 sm:text-body">
+												{clip.title}
+											</span>
+										) : null}
 										{isActive ? (
 											<span className="mt-1 block text-label text-primary-foreground/75">
 												{labels.nowPlaying}

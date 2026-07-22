@@ -185,8 +185,8 @@ export function DonateFinancialForm({
 												amountRegister.onChange(event);
 											}}
 											type="number"
-											min={1}
-											step={1}
+											min={0.01}
+											step={0.01}
 											placeholder={copy.placeholders.amount}
 										/>
 										<Select

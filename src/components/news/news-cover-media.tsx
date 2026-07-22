@@ -1,10 +1,9 @@
 "use client";
 
 import { ArrowsPointingOutIcon } from "@heroicons/react/24/outline";
-import { useCallback, useRef, useState } from "react";
-import { NewsMediaModal } from "@/components/news/news-media-modal";
+import { useNewsPostLightbox } from "@/components/news/news-post-lightbox";
 import { ProjectCoverMedia } from "@/components/projects/project-cover-media";
-import type { MediaItem, MediaKind } from "@/types/media";
+import type { MediaKind } from "@/types/media";
 import { cn } from "@/lib/utils";
 
 type NewsCoverMediaProps = {
@@ -16,9 +15,6 @@ type NewsCoverMediaProps = {
 	className?: string;
 	imageClassName?: string;
 	sizes?: string;
-	closeLabel: string;
-	previousLabel: string;
-	nextLabel: string;
 };
 
 export function NewsCoverMedia({
@@ -30,25 +26,8 @@ export function NewsCoverMedia({
 	className,
 	imageClassName,
 	sizes,
-	closeLabel,
-	previousLabel,
-	nextLabel,
 }: NewsCoverMediaProps) {
-	const dialogRef = useRef<HTMLDialogElement>(null);
-	const [activeIndex, setActiveIndex] = useState<number | null>(null);
-
-	const coverItem: MediaItem = {
-		url,
-		kind,
-		thumbnailUrl: posterUrl ?? null,
-		caption: null,
-		sortOrder: 0,
-	};
-
-	const open = useCallback(() => {
-		setActiveIndex(0);
-		dialogRef.current?.showModal();
-	}, []);
+	const { openCover } = useNewsPostLightbox();
 
 	const coverMedia = (
 		<ProjectCoverMedia
@@ -63,44 +42,29 @@ export function NewsCoverMedia({
 		/>
 	);
 
-	return (
-		<>
-			{kind === "IMAGE" ? (
-				<button
-					type="button"
-					onClick={open}
-					aria-label={alt}
-					className={cn(
-						"group block w-full cursor-pointer text-start",
-						"transition-opacity fine-hover:opacity-95",
-					)}
-				>
-					{coverMedia}
-				</button>
-			) : (
-				<div className="relative">
-					{coverMedia}
-					<button
-						type="button"
-						onClick={open}
-						aria-label={alt}
-						className="absolute end-3 top-3 inline-flex size-9 items-center justify-center border border-border/80 bg-background/90 text-foreground transition-colors fine-hover:bg-background"
-					>
-						<ArrowsPointingOutIcon className="size-4" aria-hidden />
-					</button>
-				</div>
+	return kind === "IMAGE" ? (
+		<button
+			type="button"
+			onClick={openCover}
+			aria-label={alt}
+			className={cn(
+				"group block w-full cursor-pointer text-start",
+				"transition-opacity fine-hover:opacity-95",
 			)}
-
-			<NewsMediaModal
-				items={[coverItem]}
-				activeIndex={activeIndex}
-				onActiveIndexChange={setActiveIndex}
-				dialogRef={dialogRef}
-				articleTitle={alt}
-				closeLabel={closeLabel}
-				previousLabel={previousLabel}
-				nextLabel={nextLabel}
-			/>
-		</>
+		>
+			{coverMedia}
+		</button>
+	) : (
+		<div className="relative">
+			{coverMedia}
+			<button
+				type="button"
+				onClick={openCover}
+				aria-label={alt}
+				className="absolute end-3 top-3 inline-flex size-9 items-center justify-center border border-border/80 bg-background/90 text-foreground transition-colors fine-hover:bg-background"
+			>
+				<ArrowsPointingOutIcon className="size-4" aria-hidden />
+			</button>
+		</div>
 	);
 }

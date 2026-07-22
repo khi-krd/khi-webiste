@@ -198,6 +198,7 @@ export function GalleryPostView({
 			<ScrollRevealBlock>
 				<GalleryAlbum
 					items={albumImages}
+					coverUrl={post.coverUrl}
 					postTitle={post.title}
 					photosLabel={photosLabel}
 					closeLabel={closeLabel}

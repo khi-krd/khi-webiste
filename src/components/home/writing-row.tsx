@@ -39,7 +39,7 @@ export function WritingRow({ item, className }: WritingRowProps) {
 					{item.coverUrl ? (
 						<div
 							className={cn(
-								"absolute -inset-[5%] origin-center",
+								"absolute inset-[-5%] origin-center",
 								"transition-transform duration-[1.2s]",
 								imageEase,
 								"group-fine:scale-[1.05] motion-reduce:transition-none motion-reduce:group-fine:scale-100",

@@ -16,6 +16,8 @@ type DonateFormsSectionProps = {
 	eyebrow: string;
 	heading: string;
 	description: string;
+	showArchive?: boolean;
+	showFinancial?: boolean;
 	archiveCopy: ComponentPropsWithoutRef<typeof DonateArchiveForm>["copy"];
 	financialCopy: ComponentPropsWithoutRef<typeof DonateFinancialForm>["copy"];
 };
@@ -24,9 +26,14 @@ export function DonateFormsSection({
 	eyebrow,
 	heading,
 	description,
+	showArchive = true,
+	showFinancial = true,
 	archiveCopy,
 	financialCopy,
 }: DonateFormsSectionProps) {
+	if (!showArchive && !showFinancial) {
+		return null;
+	}
 	return (
 		<HomeSection aria-labelledby="donate-forms-heading">
 			<ScrollRevealBlock className={homeSectionHeaderClass}>
@@ -46,12 +53,16 @@ export function DonateFormsSection({
 
 			<div className={homeSectionContentClass}>
 				<ScrollReveal className="flex flex-col gap-10 sm:gap-12">
-					<ScrollRevealItem>
-						<DonateArchiveForm copy={archiveCopy} />
-					</ScrollRevealItem>
-					<ScrollRevealItem>
-						<DonateFinancialForm copy={financialCopy} />
-					</ScrollRevealItem>
+					{showArchive ? (
+						<ScrollRevealItem>
+							<DonateArchiveForm copy={archiveCopy} />
+						</ScrollRevealItem>
+					) : null}
+					{showFinancial ? (
+						<ScrollRevealItem>
+							<DonateFinancialForm copy={financialCopy} />
+						</ScrollRevealItem>
+					) : null}
 				</ScrollReveal>
 			</div>
 		</HomeSection>

@@ -389,6 +389,8 @@ export type GalleryPost = {
 	/** ISO-8601 date (YYYY-MM-DD). */
 	publishmentDate: string;
 	tags: string[];
+	/** CMS cover/thumbnail URL — may differ from album[0]. */
+	coverUrl?: string;
 	/** Ordered album — its length IS the photo count (no separate field). */
 	album: GalleryAlbumItem[];
 };

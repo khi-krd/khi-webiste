@@ -4,9 +4,12 @@ import { setRequestLocale } from "next-intl/server";
 import { ShortFilmDetailView } from "@/components/video/short-film-detail-view";
 import type { VideoPosterCardProps } from "@/components/video/video-poster-card";
 import { getVideoById, getVideoListing } from "@/lib/api/videos";
-import { SHORT_FILMS_TOPIC_ID } from "@/lib/mock/videos";
 import { formatDuration } from "@/lib/video/format";
-import { shortFilmDetailHref } from "@/lib/video/resolve";
+import {
+	isShortFilm,
+	SHORT_FILM_LISTING_FILTERS,
+	shortFilmDetailHref,
+} from "@/lib/video/resolve";
 import { RELATED_VIDEOS_VISIBLE } from "@/components/video/video-related-grid";
 
 type ShortFilmDetailPageProps = {
@@ -35,7 +38,7 @@ export async function generateMetadata({
 	if (videoId == null) notFound();
 
 	const detail = await getVideoById(locale, videoId, parseClipNumber(clip));
-	if (!detail || detail.topicId !== SHORT_FILMS_TOPIC_ID) notFound();
+	if (!detail || !isShortFilm(detail)) notFound();
 
 	return {
 		title: detail.title,
@@ -55,10 +58,10 @@ export default async function ShortFilmDetailPage({
 	if (videoId == null) notFound();
 
 	const detail = await getVideoById(locale, videoId, parseClipNumber(clip));
-	if (!detail || detail.topicId !== SHORT_FILMS_TOPIC_ID) notFound();
+	if (!detail || !isShortFilm(detail)) notFound();
 
 	const relatedListing = await getVideoListing(locale, {
-		topicId: SHORT_FILMS_TOPIC_ID,
+		...SHORT_FILM_LISTING_FILTERS,
 		size: RELATED_VIDEOS_VISIBLE + 2,
 	});
 	const relatedShortFilms: VideoPosterCardProps[] = relatedListing.items
@@ -69,13 +72,14 @@ export default async function ShortFilmDetailPage({
 			title: card.title,
 			subtitle: card.subtitle,
 			coverUrl: card.coverUrl,
+			previewVideoUrl: card.previewVideoUrl,
 			durationLabel: formatDuration(card.durationSeconds),
 			href: shortFilmDetailHref(card.id),
 			dark: true,
 		}));
 
 	return (
-		<main className="bg-foreground">
+		<main className="bg-foreground pb-16 text-primary-foreground sm:pb-20">
 			<ShortFilmDetailView
 				detail={detail}
 				locale={locale}

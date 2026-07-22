@@ -20,7 +20,7 @@ export function createDonateFinancialFormSchema(
 		amount: z
 			.number({ message: messages.amountInvalid })
 			.refine(
-				(value) => Number.isFinite(value) && value > 0,
+				(value) => Number.isFinite(value) && value >= 0.01,
 				messages.amountInvalid,
 			),
 		currency: z

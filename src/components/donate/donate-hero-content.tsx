@@ -17,6 +17,8 @@ type DonateHeroContentProps = {
 	intro: string;
 	ctaArchive: string;
 	ctaFinancial: string;
+	showArchiveCta?: boolean;
+	showFinancialCta?: boolean;
 };
 
 export function DonateHeroContent({
@@ -25,6 +27,8 @@ export function DonateHeroContent({
 	intro,
 	ctaArchive,
 	ctaFinancial,
+	showArchiveCta = true,
+	showFinancialCta = true,
 }: DonateHeroContentProps) {
 	return (
 		<ScrollReveal className="max-w-4xl text-start text-white">
@@ -39,24 +43,38 @@ export function DonateHeroContent({
 			<ScrollRevealItem>
 				<p className="hero-slide-description mt-5 max-w-xl">{intro}</p>
 			</ScrollRevealItem>
-			<ScrollRevealItem>
-				<div className="mt-8 flex flex-wrap gap-3">
-					<Link href="#archive-form" variant="nav" className={soundCtaClass}>
-						<span className="relative z-1">{ctaArchive}</span>
-						<DirectionalIcon
-							icon={ArrowRightIcon}
-							className="relative z-1 size-4"
-						/>
-					</Link>
-					<Link href="#financial-form" variant="nav" className={soundCtaClass}>
-						<span className="relative z-1">{ctaFinancial}</span>
-						<DirectionalIcon
-							icon={ArrowRightIcon}
-							className="relative z-1 size-4"
-						/>
-					</Link>
-				</div>
-			</ScrollRevealItem>
+			{showArchiveCta || showFinancialCta ? (
+				<ScrollRevealItem>
+					<div className="mt-8 flex flex-wrap gap-3">
+						{showArchiveCta ? (
+							<Link
+								href="#archive-form"
+								variant="nav"
+								className={soundCtaClass}
+							>
+								<span className="relative z-1">{ctaArchive}</span>
+								<DirectionalIcon
+									icon={ArrowRightIcon}
+									className="relative z-1 size-4"
+								/>
+							</Link>
+						) : null}
+						{showFinancialCta ? (
+							<Link
+								href="#financial-form"
+								variant="nav"
+								className={soundCtaClass}
+							>
+								<span className="relative z-1">{ctaFinancial}</span>
+								<DirectionalIcon
+									icon={ArrowRightIcon}
+									className="relative z-1 size-4"
+								/>
+							</Link>
+						) : null}
+					</div>
+				</ScrollRevealItem>
+			) : null}
 		</ScrollReveal>
 	);
 }

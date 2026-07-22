@@ -29,10 +29,6 @@ type NewsMediaModalProps = {
 const navButtonClass =
 	"inline-flex size-9 items-center justify-center border border-border-strong text-foreground transition-colors fine-hover:bg-sunken";
 
-function frameNo(index: number): string {
-	return String(index + 1).padStart(2, "0");
-}
-
 function isRemoteSrc(src: string): boolean {
 	return src.startsWith("http://") || src.startsWith("https://");
 }
@@ -139,14 +135,7 @@ export function NewsMediaModal({
 		>
 			{item && activeIndex !== null ? (
 				<div className="flex max-h-[inherit] flex-col">
-					<div className="flex items-center justify-between gap-3 border-b border-border px-4 py-3 sm:px-5">
-						<p className="label font-medium">
-							{frameNo(activeIndex)}
-							<span className="text-muted">
-								{" "}
-								/ {frameNo(items.length - 1)}
-							</span>
-						</p>
+					<div className="flex items-center justify-end gap-3 border-b border-border px-4 py-3 sm:px-5">
 						<button
 							type="button"
 							onClick={() => dialogRef.current?.close()}
@@ -173,10 +162,7 @@ export function NewsMediaModal({
 												type="button"
 												onClick={() => onActiveIndexChange(index)}
 												aria-pressed={isActive}
-												aria-label={
-													thumb.caption ??
-													`${articleTitle} — ${frameNo(index)}`
-												}
+												aria-label={thumb.caption ?? articleTitle}
 												className={cn(
 													"relative block aspect-4/3 w-full overflow-hidden border transition-[border-color,opacity] duration-200",
 													isActive

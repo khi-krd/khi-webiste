@@ -1,7 +1,6 @@
 "use client";
 
 import {
-	albumItemToLightboxItem,
 	type GalleryAlbumMetadataLabels,
 	galleryPhotoSurfaceClass,
 } from "@/components/gallery/gallery-album-item";
@@ -10,6 +9,7 @@ import {
 	useGalleryLightbox,
 } from "@/components/gallery/gallery-lightbox";
 import { Image } from "@/components/ui/image";
+import { buildGalleryLightboxItems } from "@/lib/gallery/lightbox-items";
 import { homeInsetClass } from "@/lib/layout";
 import type { GalleryAlbumItem } from "@/lib/mock/gallery";
 import { cn } from "@/lib/utils";
@@ -18,6 +18,7 @@ const sliceEase = "ease-[cubic-bezier(0.22,1,0.36,1)]";
 
 type GalleryAlbumProps = {
 	items: GalleryAlbumItem[];
+	coverUrl?: string;
 	postTitle: string;
 	photosLabel: string;
 	closeLabel: string;
@@ -26,16 +27,13 @@ type GalleryAlbumProps = {
 	metadataLabels: GalleryAlbumMetadataLabels;
 };
 
-function frameNo(index: number): string {
-	return String(index + 1).padStart(2, "0");
-}
-
 /**
  * Opened collection album — contact sheet grid. Every image opens the
  * lightbox with the full `ImageItemDto` record when present.
  */
 export function GalleryAlbum({
 	items,
+	coverUrl,
 	postTitle,
 	photosLabel,
 	closeLabel,
@@ -43,8 +41,10 @@ export function GalleryAlbum({
 	nextLabel,
 	metadataLabels,
 }: GalleryAlbumProps) {
-	const lightboxItems = items.map((item) =>
-		albumItemToLightboxItem(item, postTitle),
+	const { items: lightboxItems, albumIndexOffset } = buildGalleryLightboxItems(
+		coverUrl,
+		items,
+		postTitle,
 	);
 	const { dialogRef, activeIndex, setActiveIndex, open } = useGalleryLightbox();
 
@@ -54,15 +54,12 @@ export function GalleryAlbum({
 				aria-label={photosLabel}
 				className={cn("pt-8 pb-12 lg:pt-10 lg:pb-16", homeInsetClass)}
 			>
-				<header className="flex items-baseline justify-between gap-4 border-b border-border pb-4">
+				<header className="border-b border-border pb-4">
 					<p className="label font-medium text-foreground">
 						<span aria-hidden="true" className="me-2">
 							{"//"}
 						</span>
 						{photosLabel}
-					</p>
-					<p className="label" aria-hidden="true">
-						{frameNo(items.length - 1)}
 					</p>
 				</header>
 
@@ -71,10 +68,8 @@ export function GalleryAlbum({
 						<figure key={sheetItem.id} className="mb-2 break-inside-avoid">
 							<button
 								type="button"
-								onClick={() => open(index)}
-								aria-label={
-									sheetItem.caption ?? `${postTitle} — ${frameNo(index)}`
-								}
+								onClick={() => open(index + albumIndexOffset)}
+								aria-label={sheetItem.caption ?? postTitle}
 								className="group block w-full cursor-pointer"
 							>
 								{sheetItem.imageUrl ? (
@@ -107,14 +102,11 @@ export function GalleryAlbum({
 									</div>
 								)}
 							</button>
-							<figcaption className="px-0.5 pt-1.5 pb-2.5">
-								<p className="label flex flex-wrap items-baseline gap-x-2 gap-y-0.5">
-									<span className="font-medium">{frameNo(index)}</span>
-									{sheetItem.caption && (
-										<span className="text-foreground">{sheetItem.caption}</span>
-									)}
-								</p>
-							</figcaption>
+							{sheetItem.caption ? (
+								<figcaption className="px-0.5 pt-1.5 pb-2.5">
+									<p className="label text-foreground">{sheetItem.caption}</p>
+								</figcaption>
+							) : null}
 						</figure>
 					))}
 				</div>

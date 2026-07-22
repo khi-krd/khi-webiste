@@ -60,7 +60,7 @@ export default async function VideosPage({
 		heroStills.push({
 			src,
 			title: item.title,
-			href: isShortFilm(item.topicId)
+			href: isShortFilm(item)
 				? shortFilmDetailHref(item.id)
 				: videoDetailHref(item.id),
 		});
@@ -88,6 +88,7 @@ export default async function VideosPage({
 					title={t("grid.allTitle")}
 					cards={pageData.listing.items}
 					showFeatured={pageData.showFeatured}
+					featuredLead={pageData.featuredLead}
 					currentPage={pageData.listing.currentPage}
 					totalPages={pageData.listing.totalPages}
 					totalElements={pageData.listing.totalElements}

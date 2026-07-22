@@ -31,10 +31,6 @@ type GalleryLightboxProps = {
 	fallbackTitle?: string;
 };
 
-function frameNo(index: number): string {
-	return String(index + 1).padStart(2, "0");
-}
-
 const navButtonClass =
 	"inline-flex size-9 items-center justify-center border border-border-strong text-foreground transition-colors fine-hover:bg-sunken";
 
@@ -153,11 +149,7 @@ export function GalleryLightbox({
 								<NextImage
 									key={item.id}
 									src={item.imageUrl}
-									alt={
-										item.alt ??
-										item.caption ??
-										`${collectionTitle} — ${frameNo(activeIndex)}`
-									}
+									alt={item.alt ?? item.caption ?? collectionTitle}
 									fill
 									sizes="(max-width: 1023px) 98vw, 90vw"
 									className="object-contain"
@@ -198,10 +190,7 @@ export function GalleryLightbox({
 												type="button"
 												onClick={() => onActiveIndexChange(index)}
 												aria-pressed={isActive}
-												aria-label={
-													thumb.caption ??
-													`${collectionTitle} — ${frameNo(index)}`
-												}
+												aria-label={thumb.caption ?? collectionTitle}
 												className={cn(
 													"relative block aspect-4/3 w-full overflow-hidden border transition-[border-color,opacity] duration-200",
 													isActive
@@ -225,14 +214,7 @@ export function GalleryLightbox({
 					</div>
 
 					<div className="flex min-h-0 flex-col gap-5 overflow-y-auto border-t border-border p-5 lg:border-t-0 lg:border-s lg:p-6">
-						<div className="flex items-center justify-between gap-3">
-							<p className="label font-medium">
-								{frameNo(activeIndex)}
-								<span className="text-muted">
-									{" "}
-									/ {frameNo(items.length - 1)}
-								</span>
-							</p>
+						<div className="flex items-center justify-end gap-3">
 							<button
 								type="button"
 								onClick={() => dialogRef.current?.close()}

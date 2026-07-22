@@ -1,5 +1,4 @@
-import { classifyPlayableSource } from "@/components/ui/video-player/video-source";
-import { SHORT_FILMS_TOPIC_ID } from "@/lib/mock/videos";
+import { classifyPlayableSource } from "@/lib/video/source";
 import { plainTextFromRichContent } from "@/lib/rich-text";
 import type {
 	ResolvedVideoCard,
@@ -12,6 +11,7 @@ import type {
 	VideoContent,
 	VideoHighlightClip,
 	VideoPlayerKind,
+	VideoType,
 } from "@/types/video";
 
 export const classifySource = classifyPlayableSource;
@@ -64,6 +64,24 @@ export function resolveVideoCoverUrl(
 	);
 }
 
+/** Direct file URL for thumbnail previews when the CMS has no cover image. */
+export function resolveVideoPreviewUrl(video: Video): string | null {
+	const clips = sortedClips(video) ?? [];
+
+	for (const candidate of [
+		video.sourceUrl,
+		video.sourceExternalUrl,
+		...clips.map((clip) => resolveClipUrl(clip)),
+	]) {
+		const classified = classifyPlayableSource(candidate);
+		if (classified?.kind === "vidstack") {
+			return classified.src;
+		}
+	}
+
+	return null;
+}
+
 export function resolveVideoTopicName(
 	locale: string,
 	video: Video,
@@ -98,8 +116,19 @@ export function shortFilmDetailHref(id: number): string {
 	return `/videos/shortfilms/${id}`;
 }
 
-export function isShortFilm(topicId: number | null): boolean {
-	return topicId === SHORT_FILMS_TOPIC_ID;
+/** API `videoType` for films — there is no separate short-film enum value. */
+export const SHORT_FILM_VIDEO_TYPE = "FILM" satisfies VideoType;
+
+/** Listing filters for `/videos/shortfilms` and related film surfaces. */
+export const SHORT_FILM_LISTING_FILTERS = {
+	videoType: SHORT_FILM_VIDEO_TYPE,
+} as const;
+
+export function isShortFilm(
+	video: Pick<ResolvedVideoCard, "videoType"> | VideoType,
+): boolean {
+	const videoType = typeof video === "string" ? video : video.videoType;
+	return videoType === SHORT_FILM_VIDEO_TYPE;
 }
 
 function resolveClipUrl(
@@ -242,6 +271,7 @@ function resolveClipCoverUrl(
 function resolveClip(
 	locale: string,
 	clip: NonNullable<Video["videoClipItems"]>[number],
+	parentCoverUrl?: string | null,
 ): ResolvedVideoClip {
 	const title =
 		locale === "ckb"
@@ -250,10 +280,11 @@ function resolveClip(
 
 	return {
 		clipNumber: clip.clipNumber,
-		title: title ?? String(clip.clipNumber),
+		title: title ?? "",
 		url: resolveClipUrl(clip) ?? "",
 		durationSeconds: clip.durationSeconds ?? null,
-		coverUrl: resolveClipCoverUrl(locale, clip),
+		coverUrl:
+			resolveClipCoverUrl(locale, clip) ?? parentCoverUrl ?? null,
 	};
 }
 
@@ -293,12 +324,15 @@ export function resolveVideoCard(
 
 	return {
 		id: video.id,
+		featured: video.featured ?? false,
+		featuredOrder: video.featuredOrder ?? null,
 		title: content.title,
 		subtitle: firstNonBlank(content.director),
 		excerpt: description
 			? truncate(plainTextFromRichContent(description), EXCERPT_MAX_LENGTH)
 			: "",
 		coverUrl: resolveVideoCoverUrl(locale, video),
+		previewVideoUrl: resolveVideoPreviewUrl(video),
 		hoverCoverUrl: video.hoverCoverUrl ?? null,
 		videoType: video.videoType,
 		albumOfMemories: video.albumOfMemories,
@@ -340,7 +374,7 @@ export function resolveVideoCards(
 	}
 
 	const clips = (sortedClips(video) ?? []).map((clip) =>
-		resolveClip(locale, clip),
+		resolveClip(locale, clip, base.coverUrl),
 	);
 	if (clips.length <= 1) {
 		return [base];
@@ -368,8 +402,10 @@ export function resolveVideoDetail(
 		return null;
 	}
 
+	const coverUrl = resolveVideoCoverUrl(locale, video);
+	const previewVideoUrl = resolveVideoPreviewUrl(video);
 	const clips = (sortedClips(video) ?? []).map((clip) =>
-		resolveClip(locale, clip),
+		resolveClip(locale, clip, coverUrl),
 	);
 	const activeClip =
 		clipNumber != null
@@ -391,7 +427,8 @@ export function resolveVideoDetail(
 		// One post → one title/description; clips are a gallery, not separate pages.
 		title: content.title,
 		description: content.description?.trim() ?? "",
-		coverUrl: resolveVideoCoverUrl(locale, video),
+		coverUrl,
+		previewVideoUrl,
 		videoType: video.videoType,
 		albumOfMemories: video.albumOfMemories,
 		topicId: video.topicId ?? null,

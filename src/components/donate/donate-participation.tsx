@@ -22,6 +22,8 @@ type DonateParticipationProps = {
 	financial: { label: string; body: string; cta: string };
 	body: string;
 	closing: string;
+	showArchive?: boolean;
+	showFinancial?: boolean;
 };
 
 export function DonateParticipation({
@@ -30,6 +32,8 @@ export function DonateParticipation({
 	financial,
 	body,
 	closing,
+	showArchive = true,
+	showFinancial = true,
 }: DonateParticipationProps) {
 	return (
 		<HomeSection
@@ -50,24 +54,30 @@ export function DonateParticipation({
 			</ScrollRevealBlock>
 
 			<div className={homeSectionContentClass}>
-				<ScrollReveal className="grid grid-cols-1 gap-3 sm:grid-cols-2 sm:gap-4">
-					<ScrollRevealItem>
-						<PathCard
-							label={archive.label}
-							body={archive.body}
-							cta={archive.cta}
-							href="#archive-form"
-						/>
-					</ScrollRevealItem>
-					<ScrollRevealItem>
-						<PathCard
-							label={financial.label}
-							body={financial.body}
-							cta={financial.cta}
-							href="#financial-form"
-						/>
-					</ScrollRevealItem>
-				</ScrollReveal>
+				{showArchive || showFinancial ? (
+					<ScrollReveal className="grid grid-cols-1 gap-3 sm:grid-cols-2 sm:gap-4">
+						{showArchive ? (
+							<ScrollRevealItem>
+								<PathCard
+									label={archive.label}
+									body={archive.body}
+									cta={archive.cta}
+									href="#archive-form"
+								/>
+							</ScrollRevealItem>
+						) : null}
+						{showFinancial ? (
+							<ScrollRevealItem>
+								<PathCard
+									label={financial.label}
+									body={financial.body}
+									cta={financial.cta}
+									href="#financial-form"
+								/>
+							</ScrollRevealItem>
+						) : null}
+					</ScrollReveal>
+				) : null}
 
 				<ScrollRevealBlock className="mt-8 border border-border bg-background p-6 sm:mt-10 sm:p-8">
 					<p className="max-w-3xl text-body leading-relaxed text-foreground">

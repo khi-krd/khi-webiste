@@ -3,6 +3,11 @@ import { apiFetch, apiPost, DEFAULT_REVALIDATE } from "@/lib/api/client";
 import { getApiBaseUrl } from "@/lib/api/config";
 import { applyMockPolicyNullable } from "@/lib/api/mock-policy";
 import {
+	filterDonateTypeItems,
+	resolveDonateVisibility,
+	type DonateVisibility,
+} from "@/lib/donate/resolve";
+import {
 	getDonateHeroMedia,
 	getDonatePaymentDetails,
 	getDonateTypeItems,
@@ -24,6 +29,13 @@ const DONATIONS_TYPES_ENDPOINT = "/api/v1/donations/types";
 const DONATIONS_FINANCIAL_ENDPOINT = "/api/v1/donations/financial";
 const DONATIONS_ARCHIVE_ENDPOINT = "/api/v1/donations/archive";
 const DONATIONS_TAG = "donations";
+
+export type DonatePageData = {
+	heroMedia: DonateHeroMedia;
+	typeItems: DonateTypeItem[];
+	payment: DonatePaymentDetails;
+	visibility: DonateVisibility;
+};
 
 export async function getDonationSettings() {
 	if (!getApiBaseUrl()) {
@@ -73,8 +85,9 @@ export async function submitArchiveDonation(body: ArchiveDonationSubmission) {
 	});
 }
 
-export async function getDonateHeroMediaFromApi(): Promise<DonateHeroMedia> {
-	const settings = await getDonationSettings();
+function resolveHeroMedia(
+	settings: Awaited<ReturnType<typeof getDonationSettings>>,
+): DonateHeroMedia {
 	const apiValue = settings?.heroImageUrl
 		? {
 				url: settings.heroImageUrl,
@@ -90,8 +103,9 @@ export async function getDonateHeroMediaFromApi(): Promise<DonateHeroMedia> {
 	);
 }
 
-export async function getDonatePaymentDetailsFromApi(): Promise<DonatePaymentDetails> {
-	const settings = await getDonationSettings();
+function resolvePaymentDetails(
+	settings: Awaited<ReturnType<typeof getDonationSettings>>,
+): DonatePaymentDetails {
 	const apiValue = settings
 		? {
 				fibAccount: settings.accountNumber ?? "",
@@ -107,44 +121,34 @@ export async function getDonatePaymentDetailsFromApi(): Promise<DonatePaymentDet
 	);
 }
 
-export async function getDonateTypeItemsFromApi(): Promise<DonateTypeItem[]> {
+function resolveTypeItems(
+	settings: Awaited<ReturnType<typeof getDonationSettings>>,
+	types: Awaited<ReturnType<typeof getDonationTypes>>,
+	visibility: DonateVisibility,
+): DonateTypeItem[] {
+	if (!settings && types.length === 0) {
+		return (
+			applyMockPolicyNullable({
+				apiValue: null,
+				getMockValue: () => getDonateTypeItems(),
+			}) ?? []
+		);
+	}
+
+	return filterDonateTypeItems(getDonateTypeItems(), visibility);
+}
+
+export async function getDonatePageDataFromApi(): Promise<DonatePageData> {
 	const [settings, types] = await Promise.all([
 		getDonationSettings(),
 		getDonationTypes(),
 	]);
+	const visibility = resolveDonateVisibility(settings, types);
 
-	if (!settings && types.length === 0) {
-		return applyMockPolicyNullable({
-			apiValue: null,
-			getMockValue: () => getDonateTypeItems(),
-		}) ?? [];
-	}
-
-	const mockItems = getDonateTypeItems();
-	const enabledCodes = new Set(
-		types.filter((type) => type.enabled).map((type) => type.code),
-	);
-
-	return mockItems.filter((item) => {
-		if (item.id === "financial") {
-			return (
-				(enabledCodes.size === 0 || enabledCodes.has("FINANCIAL")) &&
-				settings?.financialDonationsEnabled !== false
-			);
-		}
-
-		if (
-			item.id === "visualArchive" ||
-			item.id === "documents" ||
-			item.id === "oralHeritage" ||
-			item.id === "scientific"
-		) {
-			return (
-				(enabledCodes.size === 0 || enabledCodes.has("ARCHIVE")) &&
-				settings?.archiveDonationsEnabled !== false
-			);
-		}
-
-		return true;
-	});
+	return {
+		heroMedia: resolveHeroMedia(settings),
+		typeItems: resolveTypeItems(settings, types, visibility),
+		payment: resolvePaymentDetails(settings),
+		visibility,
+	};
 }

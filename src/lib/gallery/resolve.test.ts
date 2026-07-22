@@ -112,4 +112,24 @@ describe("resolveGalleryPost", () => {
 		const post = resolveGalleryPost("ku", collection);
 		expect(post?.album).toHaveLength(2);
 	});
+
+	it("returns the CMS cover URL on the resolved post", () => {
+		const collection = {
+			id: 1,
+			slugKmr: "test-gallery",
+			collectionType: "GALLERY",
+			kmrCoverUrl: "https://cdn.example.com/cover-thumb.jpg",
+			contentLanguages: ["KMR"],
+			kmrContent: {
+				title: "Test gallery",
+				description: null,
+				location: null,
+				collectedBy: null,
+			},
+			imageAlbum: [albumItem(1, "https://cdn.example.com/full-image.jpg", 0)],
+		} as ImageCollection;
+
+		const post = resolveGalleryPost("ku", collection);
+		expect(post?.coverUrl).toBe("https://cdn.example.com/cover-thumb.jpg");
+	});
 });

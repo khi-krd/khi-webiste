@@ -139,7 +139,7 @@ export async function Footer() {
 	];
 
 	return (
-		<footer className="relative mt-20 overflow-hidden">
+		<footer className="relative overflow-hidden pt-20">
 			<div
 				aria-hidden="true"
 				className="absolute inset-0 scale-125 saturate-150 contrast-125"

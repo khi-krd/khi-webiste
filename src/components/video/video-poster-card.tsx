@@ -1,6 +1,9 @@
+"use client";
+
 import { PlayIcon } from "@heroicons/react/24/solid";
 import NextImage from "next/image";
 import { Link } from "@/components/ui/link";
+import { VideoStillPreview } from "@/components/video/video-still-preview-lazy";
 import { cn } from "@/lib/utils";
 import { videoDetailHref } from "@/lib/video/resolve";
 
@@ -9,6 +12,7 @@ export type VideoPosterCardProps = {
 	title: string;
 	subtitle?: string | null;
 	coverUrl: string | null;
+	previewVideoUrl?: string | null;
 	durationLabel?: string | null;
 	/** 0–1 watched fraction → renders a Continue-Watching progress bar. */
 	progress?: number | null;
@@ -23,6 +27,7 @@ export function VideoPosterCard({
 	title,
 	subtitle,
 	coverUrl,
+	previewVideoUrl = null,
 	durationLabel,
 	progress,
 	showPlay = false,
@@ -55,6 +60,12 @@ export function VideoPosterCard({
 						src={coverUrl}
 						alt=""
 						fill
+						sizes="(max-width: 640px) 100vw, 33vw"
+						className="absolute inset-0 size-full object-cover object-center brightness-[0.92] transition-[filter,transform] duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] group-fine:scale-[1.05] group-fine:brightness-100 motion-reduce:transition-none motion-reduce:duration-0 motion-reduce:group-fine:scale-100"
+					/>
+				) : previewVideoUrl ? (
+					<VideoStillPreview
+						src={previewVideoUrl}
 						sizes="(max-width: 640px) 100vw, 33vw"
 						className="absolute inset-0 size-full object-cover object-center brightness-[0.92] transition-[filter,transform] duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] group-fine:scale-[1.05] group-fine:brightness-100 motion-reduce:transition-none motion-reduce:duration-0 motion-reduce:group-fine:scale-100"
 					/>

@@ -139,8 +139,8 @@ Expected page body (after unwrapping):
 | About                       | ✅ (copy only)       | Partial         | **~25%**           |
 | Services                    | ✅ (text only)       | Partial         | **~30%**           |
 | Contact                     | ✅ (office data)     | ❌ Not wired     | **~40%** potential |
-| Donate                      | ❌                   | ❌               | **0%**             |
-| Contact / donate forms      | ❌                   | ❌               | **0%**             |
+| Donate                      | ✅                   | ✅               | **~90%**           |
+| Contact / donate forms      | ✅ (donate)          | Partial         | **~45%**           |
 | Global search               | ❌                   | ❌               | **0%**             |
 | Sitemap                     | ❌ (derived)         | ❌               | **0%**             |
 
@@ -541,44 +541,51 @@ Expected page body (after unwrapping):
 
 ### 9. Services
 
-**Used by:** `/[locale]/services` (section title + body merged onto mock layout)
-
+**Used by:** `/[locale]/services` — dynamic sections from `GET /api/v1/services/all`
 
 | Method | Path                   | Query params   | Site integration          |
 | ------ | ---------------------- | -------------- | ------------------------- |
-| `GET`  | `/api/v1/services/all` | `page`, `size` | `getServiceRecords()` |
-| `GET`  | `/api/v1/services`     | `page`, `size` | Alias (also works on some deployments) |
+| `GET`  | `/api/v1/services/all` | `page`, `size` | `getServiceRecords()` via `apiFetchPage` |
+| `GET`  | `/api/v1/services`     | `page`, `size` | Admin / optional filter   |
 
+**Envelope:** `{ success, message, data: { content, totalElements, … } }` — unwrapped by `unwrapApiPayload`.
 
-**Required response fields (per service)**
+**Behavior:** One active service record = one nav item + one scroll section, in API response order (`sortOrder` on backend). Section count is not fixed.
 
+**Key fields:** `contents[]` (CKB/KMR title + Markdown/HTML description), `galleryMedia[]` (ordered `IMAGE`/`VIDEO` slots), `navAnchorId`, `layoutType`, `partnerIds[]`, legacy `featureImageUrls` / `thumbnailUrls` / `heroPosterUrl`.
 
-| Field         | Type      | Required |
-| ------------- | --------- | -------- |
-| `id`          | `number`  | ✅        |
-| `serviceType` | `string`  | Optional |
-| `location`    | `string`  | Optional |
-| `active`      | `boolean` | ✅        |
-| `contents[]`  | see below | ✅        |
+**Fetch notes:** Per-item Zod parse via `apiFetchPage` + `normalizeServiceRecord`. Records without a resolvable title are skipped. Empty API → mock fallback sections.
 
-
-**Per content entry (**`contents[]`**)**
-
-
-| Field          | Type                        | Required     |
-| -------------- | --------------------------- | ------------ |
-| `languageCode` | `CKB`                       | `KMR`        |
-| `title`        | `string`                    | ✅            |
-| `description`  | `string` (Markdown or HTML) | Section body |
-
-
-**Not covered by API:** service layout type, hero video, feature images, thumbnail gallery, bottom partner cards, nav anchor IDs. The site maps API text onto mock sections **by index**.
+See [`docs/SERVICES_BACKEND.md`](SERVICES_BACKEND.md) for full backend spec.
 
 ---
 
+### 10. Donate
 
+**Used by:** `/[locale]/donate` — hero, type cards, forms, bank/FastPay numbers
 
-### 10. Featured (homepage hero)
+| Method | Path                           | Site integration                |
+| ------ | ------------------------------ | ------------------------------- |
+| `GET`  | `/api/v1/donations/settings`   | `getDonatePageDataFromApi()`    |
+| `GET`  | `/api/v1/donations/types`      | `getDonatePageDataFromApi()`    |
+| `POST` | `/api/v1/donations/archive`    | `submitArchiveDonationAction()` |
+| `POST` | `/api/v1/donations/financial`  | `submitFinancialDonationAction()` |
+
+**Envelope:** `{ success, message, data }` — unwrapped by `unwrapApiPayload`.
+
+**Settings fields used:** `heroImageUrl`, `accountNumber` (FIB display), `iban` (FastPay display), `archiveDonationsEnabled`, `financialDonationsEnabled`.
+
+**Types:** `FINANCIAL` / `ARCHIVE` enable flags filter cards, hero CTAs, participation paths, and forms. Empty types array → show all (fallback).
+
+**Form mapping:** Archive material types and financial `paymentMethod: BANK_TRANSFER` (FIB/FastPay UI options). Amount presets remain static in i18n/mock.
+
+**Not covered by API:** type card images, supporters image, amount presets, page copy (i18n), archive file upload (`attachmentUrl` not sent yet).
+
+See [`docs/DONATE_BACKEND.md`](DONATE_BACKEND.md) for full backend spec.
+
+---
+
+### 11. Featured (homepage hero)
 
 **Used by:** homepage `FeaturedHero`
 
@@ -616,7 +623,7 @@ Items without a resolvable image URL are omitted server-side. An empty array is 
 
 
 
-### 11. Media (indirect)
+### 12. Media (indirect)
 
 **Used by:** all cover URLs, PDFs, audio files, gallery images
 

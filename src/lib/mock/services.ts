@@ -22,6 +22,10 @@ export type ServiceVideo = {
 	variant?: "minimal" | "full";
 };
 
+export type ServiceGalleryMediaItem =
+	| { kind: "image"; media: ServiceMedia }
+	| { kind: "video"; video: ServiceVideo };
+
 export type ServiceItem = {
 	id: string;
 	slug: string;
@@ -29,6 +33,8 @@ export type ServiceItem = {
 	featureImage: ServiceMedia;
 	video: ServiceVideo;
 	thumbnails: [ServiceMedia, ServiceMedia, ServiceMedia, ServiceMedia];
+	/** Ordered gallery slots — each entry may be an image or a video. */
+	galleryMedia?: ServiceGalleryMediaItem[];
 };
 
 const MENU = (n: number) => `/menu/${n}.jpg`;
@@ -49,13 +55,13 @@ export type ServiceId = (typeof SERVICE_IDS)[number];
 
 const LAYOUT_BY_ID: Record<ServiceId, ServiceLayout> = {
 	"institute-hall": "cinema",
-	studio: "cinema",
-	"research-publishing": "cinema",
-	"printing-house": "cinema",
-	sales: "cinema",
-	library: "cinema",
-	"audio-visual-archive": "cinema",
-	"joint-projects": "cinema",
+	studio: "studio-panel",
+	"research-publishing": "editorial",
+	"printing-house": "stacked",
+	sales: "split",
+	library: "gallery",
+	"audio-visual-archive": "split-reverse",
+	"joint-projects": "bento",
 };
 
 function buildThumbnails(startIndex: number): ServiceItem["thumbnails"] {
@@ -76,10 +82,37 @@ function buildVideo(
 	};
 }
 
+function buildGalleryMedia(
+	startIndex: number,
+	videoVariant: "minimal" | "full",
+	videoAtIndex: number,
+	slotCount = 5,
+): ServiceGalleryMediaItem[] {
+	const items: ServiceGalleryMediaItem[] = [];
+	let imageOffset = 0;
+
+	for (let position = 0; position < slotCount; position++) {
+		if (position === videoAtIndex) {
+			items.push({
+				kind: "video",
+				video: buildVideo(((startIndex + position) % 7) + 1, videoVariant),
+			});
+			continue;
+		}
+
+		const menuIndex = ((startIndex + imageOffset - 1) % 7) + 1;
+		items.push({ kind: "image", media: { url: MENU(menuIndex) } });
+		imageOffset += 1;
+	}
+
+	return items;
+}
+
 function buildService(id: ServiceId, imageIndex: number): ServiceItem {
 	const layout = LAYOUT_BY_ID[id];
 	const videoVariant: "minimal" | "full" =
 		layout === "split-reverse" ? "full" : "minimal";
+	const videoAtIndex = imageIndex % 5;
 
 	return {
 		id,
@@ -88,6 +121,7 @@ function buildService(id: ServiceId, imageIndex: number): ServiceItem {
 		featureImage: { url: MENU(imageIndex) },
 		video: buildVideo((imageIndex % 7) + 1, videoVariant),
 		thumbnails: buildThumbnails(imageIndex + 1),
+		galleryMedia: buildGalleryMedia(imageIndex, videoVariant, videoAtIndex),
 	};
 }
 

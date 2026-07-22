@@ -10,6 +10,8 @@ type DonateHeroProps = {
 	intro: string;
 	ctaArchive: string;
 	ctaFinancial: string;
+	showArchiveCta?: boolean;
+	showFinancialCta?: boolean;
 	className?: string;
 };
 
@@ -20,6 +22,8 @@ export function DonateHero({
 	intro,
 	ctaArchive,
 	ctaFinancial,
+	showArchiveCta = true,
+	showFinancialCta = true,
 	className,
 }: DonateHeroProps) {
 	return (
@@ -71,6 +75,8 @@ export function DonateHero({
 					intro={intro}
 					ctaArchive={ctaArchive}
 					ctaFinancial={ctaFinancial}
+					showArchiveCta={showArchiveCta}
+					showFinancialCta={showFinancialCta}
 				/>
 			</div>
 		</section>

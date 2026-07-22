@@ -1,6 +1,7 @@
 import { NewsCard } from "@/components/home/news-card";
 import { NewsCoverMedia } from "@/components/news/news-cover-media";
 import { NewsMediaGallery } from "@/components/news/news-media-gallery";
+import { NewsPostLightboxProvider } from "@/components/news/news-post-lightbox";
 import { ArrowLeftIcon, ArrowRightIcon } from "@heroicons/react/24/outline";
 import {
 	ScrollReveal,
@@ -110,8 +111,23 @@ export function NewsPostView({
 			? item.description
 			: null
 		: item.excerpt;
+	const coverItem = {
+		url: coverUrl,
+		kind: coverKind,
+		thumbnailUrl: item.coverThumbnailUrl ?? item.image.url,
+		caption: null,
+		sortOrder: 0,
+	};
 
 	return (
+		<NewsPostLightboxProvider
+			coverItem={coverItem}
+			galleryItems={mediaGallery}
+			articleTitle={item.title}
+			closeLabel={closeLabel}
+			previousLabel={lightboxPreviousLabel}
+			nextLabel={lightboxNextLabel}
+		>
 		<article className={cn(homeInsetClass, "pb-16 sm:pb-20")}>
 			<ScrollRevealBlock className="pt-10 sm:pt-12">
 				<Link
@@ -136,9 +152,6 @@ export function NewsPostView({
 								kind={coverKind}
 								posterUrl={item.coverThumbnailUrl ?? item.image.url}
 								priority
-								closeLabel={closeLabel}
-								previousLabel={lightboxPreviousLabel}
-								nextLabel={lightboxNextLabel}
 								className={cn(
 									coverKind === "IMAGE"
 										? "aspect-[4/3] w-full"
@@ -211,9 +224,6 @@ export function NewsPostView({
 						items={mediaGallery}
 						title={galleryLabel}
 						articleTitle={item.title}
-						closeLabel={closeLabel}
-						previousLabel={lightboxPreviousLabel}
-						nextLabel={lightboxNextLabel}
 					/>
 				</ScrollReveal>
 			)}
@@ -266,5 +276,6 @@ export function NewsPostView({
 				</section>
 			) : null}
 		</article>
+		</NewsPostLightboxProvider>
 	);
 }

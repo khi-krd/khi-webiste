@@ -208,6 +208,8 @@ export function resolveGalleryPost(
 	const album = dedupeImageAlbumItems(collection.imageAlbum).map((item) =>
 		resolveAlbumItem(locale, item),
 	);
+	const coverUrl =
+		resolveCoverUrl(locale, collection) ?? album[0]?.imageUrl ?? undefined;
 
 	return {
 		id: resolveCollectionSlug(locale, collection),
@@ -220,6 +222,7 @@ export function resolveGalleryPost(
 		publishmentDate:
 			collection.publishmentDate ?? new Date().toISOString().slice(0, 10),
 		tags: resolveTags(locale, collection),
+		coverUrl,
 		album,
 	};
 }

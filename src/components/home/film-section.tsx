@@ -14,7 +14,10 @@ import { DirectionalIcon } from "@/components/ui/directional-icon";
 import { Link } from "@/components/ui/link";
 import { getVideoListing } from "@/lib/api/videos";
 import { formatDuration } from "@/lib/video/format";
-import { shortFilmDetailHref } from "@/lib/video/resolve";
+import {
+	SHORT_FILM_LISTING_FILTERS,
+	shortFilmDetailHref,
+} from "@/lib/video/resolve";
 import type { ResolvedVideoCard } from "@/types/video";
 
 const FILM_COUNT = 5;
@@ -45,7 +48,7 @@ export async function FilmSection() {
 	const t = await getTranslations("Video");
 
 	const listing = await getVideoListing(locale, {
-		videoType: "FILM",
+		...SHORT_FILM_LISTING_FILTERS,
 		size: FILM_COUNT,
 		mockContext: "home",
 	});

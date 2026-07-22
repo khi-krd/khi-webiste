@@ -4,7 +4,6 @@ import { setRequestLocale } from "next-intl/server";
 import { VideoDetailView } from "@/components/video/video-detail-view";
 import type { VideoPosterCardProps } from "@/components/video/video-poster-card";
 import { getVideoById, getVideoListing } from "@/lib/api/videos";
-import { SHORT_FILMS_TOPIC_ID } from "@/lib/mock/videos";
 import { formatDuration } from "@/lib/video/format";
 import {
 	isShortFilm,
@@ -64,7 +63,7 @@ export default async function VideoDetailPage({
 	const detail = await getVideoById(locale, videoId, clipNumber);
 	if (!detail) notFound();
 
-	if (isShortFilm(detail.topicId)) {
+	if (isShortFilm(detail)) {
 		const clipQuery =
 			clipNumber != null ? `?clip=${clipNumber}` : "";
 		redirect(`${shortFilmDetailHref(videoId)}${clipQuery}`);
@@ -73,7 +72,6 @@ export default async function VideoDetailPage({
 	const relatedListing = await getVideoListing(locale, {
 		topicId: detail.topicId ?? undefined,
 		videoType: detail.videoType,
-		excludeTopicId: SHORT_FILMS_TOPIC_ID,
 		size: RELATED_VIDEOS_VISIBLE + 4,
 	});
 

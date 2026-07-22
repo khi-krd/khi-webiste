@@ -64,7 +64,7 @@ export function ServiceSectionVideo({
 						src={poster}
 						alt=""
 						fill
-						sizes="(max-width: 1024px) 100vw, 70vw"
+						sizes="100vw"
 						className="object-cover brightness-[0.85] contrast-[1.1] saturate-[0.72] transition-[filter,transform] duration-500 group-fine:scale-[1.02] group-fine:brightness-[0.92] motion-reduce:transition-none motion-reduce:group-fine:scale-100"
 					/>
 				) : null}

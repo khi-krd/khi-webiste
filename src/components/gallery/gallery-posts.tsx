@@ -40,14 +40,7 @@ type GalleryPostsProps = {
 
 const sliceEase = "ease-[cubic-bezier(0.22,1,0.36,1)]";
 
-function PostRow({
-	post,
-	index,
-}: {
-	post: GalleryPostWithMeta;
-	index: number;
-}) {
-	const indexLabel = String(index + 1).padStart(2, "0");
+function PostRow({ post }: { post: GalleryPostWithMeta }) {
 	const year = post.publishmentDate.slice(0, 4);
 	const stripItems = post.album.filter((item) => item.imageUrl).slice(0, 4);
 
@@ -57,8 +50,6 @@ function PostRow({
 				<GalleryRevealItem>
 					<p className="label flex flex-wrap items-center gap-2 font-medium">
 						<span aria-hidden="true">{"//"}</span>
-						<span>{indexLabel}</span>
-						<span aria-hidden="true">·</span>
 						<span>{post.typeLabel}</span>
 						<span aria-hidden="true">·</span>
 						<span>{post.photosLabel}</span>
@@ -150,15 +141,12 @@ export function GalleryPosts({
 					homeInsetClass,
 				)}
 			>
-				<div className="flex items-baseline justify-between gap-4 border-b border-primary-foreground/20 pb-5">
+				<div className="border-b border-primary-foreground/20 pb-5">
 					<p className="label font-medium text-primary-foreground/70">
 						<span aria-hidden="true" className="me-2">
 							{"//"}
 						</span>
 						{eyebrow}
-					</p>
-					<p className="label text-primary-foreground/70" aria-hidden="true">
-						{String(totalCount).padStart(2, "0")}
 					</p>
 				</div>
 				<h2 id="gallery-posts-heading" className="display-title mt-8">
@@ -182,7 +170,7 @@ export function GalleryPosts({
 				) : (
 					<div>
 						{posts.map((post, index) => (
-							<PostRow key={post.id} post={post} index={indexOffset + index} />
+							<PostRow key={post.id} post={post} />
 						))}
 					</div>
 				)}

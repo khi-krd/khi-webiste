@@ -4,7 +4,7 @@ import { ServiceLayoutShell } from "@/components/services/service-layout-shell";
 import { ServiceMediaGallery } from "@/components/services/service-media-gallery";
 
 export function BentoLayout({ service, title, body }: ServiceLayoutProps) {
-	const gallery = buildServiceGallery(service, "feature");
+	const gallery = buildServiceGallery(service);
 
 	return (
 		<ServiceLayoutShell
@@ -17,7 +17,6 @@ export function BentoLayout({ service, title, body }: ServiceLayoutProps) {
 					defaultIndex={gallery.defaultIndex}
 					title={title}
 					mainAspectRatio="4/3"
-					mainClassName="max-w-3xl"
 				/>
 			}
 		/>

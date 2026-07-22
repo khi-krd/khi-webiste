@@ -13,10 +13,12 @@ import {
 } from "@/components/video/video-poster-card";
 import { getVideoListing } from "@/lib/api/videos";
 import { homeInsetClass } from "@/lib/layout";
-import { SHORT_FILMS_TOPIC_ID } from "@/lib/mock/videos";
 import { cn } from "@/lib/utils";
 import { formatDuration } from "@/lib/video/format";
-import { shortFilmDetailHref } from "@/lib/video/resolve";
+import {
+	SHORT_FILM_LISTING_FILTERS,
+	shortFilmDetailHref,
+} from "@/lib/video/resolve";
 import type { ResolvedVideoCard } from "@/types/video";
 
 /** Enough posters for a dense 2–3 row shelf on common breakpoints. */
@@ -28,6 +30,7 @@ function toPoster(card: ResolvedVideoCard): VideoPosterCardProps {
 		title: card.title,
 		subtitle: card.subtitle,
 		coverUrl: card.coverUrl,
+		previewVideoUrl: card.previewVideoUrl,
 		durationLabel: formatDuration(card.durationSeconds),
 		href: shortFilmDetailHref(card.id),
 		dark: true,
@@ -42,7 +45,7 @@ export async function VideoShortFilmsPromo() {
 	const t = await getTranslations("Video");
 
 	const listing = await getVideoListing(locale, {
-		topicId: SHORT_FILMS_TOPIC_ID,
+		...SHORT_FILM_LISTING_FILTERS,
 		size: 100,
 	});
 	const shortFilms = listing.items.slice(0, PREVIEW_COUNT);

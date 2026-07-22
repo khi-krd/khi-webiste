@@ -1,34 +1,27 @@
 "use client";
 
 import { PlayIcon } from "@heroicons/react/24/solid";
-import { motion, useReducedMotion } from "motion/react";
+import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 import NextImage from "next/image";
-import { useState } from "react";
+import { useCallback, useEffect, useId, useState } from "react";
 import { ServiceFeatureImage } from "@/components/services/service-feature-image";
-import type { GallerySlide } from "@/components/services/service-gallery-slides";
+import {
+	type GallerySlide,
+	slideKey,
+} from "@/components/services/service-gallery-slides";
 import { ServiceSectionVideo } from "@/components/services/service-section-video";
 import { cn } from "@/lib/utils";
-
-type ThumbnailVariant = "default" | "large" | "compact";
-
-const thumbGridClass: Record<ThumbnailVariant, string> = {
-	default:
-		"mt-4 flex gap-2 overflow-x-auto px-0.5 pb-1 sm:grid sm:grid-cols-5 sm:gap-3 sm:overflow-visible sm:pb-0 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden",
-	large:
-		"mt-4 flex gap-2.5 overflow-x-auto px-0.5 pb-1 sm:grid sm:grid-cols-5 sm:gap-3 sm:overflow-visible sm:pb-0 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden",
-	compact:
-		"mt-4 flex gap-2 overflow-x-auto px-0.5 pb-1 sm:grid sm:grid-cols-5 sm:gap-2.5 sm:overflow-visible sm:pb-0 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden",
-};
 
 type ServiceMediaGalleryProps = {
 	slides: GallerySlide[];
 	title: string;
 	defaultIndex?: number;
 	mainAspectRatio?: string;
-	thumbVariant?: ThumbnailVariant;
 	mainClassName?: string;
 	className?: string;
 };
+
+const revealEase = [0.22, 1, 0.36, 1] as const;
 
 function slidePreviewSrc(slide: GallerySlide): string {
 	if (slide.type === "image") return slide.media.url;
@@ -40,9 +33,8 @@ function slidePreviewAlt(slide: GallerySlide, title: string): string {
 	return slide.video.posterAlt ?? title;
 }
 
-function slideKey(slide: GallerySlide): string {
-	if (slide.type === "image") return slide.media.url;
-	return slide.video.src;
+function slideKindLabel(slide: GallerySlide): string {
+	return slide.type === "video" ? "Video" : "Image";
 }
 
 function formatAspectRatio(ratio: string): string {
@@ -54,77 +46,115 @@ export function ServiceMediaGallery({
 	title,
 	defaultIndex = 0,
 	mainAspectRatio = "16/9",
-	thumbVariant = "default",
 	mainClassName,
 	className,
 }: ServiceMediaGalleryProps) {
 	const reduceMotion = useReducedMotion();
-	const [activeIndex, setActiveIndex] = useState(defaultIndex);
+	const galleryId = useId();
+	const safeDefaultIndex =
+		slides.length > 0 ? Math.min(defaultIndex, slides.length - 1) : 0;
+	const [activeIndex, setActiveIndex] = useState(safeDefaultIndex);
+
 	const active = slides[activeIndex] ?? slides[0];
 	const aspect = formatAspectRatio(mainAspectRatio);
+	const hasMultipleSlides = slides.length > 1;
+
+	useEffect(() => {
+		setActiveIndex((current) => {
+			if (slides.length === 0) return 0;
+			return Math.min(current, slides.length - 1);
+		});
+	}, [slides.length]);
+
+	const goTo = useCallback(
+		(index: number) => {
+			if (index < 0 || index >= slides.length) return;
+			setActiveIndex(index);
+		},
+		[slides.length],
+	);
 
 	return (
-		<div className={cn("min-w-0", className)}>
+		<div className={cn("flex w-full min-w-0 flex-col", className)}>
 			<div
 				className={cn(
-					"relative overflow-hidden border border-border bg-surface",
+					"relative w-full overflow-hidden border border-border bg-surface",
 					mainClassName,
 				)}
+				role="tabpanel"
+				id={`${galleryId}-panel`}
+				aria-labelledby={`${galleryId}-tab-${activeIndex}`}
 			>
-				{active?.type === "video" ? (
-					<ServiceSectionVideo
-						key={`video-${activeIndex}`}
-						video={active.video}
-						title={title}
-						aspectRatio={aspect}
-						compact
-						className="border-0"
-					/>
-				) : active ? (
-					<motion.div
-						key={`image-${activeIndex}-${active.media.url}`}
-						initial={reduceMotion ? false : { opacity: 0.88 }}
-						animate={{ opacity: 1 }}
-						transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
-					>
-						<ServiceFeatureImage
-							src={active.media.url}
-							alt={active.media.alt ?? title}
-							aspectRatio={mainAspectRatio}
-							sizes="(max-width: 1024px) 100vw, 65vw"
-							className="border-0"
-						/>
-					</motion.div>
-				) : null}
+				<AnimatePresence mode="wait" initial={false}>
+					{active?.type === "video" ? (
+						<motion.div
+							key={`video-${activeIndex}-${slideKey(active)}`}
+							className="w-full"
+							initial={reduceMotion ? false : { opacity: 0.9 }}
+							animate={{ opacity: 1 }}
+							exit={reduceMotion ? undefined : { opacity: 0.92 }}
+							transition={{ duration: 0.28, ease: revealEase }}
+						>
+							<ServiceSectionVideo
+								video={active.video}
+								title={title}
+								aspectRatio={aspect}
+								compact
+								className="w-full border-0"
+							/>
+						</motion.div>
+					) : active ? (
+						<motion.div
+							key={`image-${activeIndex}-${active.media.url}`}
+							className="w-full"
+							initial={reduceMotion ? false : { opacity: 0.9 }}
+							animate={{ opacity: 1 }}
+							exit={reduceMotion ? undefined : { opacity: 0.92 }}
+							transition={{ duration: 0.28, ease: revealEase }}
+						>
+							<ServiceFeatureImage
+								src={active.media.url}
+								alt={active.media.alt ?? title}
+								aspectRatio={mainAspectRatio}
+								sizes="100vw"
+								className="w-full border-0"
+							/>
+						</motion.div>
+					) : null}
+				</AnimatePresence>
 			</div>
 
-			{slides.length > 0 && (
-				<ul className={thumbGridClass[thumbVariant]}>
+			{hasMultipleSlides && (
+				<ul
+					className="mt-4 grid w-full grid-cols-3 gap-2 sm:grid-cols-4 sm:gap-3 lg:grid-cols-6"
+					role="tablist"
+					aria-label={`${title} media`}
+				>
 					{slides.map((slide, slideIndex) => {
 						const isActive = activeIndex === slideIndex;
 						const previewSrc = slidePreviewSrc(slide);
 						const isVideo = slide.type === "video";
 
 						return (
-							<li
-								key={slideKey(slide)}
-								className="w-[4.75rem] shrink-0 sm:w-auto sm:shrink"
-							>
+							<li key={slideKey(slide)}>
 								<button
 									type="button"
-									onClick={() => setActiveIndex(slideIndex)}
-									aria-pressed={isActive}
-									aria-label={slidePreviewAlt(slide, title)}
+									id={`${galleryId}-tab-${slideIndex}`}
+									role="tab"
+									aria-selected={isActive}
+									aria-controls={`${galleryId}-panel`}
+									onClick={() => goTo(slideIndex)}
+									aria-label={`${slideKindLabel(slide)}: ${slidePreviewAlt(slide, title)}`}
 									className={cn(
 										"group relative block w-full overflow-hidden border bg-surface text-start transition-[border-color,opacity,transform] duration-200",
 										isActive
-											? "border-foreground opacity-100"
-											: "border-border opacity-80 fine-hover:border-border-strong fine-hover:opacity-100",
+											? "border-foreground opacity-100 ring-1 ring-inset ring-foreground/80"
+											: "border-border opacity-72 fine-hover:border-border-strong fine-hover:opacity-100",
 										"focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-foreground",
 									)}
 								>
 									<span
-										className="relative block aspect-[4/3] w-full"
+										className="relative block aspect-4/3 w-full"
 										aria-hidden
 									>
 										{previewSrc ? (
@@ -132,28 +162,32 @@ export function ServiceMediaGallery({
 												src={previewSrc}
 												alt=""
 												fill
-												sizes="(max-width: 640px) 50vw, 20vw"
+												sizes="(max-width: 640px) 30vw, 12vw"
 												className={cn(
-													"object-cover brightness-[0.85] contrast-[1.08] saturate-[0.7]",
-													"transition-[filter] duration-300",
-													isActive &&
-														"brightness-[0.92] contrast-[1.1] saturate-[0.76]",
+													"object-cover brightness-[0.85] contrast-[1.08] saturate-[0.7] transition-[filter,transform] duration-500",
+													!isActive &&
+														"group-fine:scale-[1.03] group-fine:brightness-[0.92] group-fine:saturate-[0.78]",
+													isActive && "brightness-[0.95] saturate-[0.8]",
 												)}
 											/>
-										) : null}
+										) : (
+											<span className="absolute inset-0 bg-sunken" />
+										)}
+
 										{isVideo && (
-											<span className="pointer-events-none absolute inset-0 flex items-center justify-center bg-foreground/20">
-												<span className="inline-flex size-7 items-center justify-center bg-foreground/75 text-white sm:size-8">
+											<span className="pointer-events-none absolute inset-x-0 top-0 flex justify-end bg-linear-to-b from-foreground/55 to-transparent px-1.5 py-1">
+												<span className="inline-flex size-5 items-center justify-center bg-foreground/75 text-white">
 													<PlayIcon
-														className="size-3 translate-x-0.5 sm:size-3.5"
+														className="size-2.5 translate-x-px"
 														aria-hidden
 													/>
 												</span>
 											</span>
 										)}
+
 										{isActive && (
 											<span
-												className="pointer-events-none absolute inset-0 ring-1 ring-inset ring-foreground/80"
+												className="pointer-events-none absolute inset-0 ring-1 ring-inset ring-white/35"
 												aria-hidden
 											/>
 										)}

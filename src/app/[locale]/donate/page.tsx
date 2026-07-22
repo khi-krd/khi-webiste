@@ -11,11 +11,7 @@ import {
 	getSupportersImage,
 	MATERIAL_TYPE_IDS,
 } from "@/lib/mock/donate";
-import {
-	getDonateHeroMediaFromApi,
-	getDonatePaymentDetailsFromApi,
-	getDonateTypeItemsFromApi,
-} from "@/lib/api/donations";
+import { getDonatePageDataFromApi } from "@/lib/api/donations";
 
 export async function generateMetadata({
 	params,
@@ -40,12 +36,14 @@ export default async function DonatePage({
 	setRequestLocale(locale);
 
 	const t = await getTranslations("Donate");
-	const [heroMedia, typeItems, payment] = await Promise.all([
-		getDonateHeroMediaFromApi(),
-		getDonateTypeItemsFromApi(),
-		getDonatePaymentDetailsFromApi(),
-	]);
-	const supportersImage = getSupportersImage();
+	const { heroMedia, typeItems, payment, visibility } =
+		await getDonatePageDataFromApi();
+	const supportersCtaHref = visibility.archive
+		? "#archive-form"
+		: visibility.financial
+			? "#financial-form"
+			: null;
+	const supportersImage = getSupportersImage(supportersCtaHref);
 	const amountPresets = getAmountPresets();
 
 	return (
@@ -59,18 +57,22 @@ export default async function DonatePage({
 				intro={t("hero.intro")}
 				ctaArchive={t("hero.ctaArchive")}
 				ctaFinancial={t("hero.ctaFinancial")}
+				showArchiveCta={visibility.archive}
+				showFinancialCta={visibility.financial}
 			/>
 
-			<DonateTypesGrid
-				eyebrow={t("hero.eyebrow")}
-				heading={t("types.heading")}
-				description={t("types.description")}
-				items={typeItems}
-				getItemCopy={(id) => ({
-					title: t(`types.items.${id}.title`),
-					description: t(`types.items.${id}.description`),
-				})}
-			/>
+			{typeItems.length > 0 ? (
+				<DonateTypesGrid
+					eyebrow={t("hero.eyebrow")}
+					heading={t("types.heading")}
+					description={t("types.description")}
+					items={typeItems}
+					getItemCopy={(id) => ({
+						title: t(`types.items.${id}.title`),
+						description: t(`types.items.${id}.description`),
+					})}
+				/>
+			) : null}
 
 			<DonateParticipation
 				heading={t("participate.heading")}
@@ -86,9 +88,13 @@ export default async function DonatePage({
 				}}
 				body={t("participate.body")}
 				closing={t("participate.closing")}
+				showArchive={visibility.archive}
+				showFinancial={visibility.financial}
 			/>
 
 			<DonateFormsSection
+				showArchive={visibility.archive}
+				showFinancial={visibility.financial}
 				eyebrow={t("forms.sectionEyebrow")}
 				heading={t("forms.sectionHeading")}
 				description={t("forms.sectionDescription")}

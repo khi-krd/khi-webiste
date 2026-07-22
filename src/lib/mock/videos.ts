@@ -26,6 +26,8 @@ type VideoSeed = Partial<Video> & Pick<Video, "id" | "videoType" | "createdAt">;
 
 function makeVideo(seed: VideoSeed): Video {
 	const base: Video = {
+		featured: false,
+		featuredOrder: null,
 		albumOfMemories: false,
 		ckbCoverUrl: null,
 		kmrCoverUrl: null,
@@ -69,6 +71,8 @@ const RAW_VIDEOS: Video[] = [
 	makeVideo({
 		id: 1,
 		videoType: "FILM",
+		featured: true,
+		featuredOrder: 1,
 		topicId: SHORT_FILMS_TOPIC_ID,
 		ckbCoverUrl: "/menu/4.jpg",
 		kmrCoverUrl: "/menu/4.jpg",
@@ -347,6 +351,8 @@ const RAW_VIDEOS: Video[] = [
 	makeVideo({
 		id: 5,
 		videoType: "VIDEO_CLIP",
+		featured: true,
+		featuredOrder: 2,
 		topicId: 3,
 		ckbCoverUrl: "/menu/7.jpg",
 		kmrCoverUrl: "/menu/7.jpg",

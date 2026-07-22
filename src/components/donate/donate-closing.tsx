@@ -31,7 +31,7 @@ type DonateClosingProps = {
 		title: string;
 		description: string;
 		cta: string;
-		image: { url: string; href: string };
+		image: { url: string; href: string | null };
 	};
 	payment: DonatePaymentDetails;
 	fibCopy: { label: string; copy: string; copied: string };
@@ -65,17 +65,19 @@ export function DonateClosing({
 						<p className="mt-3 text-body leading-relaxed text-primary-foreground/82">
 							{supporters.description}
 						</p>
-						<Link
-							href={supporters.image.href}
-							variant="nav"
-							className={supportersCtaClass}
-						>
-							<span className="relative z-1">{supporters.cta}</span>
-							<DirectionalIcon
-								icon={ArrowRightIcon}
-								className="relative z-1 size-4"
-							/>
-						</Link>
+						{supporters.image.href ? (
+							<Link
+								href={supporters.image.href}
+								variant="nav"
+								className={supportersCtaClass}
+							>
+								<span className="relative z-1">{supporters.cta}</span>
+								<DirectionalIcon
+									icon={ArrowRightIcon}
+									className="relative z-1 size-4"
+								/>
+							</Link>
+						) : null}
 					</div>
 				</header>
 			</ScrollRevealBlock>

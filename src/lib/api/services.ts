@@ -1,12 +1,12 @@
 import "server-only";
 import {
-	apiFetch,
+	apiFetchPage,
 	BULK_FETCH_SIZE,
 	DEFAULT_REVALIDATE,
 } from "@/lib/api/client";
 import { getApiBaseUrl, shouldUseMockData } from "@/lib/api/config";
-import { applyMockPolicy, applyMockPolicyNullable } from "@/lib/api/mock-policy";
 import { getAboutPartners } from "@/lib/api/about";
+import { normalizeServiceRecord } from "@/lib/api/normalize";
 import {
 	getServices as getMockServices,
 	getServicesBottomCards,
@@ -17,10 +17,14 @@ import type { PartnerItem } from "@/lib/mock/about";
 import {
 	buildApiOnlyServiceSections,
 	type MergedServiceSection,
-	mergeServiceSections,
 	resolveServicesHeroMedia,
 } from "@/lib/services/resolve";
-import { type Service, ServicesPageSchema } from "@/types/service";
+import {
+	filterContentServiceRecords,
+	findServicesPageHeroRecord,
+	serviceRecordToPageSettings,
+} from "@/lib/api/services-page";
+import { type Service, ServiceSchema } from "@/types/service";
 
 const SERVICES_ENDPOINT = "/api/v1/services/all";
 const SERVICES_TAG = "services";
@@ -30,14 +34,30 @@ export async function getServiceRecords(): Promise<Service[]> {
 		return [];
 	}
 
-	const page = await apiFetch(SERVICES_ENDPOINT, {
-		schema: ServicesPageSchema,
+	const page = await apiFetchPage(SERVICES_ENDPOINT, {
+		itemSchema: ServiceSchema,
 		tags: [SERVICES_TAG],
 		revalidate: DEFAULT_REVALIDATE,
 		searchParams: { page: 0, size: BULK_FETCH_SIZE },
+		normalizeItem: normalizeServiceRecord,
 	});
 
-	return page?.content ?? [];
+	if (!page?.content.length) {
+		return [];
+	}
+
+	return page.content
+		.filter((record) => record.active !== false)
+		.sort((a, b) => {
+			const ao =
+				typeof a.sortOrder === "number" ? a.sortOrder : Number.POSITIVE_INFINITY;
+			const bo =
+				typeof b.sortOrder === "number" ? b.sortOrder : Number.POSITIVE_INFINITY;
+			if (ao !== bo) return ao - bo;
+			const ap = a.publishedAt ? Date.parse(a.publishedAt) : 0;
+			const bp = b.publishedAt ? Date.parse(b.publishedAt) : 0;
+			return bp - ap;
+		});
 }
 
 function mockOnlyServiceSections(
@@ -55,62 +75,77 @@ function mockOnlyServiceSections(
 export async function getMergedServiceSections(
 	locale: string,
 ): Promise<MergedServiceSection[]> {
+	if (shouldUseMockData()) {
+		return mockOnlyServiceSections(locale);
+	}
+
 	const records = await getServiceRecords();
+	const contentRecords = filterContentServiceRecords(records);
 
-	if (shouldUseMockData() || !getApiBaseUrl()) {
-		if (records.length === 0) {
-			return mockOnlyServiceSections(locale);
+	if (contentRecords.length > 0) {
+		const apiSections = buildApiOnlyServiceSections(locale, contentRecords, {
+			useMockMediaFallback: true,
+		});
+		if (apiSections.length > 0) {
+			return apiSections;
 		}
-
-		return mergeServiceSections(locale, getMockServices(locale), records);
 	}
 
-	if (records.length === 0) {
-		return [];
-	}
-
-	return buildApiOnlyServiceSections(locale, records);
+	// API empty or unavailable — local dev fallback only
+	return mockOnlyServiceSections(locale);
 }
 
 export async function getServicesHeroMediaFromApi(locale: string) {
 	const records = await getServiceRecords();
+	const heroRecord = findServicesPageHeroRecord(records);
+	if (heroRecord) {
+		const settings = serviceRecordToPageSettings(heroRecord);
+		const url = settings.heroImageUrl?.trim();
+		if (url) {
+			const isCkb = locale === "ckb";
+			const title = isCkb
+				? settings.titleCkb?.trim()
+				: settings.titleKmr?.trim();
+			return { url, alt: title ?? "" };
+		}
+	}
+
 	if (records.length > 0) {
-		const apiMedia = resolveServicesHeroMedia(records, locale, {
-			url: "",
-			alt: "",
-		});
+		const apiMedia = resolveServicesHeroMedia(
+			filterContentServiceRecords(records),
+			locale,
+			{
+				url: "",
+				alt: "",
+			},
+		);
 		if (apiMedia.url) {
 			return apiMedia;
 		}
 	}
 
-	return (
-		applyMockPolicyNullable({
-			apiValue: null,
-			getMockValue: () => getServicesHeroMedia(),
-		}) ?? { url: "", alt: "" }
-	);
+	return getServicesHeroMedia();
 }
 
 export async function getServicePartnerCards(
 	locale: string,
 ): Promise<PartnerItem[]> {
 	const partners = await getAboutPartners(locale);
-	const records = await getServiceRecords();
-	const merged =
-		shouldUseMockData() || !getApiBaseUrl()
-			? mergeServiceSections(locale, getMockServices(locale), records)
-			: buildApiOnlyServiceSections(locale, records);
+	const records = filterContentServiceRecords(await getServiceRecords());
+	const sections =
+		records.length > 0
+			? buildApiOnlyServiceSections(locale, records, {
+					useMockMediaFallback: true,
+				})
+			: shouldUseMockData()
+				? mockOnlyServiceSections(locale)
+				: [];
 	const partnerIds = new Set(
-		merged.flatMap((section) => section.partnerIds),
+		sections.flatMap((section) => section.partnerIds),
 	);
 
 	if (partnerIds.size === 0) {
-		return applyMockPolicy({
-			context: "global",
-			apiItems: [],
-			getMockItems: () => getServicesBottomCards(locale),
-		});
+		return getServicesBottomCards(locale);
 	}
 
 	return partners.filter((partner) => partnerIds.has(Number(partner.id)));

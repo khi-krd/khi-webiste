@@ -298,12 +298,96 @@ function normalizeVideoClip(raw: unknown): unknown {
 	};
 }
 
+type NormalizedVideoSource = {
+	url: string;
+	main: boolean;
+	coverUrl: string | null;
+};
+
+function normalizeVideoSource(raw: unknown): NormalizedVideoSource | null {
+	const source = asRecord(raw);
+	if (!source) {
+		return null;
+	}
+
+	const url = asOptionalString(source.url);
+	if (!url) {
+		return null;
+	}
+
+	return {
+		url,
+		main: source.main === true,
+		coverUrl: asOptionalString(
+			source.thumbnailUrl ??
+				source.thumbnail_url ??
+				source.coverUrl ??
+				source.cover_url ??
+				source.posterUrl ??
+				source.poster_url,
+		),
+	};
+}
+
+/** FILM records may send `videoSources` instead of `videoClipItems`. */
+function orderVideoSources(
+	sources: NormalizedVideoSource[],
+): NormalizedVideoSource[] {
+	const mainIndex = sources.findIndex((source) => source.main);
+	if (mainIndex <= 0) {
+		return sources;
+	}
+
+	return [
+		sources[mainIndex],
+		...sources.slice(0, mainIndex),
+		...sources.slice(mainIndex + 1),
+	];
+}
+
+function videoSourcesToClipItems(sources: NormalizedVideoSource[]): unknown[] {
+	return orderVideoSources(sources).map((source, index) =>
+		normalizeVideoClip({
+			clipNumber: index + 1,
+			url: source.url,
+			coverUrl: source.coverUrl,
+		}),
+	);
+}
+
 export function normalizeVideoRecord(raw: unknown): unknown {
 	const record = asRecord(raw);
 	if (!record) return raw;
 
+	const rawVideoSources = record.videoSources ?? record.video_sources;
+	const videoSources = Array.isArray(rawVideoSources)
+		? rawVideoSources
+				.map(normalizeVideoSource)
+				.filter((source): source is NormalizedVideoSource => source != null)
+		: [];
+
+	const normalizedClipItems: unknown = Array.isArray(record.videoClipItems)
+		? record.videoClipItems.map(normalizeVideoClip)
+		: record.videoClipItems;
+
+	const hasClipItems =
+		Array.isArray(normalizedClipItems) && normalizedClipItems.length > 0;
+
+	const videoClipItems =
+		!hasClipItems && videoSources.length > 0
+			? videoSourcesToClipItems(videoSources)
+			: normalizedClipItems;
+
+	const mainSourceUrl =
+		videoSources.find((source) => source.main)?.url ??
+		videoSources[0]?.url ??
+		null;
+
 	return {
 		...record,
+		featured: record.featured === true,
+		featuredOrder:
+			record.featuredOrder ?? record.featured_order ?? null,
 		ckbContent:
 			record.ckbContent != null
 				? normalizeVideoContent(record.ckbContent)
@@ -316,9 +400,9 @@ export function normalizeVideoRecord(raw: unknown): unknown {
 			record.enContent != null
 				? normalizeVideoContent(record.enContent)
 				: record.enContent,
-		videoClipItems: Array.isArray(record.videoClipItems)
-			? record.videoClipItems.map(normalizeVideoClip)
-			: record.videoClipItems,
+		sourceUrl:
+			asOptionalString(record.sourceUrl ?? record.source_url) ?? mainSourceUrl,
+		videoClipItems,
 		castMembers: Array.isArray(record.castMembers)
 			? record.castMembers.map(normalizeVideoCastMember)
 			: [],
@@ -353,6 +437,80 @@ export function normalizeImageCollectionRecord(raw: unknown): unknown {
 	return {
 		...withTags,
 		imageAlbum,
+	};
+}
+
+function coerceNumberArray(raw: unknown): number[] {
+	if (!Array.isArray(raw)) {
+		return [];
+	}
+
+	return raw
+		.map((value) => Number(value))
+		.filter((value) => Number.isFinite(value));
+}
+
+function normalizeGalleryMediaItem(raw: unknown): UnknownRecord | null {
+	const item = asRecord(raw);
+	if (!item) {
+		return null;
+	}
+
+	const url =
+		(typeof item.url === "string" ? item.url.trim() : "") ||
+		(typeof item.mediaUrl === "string" ? item.mediaUrl.trim() : "") ||
+		(typeof item.media_url === "string" ? item.media_url.trim() : "");
+	if (!url) {
+		return null;
+	}
+
+	const posterRaw =
+		item.posterUrl ?? item.poster_url ?? item.thumbnailUrl ?? item.thumbnail_url;
+
+	return {
+		...item,
+		type: item.type ?? item.mediaType ?? item.media_type ?? "IMAGE",
+		url,
+		posterUrl:
+			typeof posterRaw === "string" ? posterRaw.trim() || null : null,
+		alt: typeof item.alt === "string" ? item.alt.trim() || null : null,
+	};
+}
+
+export function normalizeServiceRecord(raw: unknown): unknown {
+	const record = asRecord(raw);
+	if (!record) {
+		return raw;
+	}
+
+	const gallerySource = record.galleryMedia ?? record.gallery_media;
+	const galleryMedia = Array.isArray(gallerySource)
+		? gallerySource
+				.map(normalizeGalleryMediaItem)
+				.filter((item): item is UnknownRecord => item != null)
+		: [];
+
+	return {
+		...record,
+		active: record.active ?? true,
+		contents: Array.isArray(record.contents) ? record.contents : [],
+		galleryMedia,
+		featureImageUrls: coerceStringArray(
+			record.featureImageUrls ?? record.feature_image_urls,
+		).filter(Boolean),
+		thumbnailUrls: coerceStringArray(
+			record.thumbnailUrls ?? record.thumbnail_urls,
+		).filter(Boolean),
+		partnerIds: coerceNumberArray(record.partnerIds),
+		sortOrder: record.sortOrder ?? record.sort_order ?? null,
+		navAnchorId: record.navAnchorId ?? record.nav_anchor_id ?? null,
+		heroVideoUrl: record.heroVideoUrl ?? record.hero_video_url ?? null,
+		heroPosterUrl: record.heroPosterUrl ?? record.hero_poster_url ?? null,
+		serviceType: record.serviceType ?? record.service_type ?? null,
+		layoutType: record.layoutType ?? record.layout_type ?? null,
+		publishedAt: record.publishedAt ?? record.published_at ?? null,
+		createdAt: record.createdAt ?? record.created_at ?? null,
+		updatedAt: record.updatedAt ?? record.updated_at ?? null,
 	};
 }
 

@@ -126,10 +126,10 @@ export function getAmountPresets(): AmountPreset[] {
 	];
 }
 
-export function getSupportersImage() {
+export function getSupportersImage(href?: string | null) {
 	return {
 		url: DONATE_IMAGES.supporters,
-		href: "#archive-form",
+		href: href ?? null,
 	};
 }
 

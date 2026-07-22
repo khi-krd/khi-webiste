@@ -4,7 +4,7 @@ import { ServiceLayoutShell } from "@/components/services/service-layout-shell";
 import { ServiceMediaGallery } from "@/components/services/service-media-gallery";
 
 export function CinemaLayout({ service, title, body }: ServiceLayoutProps) {
-	const gallery = buildServiceGallery(service, "video");
+	const gallery = buildServiceGallery(service);
 
 	return (
 		<ServiceLayoutShell

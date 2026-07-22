@@ -1,10 +1,10 @@
 "use client";
 
 import { FilmIcon } from "@heroicons/react/24/outline";
+import dynamic from "next/dynamic";
 import NextImage from "next/image";
 import { type ReactNode, useState } from "react";
-import { VideoPlayer } from "@/components/ui/video-player";
-import { classifyPlayableSource } from "@/components/ui/video-player/video-source";
+import { classifyPlayableSource } from "@/lib/video/source";
 import {
 	FilmSceneList,
 	type FilmSceneListLabels,
@@ -15,6 +15,12 @@ import {
 } from "@/components/video/video-clip-list";
 import { cn } from "@/lib/utils";
 import type { ResolvedVideoClip, VideoPlayerKind } from "@/types/video";
+
+const VideoPlayer = dynamic(
+	() =>
+		import("@/components/ui/video-player").then((mod) => mod.VideoPlayer),
+	{ ssr: false },
+);
 
 type VideoPlayerFrameProps = {
 	playerKind: VideoPlayerKind;
@@ -151,14 +157,27 @@ export function VideoPlayerFrame({
 
 	if (surfaceKind === "vidstack" && surfaceSrc) {
 		surface = (
-			<VideoPlayer
-				key={`clip-${selectedClipNumber ?? "single"}-${surfaceSrc}`}
-				src={surfaceSrc}
-				title={title}
-				poster={surfacePoster}
-				variant="full"
-				autoPlay={isGallery && autoPlaySelected}
-			/>
+			<PlayerSurface cinema={isCinema}>
+				{surfacePoster ? (
+					<NextImage
+						src={surfacePoster}
+						alt=""
+						fill
+						sizes="(max-width: 1024px) 100vw, 60vw"
+						className="object-cover"
+						priority
+					/>
+				) : null}
+				<VideoPlayer
+					key={`clip-${selectedClipNumber ?? "single"}-${surfaceSrc}`}
+					src={surfaceSrc}
+					title={title}
+					poster={surfacePoster}
+					variant="full"
+					autoPlay={isGallery && autoPlaySelected}
+					className="absolute inset-0 z-1 size-full"
+				/>
+			</PlayerSurface>
 		);
 	} else if (surfaceKind === "iframe" && surfaceSrc) {
 		surface = (
@@ -192,6 +211,7 @@ export function VideoPlayerFrame({
 					activeSceneNumber={activeClip.clipNumber}
 					onSelect={handleClipSelect}
 					labels={sceneLabels}
+					fallbackCoverUrl={poster}
 					className="mt-6 sm:mt-8"
 				/>
 			) : clipLabels ? (
@@ -200,6 +220,7 @@ export function VideoPlayerFrame({
 					activeClipNumber={activeClip.clipNumber}
 					onSelect={handleClipSelect}
 					labels={clipLabels}
+					fallbackCoverUrl={poster}
 					className="mt-6 sm:mt-8"
 				/>
 			) : null

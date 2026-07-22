@@ -9,6 +9,7 @@ import { VideoFilterBar } from "@/components/video/video-filter-bar";
 import { VideoPagination } from "@/components/video/video-pagination";
 import { homeInsetClass } from "@/lib/layout";
 import { cn } from "@/lib/utils";
+import { cardIdentity } from "@/lib/video/filter";
 import { formatDuration } from "@/lib/video/format";
 import {
 	isShortFilm,
@@ -27,6 +28,7 @@ type VideoShellProps = {
 	title: string;
 	cards: ResolvedVideoCard[];
 	showFeatured?: boolean;
+	featuredLead?: ResolvedVideoCard | null;
 	currentPage: number;
 	totalPages: number;
 	totalElements: number;
@@ -48,6 +50,7 @@ export async function VideoShell({
 	title,
 	cards,
 	showFeatured = false,
+	featuredLead,
 	currentPage,
 	totalPages,
 	totalElements,
@@ -62,13 +65,13 @@ export async function VideoShell({
 	className,
 }: VideoShellProps) {
 	const t = await getTranslations("Video");
-	const isEmpty = cards.length === 0;
 
 	const toCardProps = (card: ResolvedVideoCard): VideoCardProps => ({
 		id: card.id,
 		title: card.title,
 		subtitle: card.subtitle,
 		coverUrl: card.coverUrl,
+		previewVideoUrl: card.previewVideoUrl,
 		hoverCoverUrl: card.hoverCoverUrl,
 		videoType: card.videoType,
 		typeLabel: t(`typeBadge.${card.videoType}`),
@@ -77,15 +80,25 @@ export async function VideoShell({
 		yearLabel: card.year != null ? String(card.year) : null,
 		memories: card.albumOfMemories,
 		memoriesLabel: card.albumOfMemories ? t("card.memoriesBadge") : null,
-		href: isShortFilm(card.topicId)
+		href: isShortFilm(card)
 			? shortFilmDetailHref(card.id)
 			: videoDetailHref(card.id, card.clipNumber),
 	});
 
-	const cardModels = cards.map(toCardProps);
-	const leadCard = showFeatured ? cardModels[0] : undefined;
-	const gridCards = showFeatured ? cards.slice(1) : cards;
-	const gridModels = leadCard ? cardModels.slice(1) : cardModels;
+	const leadSource =
+		showFeatured && featuredLead
+			? featuredLead
+			: showFeatured
+				? cards[0]
+				: undefined;
+	const leadCard = leadSource ? toCardProps(leadSource) : undefined;
+	const leadKey = leadSource ? cardIdentity(leadSource) : null;
+	const gridCards =
+		leadKey != null
+			? cards.filter((card) => cardIdentity(card) !== leadKey)
+			: cards;
+	const gridModels = gridCards.map(toCardProps);
+	const isEmpty = gridModels.length === 0 && !leadCard;
 	/** Remount the reveal grid on page/filter changes so new cards aren't stuck at opacity 0 (`once: true`). */
 	const gridKey = [
 		currentPage,

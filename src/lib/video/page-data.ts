@@ -1,4 +1,5 @@
 import {
+	getFeaturedVideoLead,
 	getVideoListing,
 	getVideoTopics,
 	VIDEO_GRID_PAGE_SIZE,
@@ -36,8 +37,12 @@ export async function loadVideoPageData(
 	const activeMemories = parseVideoMemories(searchParams.memories);
 	const activeQuery = searchParams.q?.trim() || null;
 	const page = Math.max(1, Number.parseInt(searchParams.page ?? "1", 10) || 1);
+	const hasFilters = Boolean(
+		activeType || activeTopicId != null || activeMemories || activeQuery,
+	);
+	const showFeatured = page === 1 && !hasFilters;
 
-	const [listing, topics] = await Promise.all([
+	const [listing, topics, featuredLead] = await Promise.all([
 		getVideoListing(locale, {
 			videoType: activeType,
 			topicId: activeTopicId,
@@ -47,11 +52,8 @@ export async function loadVideoPageData(
 			size: VIDEO_GRID_PAGE_SIZE,
 		}),
 		getVideoTopics(locale),
+		showFeatured ? getFeaturedVideoLead(locale) : Promise.resolve(null),
 	]);
-
-	const hasFilters = Boolean(
-		activeType || activeTopicId != null || activeMemories || activeQuery,
-	);
 
 	return {
 		activeType,
@@ -60,8 +62,8 @@ export async function loadVideoPageData(
 		activeQuery,
 		listing,
 		topics,
-		// Featured bento only leads page 1 of the unfiltered catalogue.
-		showFeatured: page === 1 && !hasFilters,
+		featuredLead,
+		showFeatured,
 		noResultsMessage: hasFilters ? t("grid.noResults") : t("grid.empty"),
 		direction: (locale === "ckb" ? "rtl" : "ltr") as "ltr" | "rtl",
 	};

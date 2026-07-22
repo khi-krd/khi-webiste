@@ -4,6 +4,7 @@ import { PlayIcon } from "@heroicons/react/24/solid";
 import NextImage from "next/image";
 import { cn } from "@/lib/utils";
 import { formatDuration } from "@/lib/video/format";
+import { VideoStillPreview } from "@/components/video/video-still-preview-lazy";
 import type { ResolvedVideoClip } from "@/types/video";
 
 export type FilmSceneListLabels = {
@@ -18,21 +19,20 @@ type FilmSceneListProps = {
 	activeSceneNumber: number;
 	onSelect: (sceneNumber: number) => void;
 	labels: FilmSceneListLabels;
+	fallbackCoverUrl?: string | null;
 	className?: string;
 };
 
 const MEDIA_FILE_PATTERN = /\.(mp4|webm|ogg|ogv|mov|m4v|m3u8|mpd)(\?|#|$)/i;
 
-function padScene(n: number): string {
-	return String(n).padStart(2, "0");
-}
-
 function SceneStill({
 	scene,
 	isActive,
+	fallbackCoverUrl,
 }: {
 	scene: ResolvedVideoClip;
 	isActive: boolean;
+	fallbackCoverUrl?: string | null;
 }) {
 	const mediaClass = cn(
 		"absolute inset-0 size-full object-cover object-center transition-[filter,transform] duration-700 ease-[cubic-bezier(0.22,1,0.36,1)] motion-reduce:transition-none",
@@ -55,26 +55,17 @@ function SceneStill({
 
 	if (scene.url && MEDIA_FILE_PATTERN.test(scene.url)) {
 		return (
-			<video
-				src={`${scene.url}#t=0.5`}
-				muted
-				playsInline
-				preload="metadata"
-				aria-hidden
+			<VideoStillPreview
+				src={scene.url}
+				fallbackCoverUrl={scene.coverUrl ?? fallbackCoverUrl}
+				sizes="(max-width: 640px) 85vw, (max-width: 1024px) 40vw, 28vw"
 				className={mediaClass}
 			/>
 		);
 	}
 
 	return (
-		<div
-			aria-hidden
-			className="flex h-full w-full items-center justify-center bg-primary-foreground/5"
-		>
-			<span className="font-heading text-display font-bold text-primary-foreground/12">
-				{padScene(scene.clipNumber)}
-			</span>
-		</div>
+		<div aria-hidden className="h-full w-full bg-primary-foreground/5" />
 	);
 }
 
@@ -87,6 +78,7 @@ export function FilmSceneList({
 	activeSceneNumber,
 	onSelect,
 	labels,
+	fallbackCoverUrl = null,
 	className,
 }: FilmSceneListProps) {
 	if (scenes.length === 0) {
@@ -95,17 +87,9 @@ export function FilmSceneList({
 
 	return (
 		<section className={cn(className)} aria-label={labels.title}>
-			<div className="flex items-end justify-between gap-4 border-b border-primary-foreground/15 pb-3">
-				<div>
-					<p className="text-label font-medium tracking-[0.14em] text-primary-foreground/50 uppercase">
-						{labels.title}
-					</p>
-				</div>
-				<p
-					dir="ltr"
-					className="shrink-0 text-label tabular-nums text-primary-foreground/40"
-				>
-					{padScene(1)}–{padScene(scenes.length)}
+			<div className="border-b border-primary-foreground/15 pb-3">
+				<p className="text-label font-medium tracking-[0.14em] text-primary-foreground/50 uppercase">
+					{labels.title}
 				</p>
 			</div>
 
@@ -120,7 +104,6 @@ export function FilmSceneList({
 				{scenes.map((scene) => {
 					const isActive = scene.clipNumber === activeSceneNumber;
 					const duration = formatDuration(scene.durationSeconds);
-					const sceneLabel = `${labels.scene} ${padScene(scene.clipNumber)}`;
 
 					return (
 						<li key={scene.clipNumber} className="min-w-0">
@@ -130,8 +113,8 @@ export function FilmSceneList({
 								aria-current={isActive ? "true" : undefined}
 								aria-label={
 									isActive
-										? `${scene.title} — ${labels.nowPlaying}`
-										: `${labels.play}: ${scene.title}`
+										? `${scene.title || labels.title} — ${labels.nowPlaying}`
+										: `${labels.play}: ${scene.title || labels.title}`
 								}
 								className={cn(
 									"group relative block w-full overflow-hidden text-start transition-[box-shadow,opacity] duration-300",
@@ -142,7 +125,11 @@ export function FilmSceneList({
 							>
 								{/* Letterbox frame */}
 								<div className="relative aspect-[2.2/1] w-full overflow-hidden bg-foreground">
-									<SceneStill scene={scene} isActive={isActive} />
+									<SceneStill
+										scene={scene}
+										isActive={isActive}
+										fallbackCoverUrl={fallbackCoverUrl}
+									/>
 
 									{/* Top/bottom cinema bars */}
 									<span
@@ -189,26 +176,24 @@ export function FilmSceneList({
 										</span>
 									</span>
 
-									<div className="absolute inset-x-0 bottom-0 z-3 p-3 pt-8 sm:p-3.5 sm:pt-10">
-										<span
-											dir="ltr"
-											className="mb-1 block text-label tracking-[0.12em] text-primary-foreground/55 uppercase"
-										>
-											{sceneLabel}
-										</span>
-										<span className="block font-heading text-small font-semibold leading-snug text-balance text-primary-foreground line-clamp-2 sm:text-body">
-											{scene.title}
-										</span>
-										{isActive ? (
-											<span className="mt-1.5 inline-flex items-center gap-1.5 text-label text-primary-foreground/75">
-												<span
-													aria-hidden
-													className="size-1.5 rounded-pill bg-primary-foreground"
-												/>
-												{labels.nowPlaying}
-											</span>
-										) : null}
-									</div>
+									{(scene.title || isActive) && (
+										<div className="absolute inset-x-0 bottom-0 z-3 p-3 pt-8 sm:p-3.5 sm:pt-10">
+											{scene.title ? (
+												<span className="block font-heading text-small font-semibold leading-snug text-balance text-primary-foreground line-clamp-2 sm:text-body">
+													{scene.title}
+												</span>
+											) : null}
+											{isActive ? (
+												<span className="mt-1.5 inline-flex items-center gap-1.5 text-label text-primary-foreground/75">
+													<span
+														aria-hidden
+														className="size-1.5 rounded-pill bg-primary-foreground"
+													/>
+													{labels.nowPlaying}
+												</span>
+											) : null}
+										</div>
+									)}
 								</div>
 							</button>
 						</li>

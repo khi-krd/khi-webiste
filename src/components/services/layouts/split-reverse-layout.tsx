@@ -8,7 +8,7 @@ export function SplitReverseLayout({
 	title,
 	body,
 }: ServiceLayoutProps) {
-	const gallery = buildServiceGallery(service, "video");
+	const gallery = buildServiceGallery(service);
 
 	return (
 		<ServiceLayoutShell
