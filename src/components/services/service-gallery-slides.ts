@@ -115,7 +115,7 @@ export function mapApiGalleryMedia(
 	title: string,
 	videoVariant: ServiceVideo["variant"] = "minimal",
 ): ServiceGalleryMediaItem[] {
-	return items.flatMap((item) => {
+	return items.flatMap((item): ServiceGalleryMediaItem[] => {
 		const url = item.url?.trim();
 		if (!url) return [];
 
