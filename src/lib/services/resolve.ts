@@ -344,7 +344,7 @@ export function buildApiOnlyServiceSections(
 		: [];
 
 	return apiRecords
-		.map((record, index) => {
+		.map((record, index): MergedServiceSection | null => {
 			const api = resolveServiceContent(locale, record);
 			if (!api) {
 				return null;
