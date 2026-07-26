@@ -45,13 +45,12 @@ const MAX_ZOOM = 2.5;
 const ZOOM_STEP = 0.25;
 const WHEEL_ZOOM_FACTOR = 0.0015;
 const FIT_EPSILON = 0.01;
-const VIEWPORT_PADDING_Y = 32;
-const VIEWPORT_PADDING_Y_MOBILE = 16;
+const VIEWPORT_PADDING_Y = 40;
+const VIEWPORT_PADDING_Y_MOBILE = 24;
 const VIEWPORT_PADDING_X = 48;
 const VIEWPORT_PADDING_X_MOBILE = 8;
 const SWIPE_THRESHOLD_PX = 48;
 const DRAG_PAN_THRESHOLD_PX = 4;
-const FULLSCREEN_CHROME_HEIGHT = 140;
 const SPREAD_PAGE_GAP = 12;
 
 function clampZoom(value: number): number {
@@ -65,7 +64,8 @@ function touchDistance(
 	return Math.hypot(a.clientX - b.clientX, a.clientY - b.clientY);
 }
 
-const INLINE_VIEWPORT_CLASS = "h-[28rem] min-h-[50dvh] sm:h-[28rem] sm:min-h-0";
+const INLINE_VIEWPORT_CLASS =
+	"h-[70dvh] min-h-[26rem] sm:h-[80dvh] sm:min-h-[36rem] sm:max-h-[56rem]";
 const FULLSCREEN_VIEWPORT_CLASS = "min-h-0 flex-1";
 
 type FitMode = "width" | "height";
@@ -723,9 +723,7 @@ function PdfReaderViewport({
 			const deltaY = event.clientY - drag.startY;
 
 			if (!drag.active) {
-				if (
-					Math.hypot(deltaX, deltaY) < DRAG_PAN_THRESHOLD_PX
-				) {
+				if (Math.hypot(deltaX, deltaY) < DRAG_PAN_THRESHOLD_PX) {
 					return;
 				}
 				drag.active = true;
@@ -874,7 +872,7 @@ export function WritingPdfViewer({
 	);
 	const [pageNumber, setPageNumber] = useState(1);
 	const [numPages, setNumPages] = useState(0);
-	const [fitMode, setFitMode] = useState<FitMode>("width");
+	const [fitMode, setFitMode] = useState<FitMode>("height");
 	const [twoPageSpread, setTwoPageSpread] = useState(false);
 	const [zoom, setZoom] = useState(1);
 	const [loadError, setLoadError] = useState(false);
@@ -945,7 +943,7 @@ export function WritingPdfViewer({
 		setDocumentReady(false);
 		setIsDisplayReady(false);
 		setIsReaderActive(false);
-		setFitMode("width");
+		setFitMode("height");
 		setTwoPageSpread(false);
 		setZoom(1);
 		stablePageRenderSizeRef.current = {};
@@ -960,7 +958,7 @@ export function WritingPdfViewer({
 		setLoadError(false);
 		setDocumentReady(false);
 		setIsDisplayReady(false);
-		setFitMode("width");
+		setFitMode("height");
 		setZoom(1);
 		stablePageRenderSizeRef.current = {};
 	}, []);
@@ -1094,7 +1092,7 @@ export function WritingPdfViewer({
 			containerWidth: availableWidth,
 			viewportHeight,
 			spreadColumns,
-			chromeHeight: isFullscreen ? FULLSCREEN_CHROME_HEIGHT : viewportPaddingY,
+			chromeHeight: viewportPaddingY,
 		});
 
 		const hasSize = (next.width ?? 0) > 0 || (next.height ?? 0) > 0;
@@ -1116,7 +1114,6 @@ export function WritingPdfViewer({
 		isViewportReady,
 		zoom,
 		spreadColumns,
-		isFullscreen,
 		viewportPaddingX,
 		viewportPaddingY,
 	]);
@@ -1168,7 +1165,7 @@ export function WritingPdfViewer({
 					coverUrl={coverUrl}
 					readLabel={t("readButton")}
 					onStart={() => {
-						setFitMode("width");
+						setFitMode("height");
 						setTwoPageSpread(false);
 						setZoom(1);
 						setIsReaderActive(true);
@@ -1183,8 +1180,7 @@ export function WritingPdfViewer({
 		zoom,
 		twoPageSpread,
 		onToggleSpread: toggleSpread,
-		onZoomOut: () =>
-			setZoom((current) => clampZoom(current - ZOOM_STEP)),
+		onZoomOut: () => setZoom((current) => clampZoom(current - ZOOM_STEP)),
 		onFitWidth: () => {
 			setFitMode("width");
 			setZoom(1);
@@ -1193,8 +1189,7 @@ export function WritingPdfViewer({
 			setFitMode("height");
 			setZoom(1);
 		},
-		onZoomIn: () =>
-			setZoom((current) => clampZoom(current + ZOOM_STEP)),
+		onZoomIn: () => setZoom((current) => clampZoom(current + ZOOM_STEP)),
 		labels: toolbarLabels,
 	};
 
@@ -1239,9 +1234,7 @@ export function WritingPdfViewer({
 		? "max-w-none"
 		: effectiveTwoPageSpread
 			? "max-w-4xl sm:max-w-5xl lg:max-w-6xl"
-			: effectiveFitMode === "width"
-				? "max-w-none"
-				: "max-w-2xl sm:max-w-3xl";
+			: "max-w-none";
 
 	return (
 		<div className={cn("writing-pdf-viewer", className)}>
