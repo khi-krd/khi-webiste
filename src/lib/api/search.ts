@@ -1,7 +1,7 @@
 import "server-only";
-import { audioDetailHref } from "@/lib/audio/resolve";
 import { unwrapApiPayload } from "@/lib/api/client";
 import { getApiBaseUrl } from "@/lib/api/config";
+import { audioDetailHref } from "@/lib/audio/resolve";
 import { galleryDetailHref, newsDetailHref } from "@/lib/content/href";
 import { projectDetailHref } from "@/lib/content/project-href";
 import { videoDetailHref } from "@/lib/video/resolve";
@@ -104,8 +104,8 @@ function resolveSearchItem(
 			: firstNonBlank(item.titleKmr, item.titleCkb)) ?? "";
 	const description =
 		locale === "ckb"
-			? firstNonBlank(item.descriptionCkb, item.descriptionKmr) ?? ""
-			: firstNonBlank(item.descriptionKmr, item.descriptionCkb) ?? "";
+			? (firstNonBlank(item.descriptionCkb, item.descriptionKmr) ?? "")
+			: (firstNonBlank(item.descriptionKmr, item.descriptionCkb) ?? "");
 
 	return {
 		...item,
@@ -117,13 +117,16 @@ function resolveSearchItem(
 
 function resolveSearchSection(
 	locale: string,
-	section: {
-		items: SearchItem[];
-		totalElements: number;
-		totalPages: number;
-		currentPage: number;
-		size: number;
-	} | null | undefined,
+	section:
+		| {
+				items: SearchItem[];
+				totalElements: number;
+				totalPages: number;
+				currentPage: number;
+				size: number;
+		  }
+		| null
+		| undefined,
 ): ResolvedSearchSection | null {
 	if (!section) {
 		return null;

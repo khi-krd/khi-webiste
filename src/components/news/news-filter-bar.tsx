@@ -8,13 +8,13 @@ import {
 import { useSearchParams } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { useCallback, useEffect, useRef, useState, useTransition } from "react";
-import { useScrollToSection } from "@/lib/use-scroll-to-section";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { useRouter } from "@/i18n/navigation";
 import type { NewsCategoryOption } from "@/lib/mock/news";
 import { isKnownCategory } from "@/lib/mock/news";
 import { buildNewsHref } from "@/lib/news-url";
+import { useScrollToSection } from "@/lib/use-scroll-to-section";
 import { cn } from "@/lib/utils";
 
 type NewsFilterBarProps = {

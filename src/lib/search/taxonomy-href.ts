@@ -1,7 +1,7 @@
+import { buildAudioHref } from "@/lib/audio-url";
 import { buildGalleryHref } from "@/lib/gallery-url";
 import { buildNewsHref } from "@/lib/news-url";
 import { projectsHref } from "@/lib/projects-url";
-import { buildAudioHref } from "@/lib/audio-url";
 import { buildVideoHref } from "@/lib/video-url";
 import { isBookGenre } from "@/lib/writing/genres";
 import { buildWritingsHref } from "@/lib/writings-url";
@@ -29,10 +29,7 @@ export function videoTagHref(tag: string, basePath = "/videos"): string {
 	return buildVideoHref({ q: tag, basePath });
 }
 
-export function videoTopicHref(
-	topicId: number,
-	basePath = "/videos",
-): string {
+export function videoTopicHref(topicId: number, basePath = "/videos"): string {
 	return buildVideoHref({ topic: topicId, basePath });
 }
 

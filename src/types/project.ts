@@ -1,9 +1,5 @@
 import { z } from "zod";
-import {
-	BilingualSetSchema,
-	ContentLanguageSchema,
-	CoverMediaTypeSchema,
-} from "@/types/news";
+import { ContentLanguageSchema, CoverMediaTypeSchema } from "@/types/news";
 
 export const ProjectStatusSchema = z.enum([
 	"ACTIVE",

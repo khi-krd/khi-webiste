@@ -11,11 +11,11 @@ import { NAV_ITEMS, SEARCH_SUGGESTION_KEYS } from "@/config/site";
 import {
 	type ClientSearchItem,
 	type ClientSearchSectionKey,
-	type SearchTaxonomyItem,
 	fetchGlobalSearch,
 	fetchTaxonomyCatalog,
 	filterTaxonomyCatalog,
 	groupSearchItems,
+	type SearchTaxonomyItem,
 } from "@/lib/search/client";
 import {
 	getNavMenuTaxonomyItems,
@@ -380,11 +380,13 @@ export function MenuSearch({
 	const [submitted, setSubmitted] = useState(false);
 	const [apiResults, setApiResults] = useState<ClientSearchItem[] | null>(null);
 	const [isLoading, setIsLoading] = useState(false);
-	const [contentSearchUnavailable, setContentSearchUnavailable] = useState(false);
+	const [contentSearchUnavailable, setContentSearchUnavailable] =
+		useState(false);
 	const [localTaxonomyCatalog, setLocalTaxonomyCatalog] = useState<
 		SearchTaxonomyItem[] | null
 	>(null);
-	const [localTaxonomyUnavailable, setLocalTaxonomyUnavailable] = useState(false);
+	const [localTaxonomyUnavailable, setLocalTaxonomyUnavailable] =
+		useState(false);
 
 	const useParentTaxonomy = taxonomyCatalogProp !== undefined;
 	const taxonomyCatalog = useParentTaxonomy

@@ -12,6 +12,7 @@ import {
 	isKnownCategory,
 	paginateNews,
 } from "@/lib/api/news";
+import { localeAlternates } from "@/lib/seo/metadata";
 
 export async function generateMetadata({
 	params,
@@ -22,6 +23,7 @@ export async function generateMetadata({
 	const t = await getTranslations({ locale, namespace: "News" });
 
 	return {
+		alternates: localeAlternates(locale, "/news"),
 		title: t("pageTitle"),
 		description: t("metaDescription"),
 	};

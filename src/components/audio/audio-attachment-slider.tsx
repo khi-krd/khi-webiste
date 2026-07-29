@@ -104,10 +104,7 @@ export function AudioAttachmentSlider({
 		<section aria-label={title}>
 			<h2 className="font-heading text-h3 font-bold">{title}</h2>
 
-			<div
-				className={emblaViewportClass}
-				ref={emblaRef}
-			>
+			<div className={emblaViewportClass} ref={emblaRef}>
 				<ul
 					className={emblaContainerClass}
 					aria-roledescription="carousel"

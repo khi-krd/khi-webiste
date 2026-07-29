@@ -4,13 +4,19 @@ services:
       context: .
       args:
         NEXT_PUBLIC_MEDIA_HOST: ${NEXT_PUBLIC_MEDIA_HOST}
-        NEXT_PUBLIC_SITE_URL: ${NEXT_PUBLIC_SITE_URL}
+        # Build-time, not run-time: NEXT_PUBLIC_* is inlined into the client
+        # bundle during `next build`, so changing it later needs a rebuild.
+        NEXT_PUBLIC_SITE_URL: ${NEXT_PUBLIC_SITE_URL:?NEXT_PUBLIC_SITE_URL is required}
         NEXT_PUBLIC_ENABLE_BORDER_RADIUS: ${NEXT_PUBLIC_ENABLE_BORDER_RADIUS:-false}
         NEXT_PUBLIC_BORDER_RADIUS: ${NEXT_PUBLIC_BORDER_RADIUS:-m}
+        # Enable only once TLS terminates in front of this container. Build-time:
+        # next.config.ts headers() is baked in during the build.
+        ENABLE_HSTS: ${ENABLE_HSTS:-false}
     expose:
       - "3000"
     environment:
-      API_BASE_URL: ${API_BASE_URL}
+      # Required at run time — the container refuses to serve without it.
+      API_BASE_URL: ${API_BASE_URL:?API_BASE_URL is required}
       # 0 = no-store (fresh CMS data); positive = ISR seconds — see docs/API.md
       API_REVALIDATE_SECONDS: ${API_REVALIDATE_SECONDS:-0}
       REVALIDATION_SECRET: ${REVALIDATION_SECRET:-}
@@ -19,3 +25,15 @@ services:
       # off | full | auto — see docs/API.md
       USE_MOCK_DATA: ${USE_MOCK_DATA:-off}
     restart: unless-stopped
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "node",
+          "-e",
+          "fetch('http://127.0.0.1:3000/ckb').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))",
+        ]
+      interval: 30s
+      timeout: 5s
+      start_period: 20s
+      retries: 3

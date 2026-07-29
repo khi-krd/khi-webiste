@@ -156,9 +156,7 @@ function normalizeSoundFile(raw: unknown): unknown {
 		.trim()
 		.toUpperCase();
 	const normalizedType =
-		rawFileType === "VIDEO" || rawFileType === "OTHER"
-			? rawFileType
-			: "AUDIO";
+		rawFileType === "VIDEO" || rawFileType === "OTHER" ? rawFileType : "AUDIO";
 	const fileFormat =
 		asOptionalString(file.fileFormat ?? file.file_format) ??
 		(AUDIO_CONTAINER_TYPES.has(rawFileType) ? rawFileType : null);
@@ -170,14 +168,11 @@ function normalizeSoundFile(raw: unknown): unknown {
 		embedUrl: file.embedUrl ?? file.embed_url ?? null,
 		thumbUrl: file.thumbUrl ?? file.thumb_url ?? null,
 		fileType: normalizedType,
-		publishmentYear:
-			file.publishmentYear ?? file.publishment_year ?? null,
+		publishmentYear: file.publishmentYear ?? file.publishment_year ?? null,
 		fileFormat,
 		sizeBytes: file.sizeBytes ?? file.size_bytes ?? null,
-		durationSeconds:
-			file.durationSeconds ?? file.duration_seconds ?? null,
-		durationMinutes:
-			file.durationMinutes ?? file.duration_minutes ?? null,
+		durationSeconds: file.durationSeconds ?? file.duration_seconds ?? null,
+		durationMinutes: file.durationMinutes ?? file.duration_minutes ?? null,
 		bitRate: asOptionalString(file.bitRate ?? file.bit_rate),
 		sampleRate: asOptionalString(file.sampleRate ?? file.sample_rate),
 		audioChannel: file.audioChannel ?? file.audio_channel ?? null,
@@ -194,8 +189,7 @@ function normalizeSoundFile(raw: unknown): unknown {
 						...item,
 						imageUrl: item.imageUrl ?? item.image_url ?? null,
 						caption: item.caption ?? null,
-						brochureOrder:
-							item.brochureOrder ?? item.brochure_order ?? null,
+						brochureOrder: item.brochureOrder ?? item.brochure_order ?? null,
 					};
 				})
 			: [],
@@ -214,15 +208,16 @@ export function normalizeSoundTrackRecord(raw: unknown): unknown {
 		albumOfMemories:
 			record.albumOfMemories ?? record.album_of_memories ?? false,
 		thisProjectOfInstitute:
-			record.thisProjectOfInstitute ?? record.this_project_of_institute ?? false,
+			record.thisProjectOfInstitute ??
+			record.this_project_of_institute ??
+			false,
 		files: Array.isArray(record.files)
 			? record.files.map(normalizeSoundFile)
 			: [],
 		attachments: Array.isArray(record.attachments) ? record.attachments : [],
 		locations: Array.isArray(record.locations) ? record.locations : [],
 		directors: Array.isArray(record.directors) ? record.directors : [],
-		publishmentYear:
-			record.publishmentYear ?? record.publishment_year ?? null,
+		publishmentYear: record.publishmentYear ?? record.publishment_year ?? null,
 		cdNumber: record.cdNumber ?? record.cd_number ?? null,
 		createdAt: record.createdAt ?? record.created_at ?? "",
 		updatedAt: record.updatedAt ?? record.updated_at ?? "",
@@ -253,7 +248,12 @@ function normalizeVideoCastMember(raw: unknown): unknown {
 		nameKmr: member.nameKmr ?? member.name_kmr ?? null,
 		roleCkb: member.roleCkb ?? member.role_ckb ?? null,
 		roleKmr: member.roleKmr ?? member.role_kmr ?? null,
-		photoUrl: member.photoUrl ?? member.photo_url ?? member.imageUrl ?? member.image_url ?? null,
+		photoUrl:
+			member.photoUrl ??
+			member.photo_url ??
+			member.imageUrl ??
+			member.image_url ??
+			null,
 	};
 }
 
@@ -286,8 +286,7 @@ function normalizeVideoClip(raw: unknown): unknown {
 			clip.embedUrl ??
 			clip.embed_url ??
 			null,
-		durationSeconds:
-			clip.durationSeconds ?? clip.duration_seconds ?? null,
+		durationSeconds: clip.durationSeconds ?? clip.duration_seconds ?? null,
 		titleCkb: clip.titleCkb ?? clip.title_ckb ?? null,
 		titleKmr: clip.titleKmr ?? clip.title_kmr ?? null,
 		coverUrl: clip.coverUrl ?? clip.cover_url ?? null,
@@ -386,8 +385,7 @@ export function normalizeVideoRecord(raw: unknown): unknown {
 	return {
 		...record,
 		featured: record.featured === true,
-		featuredOrder:
-			record.featuredOrder ?? record.featured_order ?? null,
+		featuredOrder: record.featuredOrder ?? record.featured_order ?? null,
 		ckbContent:
 			record.ckbContent != null
 				? normalizeVideoContent(record.ckbContent)
@@ -465,14 +463,16 @@ function normalizeGalleryMediaItem(raw: unknown): UnknownRecord | null {
 	}
 
 	const posterRaw =
-		item.posterUrl ?? item.poster_url ?? item.thumbnailUrl ?? item.thumbnail_url;
+		item.posterUrl ??
+		item.poster_url ??
+		item.thumbnailUrl ??
+		item.thumbnail_url;
 
 	return {
 		...item,
 		type: item.type ?? item.mediaType ?? item.media_type ?? "IMAGE",
 		url,
-		posterUrl:
-			typeof posterRaw === "string" ? posterRaw.trim() || null : null,
+		posterUrl: typeof posterRaw === "string" ? posterRaw.trim() || null : null,
 		alt: typeof item.alt === "string" ? item.alt.trim() || null : null,
 	};
 }
@@ -523,18 +523,9 @@ export function normalizeSeriesBookRecord(raw: unknown): unknown {
 
 	return {
 		...record,
-		titleCkb:
-			record.titleCkb ??
-			record.title_ckb ??
-			ckbContent?.title ??
-			null,
-		titleKmr:
-			record.titleKmr ??
-			record.title_kmr ??
-			kmrContent?.title ??
-			null,
-		seriesOrder:
-			record.seriesOrder ?? record.series_order ?? null,
+		titleCkb: record.titleCkb ?? record.title_ckb ?? ckbContent?.title ?? null,
+		titleKmr: record.titleKmr ?? record.title_kmr ?? kmrContent?.title ?? null,
+		seriesOrder: record.seriesOrder ?? record.series_order ?? null,
 		createdAt: record.createdAt ?? record.created_at ?? "",
 	};
 }

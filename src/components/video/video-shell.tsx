@@ -147,7 +147,10 @@ export async function VideoShell({
 				) : (
 					<>
 						{leadCard ? (
-							<ScrollRevealBlock key={`featured-${gridKey}`} className="mt-5 sm:mt-6">
+							<ScrollRevealBlock
+								key={`featured-${gridKey}`}
+								className="mt-5 sm:mt-6"
+							>
 								<VideoCard {...leadCard} variant="featured" />
 							</ScrollRevealBlock>
 						) : null}

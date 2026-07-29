@@ -13,6 +13,7 @@ import { Header } from "@/components/layout/header";
 import { RouteProgress } from "@/components/layout/route-progress";
 import { NativeScroll } from "@/components/providers/native-scroll";
 import { routing } from "@/i18n/routing";
+import { assertServerEnv } from "@/lib/env";
 import { archivo, clashDisplay, vazirmatn } from "@/lib/fonts";
 import { getBorderRadiusHtmlAttrs } from "@/lib/theme/border-radius";
 import { cn } from "@/lib/utils";
@@ -51,6 +52,13 @@ export async function generateMetadata({
 			locale,
 			type: "website",
 		},
+		// Next fills in `images` from src/app/opengraph-image.tsx; declaring the
+		// card type is what makes X/Twitter render the large preview.
+		twitter: {
+			card: "summary_large_image",
+			title: siteName,
+			description: t("aboutDescription"),
+		},
 	};
 }
 
@@ -59,6 +67,10 @@ function getDir(locale: string): "ltr" | "rtl" {
 }
 
 export default async function LocaleLayout({ children, params }: Props) {
+	// Fails the request loudly in production when required deploy config is
+	// missing, instead of silently rendering an empty site.
+	assertServerEnv();
+
 	const { locale } = await params;
 
 	if (!hasLocale(routing.locales, locale)) {

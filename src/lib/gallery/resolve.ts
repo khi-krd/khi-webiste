@@ -1,3 +1,4 @@
+import { galleryDetailHref, resolveContentSlug } from "@/lib/content/href";
 import type {
 	GalleryAlbumItem,
 	GalleryCollectionType,
@@ -7,7 +8,6 @@ import type {
 } from "@/lib/mock/gallery";
 import type { ImageCollectionItem } from "@/lib/mock/image-collection";
 import type { ImageAlbumItem, ImageCollection } from "@/types/gallery";
-import { galleryDetailHref, resolveContentSlug } from "@/lib/content/href";
 
 type GalleryAspect = GalleryHeroImage["aspect"];
 
@@ -135,8 +135,7 @@ export function dedupeImageAlbumItems(
 			continue;
 		}
 
-		const mediaKey =
-			item.imageUrl ?? item.externalUrl ?? item.embedUrl ?? null;
+		const mediaKey = item.imageUrl ?? item.externalUrl ?? item.embedUrl ?? null;
 		if (mediaKey && seenMedia.has(mediaKey)) {
 			continue;
 		}

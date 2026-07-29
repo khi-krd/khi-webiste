@@ -2,11 +2,8 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { NewsPostView } from "@/components/news/news-post-view";
-import {
-	getNewsBySlug,
-	getRelatedNews,
-	isValidCategory,
-} from "@/lib/api/news";
+import { getNewsBySlug, getRelatedNews, isValidCategory } from "@/lib/api/news";
+import { localeAlternates } from "@/lib/seo/metadata";
 
 type NewsPostPageProps = {
 	params: Promise<{ locale: string; slug: string }>;
@@ -30,6 +27,7 @@ export async function generateMetadata({
 	if (!detail) notFound();
 
 	return {
+		alternates: localeAlternates(locale, `/news/${slug}`),
 		title: detail.item.title,
 		description: detail.item.excerpt,
 	};

@@ -60,7 +60,9 @@ export async function FilmSection() {
 	const categoryLabel = (card: ResolvedVideoCard) =>
 		card.topicName ?? t(`typeBadge.${card.videoType}`);
 
-	const items = listing.items.map((card) => toFilmItem(card, categoryLabel(card)));
+	const items = listing.items.map((card) =>
+		toFilmItem(card, categoryLabel(card)),
+	);
 	const [featured, ...rest] = items;
 	const gridItems = rest.slice(0, GRID_COUNT);
 

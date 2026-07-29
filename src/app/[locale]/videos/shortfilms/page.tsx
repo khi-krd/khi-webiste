@@ -6,6 +6,7 @@ import type { VideoPosterCardProps } from "@/components/video/video-poster-card"
 import { VideoPosterRail } from "@/components/video/video-poster-rail";
 import { getVideoById, getVideoListing } from "@/lib/api/videos";
 import { homeInsetClass } from "@/lib/layout";
+import { localeAlternates } from "@/lib/seo/metadata";
 import { pickFeaturedCard } from "@/lib/video/filter";
 import { formatDuration } from "@/lib/video/format";
 import {
@@ -26,6 +27,7 @@ export async function generateMetadata({
 	const t = await getTranslations({ locale, namespace: "Video" });
 
 	return {
+		alternates: localeAlternates(locale, "/videos/shortfilms"),
 		title: t("shortfilms.pageTitle"),
 		description: t("shortfilms.metaDescription"),
 	};

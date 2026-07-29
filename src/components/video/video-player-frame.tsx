@@ -4,7 +4,6 @@ import { FilmIcon } from "@heroicons/react/24/outline";
 import dynamic from "next/dynamic";
 import NextImage from "next/image";
 import { type ReactNode, useState } from "react";
-import { classifyPlayableSource } from "@/lib/video/source";
 import {
 	FilmSceneList,
 	type FilmSceneListLabels,
@@ -14,11 +13,11 @@ import {
 	type VideoClipListLabels,
 } from "@/components/video/video-clip-list";
 import { cn } from "@/lib/utils";
+import { classifyPlayableSource } from "@/lib/video/source";
 import type { ResolvedVideoClip, VideoPlayerKind } from "@/types/video";
 
 const VideoPlayer = dynamic(
-	() =>
-		import("@/components/ui/video-player").then((mod) => mod.VideoPlayer),
+	() => import("@/components/ui/video-player").then((mod) => mod.VideoPlayer),
 	{ ssr: false },
 );
 
@@ -115,11 +114,9 @@ export function VideoPlayerFrame({
 		(isCinema && sceneLabels != null) || (!isCinema && clipLabels != null);
 	const isGallery = clips.length > 1 && hasGalleryLabels;
 
-	const initialClipNumber =
-		activeClipNumber ?? clips[0]?.clipNumber ?? null;
-	const [selectedClipNumber, setSelectedClipNumber] = useState(
-		initialClipNumber,
-	);
+	const initialClipNumber = activeClipNumber ?? clips[0]?.clipNumber ?? null;
+	const [selectedClipNumber, setSelectedClipNumber] =
+		useState(initialClipNumber);
 	/** Autoplay only after the user picks a gallery tile — not on first paint. */
 	const [autoPlaySelected, setAutoPlaySelected] = useState(false);
 

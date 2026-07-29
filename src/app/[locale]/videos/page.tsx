@@ -1,11 +1,9 @@
 import type { Metadata } from "next";
 import { getTranslations, setRequestLocale } from "next-intl/server";
-import {
-	VideoHero,
-	type VideoHeroStill,
-} from "@/components/video/video-hero";
+import { VideoHero, type VideoHeroStill } from "@/components/video/video-hero";
 import { VideoShell } from "@/components/video/video-shell";
 import { VideoShortFilmsPromo } from "@/components/video/video-shortfilms-promo";
+import { localeAlternates } from "@/lib/seo/metadata";
 import { loadVideoPageData } from "@/lib/video/page-data";
 import {
 	isShortFilm,
@@ -22,6 +20,7 @@ export async function generateMetadata({
 	const t = await getTranslations({ locale, namespace: "Video" });
 
 	return {
+		alternates: localeAlternates(locale, "/videos"),
 		title: t("pageTitle"),
 		description: t("metaDescription"),
 	};
@@ -80,10 +79,7 @@ export default async function VideosPage({
 
 			<VideoShortFilmsPromo />
 
-			<div
-				id="videos-content"
-				className="scroll-mt-26 sm:scroll-mt-30"
-			>
+			<div id="videos-content" className="scroll-mt-26 sm:scroll-mt-30">
 				<VideoShell
 					title={t("grid.allTitle")}
 					cards={pageData.listing.items}

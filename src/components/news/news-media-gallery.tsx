@@ -1,14 +1,10 @@
 "use client";
 
-import {
-	FilmIcon,
-	MusicalNoteIcon,
-	PlayIcon,
-} from "@heroicons/react/24/solid";
+import { FilmIcon, MusicalNoteIcon, PlayIcon } from "@heroicons/react/24/solid";
 import { useNewsPostLightbox } from "@/components/news/news-post-lightbox";
 import { Image } from "@/components/ui/image";
-import type { MediaItem } from "@/types/media";
 import { cn } from "@/lib/utils";
+import type { MediaItem } from "@/types/media";
 
 type NewsMediaGalleryProps = {
 	items: MediaItem[];
@@ -21,7 +17,9 @@ function thumbnailSrc(item: MediaItem): string {
 		return item.url;
 	}
 
-	return item.thumbnailUrl ?? (item.kind === "AUDIO" ? "/menu/5.jpg" : item.url);
+	return (
+		item.thumbnailUrl ?? (item.kind === "AUDIO" ? "/menu/5.jpg" : item.url)
+	);
 }
 
 function MediaKindBadge({ kind }: { kind: MediaItem["kind"] }) {

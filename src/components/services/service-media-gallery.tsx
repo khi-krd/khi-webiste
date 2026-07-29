@@ -125,7 +125,7 @@ export function ServiceMediaGallery({
 			</div>
 
 			{hasMultipleSlides && (
-				<ul
+				<div
 					className="mt-4 grid w-full grid-cols-3 gap-2 sm:grid-cols-4 sm:gap-3 lg:grid-cols-6"
 					role="tablist"
 					aria-label={`${title} media`}
@@ -136,67 +136,63 @@ export function ServiceMediaGallery({
 						const isVideo = slide.type === "video";
 
 						return (
-							<li key={slideKey(slide)}>
-								<button
-									type="button"
-									id={`${galleryId}-tab-${slideIndex}`}
-									role="tab"
-									aria-selected={isActive}
-									aria-controls={`${galleryId}-panel`}
-									onClick={() => goTo(slideIndex)}
-									aria-label={`${slideKindLabel(slide)}: ${slidePreviewAlt(slide, title)}`}
-									className={cn(
-										"group relative block w-full overflow-hidden border bg-surface text-start transition-[border-color,opacity,transform] duration-200",
-										isActive
-											? "border-foreground opacity-100 ring-1 ring-inset ring-foreground/80"
-											: "border-border opacity-72 fine-hover:border-border-strong fine-hover:opacity-100",
-										"focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-foreground",
+							<button
+								key={slideKey(slide)}
+								type="button"
+								id={`${galleryId}-tab-${slideIndex}`}
+								role="tab"
+								aria-selected={isActive}
+								aria-controls={`${galleryId}-panel`}
+								onClick={() => goTo(slideIndex)}
+								aria-label={`${slideKindLabel(slide)}: ${slidePreviewAlt(slide, title)}`}
+								className={cn(
+									"group relative block w-full overflow-hidden border bg-surface text-start transition-[border-color,opacity,transform] duration-200",
+									isActive
+										? "border-foreground opacity-100 ring-1 ring-inset ring-foreground/80"
+										: "border-border opacity-72 fine-hover:border-border-strong fine-hover:opacity-100",
+									"focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-foreground",
+								)}
+							>
+								<span className="relative block aspect-4/3 w-full" aria-hidden>
+									{previewSrc ? (
+										<NextImage
+											src={previewSrc}
+											alt=""
+											fill
+											sizes="(max-width: 640px) 30vw, 12vw"
+											className={cn(
+												"object-cover brightness-[0.85] contrast-[1.08] saturate-[0.7] transition-[filter,transform] duration-500",
+												!isActive &&
+													"group-fine:scale-[1.03] group-fine:brightness-[0.92] group-fine:saturate-[0.78]",
+												isActive && "brightness-[0.95] saturate-[0.8]",
+											)}
+										/>
+									) : (
+										<span className="absolute inset-0 bg-sunken" />
 									)}
-								>
-									<span
-										className="relative block aspect-4/3 w-full"
-										aria-hidden
-									>
-										{previewSrc ? (
-											<NextImage
-												src={previewSrc}
-												alt=""
-												fill
-												sizes="(max-width: 640px) 30vw, 12vw"
-												className={cn(
-													"object-cover brightness-[0.85] contrast-[1.08] saturate-[0.7] transition-[filter,transform] duration-500",
-													!isActive &&
-														"group-fine:scale-[1.03] group-fine:brightness-[0.92] group-fine:saturate-[0.78]",
-													isActive && "brightness-[0.95] saturate-[0.8]",
-												)}
-											/>
-										) : (
-											<span className="absolute inset-0 bg-sunken" />
-										)}
 
-										{isVideo && (
-											<span className="pointer-events-none absolute inset-x-0 top-0 flex justify-end bg-linear-to-b from-foreground/55 to-transparent px-1.5 py-1">
-												<span className="inline-flex size-5 items-center justify-center bg-foreground/75 text-white">
-													<PlayIcon
-														className="size-2.5 translate-x-px"
-														aria-hidden
-													/>
-												</span>
+									{isVideo && (
+										<span className="pointer-events-none absolute inset-x-0 top-0 flex justify-end bg-linear-to-b from-foreground/55 to-transparent px-1.5 py-1">
+											<span className="inline-flex size-5 items-center justify-center bg-foreground/75 text-white">
+												<PlayIcon
+													className="size-2.5 translate-x-px"
+													aria-hidden
+												/>
 											</span>
-										)}
+										</span>
+									)}
 
-										{isActive && (
-											<span
-												className="pointer-events-none absolute inset-0 ring-1 ring-inset ring-white/35"
-												aria-hidden
-											/>
-										)}
-									</span>
-								</button>
-							</li>
+									{isActive && (
+										<span
+											className="pointer-events-none absolute inset-0 ring-1 ring-inset ring-white/35"
+											aria-hidden
+										/>
+									)}
+								</span>
+							</button>
 						);
 					})}
-				</ul>
+				</div>
 			)}
 		</div>
 	);

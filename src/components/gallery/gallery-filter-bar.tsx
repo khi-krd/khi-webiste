@@ -8,15 +8,12 @@ import {
 import { useSearchParams } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { useCallback, useEffect, useRef, useState, useTransition } from "react";
-import { useScrollToSection } from "@/lib/use-scroll-to-section";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { useRouter } from "@/i18n/navigation";
-import {
-	buildGalleryHref,
-	isGalleryCollectionType,
-} from "@/lib/gallery-url";
+import { buildGalleryHref, isGalleryCollectionType } from "@/lib/gallery-url";
 import type { GalleryCollectionType } from "@/lib/mock/gallery";
+import { useScrollToSection } from "@/lib/use-scroll-to-section";
 import { cn } from "@/lib/utils";
 
 const GALLERY_TYPE_OPTIONS: GalleryCollectionType[] = [
@@ -45,9 +42,7 @@ export function GalleryFilterBar({
 	const scrollToSection = useScrollToSection();
 
 	const hasActiveType = isGalleryCollectionType(activeType);
-	const activeTypeLabel = hasActiveType
-		? t(`posts.types.${activeType}`)
-		: null;
+	const activeTypeLabel = hasActiveType ? t(`posts.types.${activeType}`) : null;
 	const hasActiveQuery = Boolean(activeQuery?.trim());
 	const hasActiveFilters = hasActiveType || hasActiveQuery;
 

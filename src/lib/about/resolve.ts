@@ -1,12 +1,12 @@
-import type { About, AboutContent } from "@/types/about";
-import type { Partner } from "@/types/partner";
-import type { TeamMember as ApiTeamMember } from "@/types/team";
 import type {
 	FounderPerson,
 	OfficeTeam,
 	PartnerItem,
 	TeamMember,
 } from "@/lib/mock/about";
+import type { About, AboutContent } from "@/types/about";
+import type { Partner } from "@/types/partner";
+import type { TeamMember as ApiTeamMember } from "@/types/team";
 
 function firstNonBlank(
 	...values: (string | null | undefined)[]
@@ -85,7 +85,9 @@ const TEAM_OFFICE_ALIASES: Record<string, OfficeTeam["id"]> = {
 	DUHOK: "duhok",
 };
 
-function resolveTeamOfficeId(office: string | null | undefined): OfficeTeam["id"] {
+function resolveTeamOfficeId(
+	office: string | null | undefined,
+): OfficeTeam["id"] {
 	if (!office) {
 		return "sulaymaniyah";
 	}

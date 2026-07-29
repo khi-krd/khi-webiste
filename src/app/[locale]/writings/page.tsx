@@ -6,9 +6,10 @@ import { WritingHero } from "@/components/writing/writing-hero";
 import { WritingsShell } from "@/components/writing/writings-shell";
 import { getWritingsCarousel } from "@/lib/api/writings";
 import { homeInsetClass } from "@/lib/layout";
-import { WRITINGS_STILL } from "@/lib/mock/public-stills";
+import { localeAlternates } from "@/lib/seo/metadata";
 import { cn } from "@/lib/utils";
 import { loadWritingsPageData } from "@/lib/writing/page-data";
+import { WRITINGS_STILL } from "@/lib/writing/still";
 import type { BookGenre } from "@/types/writing";
 
 export async function generateMetadata({
@@ -20,6 +21,7 @@ export async function generateMetadata({
 	const t = await getTranslations({ locale, namespace: "Writings" });
 
 	return {
+		alternates: localeAlternates(locale, "/writings"),
 		title: t("pageTitle"),
 		description: t("metaDescription"),
 	};

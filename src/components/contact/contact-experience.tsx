@@ -9,8 +9,8 @@ import {
 	homeSectionHeaderClass,
 } from "@/components/contact/contact-shell";
 import { ScrollRevealBlock } from "@/components/motion/scroll-reveal";
-import type { ContactOffice, OfficeId } from "@/lib/mock/contact";
 import type { ResolvedContactOffice } from "@/lib/contact/resolve";
+import type { OfficeId } from "@/lib/mock/contact";
 
 type OfficeCopyBundle = Record<
 	OfficeId,

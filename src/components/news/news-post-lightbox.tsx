@@ -23,7 +23,9 @@ const NewsPostLightboxContext =
 export function useNewsPostLightbox(): NewsPostLightboxContextValue {
 	const context = useContext(NewsPostLightboxContext);
 	if (!context) {
-		throw new Error("useNewsPostLightbox must be used within NewsPostLightboxProvider");
+		throw new Error(
+			"useNewsPostLightbox must be used within NewsPostLightboxProvider",
+		);
 	}
 	return context;
 }

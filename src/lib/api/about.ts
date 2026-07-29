@@ -12,14 +12,17 @@ import {
 	DEFAULT_REVALIDATE,
 } from "@/lib/api/client";
 import { getApiBaseUrl } from "@/lib/api/config";
-import { applyMockPolicy, applyMockPolicyNullable } from "@/lib/api/mock-policy";
 import {
+	applyMockPolicy,
+	applyMockPolicyNullable,
+} from "@/lib/api/mock-policy";
+import {
+	type AboutHeroMedia,
+	type FounderPerson,
 	getAboutFounder as getMockAboutFounder,
 	getAboutHeroMedia as getMockAboutHeroMedia,
 	getAboutOffices as getMockAboutOffices,
 	getAboutPartners as getMockAboutPartners,
-	type AboutHeroMedia,
-	type FounderPerson,
 	type OfficeTeam,
 	type PartnerItem,
 } from "@/lib/mock/about";

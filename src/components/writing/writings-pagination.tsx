@@ -1,9 +1,9 @@
 "use client";
 
 import { useTransition } from "react";
-import { useScrollToSection } from "@/lib/use-scroll-to-section";
 import { Pagination } from "@/components/ui/pagination";
 import { useRouter } from "@/i18n/navigation";
+import { useScrollToSection } from "@/lib/use-scroll-to-section";
 import { cn } from "@/lib/utils";
 import type { WritingCategorySlug } from "@/lib/writing/categories";
 import type { WritingsSort } from "@/lib/writing/filter";

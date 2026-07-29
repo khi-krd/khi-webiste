@@ -8,12 +8,12 @@ import {
 import { useSearchParams } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { useCallback, useEffect, useRef, useState, useTransition } from "react";
-import { useScrollToSection } from "@/lib/use-scroll-to-section";
 import { Badge } from "@/components/ui/badge";
 import { Select } from "@/components/ui/select";
 import { useRouter } from "@/i18n/navigation";
 import { soundTypeLabel } from "@/lib/audio/sound-types";
 import { buildAudioHref } from "@/lib/audio-url";
+import { useScrollToSection } from "@/lib/use-scroll-to-section";
 import { cn } from "@/lib/utils";
 import type { TrackState } from "@/types/audio";
 

@@ -22,7 +22,6 @@ import {
 	getDemoVideoById,
 } from "@/lib/mock/videos";
 import {
-	cardIdentity,
 	filterVideos,
 	paginateVideos,
 	pickFeaturedCard,
@@ -216,12 +215,7 @@ async function searchVideosFromApi(
 		{ ...filters, query: null },
 	);
 
-	return toListResult(
-		items,
-		result.totalPages,
-		result.totalElements,
-		page,
-	);
+	return toListResult(items, result.totalPages, result.totalElements, page);
 }
 
 async function fetchPaginatedListingFromApi(
@@ -243,12 +237,7 @@ async function fetchPaginatedListingFromApi(
 		filters,
 	);
 
-	return toListResult(
-		items,
-		result.totalPages,
-		result.totalElements,
-		page,
-	);
+	return toListResult(items, result.totalPages, result.totalElements, page);
 }
 
 async function resolveVideoListingItemsFromApi(
@@ -264,10 +253,7 @@ async function resolveVideoListingItemsFromApi(
 		return [];
 	}
 
-	return applyClientOnlyFilters(
-		resolvePageToCards(locale, apiVideos),
-		filters,
-	);
+	return applyClientOnlyFilters(resolvePageToCards(locale, apiVideos), filters);
 }
 
 function canUseServerPagination(filters: VideoListingFilters): boolean {
@@ -292,9 +278,7 @@ export async function getFeaturedVideoLead(
 			size: BULK_FETCH_SIZE,
 		});
 		if (result?.content.length) {
-			const lead = pickFeaturedCard(
-				resolvePageToCards(locale, result.content),
-			);
+			const lead = pickFeaturedCard(resolvePageToCards(locale, result.content));
 			if (lead) {
 				return lead;
 			}

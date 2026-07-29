@@ -15,9 +15,7 @@ export function VideoCinemaHeroBackground({
 	previewVideoUrl = null,
 	hoverCoverUrl,
 }: VideoCinemaHeroBackgroundProps) {
-	const showHoverCover = Boolean(
-		hoverCoverUrl && hoverCoverUrl !== coverUrl,
-	);
+	const showHoverCover = Boolean(hoverCoverUrl && hoverCoverUrl !== coverUrl);
 
 	return (
 		<>

@@ -4,7 +4,7 @@ import { Bars3Icon, MagnifyingGlassIcon } from "@heroicons/react/24/outline";
 import { useTranslations } from "next-intl";
 import { useCallback, useRef, useState } from "react";
 import { LanguageSwitcher } from "@/components/layout/language-switcher";
-import { NavDrawer, NAV_DRAWER_ID } from "@/components/layout/nav-drawer";
+import { NAV_DRAWER_ID, NavDrawer } from "@/components/layout/nav-drawer";
 import { DrawnBorder } from "@/components/ui/drawn-border";
 import { SERVICES_HREF } from "@/config/site";
 import { Link } from "@/i18n/navigation";

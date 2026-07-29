@@ -1,27 +1,24 @@
 "use client";
 
-import {
-	CheckIcon,
-	ChevronDownIcon,
-} from "@heroicons/react/24/outline";
+import { CheckIcon, ChevronDownIcon } from "@heroicons/react/24/outline";
 import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 import Image from "next/image";
 import { useLocale, useTranslations } from "next-intl";
 import {
+	type CSSProperties,
 	useEffect,
 	useId,
 	useLayoutEffect,
 	useRef,
 	useState,
 	useTransition,
-	type CSSProperties,
 } from "react";
 import { createPortal } from "react-dom";
-import { Link as UiLink } from "@/components/ui/link";
 import { DrawnBorder } from "@/components/ui/drawn-border";
+import { Link as UiLink } from "@/components/ui/link";
 import { LOCALE_LABELS } from "@/config/site";
 import { usePathname, useRouter } from "@/i18n/navigation";
-import { routing, type Locale } from "@/i18n/routing";
+import { type Locale, routing } from "@/i18n/routing";
 import { cn } from "@/lib/utils";
 
 type LanguageSwitcherProps = {
@@ -247,9 +244,7 @@ function LanguageDropdown({
 			className={cn(
 				panelClassName,
 				panelSurfaceClass,
-				portalPanel
-					? "fixed"
-					: "absolute end-0 top-[calc(100%+0.375rem)] z-50",
+				portalPanel ? "fixed" : "absolute end-0 top-[calc(100%+0.375rem)] z-50",
 			)}
 		>
 			{routing.locales.map((locale) => {
@@ -319,7 +314,10 @@ function LanguageDropdown({
 					className="size-4 shrink-0 rounded-sm"
 					aria-hidden="true"
 				/>
-				<span lang={activeLocale} className="max-w-[7rem] truncate sm:max-w-none">
+				<span
+					lang={activeLocale}
+					className="max-w-[7rem] truncate sm:max-w-none"
+				>
 					{LOCALE_LABELS[activeLocale]}
 				</span>
 				<ChevronDownIcon

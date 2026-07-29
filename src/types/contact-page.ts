@@ -1,10 +1,6 @@
 import { z } from "zod";
 
-export const OfficeTypeSchema = z.enum([
-	"HEADQUARTERS",
-	"REGIONAL",
-	"BRANCH",
-]);
+export const OfficeTypeSchema = z.enum(["HEADQUARTERS", "REGIONAL", "BRANCH"]);
 
 export const ContactContentSchema = z.object({
 	title: z.string().nullish(),
@@ -63,13 +59,12 @@ export const ContactMessageSubmissionSchema = z.object({
 	locale: z.string().nullish(),
 });
 
-export const ContactMessageResponseSchema = ContactMessageSubmissionSchema.extend(
-	{
+export const ContactMessageResponseSchema =
+	ContactMessageSubmissionSchema.extend({
 		id: z.number(),
 		status: ContactMessageStatusSchema,
 		createdAt: z.string(),
-	},
-);
+	});
 
 export type OfficeType = z.infer<typeof OfficeTypeSchema>;
 export type ContactPage = z.infer<typeof ContactPageSchema>;

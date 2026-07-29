@@ -3,8 +3,8 @@
 import { ArrowsPointingOutIcon } from "@heroicons/react/24/outline";
 import { useNewsPostLightbox } from "@/components/news/news-post-lightbox";
 import { ProjectCoverMedia } from "@/components/projects/project-cover-media";
-import type { MediaKind } from "@/types/media";
 import { cn } from "@/lib/utils";
+import type { MediaKind } from "@/types/media";
 
 type NewsCoverMediaProps = {
 	url: string;

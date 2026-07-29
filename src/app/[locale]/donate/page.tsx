@@ -6,12 +6,13 @@ import { DonateHero } from "@/components/donate/donate-hero";
 import { DonateParticipation } from "@/components/donate/donate-participation";
 import { DonateTypesGrid } from "@/components/donate/donate-types-grid";
 import { VisuallyHidden } from "@/components/ui/visually-hidden";
+import { getDonatePageDataFromApi } from "@/lib/api/donations";
 import {
 	getAmountPresets,
 	getSupportersImage,
 	MATERIAL_TYPE_IDS,
 } from "@/lib/mock/donate";
-import { getDonatePageDataFromApi } from "@/lib/api/donations";
+import { localeAlternates } from "@/lib/seo/metadata";
 
 export async function generateMetadata({
 	params,
@@ -22,6 +23,7 @@ export async function generateMetadata({
 	const t = await getTranslations({ locale, namespace: "Donate" });
 
 	return {
+		alternates: localeAlternates(locale, "/donate"),
 		title: t("pageTitle"),
 		description: t("metaDescription"),
 	};

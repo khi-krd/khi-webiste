@@ -77,7 +77,9 @@ describe("normalizeVideoRecord videoSources", () => {
 	it("does not override explicit videoClipItems", () => {
 		const normalized = normalizeVideoRecord({
 			...filmWithVideoSources,
-			videoClipItems: [{ clipNumber: 1, url: "https://example.com/explicit.mp4" }],
+			videoClipItems: [
+				{ clipNumber: 1, url: "https://example.com/explicit.mp4" },
+			],
 		});
 		const parsed = VideoSchema.parse(normalized);
 
@@ -90,7 +92,9 @@ describe("normalizeVideoRecord videoSources", () => {
 
 describe("resolveVideoDetail with videoSources", () => {
 	it("exposes all sources as clips and plays the main source by default", () => {
-		const parsed = VideoSchema.parse(normalizeVideoRecord(filmWithVideoSources));
+		const parsed = VideoSchema.parse(
+			normalizeVideoRecord(filmWithVideoSources),
+		);
 		const detail = resolveVideoDetail("ckb", parsed);
 
 		expect(detail?.clips).toHaveLength(3);

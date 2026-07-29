@@ -1,13 +1,16 @@
 import type { SearchScope } from "@/config/site";
 import type { ResolvedGlobalSearchResponse } from "@/lib/api/search";
 import {
-	filterTaxonomyItems,
 	type ClientSearchSectionKey,
+	filterTaxonomyItems,
 	type SearchTaxonomyItem,
 } from "@/lib/search/taxonomy-types";
 import type { SearchType } from "@/types/search";
 
-export type { ClientSearchSectionKey, SearchTaxonomyItem } from "@/lib/search/taxonomy-types";
+export type {
+	ClientSearchSectionKey,
+	SearchTaxonomyItem,
+} from "@/lib/search/taxonomy-types";
 export {
 	getNavMenuTaxonomyItems,
 	getSectionKeyForNavKey,

@@ -4,6 +4,7 @@ import { getTranslations, setRequestLocale } from "next-intl/server";
 import { GalleryPostView } from "@/components/gallery/gallery-post-view";
 import { getGalleryPostBySlug } from "@/lib/api/gallery";
 import { plainTextFromRichContent } from "@/lib/rich-text";
+import { localeAlternates } from "@/lib/seo/metadata";
 
 type GalleryPostPageProps = {
 	params: Promise<{ locale: string; slug: string }>;
@@ -19,6 +20,7 @@ export async function generateMetadata({
 	if (!detail) notFound();
 
 	return {
+		alternates: localeAlternates(locale, `/gallery/${slug}`),
 		title: detail.post.title,
 		description: plainTextFromRichContent(detail.post.description),
 	};

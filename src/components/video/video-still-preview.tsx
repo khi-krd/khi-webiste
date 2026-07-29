@@ -38,10 +38,7 @@ export function VideoStillPreview({
 			if (!Number.isFinite(video.duration) || video.duration <= 0) {
 				return;
 			}
-			const target = Math.min(
-				seekSeconds,
-				Math.max(0, video.duration - 0.05),
-			);
+			const target = Math.min(seekSeconds, Math.max(0, video.duration - 0.05));
 			if (Math.abs(video.currentTime - target) > 0.05) {
 				video.currentTime = target;
 			}
@@ -54,7 +51,7 @@ export function VideoStillPreview({
 			video.removeEventListener("loadedmetadata", seekToPreview);
 			video.removeEventListener("durationchange", seekToPreview);
 		};
-	}, [src, seekSeconds]);
+	}, [seekSeconds]);
 
 	if (!isDirectMediaFileUrl(src)) {
 		return null;

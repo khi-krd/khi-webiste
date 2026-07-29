@@ -2,9 +2,9 @@
 
 import { PlayIcon } from "@heroicons/react/24/solid";
 import NextImage from "next/image";
+import { VideoStillPreview } from "@/components/video/video-still-preview-lazy";
 import { cn } from "@/lib/utils";
 import { formatDuration } from "@/lib/video/format";
-import { VideoStillPreview } from "@/components/video/video-still-preview-lazy";
 import type { ResolvedVideoClip } from "@/types/video";
 
 export type FilmSceneListLabels = {
@@ -64,9 +64,7 @@ function SceneStill({
 		);
 	}
 
-	return (
-		<div aria-hidden className="h-full w-full bg-primary-foreground/5" />
-	);
+	return <div aria-hidden className="h-full w-full bg-primary-foreground/5" />;
 }
 
 /**

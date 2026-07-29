@@ -3,17 +3,17 @@ import { apiFetch, apiPost, DEFAULT_REVALIDATE } from "@/lib/api/client";
 import { getApiBaseUrl } from "@/lib/api/config";
 import { applyMockPolicyNullable } from "@/lib/api/mock-policy";
 import {
+	type DonateVisibility,
 	filterDonateTypeItems,
 	resolveDonateVisibility,
-	type DonateVisibility,
 } from "@/lib/donate/resolve";
 import {
-	getDonateHeroMedia,
-	getDonatePaymentDetails,
-	getDonateTypeItems,
 	type DonateHeroMedia,
 	type DonatePaymentDetails,
 	type DonateTypeItem,
+	getDonateHeroMedia,
+	getDonatePaymentDetails,
+	getDonateTypeItems,
 } from "@/lib/mock/donate";
 import {
 	ArchiveDonationResponseSchema,
@@ -63,7 +63,9 @@ export async function getDonationTypes() {
 	return types ?? [];
 }
 
-export async function submitFinancialDonation(body: FinancialDonationSubmission) {
+export async function submitFinancialDonation(
+	body: FinancialDonationSubmission,
+) {
 	if (!getApiBaseUrl()) {
 		return null;
 	}

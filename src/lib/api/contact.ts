@@ -3,19 +3,19 @@ import { apiFetch, apiPost, DEFAULT_REVALIDATE } from "@/lib/api/client";
 import { getApiBaseUrl } from "@/lib/api/config";
 import { applyMockPolicy } from "@/lib/api/mock-policy";
 import {
-	resolveContactOffices,
 	type ResolvedContactOffice,
+	resolveContactOffices,
 } from "@/lib/contact/resolve";
 import {
-	getContactOffices as getMockContactOffices,
 	type ContactOffice,
+	getContactOffices as getMockContactOffices,
 } from "@/lib/mock/contact";
 import {
+	ContactActivePageSchema,
 	type ContactMessageResponse,
 	ContactMessageResponseSchema,
 	type ContactMessageSubmission,
 	type ContactPage,
-	ContactActivePageSchema,
 } from "@/types/contact-page";
 
 const CONTACT_ACTIVE_ENDPOINT = "/api/v1/contact/active";
@@ -40,8 +40,7 @@ export async function getContactOffices(
 	locale: string,
 ): Promise<ResolvedContactOffice[]> {
 	const pages = await getActiveContactPages();
-	const apiItems =
-		pages.length > 0 ? resolveContactOffices(locale, pages) : [];
+	const apiItems = pages.length > 0 ? resolveContactOffices(locale, pages) : [];
 
 	return applyMockPolicy({
 		context: "global",

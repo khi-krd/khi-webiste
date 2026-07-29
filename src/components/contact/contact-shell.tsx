@@ -31,10 +31,7 @@ export function HomeSection({
 	...props
 }: HomeSectionProps) {
 	return (
-		<section
-			className={cn(homeSectionClass, className)}
-			{...props}
-		>
+		<section className={cn(homeSectionClass, className)} {...props}>
 			{children}
 		</section>
 	);

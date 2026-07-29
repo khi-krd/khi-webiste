@@ -1,9 +1,13 @@
 import { type NextRequest, NextResponse } from "next/server";
+import { parseSearchLocale } from "@/lib/search/request";
 import { getSearchTaxonomy } from "@/lib/search/taxonomy";
+
+export const dynamic = "force-dynamic";
 
 export async function GET(request: NextRequest) {
 	const { searchParams } = request.nextUrl;
-	const locale = searchParams.get("locale") ?? "ckb";
+	// Unchecked, this fans out to ~7 upstream CMS calls per request.
+	const locale = parseSearchLocale(searchParams.get("locale"));
 
 	const noStoreHeaders = {
 		"Cache-Control": "private, no-cache, no-store, must-revalidate",

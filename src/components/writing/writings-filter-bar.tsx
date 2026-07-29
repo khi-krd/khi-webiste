@@ -8,9 +8,9 @@ import {
 import { useSearchParams } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { useCallback, useEffect, useRef, useState, useTransition } from "react";
-import { useScrollToSection } from "@/lib/use-scroll-to-section";
 import { Badge } from "@/components/ui/badge";
 import { useRouter } from "@/i18n/navigation";
+import { useScrollToSection } from "@/lib/use-scroll-to-section";
 import { cn } from "@/lib/utils";
 import type { WritingCategorySlug } from "@/lib/writing/categories";
 import { getGenresForCategory } from "@/lib/writing/categories";

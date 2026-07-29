@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Field } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { Select } from "@/components/ui/select";
+import { submitFinancialDonationAction } from "@/lib/actions/donations";
 import type {
 	AmountPreset,
 	CurrencyId,
@@ -17,7 +18,6 @@ import {
 	createDonateFinancialFormSchema,
 	type DonateFinancialFormValues,
 } from "@/lib/schemas/donate-financial-form";
-import { submitFinancialDonationAction } from "@/lib/actions/donations";
 import { cn } from "@/lib/utils";
 
 type CurrencyOption = { id: CurrencyId; label: string };

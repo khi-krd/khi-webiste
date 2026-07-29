@@ -91,7 +91,7 @@ export function WritingCarousel({
 
 	useEffect(() => {
 		emblaApi?.reInit();
-	}, [cards, emblaApi]);
+	}, [emblaApi]);
 
 	useEffect(() => {
 		if (!emblaApi || !autoplay) {
@@ -123,10 +123,7 @@ export function WritingCarousel({
 				</p>
 			) : (
 				<div className="px-6 pb-8 pt-2 sm:px-10 sm:pb-10 sm:pt-4">
-					<div
-						className="touch-pan-y overflow-hidden"
-						ref={emblaRef}
-					>
+					<div className="touch-pan-y overflow-hidden" ref={emblaRef}>
 						<ScrollRevealBlock>
 							<ul className="flex touch-pan-y">
 								{cards.map((card) => (

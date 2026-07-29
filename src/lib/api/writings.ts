@@ -7,7 +7,10 @@ import {
 	unwrapApiPayload,
 } from "@/lib/api/client";
 import { getApiBaseUrl } from "@/lib/api/config";
-import { applyMockPolicy, applyMockPolicyNullable } from "@/lib/api/mock-policy";
+import {
+	applyMockPolicy,
+	applyMockPolicyNullable,
+} from "@/lib/api/mock-policy";
 import {
 	normalizeSeriesBookRecord,
 	normalizeWritingRecord,
@@ -133,9 +136,7 @@ export async function getAllWritings(
 	});
 }
 
-function emptyWritingsPage(
-	currentPage: number,
-): WritingsListResult {
+function emptyWritingsPage(currentPage: number): WritingsListResult {
 	return {
 		items: [],
 		totalPages: 1,
@@ -337,10 +338,7 @@ export async function getRelatedWritings(
 ): Promise<ResolvedWritingCard[]> {
 	const limit = options?.limit ?? RELATED_WRITINGS_LIMIT;
 	const allItems = await getAllWritings(locale);
-	const exclude = new Set<number>([
-		detail.id,
-		...(options?.excludeIds ?? []),
-	]);
+	const exclude = new Set<number>([detail.id, ...(options?.excludeIds ?? [])]);
 	const tagSet = new Set(
 		[...detail.tags, ...detail.keywords]
 			.map((tag) => tag.trim().toLowerCase())
@@ -416,4 +414,3 @@ export async function getRelatedWritings(
 
 	return results;
 }
-

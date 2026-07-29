@@ -13,8 +13,8 @@ import {
 	VolumeSlider,
 } from "@vidstack/react";
 import {
-	type PointerEvent as ReactPointerEvent,
 	type ReactNode,
+	type PointerEvent as ReactPointerEvent,
 	useRef,
 } from "react";
 

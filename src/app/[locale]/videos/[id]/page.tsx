@@ -3,14 +3,15 @@ import { notFound, redirect } from "next/navigation";
 import { setRequestLocale } from "next-intl/server";
 import { VideoDetailView } from "@/components/video/video-detail-view";
 import type { VideoPosterCardProps } from "@/components/video/video-poster-card";
+import { RELATED_VIDEOS_VISIBLE } from "@/components/video/video-related-grid";
 import { getVideoById, getVideoListing } from "@/lib/api/videos";
+import { localeAlternates } from "@/lib/seo/metadata";
 import { formatDuration } from "@/lib/video/format";
 import {
 	isShortFilm,
 	shortFilmDetailHref,
 	videoDetailHref,
 } from "@/lib/video/resolve";
-import { RELATED_VIDEOS_VISIBLE } from "@/components/video/video-related-grid";
 
 type VideoDetailPageProps = {
 	params: Promise<{ locale: string; id: string }>;
@@ -43,6 +44,7 @@ export async function generateMetadata({
 	if (!detail) notFound();
 
 	return {
+		alternates: localeAlternates(locale, `/videos/${id}`),
 		title: detail.title,
 		description: detail.description || undefined,
 	};
@@ -64,8 +66,7 @@ export default async function VideoDetailPage({
 	if (!detail) notFound();
 
 	if (isShortFilm(detail)) {
-		const clipQuery =
-			clipNumber != null ? `?clip=${clipNumber}` : "";
+		const clipQuery = clipNumber != null ? `?clip=${clipNumber}` : "";
 		redirect(`${shortFilmDetailHref(videoId)}${clipQuery}`);
 	}
 
@@ -88,8 +89,7 @@ export default async function VideoDetailPage({
 			return true;
 		})
 		.map((card) => ({
-			id:
-				card.clipNumber != null ? card.id * 1000 + card.clipNumber : card.id,
+			id: card.clipNumber != null ? card.id * 1000 + card.clipNumber : card.id,
 			title: card.title,
 			subtitle: card.subtitle,
 			coverUrl: card.coverUrl,

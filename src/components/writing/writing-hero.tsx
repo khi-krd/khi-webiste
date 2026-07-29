@@ -3,8 +3,8 @@ import {
 	ScrollReveal,
 	ScrollRevealItem,
 } from "@/components/motion/scroll-reveal";
-import { WRITINGS_STILL } from "@/lib/mock/public-stills";
 import { cn } from "@/lib/utils";
+import { WRITINGS_STILL } from "@/lib/writing/still";
 
 type WritingHeroProps = {
 	eyebrow: string;
@@ -60,7 +60,10 @@ export function WritingHero({
 	showEmphasisItalic = false,
 }: WritingHeroProps) {
 	return (
-		<header
+		// <section>, not <header>: a nested <header> has the implicit `generic`
+		// role, which does not support aria-labelledby. <section> maps to
+		// `region`, making this a properly named landmark.
+		<section
 			aria-labelledby="writings-hero-heading"
 			className="relative overflow-hidden border-b border-border"
 		>
@@ -99,6 +102,6 @@ export function WritingHero({
 					</ScrollRevealItem>
 				</ScrollReveal>
 			</div>
-		</header>
+		</section>
 	);
 }

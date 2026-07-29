@@ -68,9 +68,7 @@ export function VideoHero({
 	const [stillA, stillB, stillC, stillD, stillE] = stills;
 
 	return (
-		<header
-			className="relative overflow-hidden border-b border-border/60 bg-surface"
-		>
+		<header className="relative overflow-hidden border-b border-border/60 bg-surface">
 			{/* faint top light — the only background event */}
 			<div
 				aria-hidden

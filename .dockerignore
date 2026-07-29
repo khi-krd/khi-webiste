@@ -6,11 +6,24 @@ build
 .env*
 .git
 .gitignore
+.github
 .cursor
 .vscode
+.claude
 *.md
+docs
 coverage
 .DS_Store
+**/.DS_Store
 *.pem
+*.tsbuildinfo
+.pnpm-store
 npm-debug.log*
 .pnpm-debug.log*
+
+# Tests never run inside the image; excluding them keeps the build context small
+# and avoids shipping fixtures into the runtime layer.
+**/*.test.ts
+**/*.test.tsx
+vitest.config.ts
+src/test

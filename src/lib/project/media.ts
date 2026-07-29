@@ -50,10 +50,7 @@ export function inferMediaKindFromUrl(url: string): MediaKind | null {
 	return null;
 }
 
-export function parseMediaKind(
-	value: unknown,
-	url?: string | null,
-): MediaKind {
+export function parseMediaKind(value: unknown, url?: string | null): MediaKind {
 	const declared = normalizeDeclaredMediaKind(value);
 	const inferred = url ? inferMediaKindFromUrl(url) : null;
 
@@ -85,26 +82,19 @@ export function parseMediaGallery(
 			const caption =
 				locale === "ckb"
 					? firstNonBlank(
-							typeof record.captionCkb === "string"
-								? record.captionCkb
-								: null,
-							typeof record.captionKmr === "string"
-								? record.captionKmr
-								: null,
+							typeof record.captionCkb === "string" ? record.captionCkb : null,
+							typeof record.captionKmr === "string" ? record.captionKmr : null,
 							typeof record.caption === "string" ? record.caption : null,
 						)
 					: firstNonBlank(
-							typeof record.captionKmr === "string"
-								? record.captionKmr
-								: null,
-							typeof record.captionCkb === "string"
-								? record.captionCkb
-								: null,
+							typeof record.captionKmr === "string" ? record.captionKmr : null,
+							typeof record.captionCkb === "string" ? record.captionCkb : null,
 							typeof record.caption === "string" ? record.caption : null,
 						);
 
 			const sortOrder =
-				typeof record.sortOrder === "number" && Number.isFinite(record.sortOrder)
+				typeof record.sortOrder === "number" &&
+				Number.isFinite(record.sortOrder)
 					? record.sortOrder
 					: index;
 

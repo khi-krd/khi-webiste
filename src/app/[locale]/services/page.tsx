@@ -16,6 +16,7 @@ import {
 	resolveServicesHeroImage,
 	serviceRecordToPageSettings,
 } from "@/lib/api/services-page";
+import { localeAlternates } from "@/lib/seo/metadata";
 
 export async function generateMetadata({
 	params,
@@ -26,6 +27,7 @@ export async function generateMetadata({
 	const t = await getTranslations({ locale, namespace: "Services" });
 
 	return {
+		alternates: localeAlternates(locale, "/services"),
 		title: t("pageTitle"),
 		description: t("metaDescription"),
 	};
@@ -77,8 +79,7 @@ export default async function ServicesPage({
 			section.title ??
 			t(`items.${section.mockId}.title`, { defaultValue: section.mockId }),
 		body:
-			section.body ??
-			t(`items.${section.mockId}.body`, { defaultValue: "" }),
+			section.body ?? t(`items.${section.mockId}.body`, { defaultValue: "" }),
 	}));
 
 	const bottomCardItems = partnerCards.map((card) => ({

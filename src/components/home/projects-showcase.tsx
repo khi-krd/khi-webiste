@@ -55,7 +55,7 @@ export function ProjectsShowcase({
 	useEffect(() => {
 		if (!emblaApi) return;
 		emblaApi.reInit();
-	}, [projects, direction, emblaApi]);
+	}, [emblaApi]);
 
 	return (
 		<div>
@@ -63,7 +63,9 @@ export function ProjectsShowcase({
 				<header>
 					<div className="flex flex-col gap-5 sm:flex-row sm:items-end sm:justify-between sm:gap-8">
 						<div className="max-w-xl text-start">
-							<p className="text-label font-medium text-muted">{copy.eyebrow}</p>
+							<p className="text-label font-medium text-muted">
+								{copy.eyebrow}
+							</p>
 							<h2
 								id="projects-heading"
 								className="mt-2 font-heading text-h3 font-semibold leading-snug text-balance sm:text-h2 sm:leading-[1.2]"

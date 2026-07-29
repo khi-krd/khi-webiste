@@ -1,0 +1,42 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: pnpm
+
+      - run: pnpm install --frozen-lockfile
+
+      - name: Lint and format check
+        run: pnpm lint
+
+      - name: Typecheck
+        run: pnpm typecheck
+
+      - name: Unit tests
+        run: pnpm test
+
+      - name: Message catalogue parity
+        run: node scripts/check-i18n-parity.mjs
+
+      - name: Production build
+        run: pnpm build
+        env:
+          # Build-time only. Server config (API_BASE_URL) is deliberately absent:
+          # src/lib/env.ts skips validation during the build phase precisely so
+          # the image can be built without production secrets.
+          NEXT_PUBLIC_SITE_URL: https://example.com
+          NEXT_PUBLIC_MEDIA_HOST: example.s3.amazonaws.com

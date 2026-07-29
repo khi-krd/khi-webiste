@@ -43,7 +43,9 @@ function dedupeOrderedSlides(slides: GallerySlide[]): GallerySlide[] {
 	return ordered;
 }
 
-function galleryItemToSlide(item: ServiceGalleryMediaItem): GallerySlide | null {
+function galleryItemToSlide(
+	item: ServiceGalleryMediaItem,
+): GallerySlide | null {
 	if (item.kind === "image") {
 		if (!isValidMediaUrl(item.media.url)) return null;
 		return { type: "image", media: item.media };
@@ -92,9 +94,7 @@ function legacySlidesFromService(service: ServiceItem): GallerySlide[] {
 	pushSlide(urlToSlide(service.featureImage.url, alt, service.video));
 
 	for (const media of service.thumbnails) {
-		pushSlide(
-			urlToSlide(media.url, media.alt ?? alt, service.video),
-		);
+		pushSlide(urlToSlide(media.url, media.alt ?? alt, service.video));
 	}
 
 	const heroSrc = service.video.src?.trim();
@@ -145,9 +145,10 @@ export function mapApiGalleryMedia(
 	});
 }
 
-export function buildServiceGallery(
-	service: ServiceItem,
-): { slides: GallerySlide[]; defaultIndex: number } {
+export function buildServiceGallery(service: ServiceItem): {
+	slides: GallerySlide[];
+	defaultIndex: number;
+} {
 	const fromGalleryMedia =
 		service.galleryMedia && service.galleryMedia.length > 0
 			? service.galleryMedia

@@ -5,21 +5,23 @@ import {
 	normalizeVideoRecord,
 	normalizeWritingRecord,
 } from "../src/lib/api/normalize";
-import { SoundTrackSchema, SoundTracksPageSchema } from "../src/types/audio";
+import { SoundTrackSchema } from "../src/types/audio";
 import { ContactActivePageSchema } from "../src/types/contact-page";
 import { FeaturedApiItemsSchema } from "../src/types/content";
-import {
-	ImageCollectionSchema,
-	ImageCollectionsPageSchema,
-} from "../src/types/gallery";
-import { ProjectSchema, ProjectsPageSchema } from "../src/types/project";
+import { ImageCollectionSchema } from "../src/types/gallery";
+import { ProjectSchema } from "../src/types/project";
 import { ServicesPageSchema } from "../src/types/service";
-import { VideoSchema, VideosPageSchema } from "../src/types/video";
-import { WritingSchema, WritingsPageSchema } from "../src/types/writing";
+import { VideoSchema } from "../src/types/video";
+import { WritingSchema } from "../src/types/writing";
 
-const API =
-	process.env.API_BASE_URL ??
-	"https://blissful-spontaneity-production.up.railway.app";
+const API = process.env.API_BASE_URL?.replace(/\/+$/, "");
+
+if (!API) {
+	console.error(
+		"API_BASE_URL is required. Run with:\n  API_BASE_URL=https://your-api pnpm validate:api",
+	);
+	process.exit(1);
+}
 
 function unwrapApiPayload(payload: unknown): unknown | null {
 	if (!payload || typeof payload !== "object") {

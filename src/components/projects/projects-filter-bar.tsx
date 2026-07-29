@@ -8,11 +8,11 @@ import {
 import { useSearchParams } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { useCallback, useEffect, useRef, useState, useTransition } from "react";
-import { useScrollToSection } from "@/lib/use-scroll-to-section";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { useRouter } from "@/i18n/navigation";
 import { projectsHref } from "@/lib/projects-url";
+import { useScrollToSection } from "@/lib/use-scroll-to-section";
 import { cn } from "@/lib/utils";
 
 type ProjectsFilterBarProps = {
@@ -210,7 +210,9 @@ export function ProjectsFilterBar({
 
 					{hasActiveFilters ? (
 						<div className="mt-4 flex flex-wrap items-center gap-2 border-t border-border pt-4">
-							<span className="text-label text-muted">{t("filter.active")}</span>
+							<span className="text-label text-muted">
+								{t("filter.active")}
+							</span>
 							{activeYear ? (
 								<Badge variant="outline" size="sm">
 									{activeYear}

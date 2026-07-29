@@ -16,6 +16,7 @@ import {
 	resolveAboutContent,
 } from "@/lib/api/about";
 import { plainTextFromRichContent } from "@/lib/rich-text";
+import { localeAlternates } from "@/lib/seo/metadata";
 
 export async function generateMetadata({
 	params,
@@ -30,6 +31,7 @@ export async function generateMetadata({
 		: null;
 
 	return {
+		alternates: localeAlternates(locale, "/about"),
 		title: aboutContent?.title ?? t("pageTitle"),
 		description:
 			aboutContent?.metaDescription ??

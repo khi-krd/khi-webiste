@@ -1,5 +1,4 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
-import { getApiBaseUrl, getMockDataMode } from "@/lib/api/config";
 
 const originalUseMockData = process.env.USE_MOCK_DATA;
 const originalApiBaseUrl = process.env.API_BASE_URL;

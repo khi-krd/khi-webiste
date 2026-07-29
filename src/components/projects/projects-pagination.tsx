@@ -1,10 +1,10 @@
 "use client";
 
 import { useTransition } from "react";
-import { useScrollToSection } from "@/lib/use-scroll-to-section";
 import { Pagination } from "@/components/ui/pagination";
 import { useRouter } from "@/i18n/navigation";
 import { projectsHref } from "@/lib/projects-url";
+import { useScrollToSection } from "@/lib/use-scroll-to-section";
 import { cn } from "@/lib/utils";
 
 type ProjectsPaginationProps = {
@@ -50,10 +50,9 @@ export function ProjectsPagination({
 
 	const handlePageChange = (page: number) => {
 		startTransition(() => {
-			router.replace(
-				hrefFor(page, activeYear, activeTag, activeQuery),
-				{ scroll: false },
-			);
+			router.replace(hrefFor(page, activeYear, activeTag, activeQuery), {
+				scroll: false,
+			});
 
 			scrollToSection("projects-content");
 		});
@@ -63,9 +62,7 @@ export function ProjectsPagination({
 		<Pagination
 			currentPage={currentPage}
 			totalPages={totalPages}
-			createHref={(page) =>
-				hrefFor(page, activeYear, activeTag, activeQuery)
-			}
+			createHref={(page) => hrefFor(page, activeYear, activeTag, activeQuery)}
 			onPageChange={handlePageChange}
 			label={label}
 			previousLabel={previousLabel}

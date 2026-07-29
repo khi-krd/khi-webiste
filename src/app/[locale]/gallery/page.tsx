@@ -3,13 +3,13 @@ import { getTranslations, setRequestLocale } from "next-intl/server";
 import { GalleryHero } from "@/components/gallery/gallery-hero";
 import { GalleryPosts } from "@/components/gallery/gallery-posts";
 import {
-	GALLERY_POSTS_PER_PAGE,
+	filterGalleryPosts,
 	getGalleryHeroColumns,
 	getGalleryPosts,
 	paginateGalleryPosts,
-	filterGalleryPosts,
 } from "@/lib/api/gallery";
 import { isGalleryCollectionType } from "@/lib/gallery-url";
+import { localeAlternates } from "@/lib/seo/metadata";
 
 export async function generateMetadata({
 	params,
@@ -20,6 +20,7 @@ export async function generateMetadata({
 	const t = await getTranslations({ locale, namespace: "Gallery" });
 
 	return {
+		alternates: localeAlternates(locale, "/gallery"),
 		title: t("pageTitle"),
 		description: t("metaDescription"),
 	};
@@ -73,8 +74,6 @@ export default async function GalleryPage({
 				title={t("posts.title")}
 				description={t("posts.description")}
 				posts={posts}
-				totalCount={allPosts.length}
-				indexOffset={(currentPage - 1) * GALLERY_POSTS_PER_PAGE}
 				currentPage={currentPage}
 				totalPages={totalPages}
 				activeQuery={q}

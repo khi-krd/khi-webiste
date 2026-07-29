@@ -1,5 +1,8 @@
+import { timingSafeEqual } from "node:crypto";
 import { revalidatePath, revalidateTag } from "next/cache";
 import { type NextRequest, NextResponse } from "next/server";
+
+export const dynamic = "force-dynamic";
 
 type RevalidateBody = {
 	tags?: string[];
@@ -26,6 +29,40 @@ function parseStringArray(value: unknown): string[] {
 	}
 
 	return value.filter(isNonEmptyString).map((entry) => entry.trim());
+}
+
+/** Constant-time compare so the secret cannot be recovered byte by byte. */
+function secretMatches(provided: string, expected: string): boolean {
+	const a = Buffer.from(provided);
+	const b = Buffer.from(expected);
+	// timingSafeEqual throws on length mismatch; compare lengths separately.
+	return a.length === b.length && timingSafeEqual(a, b);
+}
+
+/**
+ * Site-relative paths only. `revalidatePath` takes app-router paths, so an
+ * absolute URL or a traversal segment is always a caller mistake or an abuse
+ * attempt.
+ */
+function isSafePath(path: string): boolean {
+	return path.startsWith("/") && !path.startsWith("//") && !path.includes("..");
+}
+
+/**
+ * Cloudflare purges are billed and zone-wide, so restrict `files` to this
+ * site's own origin — a leaked secret should not be able to purge unrelated
+ * hostnames on the same zone.
+ */
+function isSameOriginUrl(candidate: string): boolean {
+	const siteUrl = process.env.NEXT_PUBLIC_SITE_URL?.trim();
+	if (!siteUrl) {
+		return false;
+	}
+	try {
+		return new URL(candidate).origin === new URL(siteUrl).origin;
+	} catch {
+		return false;
+	}
 }
 
 async function purgeCloudflareCache(options: {
@@ -62,22 +99,22 @@ async function purgeCloudflareCache(options: {
 		);
 
 		if (!response.ok) {
-			const text = await response.text();
+			// Log the upstream body server-side; return only the status so the
+			// caller does not receive Cloudflare's internal error detail.
+			console.error(
+				`[revalidate] Cloudflare purge failed (${response.status}):`,
+				(await response.text()).slice(0, 500),
+			);
 			return {
 				ok: false,
-				error: `Cloudflare purge failed (${response.status}): ${text.slice(0, 200)}`,
+				error: `Cloudflare purge failed (${response.status})`,
 			};
 		}
 
 		return { ok: true };
 	} catch (error) {
-		return {
-			ok: false,
-			error:
-				error instanceof Error
-					? error.message
-					: "Cloudflare purge request failed",
-		};
+		console.error("[revalidate] Cloudflare purge request failed:", error);
+		return { ok: false, error: "Cloudflare purge request failed" };
 	}
 }
 
@@ -86,6 +123,11 @@ async function purgeCloudflareCache(options: {
  *
  * POST /api/revalidate
  * Header: x-revalidation-secret: <REVALIDATION_SECRET>
+ *
+ * The secret must be sent as a header. The former `?secret=` query-string form
+ * was removed because query strings are recorded in access logs, proxy logs and
+ * Referer headers.
+ *
  * Body: {
  *   "tags": ["news", "featured"],
  *   "paths": ["/ckb", "/ku"],
@@ -95,11 +137,13 @@ async function purgeCloudflareCache(options: {
  */
 export async function POST(request: NextRequest) {
 	const expectedSecret = process.env.REVALIDATION_SECRET?.trim();
-	const providedSecret =
-		request.headers.get("x-revalidation-secret")?.trim() ??
-		request.nextUrl.searchParams.get("secret")?.trim();
+	const providedSecret = request.headers.get("x-revalidation-secret")?.trim();
 
-	if (!expectedSecret || providedSecret !== expectedSecret) {
+	if (
+		!expectedSecret ||
+		!providedSecret ||
+		!secretMatches(providedSecret, expectedSecret)
+	) {
 		return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 	}
 
@@ -111,8 +155,8 @@ export async function POST(request: NextRequest) {
 	}
 
 	const tags = parseStringArray(body.tags);
-	const paths = parseStringArray(body.paths);
-	const urls = parseStringArray(body.urls);
+	const paths = parseStringArray(body.paths).filter(isSafePath);
+	const urls = parseStringArray(body.urls).filter(isSameOriginUrl);
 	const purgeEverything = body.purgeEverything === true;
 
 	if (

@@ -88,7 +88,9 @@ export function WritingRow({ item, className }: WritingRowProps) {
 					) : null}
 
 					{item.writer ? (
-						<p className="mt-2.5 text-small text-foreground/70">{item.writer}</p>
+						<p className="mt-2.5 text-small text-foreground/70">
+							{item.writer}
+						</p>
 					) : null}
 				</div>
 			</Link>

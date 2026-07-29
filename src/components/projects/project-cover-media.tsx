@@ -1,13 +1,10 @@
 "use client";
 
-import {
-	FilmIcon,
-	MusicalNoteIcon,
-} from "@heroicons/react/24/outline";
+import { FilmIcon, MusicalNoteIcon } from "@heroicons/react/24/outline";
 import { ProjectCoverImage } from "@/components/projects/project-cover-image";
 import { VideoPlayer } from "@/components/ui/video-player";
-import type { MediaKind } from "@/types/media";
 import { cn } from "@/lib/utils";
+import type { MediaKind } from "@/types/media";
 
 type ProjectCoverMediaProps = {
 	url: string;
@@ -79,7 +76,8 @@ export function ProjectCoverMedia({
 				<div
 					className={cn(
 						"relative z-10 border-t border-border bg-surface/95 p-4 backdrop-blur-[2px] sm:p-5",
-						isHero && "mx-auto w-full max-w-3xl border-x-0 border-b-0 bg-surface/90",
+						isHero &&
+							"mx-auto w-full max-w-3xl border-x-0 border-b-0 bg-surface/90",
 					)}
 				>
 					<div className="mb-3 flex items-center gap-2 label font-semibold uppercase tracking-[0.12em] text-muted">

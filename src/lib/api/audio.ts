@@ -9,7 +9,10 @@ import {
 	unwrapApiPayload,
 } from "@/lib/api/client";
 import { getApiBaseUrl } from "@/lib/api/config";
-import { applyMockPolicy, applyMockPolicyNullable } from "@/lib/api/mock-policy";
+import {
+	applyMockPolicy,
+	applyMockPolicyNullable,
+} from "@/lib/api/mock-policy";
 import { normalizeSoundTrackRecord } from "@/lib/api/normalize";
 import {
 	filterAudioTracks,
@@ -78,7 +81,9 @@ async function fetchTracksPage(
 	return page?.content.length ? page.content : null;
 }
 
-async function fetchTracksBySoundType(soundType: string): Promise<SoundTrack[] | null> {
+async function fetchTracksBySoundType(
+	soundType: string,
+): Promise<SoundTrack[] | null> {
 	const page = await apiFetchPage(`${SOUND_TRACKS_ENDPOINT}/by-sound-type`, {
 		itemSchema: SoundTrackSchema,
 		tags: [SOUND_TRACKS_TAG],
@@ -89,7 +94,9 @@ async function fetchTracksBySoundType(soundType: string): Promise<SoundTrack[] |
 	return page?.content.length ? page.content : null;
 }
 
-async function fetchTracksByKeyword(keyword: string): Promise<SoundTrack[] | null> {
+async function fetchTracksByKeyword(
+	keyword: string,
+): Promise<SoundTrack[] | null> {
 	const page = await apiFetchPage(`${SOUND_TRACKS_ENDPOINT}/search/keyword`, {
 		itemSchema: SoundTrackSchema,
 		tags: [SOUND_TRACKS_TAG],
@@ -240,13 +247,16 @@ export async function getAlbumOfMemories(
 	let apiItems: ResolvedAudioCard[] = [];
 
 	if (getApiBaseUrl()) {
-		const page = await apiFetchPage(`${SOUND_TRACKS_ENDPOINT}/album-of-memories`, {
-			itemSchema: SoundTrackSchema,
-			tags: [SOUND_TRACKS_TAG, "album-of-memories"],
-			revalidate: DEFAULT_REVALIDATE,
-			searchParams: { page: 0, size },
-			normalizeItem: normalizeSoundTrackRecord,
-		});
+		const page = await apiFetchPage(
+			`${SOUND_TRACKS_ENDPOINT}/album-of-memories`,
+			{
+				itemSchema: SoundTrackSchema,
+				tags: [SOUND_TRACKS_TAG, "album-of-memories"],
+				revalidate: DEFAULT_REVALIDATE,
+				searchParams: { page: 0, size },
+				normalizeItem: normalizeSoundTrackRecord,
+			},
+		);
 
 		if (page?.content.length) {
 			apiItems = sortAudioTracks(
@@ -331,10 +341,7 @@ export async function getRelatedAudio(
 ): Promise<ResolvedAudioCard[]> {
 	const limit = options?.limit ?? RELATED_AUDIO_LIMIT;
 	const allItems = await getAllAudioCards(locale);
-	const exclude = new Set<number>([
-		detail.id,
-		...(options?.excludeIds ?? []),
-	]);
+	const exclude = new Set<number>([detail.id, ...(options?.excludeIds ?? [])]);
 	const tagSet = new Set(
 		[...detail.tags, ...detail.keywords]
 			.map((tag) => tag.trim().toLowerCase())

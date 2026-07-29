@@ -1,6 +1,9 @@
 import { describe, expect, it } from "vitest";
 import { richTextContentType } from "@/lib/rich-text/content-type";
-import { isRichTextEmpty, plainTextFromRichContent } from "@/lib/rich-text/plain-text";
+import {
+	isRichTextEmpty,
+	plainTextFromRichContent,
+} from "@/lib/rich-text/plain-text";
 import { renderRichText } from "@/lib/rich-text/render";
 
 describe("richTextContentType", () => {

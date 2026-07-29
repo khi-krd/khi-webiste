@@ -12,8 +12,8 @@ import {
 import { DirectionalIcon } from "@/components/ui/directional-icon";
 import { Link } from "@/components/ui/link";
 import { getVideoListing } from "@/lib/api/videos";
-import { buildVideoHref } from "@/lib/video-url";
 import { formatDuration } from "@/lib/video/format";
+import { buildVideoHref } from "@/lib/video-url";
 import type { ResolvedVideoCard } from "@/types/video";
 
 const viewAllClass =

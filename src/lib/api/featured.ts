@@ -1,5 +1,5 @@
 import "server-only";
-import { z } from "zod";
+import type { z } from "zod";
 import {
 	apiFetchRaw,
 	DEFAULT_REVALIDATE,
@@ -143,10 +143,7 @@ function logFeaturedParseFailure(rawItem: unknown, error: z.ZodError): void {
 	}
 
 	const item = asRecord(rawItem);
-	const id =
-		getIdentifier(item?.id) ??
-		getIdentifier(item?.entityId) ??
-		"?";
+	const id = getIdentifier(item?.id) ?? getIdentifier(item?.entityId) ?? "?";
 	const [firstIssue] = error.issues;
 	console.warn(
 		`[api] Zod parse failed for ${FEATURED_ENDPOINT}#item-${id}:`,
@@ -312,7 +309,9 @@ export async function getFeaturedItems(
 
 		if (payload == null) {
 			if (isDevelopment) {
-				console.warn(`[api] HTTP error or empty response for ${FEATURED_ENDPOINT}`);
+				console.warn(
+					`[api] HTTP error or empty response for ${FEATURED_ENDPOINT}`,
+				);
 			}
 		} else {
 			const unwrapped = unwrapApiPayload(payload);

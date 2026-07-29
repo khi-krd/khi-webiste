@@ -42,7 +42,9 @@ export function ErrorState({
 		<div
 			className={cn(
 				"mx-auto flex max-w-md flex-col items-center gap-4 text-center",
-				framed ? "rounded-md border border-border-strong p-8 sm:p-10" : "px-6 py-12",
+				framed
+					? "rounded-md border border-border-strong p-8 sm:p-10"
+					: "px-6 py-12",
 				className,
 			)}
 		>

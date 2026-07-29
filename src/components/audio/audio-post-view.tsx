@@ -246,8 +246,7 @@ export async function AudioPostView({
 	const fileAttachments = downloadableAttachments.filter(
 		(attachment) => attachment.attachmentType !== "IMAGE",
 	);
-	const hasSources =
-		imageAttachments.length > 0 || fileAttachments.length > 0;
+	const hasSources = imageAttachments.length > 0 || fileAttachments.length > 0;
 
 	const relatedCards = related.map((card) => toAudioCardProps(card, t));
 

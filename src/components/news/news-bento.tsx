@@ -87,10 +87,7 @@ export async function NewsBento({
 							<ScrollRevealItem className="sm:col-span-2 lg:col-span-5">
 								<NewsEditorialCard
 									item={editorial}
-									categoryLabel={newsItemCategoryLabel(
-										editorial,
-										categories,
-									)}
+									categoryLabel={newsItemCategoryLabel(editorial, categories)}
 								/>
 							</ScrollRevealItem>
 						) : null}

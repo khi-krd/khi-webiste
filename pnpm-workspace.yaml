@@ -1,6 +1,8 @@
 allowBuilds:
   '@parcel/watcher': true
   '@swc/core': true
+  # esbuild backs `tsx`, used by the `validate:api` script.
+  esbuild: true
   sharp: true
 ignoredBuiltDependencies:
   - unrs-resolver

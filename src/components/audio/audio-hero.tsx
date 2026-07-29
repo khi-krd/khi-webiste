@@ -70,9 +70,7 @@ export function AudioHero({
 	const [coverA, coverB, coverC] = covers;
 
 	return (
-		<header
-			className="relative overflow-hidden border-b border-border bg-surface"
-		>
+		<header className="relative overflow-hidden border-b border-border bg-surface">
 			{/* faint top light — the only background event */}
 			<div
 				aria-hidden

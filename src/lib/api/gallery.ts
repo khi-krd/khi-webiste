@@ -18,6 +18,7 @@ import {
 	resolveGalleryPosts,
 } from "@/lib/gallery/resolve";
 import {
+	filterGalleryPosts,
 	GALLERY_POSTS_PER_PAGE,
 	type GalleryHeroColumns,
 	type GalleryPost,
@@ -25,23 +26,20 @@ import {
 	getGalleryHeroColumns as getMockGalleryHeroColumns,
 	getGalleryPostBySlug as getMockGalleryPostBySlug,
 	getGalleryPosts as getMockGalleryPosts,
-	filterGalleryPosts,
 	paginateGalleryPosts,
 } from "@/lib/mock/gallery";
-import {
-	ImageCollectionSchema,
-} from "@/types/gallery";
+import { ImageCollectionSchema } from "@/types/gallery";
 
 const GALLERY_ENDPOINT = "/api/v1/image-collections";
 const GALLERY_TAG = "image-collections";
 
 export {
+	filterGalleryPosts,
 	GALLERY_POSTS_PER_PAGE,
 	type GalleryHeroColumns,
 	type GalleryPost,
 	type GalleryPostDetail,
 	paginateGalleryPosts,
-	filterGalleryPosts,
 };
 
 async function fetchAllCollections() {
@@ -75,8 +73,7 @@ export async function getGalleryHeroColumns(
 	const apiColumns = raw
 		? resolveGalleryHeroColumns(locale, raw)
 		: emptyColumns;
-	const hasApiColumns =
-		apiColumns.up.length > 0 || apiColumns.down.length > 0;
+	const hasApiColumns = apiColumns.up.length > 0 || apiColumns.down.length > 0;
 
 	return (
 		applyMockPolicyNullable({

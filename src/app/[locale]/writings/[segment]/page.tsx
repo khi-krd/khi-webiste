@@ -9,6 +9,7 @@ import {
 	getWritingNeighbors,
 	getWritingSeriesBooks,
 } from "@/lib/api/writings";
+import { localeAlternates } from "@/lib/seo/metadata";
 import {
 	WRITING_CATEGORY_NAV_KEYS,
 	type WritingCategorySlug,
@@ -61,6 +62,7 @@ export async function generateMetadata({
 	}
 
 	return {
+		alternates: localeAlternates(locale, `/writings/${segment}`),
 		title: detail.title,
 		description: detail.description.slice(0, 160),
 	};

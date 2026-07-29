@@ -6,8 +6,9 @@ import { getGalleryPosts } from "@/lib/api/gallery";
 import { getNews, getNewsCategories } from "@/lib/api/news";
 import { getProjectListItems, getProjectTags } from "@/lib/api/projects";
 import { getVideoTopics } from "@/lib/api/videos";
-import { buildAudioHref } from "@/lib/audio-url";
 import { soundTypeLabel } from "@/lib/audio/sound-types";
+import { buildAudioHref } from "@/lib/audio-url";
+import { buildGalleryHref } from "@/lib/gallery-url";
 import { buildNewsHref } from "@/lib/news-url";
 import { projectsHref } from "@/lib/projects-url";
 import type { SearchTaxonomyItem } from "@/lib/search/taxonomy-types";
@@ -18,7 +19,6 @@ import {
 } from "@/lib/writing/categories";
 import { BOOK_GENRES } from "@/lib/writing/genres";
 import { buildWritingsHref } from "@/lib/writings-url";
-import { buildGalleryHref } from "@/lib/gallery-url";
 import type { VideoType } from "@/types/video";
 
 function uniqueStrings(values: string[]): string[] {
@@ -94,9 +94,7 @@ export async function getSearchTaxonomy(
 		});
 	}
 
-	const newsTags = uniqueStrings(
-		newsItems.flatMap((item) => item.tags ?? []),
-	);
+	const newsTags = uniqueStrings(newsItems.flatMap((item) => item.tags ?? []));
 	for (const tag of newsTags) {
 		pushUniqueItem(items, seen, {
 			id: `news-tag-${tag.toLocaleLowerCase()}`,

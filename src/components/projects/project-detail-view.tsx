@@ -1,10 +1,10 @@
-import { ProjectCoverMedia } from "@/components/projects/project-cover-media";
-import { ProjectMediaGallery } from "@/components/projects/project-media-gallery";
 import { ArrowLeftIcon, ArrowRightIcon } from "@heroicons/react/24/outline";
 import {
 	ScrollReveal,
 	ScrollRevealBlock,
 } from "@/components/motion/scroll-reveal";
+import { ProjectCoverMedia } from "@/components/projects/project-cover-media";
+import { ProjectMediaGallery } from "@/components/projects/project-media-gallery";
 import { Badge } from "@/components/ui/badge";
 import { DirectionalIcon } from "@/components/ui/directional-icon";
 import { RichText } from "@/components/ui/rich-text";
@@ -13,8 +13,8 @@ import { Link } from "@/i18n/navigation";
 import { homeInsetClass } from "@/lib/layout";
 import type { ProjectDetail, ProjectListItem } from "@/lib/mock/projects";
 import { projectDetailHref, projectsHref } from "@/lib/projects-url";
-import { projectTagHref } from "@/lib/search/taxonomy-href";
 import { isRichTextEmpty } from "@/lib/rich-text";
+import { projectTagHref } from "@/lib/search/taxonomy-href";
 import { cn } from "@/lib/utils";
 
 type ProjectDetailViewProps = {
@@ -245,11 +245,7 @@ export function ProjectDetailView({
 							<div aria-hidden className="hidden sm:block" />
 						)}
 						{next && (
-							<AdjacentLink
-								project={next}
-								label={nextLabel}
-								direction="next"
-							/>
+							<AdjacentLink project={next} label={nextLabel} direction="next" />
 						)}
 					</div>
 				</nav>

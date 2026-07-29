@@ -75,12 +75,18 @@ describe("filterTaxonomyItems", () => {
 
 	it("respects archive scope", () => {
 		expect(filterTaxonomyItems(sampleItems, "oral", "archive")).toHaveLength(1);
-		expect(filterTaxonomyItems(sampleItems, "poetry", "archive")).toHaveLength(0);
+		expect(filterTaxonomyItems(sampleItems, "poetry", "archive")).toHaveLength(
+			0,
+		);
 	});
 
 	it("respects library scope", () => {
-		expect(filterTaxonomyItems(sampleItems, "poetry", "library")).toHaveLength(1);
-		expect(filterTaxonomyItems(sampleItems, "culture", "library")).toHaveLength(0);
+		expect(filterTaxonomyItems(sampleItems, "poetry", "library")).toHaveLength(
+			1,
+		);
+		expect(filterTaxonomyItems(sampleItems, "culture", "library")).toHaveLength(
+			0,
+		);
 	});
 });
 
@@ -159,9 +165,9 @@ describe("getNavMenuTaxonomyItems", () => {
 			},
 		];
 
-		expect(getNavMenuTaxonomyItems("video", catalog).map((item) => item.id)).toEqual(
-			["videos-topic-film", "videos-topic-docs"],
-		);
+		expect(
+			getNavMenuTaxonomyItems("video", catalog).map((item) => item.id),
+		).toEqual(["videos-topic-film", "videos-topic-docs"]);
 	});
 
 	it("caps results at NAV_MENU_MAX_ITEMS", () => {

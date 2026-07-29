@@ -354,7 +354,7 @@ export function NavDrawer({
 			setHoveredKey(null);
 			triggerRef.current?.focus();
 		}
-	}, [open, onViewChange]);
+	}, [open, onViewChange, triggerRef.current?.focus]);
 
 	function onKeyDown(event: ReactKeyboardEvent<HTMLDivElement>) {
 		if (event.key === "Escape") {
@@ -770,10 +770,7 @@ export function NavDrawer({
 																			})}
 																		</ul>
 																	</nav>
-																	<div
-																		className="min-h-0 flex-1"
-																		aria-hidden
-																	/>
+																	<div className="min-h-0 flex-1" aria-hidden />
 																</div>
 															)}
 

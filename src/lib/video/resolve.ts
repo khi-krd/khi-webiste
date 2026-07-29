@@ -1,5 +1,5 @@
-import { classifyPlayableSource } from "@/lib/video/source";
 import { plainTextFromRichContent } from "@/lib/rich-text";
+import { classifyPlayableSource } from "@/lib/video/source";
 import type {
 	ResolvedVideoCard,
 	ResolvedVideoCastMember,
@@ -104,7 +104,10 @@ function resolveBilingualStrings(
 }
 
 /** Locale-relative detail path consumed by the i18n-aware `Link`. */
-export function videoDetailHref(id: number, clipNumber?: number | null): string {
+export function videoDetailHref(
+	id: number,
+	clipNumber?: number | null,
+): string {
 	if (clipNumber != null && clipNumber > 0) {
 		return `/videos/${id}?clip=${clipNumber}`;
 	}
@@ -283,8 +286,7 @@ function resolveClip(
 		title: title ?? "",
 		url: resolveClipUrl(clip) ?? "",
 		durationSeconds: clip.durationSeconds ?? null,
-		coverUrl:
-			resolveClipCoverUrl(locale, clip) ?? parentCoverUrl ?? null,
+		coverUrl: resolveClipCoverUrl(locale, clip) ?? parentCoverUrl ?? null,
 	};
 }
 
@@ -437,8 +439,7 @@ export function resolveVideoDetail(
 		producer: firstNonBlank(content.producer),
 		location: firstNonBlank(content.location),
 		contentLanguages: video.contentLanguages,
-		durationSeconds:
-			video.durationSeconds ?? totalClipDuration(video) ?? null,
+		durationSeconds: video.durationSeconds ?? totalClipDuration(video) ?? null,
 		resolution: firstNonBlank(video.resolution),
 		fileFormat: firstNonBlank(video.fileFormat),
 		publishmentDate: firstNonBlank(video.publishmentDate),

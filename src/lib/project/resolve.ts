@@ -107,7 +107,8 @@ export function resolveProjectListItem(
 		id: String(project.id),
 		slug: String(project.id),
 		title,
-		subtitle: firstNonBlank(location, resolveProjectType(locale, project)) ?? "",
+		subtitle:
+			firstNonBlank(location, resolveProjectType(locale, project)) ?? "",
 		description,
 		excerpt,
 		location,

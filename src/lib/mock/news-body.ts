@@ -40,9 +40,18 @@ const CKB_BODIES: LocaleBodies = {
 		tags: ["مێژووی شفاهی", "ئارشیڤ", "شێوەزار", "گوند"],
 		mediaGallery: gallery(
 			media("/news/3.jpg", "IMAGE", "توێژەری مەیدانی لەگەڵ چیرۆکگۆیەکی گەنجی"),
-			media("/audio/sample-1.m4a", "AUDIO", "وەرگێڕەیەکی کورت لە چاوپێکەوتنێک — گۆرانییەکی لۆری"),
+			media(
+				"/audio/sample-1.m4a",
+				"AUDIO",
+				"وەرگێڕەیەکی کورت لە چاوپێکەوتنێک — گۆرانییەکی لۆری",
+			),
 			media("/news/4.jpg", "IMAGE", "میکرۆفۆن و تۆمارکەری دەنگی مەیدانی"),
-			media("/video/wave.mp4", "VIDEO", "کورتە فیلمێک لە پرۆسەی تۆمارکردن", "/news/2.jpg"),
+			media(
+				"/video/wave.mp4",
+				"VIDEO",
+				"کورتە فیلمێک لە پرۆسەی تۆمارکردن",
+				"/news/2.jpg",
+			),
 		),
 	},
 	"manuscript-digitization": {
@@ -74,7 +83,12 @@ const CKB_BODIES: LocaleBodies = {
 		coverThumbnailUrl: "/news/5.jpg",
 		tags: ["گۆرانی گەلەیی", "مۆسیقا", "ئارشیڤی دەنگی", "نەوەکان"],
 		mediaGallery: gallery(
-			media("/video/wave.mp4", "VIDEO", "کورتە فیلم: ئامادەکاری بۆ کۆنسێرتێکی گەلەیی", "/news/5.jpg"),
+			media(
+				"/video/wave.mp4",
+				"VIDEO",
+				"کورتە فیلم: ئامادەکاری بۆ کۆنسێرتێکی گەلەیی",
+				"/news/5.jpg",
+			),
 			media("/audio/sample-2.m4a", "AUDIO", "تۆمارێکی مەیدانی — دەنگی تەنبور"),
 			media("/news/7.jpg", "IMAGE", "ئامێرە کۆنەکانی مۆسیقا لە مۆزەخانە"),
 			media("/news/8.jpg", "IMAGE", "گەنجان لە کارگەیەتییەکی گۆرانی"),
@@ -121,7 +135,12 @@ const CKB_BODIES: LocaleBodies = {
 		coverThumbnailUrl: "/news/4.jpg",
 		tags: ["پەروەردە", "قوتابخانە", "میرات", "گوند"],
 		mediaGallery: gallery(
-			media("/video/wave.mp4", "VIDEO", "کورتە فیلم: چالاکییەکی پۆلی میرات", "/news/4.jpg"),
+			media(
+				"/video/wave.mp4",
+				"VIDEO",
+				"کورتە فیلم: چالاکییەکی پۆلی میرات",
+				"/news/4.jpg",
+			),
 			media("/news/4.jpg", "IMAGE", "قوتابیان لەگەڵ وێنەیەکی مێژوویی"),
 			media("/news/1.jpg", "IMAGE", "مامۆستایەک دەربارەی دەستنووسێک دەڵێت"),
 		),
@@ -148,7 +167,11 @@ const CKB_BODIES: LocaleBodies = {
 		tags: ["شیعر", "وەرگێڕان", "ئەدەب", "زمان"],
 		mediaGallery: gallery(
 			media("/news/1.jpg", "IMAGE", "دەستنووسی شیعر"),
-			media("/audio/sample-2.m4a", "AUDIO", "خوێندنەوەی شیعرێک بە شێوەزاری سەرچاوە"),
+			media(
+				"/audio/sample-2.m4a",
+				"AUDIO",
+				"خوێندنەوەی شیعرێک بە شێوەزاری سەرچاوە",
+			),
 		),
 	},
 	"hawraman-heritage-landscape": {
@@ -160,7 +183,12 @@ const CKB_BODIES: LocaleBodies = {
 		mediaGallery: gallery(
 			media("/news/6.jpg", "IMAGE", "گوندی پلەپلە"),
 			media("/news/9.jpg", "IMAGE", "کۆچی وەرزی"),
-			media("/video/wave.mp4", "VIDEO", "فیلم: ژیانی گوند لە هەورامان", "/news/6.jpg"),
+			media(
+				"/video/wave.mp4",
+				"VIDEO",
+				"فیلم: ژیانی گوند لە هەورامان",
+				"/news/6.jpg",
+			),
 		),
 	},
 	"women-in-oral-tradition": {
@@ -182,7 +210,12 @@ const CKB_BODIES: LocaleBodies = {
 		mediaGallery: gallery(
 			media("/news/5.jpg", "IMAGE", "ئاگری نەورۆز"),
 			media("/news/4.jpg", "IMAGE", "خەڵک لە گرد"),
-			media("/video/wave.mp4", "VIDEO", "کورتە فیلم: ئامادەکاری بۆ نەورۆز", "/news/5.jpg"),
+			media(
+				"/video/wave.mp4",
+				"VIDEO",
+				"کورتە فیلم: ئامادەکاری بۆ نەورۆز",
+				"/news/5.jpg",
+			),
 		),
 	},
 	"archive-access-policy": {
@@ -203,7 +236,12 @@ const CKB_BODIES: LocaleBodies = {
 		coverThumbnailUrl: "/news/3.jpg",
 		tags: ["سینەما", "فیلم", "هونەر", "ناسنامە"],
 		mediaGallery: gallery(
-			media("/video/wave.mp4", "VIDEO", "کورتە فیلم: دیمەنێک لە سینەمای کوردی", "/news/3.jpg"),
+			media(
+				"/video/wave.mp4",
+				"VIDEO",
+				"کورتە فیلم: دیمەنێک لە سینەمای کوردی",
+				"/news/3.jpg",
+			),
 			media("/news/3.jpg", "IMAGE", "وێنەیەکی فیلمی کوردی"),
 			media("/news/7.jpg", "IMAGE", "پێشبینینی فیلم"),
 		),
@@ -244,9 +282,18 @@ const CKB_BODIES: LocaleBodies = {
 		mediaGallery: gallery(
 			media("/news/1.jpg", "IMAGE", "پیشەساز گۆپاڵ دروست دەکات"),
 			media("/news/2.jpg", "IMAGE", "کەرەستەی دەستی لەسەر میز"),
-			media("/video/wave.mp4", "VIDEO", "فیلم: هەنگاوەکانی دروستکردنی گۆپاڵ", "/news/1.jpg"),
+			media(
+				"/video/wave.mp4",
+				"VIDEO",
+				"فیلم: هەنگاوەکانی دروستکردنی گۆپاڵ",
+				"/news/1.jpg",
+			),
 			media("/news/10.jpg", "IMAGE", "گۆپاڵە تەواوکراوەکان"),
-			media("/audio/sample-4.m4a", "AUDIO", "چیرۆکی پیشەسازێک دەربارەی فێربوونی پیشەکە"),
+			media(
+				"/audio/sample-4.m4a",
+				"AUDIO",
+				"چیرۆکی پیشەسازێک دەربارەی فێربوونی پیشەکە",
+			),
 		),
 	},
 	"youth-heritage-ambassadors": {
@@ -257,7 +304,12 @@ const CKB_BODIES: LocaleBodies = {
 		tags: ["گەنجان", "میرات", "خۆبەخشی", "بەڵگەکردن"],
 		mediaGallery: gallery(
 			media("/news/4.jpg", "IMAGE", "گەنجان لە کارگەیەتییەکی میرات"),
-			media("/video/wave.mp4", "VIDEO", "کورتە فیلم: باڵیۆزان لە مەیدان", "/news/4.jpg"),
+			media(
+				"/video/wave.mp4",
+				"VIDEO",
+				"کورتە فیلم: باڵیۆزان لە مەیدان",
+				"/news/4.jpg",
+			),
 		),
 	},
 	"radio-archive-digitization": {
@@ -269,7 +321,11 @@ const CKB_BODIES: LocaleBodies = {
 		mediaGallery: gallery(
 			media("/news/2.jpg", "IMAGE", "ئامێری ڕادیۆی کۆن"),
 			media("/audio/sample-1.m4a", "AUDIO", "وەرگێڕەیەکی پەخشی ڕادیۆی ١٩٧٥"),
-			media("/audio/sample-4.m4a", "AUDIO", "گۆرانییەکی گەلەیی لە ئارشیڤی ڕادیۆ"),
+			media(
+				"/audio/sample-4.m4a",
+				"AUDIO",
+				"گۆرانییەکی گەلەیی لە ئارشیڤی ڕادیۆ",
+			),
 		),
 	},
 };
@@ -287,7 +343,12 @@ const KU_BODIES: LocaleBodies = {
 		mediaGallery: gallery(
 			media("/news/3.jpg", "IMAGE", "Lêkolêrê qeydan bi çîrokgotarek re"),
 			media("/audio/sample-1.m4a", "AUDIO", "Kurteya hevpeyivînê — lorî"),
-			media("/video/wave.mp4", "VIDEO", "Fîlma kurt a prosesa tomarkirinê", "/news/2.jpg"),
+			media(
+				"/video/wave.mp4",
+				"VIDEO",
+				"Fîlma kurt a prosesa tomarkirinê",
+				"/news/2.jpg",
+			),
 		),
 	},
 	"craft-revival-weaving": {
@@ -301,7 +362,12 @@ const KU_BODIES: LocaleBodies = {
 		mediaGallery: gallery(
 			media("/news/1.jpg", "IMAGE", "Çêker gopal çêdike"),
 			media("/news/2.jpg", "IMAGE", "Amûrên destan li ser maseyê"),
-			media("/video/wave.mp4", "VIDEO", "Fîlm: gavên çêkirina gopalê", "/news/1.jpg"),
+			media(
+				"/video/wave.mp4",
+				"VIDEO",
+				"Fîlm: gavên çêkirina gopalê",
+				"/news/1.jpg",
+			),
 		),
 	},
 };
@@ -319,7 +385,12 @@ const EN_BODIES: LocaleBodies = {
 		mediaGallery: gallery(
 			media("/news/3.jpg", "IMAGE", "Field researcher with a community elder"),
 			media("/audio/sample-1.m4a", "AUDIO", "Interview excerpt — a lullaby"),
-			media("/video/wave.mp4", "VIDEO", "Short film: the recording process", "/news/2.jpg"),
+			media(
+				"/video/wave.mp4",
+				"VIDEO",
+				"Short film: the recording process",
+				"/news/2.jpg",
+			),
 		),
 	},
 	"craft-revival-weaving": {
@@ -330,7 +401,12 @@ const EN_BODIES: LocaleBodies = {
 		tags: ["Craft", "Walking stick", "Hawraman", "Heritage"],
 		mediaGallery: gallery(
 			media("/news/1.jpg", "IMAGE", "Artisan shaping a stick"),
-			media("/video/wave.mp4", "VIDEO", "Film: stages of carving", "/news/1.jpg"),
+			media(
+				"/video/wave.mp4",
+				"VIDEO",
+				"Film: stages of carving",
+				"/news/1.jpg",
+			),
 		),
 	},
 };
@@ -357,11 +433,7 @@ function fallbackBody(
 		tags: [],
 		mediaGallery: gallery(
 			media(imageUrl, "IMAGE", title),
-			media(
-				`/news/${(Math.abs(title.length) % 10) + 1}.jpg`,
-				"IMAGE",
-				null,
-			),
+			media(`/news/${(Math.abs(title.length) % 10) + 1}.jpg`, "IMAGE", null),
 		),
 	};
 }

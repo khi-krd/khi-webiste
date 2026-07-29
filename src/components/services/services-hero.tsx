@@ -82,10 +82,7 @@ export function ServicesHero({
 					</ServicesHeroBlock>
 
 					<ServicesHeroBlock>
-						<h2
-							id="services-hero-heading"
-							className="hero-slide-title mt-3"
-						>
+						<h2 id="services-hero-heading" className="hero-slide-title mt-3">
 							{title}
 						</h2>
 					</ServicesHeroBlock>

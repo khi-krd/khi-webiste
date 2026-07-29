@@ -133,7 +133,6 @@ export function GalleryLightbox({
 	const showThumbs = items.length > 1 && items.some((entry) => thumbSrc(entry));
 
 	return (
-		// biome-ignore lint/a11y/noStaticElementInteractions: keyboard nav on the dialog container (focus is trapped inside it)
 		<dialog
 			ref={dialogRef}
 			onClose={() => onActiveIndexChange(null)}

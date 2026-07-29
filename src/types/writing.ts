@@ -146,12 +146,8 @@ export const SeriesBookSummarySchema = z.object({
 	titleKmr: z.string().nullish(),
 	seriesOrder: z.number().nullable(),
 	createdAt: z.string().optional(),
-	ckbContent: z
-		.object({ title: z.string().nullish() })
-		.nullish(),
-	kmrContent: z
-		.object({ title: z.string().nullish() })
-		.nullish(),
+	ckbContent: z.object({ title: z.string().nullish() }).nullish(),
+	kmrContent: z.object({ title: z.string().nullish() }).nullish(),
 });
 
 export const SeriesResponseSchema = z.object({

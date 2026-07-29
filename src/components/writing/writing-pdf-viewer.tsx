@@ -435,7 +435,7 @@ function PdfPageSlot({
 
 	useEffect(() => {
 		setIsRendered(false);
-	}, [page, pageRenderSize.height, pageRenderSize.width]);
+	}, []);
 
 	return (
 		<div
@@ -522,11 +522,11 @@ function PdfReaderViewport({
 	useEffect(() => {
 		setRenderedPages(new Set());
 		setHasDisplayedOnce(initialDisplayComplete);
-	}, [pdfSrc, initialDisplayComplete]);
+	}, [initialDisplayComplete]);
 
 	useEffect(() => {
 		setRenderedPages(new Set());
-	}, [visiblePages, pageRenderSize.height, pageRenderSize.width]);
+	}, []);
 
 	const handlePageRenderSuccess = useCallback((page: number) => {
 		setRenderedPages((current) => {
@@ -781,6 +781,7 @@ function PdfReaderViewport({
 			onPointerMove={handlePointerMove}
 			onPointerUp={endPointerDrag}
 			onPointerCancel={endPointerDrag}
+			// biome-ignore lint/a11y/noNoninteractiveTabindex: the viewport is pannable and scrollable; tabIndex={0} on a labelled region is the standard way to let keyboard users reach and scroll it.
 			tabIndex={0}
 			role="region"
 			aria-label={title}

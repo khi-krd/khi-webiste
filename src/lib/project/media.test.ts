@@ -4,9 +4,7 @@ import { inferMediaKindFromUrl, parseMediaKind } from "@/lib/project/media";
 describe("inferMediaKindFromUrl", () => {
 	it("detects still images, audio, and video from file extensions", () => {
 		expect(
-			inferMediaKindFromUrl(
-				"https://s3.example.com/folders/images/photo.jpg",
-			),
+			inferMediaKindFromUrl("https://s3.example.com/folders/images/photo.jpg"),
 		).toBe("IMAGE");
 		expect(inferMediaKindFromUrl("/audio/sample-1.m4a")).toBe("AUDIO");
 		expect(inferMediaKindFromUrl("/video/wave.mp4")).toBe("VIDEO");

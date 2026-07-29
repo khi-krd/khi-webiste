@@ -6,6 +6,7 @@ import { AudioShell } from "@/components/audio/audio-shell";
 import { getAlbumOfMemories } from "@/lib/api/audio";
 import { loadAudioPageData } from "@/lib/audio/page-data";
 import { homeInsetClass } from "@/lib/layout";
+import { localeAlternates } from "@/lib/seo/metadata";
 import { cn } from "@/lib/utils";
 
 export async function generateMetadata({
@@ -17,6 +18,7 @@ export async function generateMetadata({
 	const t = await getTranslations({ locale, namespace: "Audio" });
 
 	return {
+		alternates: localeAlternates(locale, "/audio"),
 		title: t("pageTitle"),
 		description: t("metaDescription"),
 	};
@@ -86,10 +88,7 @@ export default async function AudioPage({
 				items={memories}
 			/>
 
-			<div
-				id="audio-content"
-				className="scroll-mt-26 sm:scroll-mt-30"
-			>
+			<div id="audio-content" className="scroll-mt-26 sm:scroll-mt-30">
 				<AudioShell
 					cards={pageData.listing.items}
 					currentPage={pageData.listing.currentPage}

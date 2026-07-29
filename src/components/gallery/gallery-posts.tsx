@@ -26,8 +26,6 @@ type GalleryPostsProps = {
 	title: string;
 	description: string;
 	posts: GalleryPostWithMeta[];
-	totalCount: number;
-	indexOffset: number;
 	currentPage: number;
 	totalPages: number;
 	activeQuery?: string | null;
@@ -118,8 +116,6 @@ export function GalleryPosts({
 	title,
 	description,
 	posts,
-	totalCount,
-	indexOffset,
 	currentPage,
 	totalPages,
 	activeQuery,
@@ -159,17 +155,16 @@ export function GalleryPosts({
 
 			<div className={cn("pb-16 lg:pb-24", homeInsetClass)}>
 				<div className="pt-8 lg:pt-10">
-					<GalleryFilterBar
-						activeQuery={activeQuery}
-						activeType={activeType}
-					/>
+					<GalleryFilterBar activeQuery={activeQuery} activeType={activeType} />
 				</div>
 
 				{posts.length === 0 ? (
-					<p className="mt-10 max-w-xl text-body text-muted">{noResultsMessage}</p>
+					<p className="mt-10 max-w-xl text-body text-muted">
+						{noResultsMessage}
+					</p>
 				) : (
 					<div>
-						{posts.map((post, index) => (
+						{posts.map((post, _index) => (
 							<PostRow key={post.id} post={post} />
 						))}
 					</div>

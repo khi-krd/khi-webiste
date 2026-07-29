@@ -1,12 +1,17 @@
-import { ArrowUpRightIcon, FilmIcon, MusicalNoteIcon, PhotoIcon } from "@heroicons/react/24/outline";
+import {
+	ArrowUpRightIcon,
+	FilmIcon,
+	MusicalNoteIcon,
+	PhotoIcon,
+} from "@heroicons/react/24/outline";
 import { ProjectCoverImage } from "@/components/projects/project-cover-image";
 import { DirectionalIcon } from "@/components/ui/directional-icon";
 import { Link } from "@/i18n/navigation";
 import type { ProjectListItem } from "@/lib/mock/projects";
 import { countGalleryMedia } from "@/lib/project/media";
 import { projectDetailHref } from "@/lib/projects-url";
-import type { MediaKind } from "@/types/media";
 import { cn } from "@/lib/utils";
+import type { MediaKind } from "@/types/media";
 
 type ProjectCardCopy = {
 	preview: string;

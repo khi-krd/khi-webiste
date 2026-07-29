@@ -485,9 +485,7 @@ export function filterNews(
 	if (category?.trim()) {
 		const key = category.trim();
 		result = result.filter(
-			(item) =>
-				item.category === key ||
-				item.categoryLabel?.trim() === key,
+			(item) => item.category === key || item.categoryLabel?.trim() === key,
 		);
 	}
 

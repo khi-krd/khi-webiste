@@ -6,7 +6,10 @@ import {
 	DEFAULT_REVALIDATE,
 } from "@/lib/api/client";
 import { getApiBaseUrl, getMockDataMode } from "@/lib/api/config";
-import { applyMockPolicy, applyMockPolicyNullable } from "@/lib/api/mock-policy";
+import {
+	applyMockPolicy,
+	applyMockPolicyNullable,
+} from "@/lib/api/mock-policy";
 import type { LatestUpdateItem } from "@/lib/mock/latest-updates";
 import { getLatestUpdates as getMockLatestUpdates } from "@/lib/mock/latest-updates";
 import {
@@ -31,9 +34,8 @@ import {
 	resolveNewsItem,
 	resolveNewsItems,
 } from "@/lib/news/resolve";
-import type { News } from "@/types/news";
+import type { News, NewsPage } from "@/types/news";
 import { NewsPageSchema, NewsSchema } from "@/types/news";
-import type { NewsPage } from "@/types/news";
 
 const NEWS_ENDPOINT = "/api/v1/news";
 const NEWS_TAG = "news";
@@ -112,9 +114,7 @@ async function getAllNewsRecords(
 					return (
 						resolved.title.toLowerCase().includes(q) ||
 						resolved.excerpt.toLowerCase().includes(q) ||
-						(resolved.tags ?? []).some((tag) =>
-							tag.toLowerCase().includes(q),
-						)
+						(resolved.tags ?? []).some((tag) => tag.toLowerCase().includes(q))
 					);
 				});
 			}
@@ -211,10 +211,7 @@ export async function getRelatedNews(
 ): Promise<NewsItem[]> {
 	const limit = options?.limit ?? RELATED_NEWS_LIMIT;
 	const allItems = await getAllNewsRecords(locale);
-	const exclude = new Set<string>([
-		item.id,
-		...(options?.excludeIds ?? []),
-	]);
+	const exclude = new Set<string>([item.id, ...(options?.excludeIds ?? [])]);
 	const tagSet = new Set(
 		(item.tags ?? []).map((tag) => tag.trim().toLowerCase()).filter(Boolean),
 	);
@@ -277,9 +274,7 @@ function toLatestUpdateItem(item: NewsItem): LatestUpdateItem {
 		slug: item.slug,
 		title: item.title,
 		excerpt: item.excerpt,
-		category: mapToLatestUpdateCategory(
-			item.categoryLabel ?? item.category,
-		),
+		category: mapToLatestUpdateCategory(item.categoryLabel ?? item.category),
 		image: item.image,
 	};
 }
@@ -338,10 +333,7 @@ export async function getLatestUpdates(
 		});
 	}
 
-	const items = await fetchUniqueLatestNewsItems(
-		locale,
-		LATEST_UPDATES_COUNT,
-	);
+	const items = await fetchUniqueLatestNewsItems(locale, LATEST_UPDATES_COUNT);
 	const apiItems = items ? items.map(toLatestUpdateItem) : [];
 
 	return applyMockPolicy({
@@ -366,12 +358,12 @@ function collectCategoryOptions(
 
 		const label =
 			locale === "ckb"
-				? (news.category?.ckbName?.trim() ||
+				? news.category?.ckbName?.trim() ||
 					news.category?.kmrName?.trim() ||
-					key)
-				: (news.category?.kmrName?.trim() ||
+					key
+				: news.category?.kmrName?.trim() ||
 					news.category?.ckbName?.trim() ||
-					key);
+					key;
 
 		if (!map.has(key)) {
 			map.set(key, { key, label });

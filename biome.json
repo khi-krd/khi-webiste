@@ -7,7 +7,7 @@
 	},
 	"files": {
 		"ignoreUnknown": false,
-		"includes": ["**", "!**/*.css"]
+		"includes": ["**", "!**/*.css", "!public", "!.next", "!next-env.d.ts"]
 	},
 	"formatter": {
 		"enabled": true,
@@ -16,7 +16,13 @@
 	"linter": {
 		"enabled": true,
 		"rules": {
-			"recommended": true
+			"recommended": true,
+			"correctness": {
+				"useExhaustiveDependencies": "warn"
+			},
+			"a11y": {
+				"useSemanticElements": "warn"
+			}
 		}
 	},
 	"javascript": {

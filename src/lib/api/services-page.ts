@@ -4,17 +4,17 @@ import type { Service } from "@/types/service";
 import type { ServicesPageSettings } from "@/types/services-page";
 
 /** Reserved marker — matches dashboard CMS hero record. */
-export const SERVICES_PAGE_HERO_ANCHOR = "page-hero"
-export const PAGE_HERO_SERVICE_TYPE = "page-hero"
+export const SERVICES_PAGE_HERO_ANCHOR = "page-hero";
+export const PAGE_HERO_SERVICE_TYPE = "page-hero";
 
 export function isServicesPageHeroRecord(
 	service: Pick<Service, "navAnchorId" | "serviceType">,
 ): boolean {
-	const anchor = service.navAnchorId?.trim()
+	const anchor = service.navAnchorId?.trim();
 	if (anchor === SERVICES_PAGE_HERO_ANCHOR || anchor === "__page_hero__") {
-		return true
+		return true;
 	}
-	return service.serviceType?.trim() === PAGE_HERO_SERVICE_TYPE
+	return service.serviceType?.trim() === PAGE_HERO_SERVICE_TYPE;
 }
 
 export function findServicesPageHeroRecord(
@@ -51,9 +51,7 @@ export function resolveServicesHeroCopy(
 	fallback: { eyebrow: string; title: string; intro: string },
 ) {
 	const isCkb = locale === "ckb";
-	const title = isCkb
-		? settings?.titleCkb?.trim()
-		: settings?.titleKmr?.trim();
+	const title = isCkb ? settings?.titleCkb?.trim() : settings?.titleKmr?.trim();
 	const intro = isCkb
 		? settings?.subtitleCkb?.trim()
 		: settings?.subtitleKmr?.trim();

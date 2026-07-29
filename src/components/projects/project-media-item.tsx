@@ -2,8 +2,8 @@
 
 import { ProjectCoverImage } from "@/components/projects/project-cover-image";
 import { VideoPlayer } from "@/components/ui/video-player";
-import type { MediaItem } from "@/types/media";
 import { cn } from "@/lib/utils";
+import type { MediaItem } from "@/types/media";
 
 type ProjectMediaItemProps = {
 	item: MediaItem;

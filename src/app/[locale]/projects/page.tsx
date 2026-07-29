@@ -4,6 +4,7 @@ import { ProjectsHero } from "@/components/projects/projects-hero";
 import { ProjectsShell } from "@/components/projects/projects-shell";
 import { VisuallyHidden } from "@/components/ui/visually-hidden";
 import { loadProjectsPageData } from "@/lib/project/page-data";
+import { localeAlternates } from "@/lib/seo/metadata";
 
 export async function generateMetadata({
 	params,
@@ -14,6 +15,7 @@ export async function generateMetadata({
 	const t = await getTranslations({ locale, namespace: "ProjectsPage" });
 
 	return {
+		alternates: localeAlternates(locale, "/projects"),
 		title: t("pageTitle"),
 		description: t("metaDescription"),
 	};

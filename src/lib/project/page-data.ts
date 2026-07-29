@@ -3,9 +3,9 @@ import {
 	getProjectListItems,
 	getProjectTags,
 	getProjectYears,
-	paginateProjects,
 	PROJECTS_PER_PAGE,
 	type ProjectListItem,
+	paginateProjects,
 } from "@/lib/api/projects";
 
 export type ProjectsPageData = {
@@ -50,12 +50,11 @@ export async function loadProjectsPageData(
 				})
 			: filterProjects(allItems, { year: activeYear });
 
-	const {
-		items,
-		totalElements,
-		totalPages,
-		currentPage,
-	} = paginateProjects(filtered, page, PROJECTS_PER_PAGE);
+	const { items, totalElements, totalPages, currentPage } = paginateProjects(
+		filtered,
+		page,
+		PROJECTS_PER_PAGE,
+	);
 
 	return {
 		allItems,

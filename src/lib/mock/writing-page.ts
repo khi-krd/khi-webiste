@@ -1,8 +1,8 @@
-import { WRITINGS_STILLS } from "@/lib/mock/public-stills";
 import { WRITING_DEMO_PDF_URL } from "@/lib/writing/pdf-url";
+import { WRITINGS_STILL } from "@/lib/writing/still";
 import type { BookGenre, ResolvedWritingCard } from "@/types/writing";
 
-const DEMO_COVERS = [...WRITINGS_STILLS];
+const DEMO_COVERS = [WRITINGS_STILL];
 
 type DemoCopy = {
 	title: string;

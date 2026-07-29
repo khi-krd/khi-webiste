@@ -1,7 +1,4 @@
-import {
-	ArrowLeftIcon,
-	ArrowRightIcon,
-} from "@heroicons/react/24/outline";
+import { ArrowLeftIcon, ArrowRightIcon } from "@heroicons/react/24/outline";
 import NextImage from "next/image";
 import {
 	ScrollReveal,
@@ -10,18 +7,15 @@ import {
 } from "@/components/motion/scroll-reveal";
 import { Badge } from "@/components/ui/badge";
 import { DirectionalIcon } from "@/components/ui/directional-icon";
-import { TaxonomyBadgeLink } from "@/components/ui/taxonomy-badge-link";
 import { Link } from "@/components/ui/link";
 import { RichText } from "@/components/ui/rich-text";
+import { TaxonomyBadgeLink } from "@/components/ui/taxonomy-badge-link";
 import { WritingGridCard } from "@/components/writing/writing-grid-card";
 import { WritingPdfPreview } from "@/components/writing/writing-pdf-preview";
-import { buildWritingGridCards } from "@/lib/writing/catalog";
 import { homeInsetClass } from "@/lib/layout";
-import {
-	writingGenreHref,
-	writingTagHref,
-} from "@/lib/search/taxonomy-href";
+import { writingGenreHref, writingTagHref } from "@/lib/search/taxonomy-href";
 import { cn } from "@/lib/utils";
+import { buildWritingGridCards } from "@/lib/writing/catalog";
 import type {
 	BookGenre,
 	ResolvedSeriesBook,
@@ -401,11 +395,7 @@ export function WritingPostView({
 							<div aria-hidden className="hidden sm:block" />
 						)}
 						{next ? (
-							<AdjacentLink
-								item={next}
-								label={nextLabel}
-								direction="next"
-							/>
+							<AdjacentLink item={next} label={nextLabel} direction="next" />
 						) : null}
 					</div>
 				</nav>

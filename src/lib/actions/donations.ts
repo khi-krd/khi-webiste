@@ -30,7 +30,8 @@ const PAYMENT_METHOD_MAP: Record<PaymentMethodId, string> = {
 export async function submitFinancialDonationAction(
 	values: DonateFinancialFormValues,
 ): Promise<DonationFormActionResult> {
-	const paymentMethod = PAYMENT_METHOD_MAP[values.paymentMethod as PaymentMethodId];
+	const paymentMethod =
+		PAYMENT_METHOD_MAP[values.paymentMethod as PaymentMethodId];
 
 	const result = await submitFinancialDonation({
 		donorName: values.donorName,
@@ -50,8 +51,7 @@ export async function submitFinancialDonationAction(
 export async function submitArchiveDonationAction(
 	values: DonateArchiveFormValues,
 ): Promise<DonationFormActionResult> {
-	const materialType =
-		MATERIAL_TYPE_MAP[values.materialType as MaterialTypeId];
+	const materialType = MATERIAL_TYPE_MAP[values.materialType as MaterialTypeId];
 
 	const result = await submitArchiveDonation({
 		donorName: values.userName,

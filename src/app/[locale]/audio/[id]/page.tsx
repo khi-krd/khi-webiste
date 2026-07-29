@@ -7,6 +7,7 @@ import {
 	getAudioTrackById,
 	getRelatedAudio,
 } from "@/lib/api/audio";
+import { localeAlternates } from "@/lib/seo/metadata";
 
 type AudioDetailPageProps = {
 	params: Promise<{ locale: string; id: string }>;
@@ -30,6 +31,7 @@ export async function generateMetadata({
 	if (!detail) notFound();
 
 	return {
+		alternates: localeAlternates(locale, `/audio/${id}`),
 		title: detail.title,
 		description: detail.description || undefined,
 	};

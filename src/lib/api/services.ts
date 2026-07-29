@@ -1,29 +1,29 @@
 import "server-only";
+import { getAboutPartners } from "@/lib/api/about";
 import {
 	apiFetchPage,
 	BULK_FETCH_SIZE,
 	DEFAULT_REVALIDATE,
 } from "@/lib/api/client";
 import { getApiBaseUrl, shouldUseMockData } from "@/lib/api/config";
-import { getAboutPartners } from "@/lib/api/about";
 import { normalizeServiceRecord } from "@/lib/api/normalize";
+import {
+	filterContentServiceRecords,
+	findServicesPageHeroRecord,
+	serviceRecordToPageSettings,
+} from "@/lib/api/services-page";
+import type { PartnerItem } from "@/lib/mock/about";
 import {
 	getServices as getMockServices,
 	getServicesBottomCards,
 	getServicesHeroMedia,
 	type ServiceItem,
 } from "@/lib/mock/services";
-import type { PartnerItem } from "@/lib/mock/about";
 import {
 	buildApiOnlyServiceSections,
 	type MergedServiceSection,
 	resolveServicesHeroMedia,
 } from "@/lib/services/resolve";
-import {
-	filterContentServiceRecords,
-	findServicesPageHeroRecord,
-	serviceRecordToPageSettings,
-} from "@/lib/api/services-page";
 import { type Service, ServiceSchema } from "@/types/service";
 
 const SERVICES_ENDPOINT = "/api/v1/services/all";
@@ -50,9 +50,13 @@ export async function getServiceRecords(): Promise<Service[]> {
 		.filter((record) => record.active !== false)
 		.sort((a, b) => {
 			const ao =
-				typeof a.sortOrder === "number" ? a.sortOrder : Number.POSITIVE_INFINITY;
+				typeof a.sortOrder === "number"
+					? a.sortOrder
+					: Number.POSITIVE_INFINITY;
 			const bo =
-				typeof b.sortOrder === "number" ? b.sortOrder : Number.POSITIVE_INFINITY;
+				typeof b.sortOrder === "number"
+					? b.sortOrder
+					: Number.POSITIVE_INFINITY;
 			if (ao !== bo) return ao - bo;
 			const ap = a.publishedAt ? Date.parse(a.publishedAt) : 0;
 			const bp = b.publishedAt ? Date.parse(b.publishedAt) : 0;
@@ -60,9 +64,7 @@ export async function getServiceRecords(): Promise<Service[]> {
 		});
 }
 
-function mockOnlyServiceSections(
-	locale: string,
-): MergedServiceSection[] {
+function mockOnlyServiceSections(locale: string): MergedServiceSection[] {
 	return getMockServices(locale).map((service) => ({
 		mockId: service.id,
 		service,
@@ -140,9 +142,7 @@ export async function getServicePartnerCards(
 			: shouldUseMockData()
 				? mockOnlyServiceSections(locale)
 				: [];
-	const partnerIds = new Set(
-		sections.flatMap((section) => section.partnerIds),
-	);
+	const partnerIds = new Set(sections.flatMap((section) => section.partnerIds));
 
 	if (partnerIds.size === 0) {
 		return getServicesBottomCards(locale);
@@ -171,5 +171,5 @@ export async function getServiceSections(
 		}));
 }
 
-export { getMockServices as getServicesLayout };
 export type { ServiceItem };
+export { getMockServices as getServicesLayout };

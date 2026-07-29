@@ -1,3 +1,4 @@
+import { mapApiGalleryMedia } from "@/components/services/service-gallery-slides";
 import type {
 	ServiceGalleryMediaItem,
 	ServiceItem,
@@ -6,8 +7,11 @@ import type {
 	ServiceVideo,
 } from "@/lib/mock/services";
 import { getServices as getMockServices } from "@/lib/mock/services";
-import { mapApiGalleryMedia } from "@/components/services/service-gallery-slides";
-import type { Service, ServiceContent, ServiceLayoutType } from "@/types/service";
+import type {
+	Service,
+	ServiceContent,
+	ServiceLayoutType,
+} from "@/types/service";
 
 function isLikelyMediaUrl(url: string | undefined | null): boolean {
 	const trimmed = url?.trim();
@@ -19,13 +23,16 @@ function isLikelyMediaUrl(url: string | undefined | null): boolean {
 	);
 }
 
-function pickMediaUrl(
-	apiUrl: string | undefined,
-	fallback?: string,
-): string {
-	if (isLikelyMediaUrl(apiUrl)) return apiUrl!.trim();
-	if (isLikelyMediaUrl(fallback)) return fallback!.trim();
-	return apiUrl?.trim() ?? fallback?.trim() ?? "";
+function pickMediaUrl(apiUrl: string | undefined, fallback?: string): string {
+	// Trim up front so the checks and the return value operate on the same
+	// values — this also avoids non-null assertions, since `isLikelyMediaUrl`
+	// returning false does NOT imply the input was absent.
+	const trimmedApiUrl = apiUrl?.trim() ?? "";
+	const trimmedFallback = fallback?.trim() ?? "";
+
+	if (isLikelyMediaUrl(trimmedApiUrl)) return trimmedApiUrl;
+	if (isLikelyMediaUrl(trimmedFallback)) return trimmedFallback;
+	return trimmedApiUrl || trimmedFallback;
 }
 
 function resolveServiceContentForLanguage(
@@ -221,7 +228,11 @@ function synthesizeGalleryFromLegacy(
 	const out: ServiceGalleryMediaItem[] = [];
 	const seen = new Set<string>();
 
-	const pushUrl = (url: string, type: "IMAGE" | "VIDEO", posterUrl?: string) => {
+	const pushUrl = (
+		url: string,
+		type: "IMAGE" | "VIDEO",
+		posterUrl?: string,
+	) => {
 		const trimmed = url.trim();
 		if (!trimmed || !isLikelyMediaUrl(trimmed) || seen.has(trimmed)) return;
 		seen.add(trimmed);
@@ -252,10 +263,16 @@ function synthesizeGalleryFromLegacy(
 	}
 
 	for (const url of api.layout.featureImageUrls) {
-		pushUrl(url, /\.(mp4|webm|mov|m4v|ogg)(\?|#|$)/i.test(url) ? "VIDEO" : "IMAGE");
+		pushUrl(
+			url,
+			/\.(mp4|webm|mov|m4v|ogg)(\?|#|$)/i.test(url) ? "VIDEO" : "IMAGE",
+		);
 	}
 	for (const url of api.layout.thumbnailUrls) {
-		pushUrl(url, /\.(mp4|webm|mov|m4v|ogg)(\?|#|$)/i.test(url) ? "VIDEO" : "IMAGE");
+		pushUrl(
+			url,
+			/\.(mp4|webm|mov|m4v|ogg)(\?|#|$)/i.test(url) ? "VIDEO" : "IMAGE",
+		);
 	}
 
 	return out;
@@ -283,7 +300,9 @@ function serviceItemFromApi(
 ): ServiceItem {
 	const sectionId = api.layout.navAnchorId ?? String(api.id);
 	const layout =
-		mapApiLayoutType(api.layout.layoutType) ?? mockFallback?.layout ?? "editorial";
+		mapApiLayoutType(api.layout.layoutType) ??
+		mockFallback?.layout ??
+		"editorial";
 	const thumbUrls = api.layout.thumbnailUrls;
 	let galleryMedia =
 		api.layout.galleryMedia && api.layout.galleryMedia.length > 0
@@ -308,7 +327,10 @@ function serviceItemFromApi(
 	};
 
 	const video: ServiceVideo = {
-		src: pickMediaUrl(api.layout.heroVideoUrl ?? undefined, mockFallback?.video.src),
+		src: pickMediaUrl(
+			api.layout.heroVideoUrl ?? undefined,
+			mockFallback?.video.src,
+		),
 		poster: pickMediaUrl(
 			api.layout.heroPosterUrl ?? undefined,
 			mockFallback?.video.poster,

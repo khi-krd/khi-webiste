@@ -7,25 +7,28 @@ import {
 	unwrapApiPayload,
 } from "@/lib/api/client";
 import { getApiBaseUrl } from "@/lib/api/config";
-import { applyMockPolicy, applyMockPolicyNullable } from "@/lib/api/mock-policy";
+import {
+	applyMockPolicy,
+	applyMockPolicyNullable,
+} from "@/lib/api/mock-policy";
 import {
 	filterProjects,
 	getProjectById as getMockProjectById,
 	getProjectListItems as getMockProjectListItems,
 	getProjectTags,
 	getProjectYears,
+	PROJECTS_PER_PAGE,
 	type ProjectDetail,
 	type ProjectFilter,
 	type ProjectItem,
 	type ProjectListItem,
 	paginateProjects,
-	PROJECTS_PER_PAGE,
 } from "@/lib/mock/projects";
 import {
-	resolveProjectListItem,
-	resolveProjectListItems,
 	resolveProjectItem,
 	resolveProjectItems,
+	resolveProjectListItem,
+	resolveProjectListItems,
 } from "@/lib/project/resolve";
 import { ProjectSchema } from "@/types/project";
 
@@ -33,15 +36,15 @@ const PROJECTS_ENDPOINT = "/api/v1/projects/getAll";
 const PROJECTS_TAG = "projects";
 
 export {
+	filterProjects,
+	getProjectTags,
+	getProjectYears,
 	PROJECTS_PER_PAGE,
 	type ProjectDetail,
 	type ProjectFilter,
 	type ProjectItem,
 	type ProjectListItem,
-	getProjectTags,
-	getProjectYears,
 	paginateProjects,
-	filterProjects,
 };
 
 async function fetchProjectsPage(
@@ -88,7 +91,9 @@ async function fetchProjectListItemsFromApi(
 	return resolveProjectListItems(locale, page.content);
 }
 
-async function getAllProjectRecords(locale: string): Promise<ProjectListItem[]> {
+async function getAllProjectRecords(
+	locale: string,
+): Promise<ProjectListItem[]> {
 	const apiItems = await fetchProjectListItemsFromApi(locale);
 	return applyMockPolicy({
 		context: "global",
@@ -167,10 +172,13 @@ export async function getProjectById(
 	let apiDetail: ProjectDetail | null = null;
 
 	if (getApiBaseUrl()) {
-		const raw = await apiFetchRaw(`/api/v1/projects/${encodeURIComponent(id)}`, {
-			tags: [PROJECTS_TAG, `project-${id}`],
-			revalidate: DEFAULT_REVALIDATE,
-		});
+		const raw = await apiFetchRaw(
+			`/api/v1/projects/${encodeURIComponent(id)}`,
+			{
+				tags: [PROJECTS_TAG, `project-${id}`],
+				revalidate: DEFAULT_REVALIDATE,
+			},
+		);
 		const unwrapped = unwrapApiPayload(raw);
 		const parsed = unwrapped ? ProjectSchema.safeParse(unwrapped) : null;
 
@@ -221,4 +229,4 @@ export async function getProjectsHeroCovers(
 }
 
 /** Back-compat for featured/home resolve paths that still import resolveProjectItems. */
-export { resolveProjectItems, resolveProjectItem, resolveProjectListItem };
+export { resolveProjectItem, resolveProjectItems, resolveProjectListItem };

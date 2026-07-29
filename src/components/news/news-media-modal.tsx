@@ -12,8 +12,8 @@ import { ProjectCoverMedia } from "@/components/projects/project-cover-media";
 import { DirectionalIcon } from "@/components/ui/directional-icon";
 import { VideoPlayer } from "@/components/ui/video-player";
 import { useScrollLock } from "@/lib/use-scroll-lock";
-import type { MediaItem } from "@/types/media";
 import { cn } from "@/lib/utils";
+import type { MediaItem } from "@/types/media";
 
 type NewsMediaModalProps = {
 	items: MediaItem[];
@@ -125,7 +125,6 @@ export function NewsMediaModal({
 		items.length > 1 && items.some((entry) => thumbPreview(entry));
 
 	return (
-		// biome-ignore lint/a11y/noStaticElementInteractions: keyboard nav on the dialog container (focus is trapped inside it)
 		<dialog
 			ref={dialogRef}
 			onClose={() => onActiveIndexChange(null)}
@@ -157,7 +156,11 @@ export function NewsMediaModal({
 									const isActive = index === activeIndex;
 
 									return (
-										<li key={`${thumb.url}-${index}`} className="w-16 shrink-0 sm:w-20">
+										<li
+											// biome-ignore lint/suspicious/noArrayIndexKey: the same media URL can legitimately appear twice in one article's gallery, so the index is needed to disambiguate; the list is render-order-stable and never reordered.
+											key={`${thumb.url}-${index}`}
+											className="w-16 shrink-0 sm:w-20"
+										>
 											<button
 												type="button"
 												onClick={() => onActiveIndexChange(index)}

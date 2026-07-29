@@ -152,10 +152,7 @@ export async function FeaturedHero({
 		);
 
 		return (
-			<section
-				className={sectionClass}
-				aria-label={t("regionLabel")}
-			>
+			<section className={sectionClass} aria-label={t("regionLabel")}>
 				<FeaturedCarousel
 					slides={fallbackSlides}
 					direction={direction}

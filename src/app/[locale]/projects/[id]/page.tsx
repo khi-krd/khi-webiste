@@ -4,6 +4,7 @@ import { getTranslations, setRequestLocale } from "next-intl/server";
 import { ProjectDetailView } from "@/components/projects/project-detail-view";
 import { getProjectById } from "@/lib/api/projects";
 import { plainTextFromRichContent } from "@/lib/rich-text";
+import { localeAlternates } from "@/lib/seo/metadata";
 
 type ProjectDetailPageProps = {
 	params: Promise<{ locale: string; id: string }>;
@@ -28,6 +29,7 @@ export async function generateMetadata({
 	if (!detail) notFound();
 
 	return {
+		alternates: localeAlternates(locale, `/projects/${id}`),
 		title: detail.title,
 		description: plainTextFromRichContent(detail.description),
 	};

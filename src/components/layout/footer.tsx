@@ -130,12 +130,18 @@ export async function Footer() {
 			title: t(column.titleKey),
 			links: column.links,
 		})),
-		{
-			key: "connect",
-			index: String(FOOTER_COLUMNS.length + 1).padStart(2, "0"),
-			title: t("connect"),
-			links: FOOTER_SOCIAL_LINKS,
-		},
+		// Omitted while no real social profiles are configured — an empty
+		// "connect" column reads as broken.
+		...(FOOTER_SOCIAL_LINKS.length > 0
+			? [
+					{
+						key: "connect",
+						index: String(FOOTER_COLUMNS.length + 1).padStart(2, "0"),
+						title: t("connect"),
+						links: FOOTER_SOCIAL_LINKS,
+					},
+				]
+			: []),
 	];
 
 	return (
@@ -245,10 +251,7 @@ export async function Footer() {
 													{t("brandTagline")}
 												</h3>
 											</div>
-											<Link
-												href="/contact"
-												className={footerCtaClass}
-											>
+											<Link href="/contact" className={footerCtaClass}>
 												<span className="relative z-1">{t("getInTouch")}</span>
 												<DirectionalIcon
 													icon={ArrowRightIcon}

@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import type { NewsItem } from "@/lib/mock/news";
-import type { News } from "@/types/news";
 import { dedupeNewsItems, resolveNewsItems } from "@/lib/news/resolve";
+import type { News } from "@/types/news";
 
 function newsItem(id: string): NewsItem {
 	return {

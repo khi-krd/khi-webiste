@@ -42,7 +42,10 @@ const EN_ITEMS: LocaleCopy = [
 		author: "Hêmin Salih",
 		readTime: "9",
 		category: "heritage",
-		image: { url: "/writings/images/2.jpeg", alt: "Community archive consultation" },
+		image: {
+			url: "/writings/images/2.jpeg",
+			alt: "Community archive consultation",
+		},
 	},
 	{
 		id: "writing-3",
@@ -53,7 +56,10 @@ const EN_ITEMS: LocaleCopy = [
 		author: "Prof. Nîgar Reşîd",
 		readTime: "15",
 		category: "language",
-		image: { url: "/writings/images/3.jpeg", alt: "Language classroom materials" },
+		image: {
+			url: "/writings/images/3.jpeg",
+			alt: "Language classroom materials",
+		},
 	},
 	{
 		id: "writing-4",
@@ -64,7 +70,10 @@ const EN_ITEMS: LocaleCopy = [
 		author: "Azad Karim",
 		readTime: "11",
 		category: "society",
-		image: { url: "/writings/images/4.jpeg", alt: "Urban street scene in a Kurdish city" },
+		image: {
+			url: "/writings/images/4.jpeg",
+			alt: "Urban street scene in a Kurdish city",
+		},
 	},
 ];
 
@@ -78,7 +87,10 @@ const KU_ITEMS: LocaleCopy = [
 		author: "Dr. Leyla Aziz",
 		readTime: "12",
 		category: "culture",
-		image: { url: "/writings/images/1.jpeg", alt: "Antolojiya helbestê vekirî" },
+		image: {
+			url: "/writings/images/1.jpeg",
+			alt: "Antolojiya helbestê vekirî",
+		},
 	},
 	{
 		id: "writing-2",
@@ -89,7 +101,10 @@ const KU_ITEMS: LocaleCopy = [
 		author: "Hêmin Salih",
 		readTime: "9",
 		category: "heritage",
-		image: { url: "/writings/images/2.jpeg", alt: "Danûstandina arşîva civakî" },
+		image: {
+			url: "/writings/images/2.jpeg",
+			alt: "Danûstandina arşîva civakî",
+		},
 	},
 	{
 		id: "writing-3",
@@ -111,7 +126,10 @@ const KU_ITEMS: LocaleCopy = [
 		author: "Azad Karim",
 		readTime: "11",
 		category: "society",
-		image: { url: "/writings/images/4.jpeg", alt: "Dîmena kolanê li bajarê kurdî" },
+		image: {
+			url: "/writings/images/4.jpeg",
+			alt: "Dîmena kolanê li bajarê kurdî",
+		},
 	},
 ];
 
@@ -136,7 +154,10 @@ const CKB_ITEMS: LocaleCopy = [
 		author: "حەمین ساڵح",
 		readTime: "9",
 		category: "heritage",
-		image: { url: "/writings/images/2.jpeg", alt: "گفتوگۆی ئارشیڤی کۆمەڵایەتی" },
+		image: {
+			url: "/writings/images/2.jpeg",
+			alt: "گفتوگۆی ئارشیڤی کۆمەڵایەتی",
+		},
 	},
 	{
 		id: "writing-3",
@@ -158,7 +179,10 @@ const CKB_ITEMS: LocaleCopy = [
 		author: "ئازاد کریم",
 		readTime: "11",
 		category: "society",
-		image: { url: "/writings/images/4.jpeg", alt: "دیمەنی شەقام لە شارێکی کوردی" },
+		image: {
+			url: "/writings/images/4.jpeg",
+			alt: "دیمەنی شەقام لە شارێکی کوردی",
+		},
 	},
 ];
 

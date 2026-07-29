@@ -263,14 +263,8 @@ export function resolveSeriesBooks(
 		.map((book) => {
 			const title =
 				locale === "ckb"
-					? (book.titleCkb ??
-						book.titleKmr ??
-						book.ckbContent?.title ??
-						null)
-					: (book.titleKmr ??
-						book.titleCkb ??
-						book.kmrContent?.title ??
-						null);
+					? (book.titleCkb ?? book.titleKmr ?? book.ckbContent?.title ?? null)
+					: (book.titleKmr ?? book.titleCkb ?? book.kmrContent?.title ?? null);
 			if (!title) {
 				return null;
 			}

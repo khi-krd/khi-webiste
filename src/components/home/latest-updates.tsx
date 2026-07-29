@@ -9,7 +9,10 @@ import {
 import { DirectionalIcon } from "@/components/ui/directional-icon";
 import { Link } from "@/components/ui/link";
 import { getLatestUpdates } from "@/lib/api/news";
-import type { LatestUpdateCategory, LatestUpdateItem } from "@/lib/mock/latest-updates";
+import type {
+	LatestUpdateCategory,
+	LatestUpdateItem,
+} from "@/lib/mock/latest-updates";
 
 function getCategoryLabel(
 	t: Awaited<ReturnType<typeof getTranslations>>,

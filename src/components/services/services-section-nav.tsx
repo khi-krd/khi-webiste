@@ -8,9 +8,9 @@ import {
 import { LayoutGroup } from "motion/react";
 import type { MouseEvent } from "react";
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { useScrollToSection } from "@/lib/use-scroll-to-section";
 import { ServicesNavIndicator } from "@/components/services/services-motion";
 import { DirectionalIcon } from "@/components/ui/directional-icon";
+import { useScrollToSection } from "@/lib/use-scroll-to-section";
 import { cn } from "@/lib/utils";
 
 type NavItem = {

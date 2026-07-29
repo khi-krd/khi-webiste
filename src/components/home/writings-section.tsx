@@ -67,11 +67,7 @@ export async function WritingsSection() {
 								</p>
 							</div>
 
-							<Link
-								href="/writings"
-								variant="nav"
-								className={viewAllClass}
-							>
+							<Link href="/writings" variant="nav" className={viewAllClass}>
 								<span className="relative z-1">{t("viewAll")}</span>
 								<DirectionalIcon
 									icon={ArrowRightIcon}

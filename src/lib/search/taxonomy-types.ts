@@ -46,15 +46,17 @@ const NAV_KEY_TO_SECTION: Record<string, ClientSearchSectionKey> = {
 export const NAV_MENU_MAX_ITEMS = 8;
 
 /** Kinds shown as mega-menu secondary links per section. */
-const NAV_MENU_KINDS: Record<ClientSearchSectionKey, ReadonlySet<SearchTaxonomyKind>> =
-	{
-		news: new Set(["category"]),
-		writings: new Set(["category"]),
-		videos: new Set(["topic", "type"]),
-		soundTracks: new Set(["topic", "type"]),
-		projects: new Set(["tag"]),
-		imageCollections: new Set(["tag"]),
-	};
+const NAV_MENU_KINDS: Record<
+	ClientSearchSectionKey,
+	ReadonlySet<SearchTaxonomyKind>
+> = {
+	news: new Set(["category"]),
+	writings: new Set(["category"]),
+	videos: new Set(["topic", "type"]),
+	soundTracks: new Set(["topic", "type"]),
+	projects: new Set(["tag"]),
+	imageCollections: new Set(["tag"]),
+};
 
 type NavMenuLinkLike = {
 	label: string;

@@ -1,7 +1,4 @@
-import type {
-	DonateTypeId,
-	DonateTypeItem,
-} from "@/lib/mock/donate";
+import type { DonateTypeId, DonateTypeItem } from "@/lib/mock/donate";
 import type { DonationSettings, DonationType } from "@/types/donation";
 
 export type DonateVisibility = {
@@ -29,8 +26,7 @@ export function resolveDonateVisibility(
 	const financialFromTypes = typesFallback || enabledCodes.has("FINANCIAL");
 
 	return {
-		archive:
-			settings?.archiveDonationsEnabled !== false && archiveFromTypes,
+		archive: settings?.archiveDonationsEnabled !== false && archiveFromTypes,
 		financial:
 			settings?.financialDonationsEnabled !== false && financialFromTypes,
 	};

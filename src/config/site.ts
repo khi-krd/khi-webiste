@@ -225,12 +225,17 @@ export const FOOTER_COLUMNS: FooterColumn[] = [
 	},
 ];
 
-export const FOOTER_SOCIAL_LINKS: FooterLink[] = [
-	{ labelKey: "x", href: "https://x.com", external: true },
-	{ labelKey: "instagram", href: "https://instagram.com", external: true },
-	{ labelKey: "facebook", href: "https://facebook.com", external: true },
-	{ labelKey: "linkedin", href: "https://linkedin.com", external: true },
-];
+/**
+ * The institute's social profiles.
+ *
+ * Deliberately EMPTY until the real account URLs are known — this previously
+ * shipped links to the bare platform homepages (https://x.com, …), which look
+ * broken to visitors. The footer omits the "connect" column entirely while this
+ * is empty, so filling it in is a one-line change with no layout work.
+ *
+ * Each `labelKey` must exist under the "Footer" message namespace.
+ */
+export const FOOTER_SOCIAL_LINKS: FooterLink[] = [];
 
 /**
  * Language self-names (autonyms). Intentionally IDENTICAL across every UI locale

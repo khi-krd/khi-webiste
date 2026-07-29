@@ -7,6 +7,7 @@ import { ContactSocial } from "@/components/contact/contact-social";
 import { VisuallyHidden } from "@/components/ui/visually-hidden";
 import { getContactOffices } from "@/lib/api/contact";
 import { getSocialPlatformsFromApi } from "@/lib/api/social";
+import { localeAlternates } from "@/lib/seo/metadata";
 
 export async function generateMetadata({
 	params,
@@ -17,6 +18,7 @@ export async function generateMetadata({
 	const t = await getTranslations({ locale, namespace: "Contact" });
 
 	return {
+		alternates: localeAlternates(locale, "/contact"),
 		title: t("pageTitle"),
 		description: t("metaDescription"),
 	};
