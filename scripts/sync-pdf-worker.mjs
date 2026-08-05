@@ -4,7 +4,7 @@
 // at runtime ("API version does not match Worker version") with no build error,
 // so this runs from `prebuild` rather than being hand-copied.
 //
-// pdfjs-dist is a transitive dependency of react-pdf and pnpm does not hoist it,
+// pdfjs-dist is a transitive dependency of react-pdf and pnpm does not host it,
 // so it is resolved through react-pdf rather than from the project root.
 
 import { copyFileSync, mkdirSync, readFileSync, statSync } from "node:fs";
