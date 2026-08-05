@@ -5,6 +5,8 @@ import { useTranslations } from "next-intl";
 import { useCallback, useRef, useState } from "react";
 import { LanguageSwitcher } from "@/components/layout/language-switcher";
 import { NAV_DRAWER_ID, NavDrawer } from "@/components/layout/nav-drawer";
+import { PublicationsDropdown } from "@/components/layout/publications-dropdown";
+import { Button } from "@/components/ui/button";
 import { DrawnBorder } from "@/components/ui/drawn-border";
 import { SERVICES_HREF } from "@/config/site";
 import { Link } from "@/i18n/navigation";
@@ -63,7 +65,18 @@ export function HeaderNav() {
 					<Link href={SERVICES_HREF} className={navLinkClass}>
 						{t("services")}
 					</Link>
+
+					<PublicationsDropdown />
 				</nav>
+
+				<div className="hidden items-center gap-2 sm:flex">
+					<Button type="button" variant="secondary" size="md">
+						{t("archive")}
+					</Button>
+					<Button type="button" variant="secondary" size="md">
+						{t("library")}
+					</Button>
+				</div>
 
 				<div
 					aria-hidden="true"
