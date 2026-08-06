@@ -21,6 +21,7 @@ import {
 import { createPortal } from "react-dom";
 import { LanguageSwitcher } from "@/components/layout/language-switcher";
 import { MenuSearch } from "@/components/layout/menu-search";
+import { NavPagePreview } from "@/components/layout/nav-page-preview";
 import { Container } from "@/components/ui/container";
 import { DirectionalIcon } from "@/components/ui/directional-icon";
 import { DrawnBorder } from "@/components/ui/drawn-border";
@@ -205,6 +206,12 @@ function NavSecondaryPanel({
 
 	return (
 		<div className="text-start">
+			<NavPagePreview
+				href={item.href}
+				label={t(item.key)}
+				fallbackSrc={item.imageSrc}
+			/>
+
 			<Link
 				href={item.href}
 				variant="nav"
