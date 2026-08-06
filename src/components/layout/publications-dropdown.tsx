@@ -8,6 +8,10 @@ import { DrawnBorder } from "@/components/ui/drawn-border";
 import { NAV_ITEMS } from "@/config/site";
 import { Link } from "@/i18n/navigation";
 import { cn } from "@/lib/utils";
+import {
+	navTriggerLabelClass,
+	navTriggerClass as triggerClass,
+} from "./nav-styles";
 
 /** Same catalogue entries as the hamburger menu — sound/video/writings/gallery. */
 const PUBLICATION_KEYS = ["sound", "video", "writings", "gallery"] as const;
@@ -16,12 +20,6 @@ const PUBLICATION_ITEMS = PUBLICATION_KEYS.map((key) => {
 	const item = NAV_ITEMS.find((navItem) => navItem.key === key);
 	return { key, href: item?.href ?? "/" };
 });
-
-const triggerClass = cn(
-	"draw-border-host relative isolate inline-flex h-11 items-center gap-1.5 overflow-hidden rounded-md px-3.5",
-	"font-heading text-body font-bold text-foreground transition-colors fine-hover:bg-sunken",
-	"[&>:not(svg)]:relative [&>:not(svg)]:z-1",
-);
 
 const panelClassName =
 	"absolute start-0 top-[calc(100%+0.375rem)] z-50 min-w-[11.5rem] overflow-hidden rounded-md border border-border-strong bg-surface py-1 shadow-[0_8px_24px_color-mix(in_oklch,var(--color-foreground)_12%,transparent),0_2px_6px_color-mix(in_oklch,var(--color-foreground)_6%,transparent)]";
@@ -66,15 +64,7 @@ export function PublicationsDropdown() {
 				className={triggerClass}
 			>
 				<DrawnBorder />
-				<span
-					className={cn(
-						"underline decoration-transparent decoration-2 underline-offset-[0.22em]",
-						"transition-[color,text-decoration-color] duration-200",
-						"fine-hover:decoration-current",
-					)}
-				>
-					{t("publications")}
-				</span>
+				<span className={navTriggerLabelClass}>{t("publications")}</span>
 				<ChevronDownIcon
 					className={cn(
 						"size-3.5 shrink-0 text-muted transition-transform duration-200",
