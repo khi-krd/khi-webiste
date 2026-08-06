@@ -14,6 +14,37 @@ function mulberry32(seed: number): () => number {
 	};
 }
 
+/**
+ * Returns `count` bar heights in [0.28, 1] for a waveform bent around a circle.
+ * Built from integer harmonics so the contour closes on itself — a random walk
+ * would leave a visible seam where the last bar meets the first.
+ */
+export function radialWaveformBars(seedId: number, count = 52): number[] {
+	const random = mulberry32(seedId * 2654435761);
+	const harmonics = [2, 3, 5, 8, 13, 21].map((frequency) => ({
+		frequency,
+		amplitude: 0.34 / frequency ** 0.5,
+		phase: random() * Math.PI * 2,
+	}));
+
+	const raw = Array.from({ length: count }, (_, index) => {
+		const theta = (2 * Math.PI * index) / count;
+		let value = 0;
+		for (const { frequency, amplitude, phase } of harmonics) {
+			value += amplitude * Math.sin(frequency * theta + phase);
+		}
+		return value;
+	});
+
+	// Stretch to the full [0.12, 1] range per seed — otherwise quiet seeds render
+	// as a near-uniform starburst instead of a waveform.
+	const low = Math.min(...raw);
+	const span = Math.max(...raw) - low || 1;
+	return raw.map((value) =>
+		Number((0.12 + ((value - low) / span) * 0.88).toFixed(3)),
+	);
+}
+
 /** Returns `count` bar heights in [0.15, 1], shaped like a plausible waveform. */
 export function waveformBars(seedId: number, count = 48): number[] {
 	const random = mulberry32(seedId * 2654435761);

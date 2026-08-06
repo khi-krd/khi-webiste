@@ -600,6 +600,19 @@ html[data-corners="rounded"]
 	}
 }
 
+/* Radial player: played bars breathe outward from the hub. Each bar carries its
+   own negative animation-delay so the crest travels around the ring instead of
+   every bar flexing in unison. */
+@keyframes khi-dial-bar {
+	0%,
+	100% {
+		transform: scaleY(1);
+	}
+	50% {
+		transform: scaleY(1.34);
+	}
+}
+
 @layer components {
 	/* Spinner: a thin ring (hairline) with one border-strong arc that rotates.
 	   Width comes from a Tailwind border-* utility per size; color/animation here.
