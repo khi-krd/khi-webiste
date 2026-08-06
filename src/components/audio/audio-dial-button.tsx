@@ -9,66 +9,41 @@ import {
 import { cn } from "@/lib/utils";
 import type { PlayerTrackPayload } from "@/types/audio";
 
-const TICK_COUNT = 44;
 const CENTER = 50;
-const TICK_OUTER_RADIUS = 42;
-const TICK_LENGTH = 9;
-const TICK_ANGLES = Array.from(
-	{ length: TICK_COUNT },
-	(_, index) => (360 / TICK_COUNT) * index - 90,
-);
+const RING_RADIUS = 39;
+const RING_CIRCUMFERENCE = 2 * Math.PI * RING_RADIUS;
 
-function radialPoint(radius: number, angleDeg: number) {
-	const rad = (angleDeg * Math.PI) / 180;
-	return {
-		x: CENTER + radius * Math.cos(rad),
-		y: CENTER + radius * Math.sin(rad),
-	};
-}
-
-/** Decorative radial tick ring, same geometry idle or mid-playback — only the lit tick count (by `progress`, 0–1) changes. */
+/** Smooth radial progress ring — a single eased arc rather than a discrete tick count. */
 function DialRing({ progress }: { progress: number }) {
-	const activeCount = Math.round(progress * TICK_COUNT);
-	const handle =
-		progress > 0
-			? radialPoint(TICK_OUTER_RADIUS + TICK_LENGTH / 2, progress * 360 - 90)
-			: null;
+	const clamped = Math.min(1, Math.max(0, progress));
+	const offset = RING_CIRCUMFERENCE * (1 - clamped);
 
 	return (
 		<svg
 			viewBox="0 0 100 100"
-			className="absolute inset-0 h-full w-full"
+			className="absolute inset-0 h-full w-full -rotate-90"
 			aria-hidden="true"
 		>
 			<circle
 				cx={CENTER}
 				cy={CENTER}
-				r={32}
-				strokeWidth={1}
-				className="fill-none stroke-primary-foreground/20"
+				r={RING_RADIUS}
+				strokeWidth={2}
+				className="fill-none stroke-primary-foreground/25"
 			/>
-			{TICK_ANGLES.map((angle, index) => (
-				<line
-					// biome-ignore lint/suspicious/noArrayIndexKey: fixed-length decorative ring, never reordered
-					key={index}
-					x1={CENTER}
-					y1={CENTER - TICK_OUTER_RADIUS}
-					x2={CENTER}
-					y2={CENTER - TICK_OUTER_RADIUS + TICK_LENGTH}
-					transform={`rotate(${angle} ${CENTER} ${CENTER})`}
-					strokeWidth={2.6}
-					strokeLinecap="round"
-					className={cn(
-						"transition-colors duration-300",
-						index < activeCount
-							? "stroke-accent"
-							: "stroke-primary-foreground/40",
-					)}
-				/>
-			))}
-			{handle ? (
-				<circle cx={handle.x} cy={handle.y} r={3} className="fill-accent" />
-			) : null}
+			<circle
+				cx={CENTER}
+				cy={CENTER}
+				r={RING_RADIUS}
+				strokeWidth={2}
+				strokeLinecap="round"
+				strokeDasharray={RING_CIRCUMFERENCE}
+				strokeDashoffset={offset}
+				className={cn(
+					"fill-none stroke-accent transition-[stroke-dashoffset] duration-300 ease-linear",
+					clamped <= 0 && "opacity-0",
+				)}
+			/>
 		</svg>
 	);
 }
@@ -125,35 +100,44 @@ export function AudioDialButton({
 			aria-label={`${actionLabel} — ${target.title}`}
 			aria-pressed={isPlaying}
 			className={cn(
-				"relative inline-flex shrink-0 items-center justify-center rounded-full transition-transform duration-300 fine-hover:scale-105 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-ring",
+				"relative inline-flex shrink-0 items-center justify-center rounded-full transition-transform duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] fine-hover:scale-[1.07] active:scale-[0.97] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-ring",
 				className,
 			)}
 		>
 			<span
 				aria-hidden
-				className="absolute inset-0 rounded-full bg-foreground/35 shadow-[0_8px_28px_-6px_rgba(0,0,0,0.6)] blur-[3px]"
+				className="absolute inset-0 rounded-full bg-foreground/30 shadow-[0_8px_28px_-6px_rgba(0,0,0,0.55)] backdrop-blur-[2px] transition-shadow duration-300 group-fine:shadow-[0_10px_32px_-6px_rgba(0,0,0,0.65)]"
 			/>
 			<span
 				aria-hidden
 				className={cn(
-					"absolute inset-0 rounded-full bg-accent/30 blur-lg transition-opacity duration-300",
-					isPlaying ? "opacity-100" : "opacity-0 group-fine:opacity-50",
+					"absolute inset-0 rounded-full bg-accent/35 blur-lg transition-opacity duration-500 ease-[cubic-bezier(0.22,1,0.36,1)]",
+					isPlaying ? "opacity-100" : "opacity-0 group-fine:opacity-60",
 				)}
 			/>
 			{isCurrent ? <ActiveDialRing /> : <DialRing progress={0} />}
 			<span
 				className={cn(
-					"relative z-1 flex size-10 items-center justify-center rounded-full text-primary-foreground shadow-[0_10px_24px_-8px_rgba(0,0,0,0.65)] transition-colors duration-300 sm:size-12",
+					"relative z-1 flex size-10 items-center justify-center rounded-full text-primary-foreground shadow-[0_10px_24px_-8px_rgba(0,0,0,0.65)] transition-colors duration-300 ease-out sm:size-12",
 					isPlaying
 						? "bg-accent text-foreground"
 						: "bg-foreground group-fine:bg-accent group-fine:text-foreground",
 				)}
 			>
-				{isPlaying ? (
-					<PauseIcon aria-hidden className="size-4 sm:size-5" />
-				) : (
-					<PlayIcon aria-hidden className="size-4 translate-x-[6%] sm:size-5" />
-				)}
+				<PlayIcon
+					aria-hidden
+					className={cn(
+						"absolute size-4 translate-x-[6%] transition-[opacity,transform] duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] sm:size-5",
+						isPlaying ? "scale-75 opacity-0" : "scale-100 opacity-100",
+					)}
+				/>
+				<PauseIcon
+					aria-hidden
+					className={cn(
+						"absolute size-4 transition-[opacity,transform] duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] sm:size-5",
+						isPlaying ? "scale-100 opacity-100" : "scale-75 opacity-0",
+					)}
+				/>
 			</span>
 		</button>
 	);

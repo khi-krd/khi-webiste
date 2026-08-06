@@ -34,7 +34,7 @@ const GRID_MAX_ITEMS = 12;
 const COMPACT_MAX_ITEMS = 4;
 
 const soundCtaClass =
-	"group/sound-cta relative inline-flex h-10 w-fit shrink-0 items-center gap-2.5 overflow-hidden border border-primary-foreground/70 bg-primary-foreground/10 px-5 font-heading text-small font-semibold text-primary-foreground no-underline backdrop-blur-[2px] transition-[color,gap,box-shadow,background-color,border-color] duration-300 ease-out before:absolute before:inset-0 before:z-0 before:origin-bottom before:scale-y-0 before:bg-primary-foreground before:transition-transform before:duration-300 before:ease-[cubic-bezier(0.22,1,0.36,1)] fine-hover:gap-3.5 fine-hover:border-primary-foreground fine-hover:text-foreground fine-hover:shadow-[0_8px_24px_-12px_color-mix(in_oklch,var(--color-foreground)_55%,transparent)] fine-hover:before:scale-y-100 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-foreground motion-reduce:before:transition-none motion-reduce:fine-hover:before:scale-y-100 motion-reduce:fine-hover:gap-2.5";
+	"group/sound-cta relative inline-flex h-10 w-fit shrink-0 items-center gap-2.5 overflow-hidden rounded-tl-lg rounded-br-lg border border-primary-foreground/70 bg-primary-foreground/10 px-5 font-heading text-small font-semibold text-primary-foreground no-underline backdrop-blur-[2px] transition-[color,gap,box-shadow,background-color,border-color] duration-300 ease-out before:absolute before:inset-0 before:z-0 before:origin-bottom before:scale-y-0 before:bg-primary-foreground before:transition-transform before:duration-300 before:ease-[cubic-bezier(0.22,1,0.36,1)] fine-hover:gap-3.5 fine-hover:border-primary-foreground fine-hover:text-foreground fine-hover:shadow-[0_8px_24px_-12px_color-mix(in_oklch,var(--color-foreground)_55%,transparent)] fine-hover:before:scale-y-100 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-foreground motion-reduce:before:transition-none motion-reduce:fine-hover:before:scale-y-100 motion-reduce:fine-hover:gap-2.5";
 
 function SoundSectionCard({ item }: { item: SoundSectionCardItem }) {
 	const { state } = usePlayer();
@@ -45,8 +45,8 @@ function SoundSectionCard({ item }: { item: SoundSectionCardItem }) {
 	return (
 		<article
 			className={cn(
-				"group relative flex flex-col overflow-hidden rounded-lg border border-primary-foreground/15 bg-primary-foreground/6 transition-[transform,box-shadow,background-color,border-color] duration-300 ease-out",
-				"fine-hover:-translate-y-1 fine-hover:border-primary-foreground/35 fine-hover:bg-primary-foreground/10 fine-hover:shadow-[0_24px_50px_-22px_rgba(0,0,0,0.65)]",
+				"group relative flex flex-col overflow-hidden rounded-lg border border-primary-foreground/15 bg-primary-foreground/6 [will-change:transform] transition-[transform,box-shadow,background-color,border-color] duration-500 ease-[cubic-bezier(0.22,1,0.36,1)]",
+				"fine-hover:-translate-y-1.5 fine-hover:border-primary-foreground/35 fine-hover:bg-primary-foreground/10 fine-hover:shadow-[0_24px_50px_-22px_rgba(0,0,0,0.65)]",
 				isActive &&
 					"border-accent/40 bg-primary-foreground/12 shadow-[0_24px_50px_-22px_rgba(0,0,0,0.65)]",
 			)}
@@ -59,7 +59,7 @@ function SoundSectionCard({ item }: { item: SoundSectionCardItem }) {
 						fill
 						sizes="(max-width: 640px) 45vw, (max-width: 1024px) 30vw, 22vw"
 						className={cn(
-							"object-cover transition-[filter,transform] duration-500 ease-out",
+							"object-cover transition-[filter,transform] duration-500 ease-[cubic-bezier(0.22,1,0.36,1)]",
 							isActive
 								? "brightness-100 saturate-100"
 								: "brightness-[0.85] saturate-[0.9] group-fine:scale-[1.05] group-fine:brightness-100",
@@ -79,7 +79,7 @@ function SoundSectionCard({ item }: { item: SoundSectionCardItem }) {
 				<div
 					aria-hidden
 					className={cn(
-						"absolute inset-0 bg-linear-to-t from-foreground/80 via-foreground/10 to-transparent transition-opacity duration-300",
+						"absolute inset-0 bg-linear-to-t from-foreground/80 via-foreground/10 to-transparent transition-opacity duration-500 ease-[cubic-bezier(0.22,1,0.36,1)]",
 						isPlaying ? "opacity-100" : "opacity-70 group-fine:opacity-85",
 					)}
 				/>
@@ -97,7 +97,7 @@ function SoundSectionCard({ item }: { item: SoundSectionCardItem }) {
 					<Link
 						href={audioDetailHref(item.id)}
 						variant="nav"
-						className="text-inherit no-underline after:absolute after:inset-0 after:z-1 after:content-[''] transition-[text-decoration-color] duration-300 group-fine:underline group-fine:decoration-primary-foreground/35 group-fine:underline-offset-[0.2em] motion-reduce:group-fine:no-underline"
+						className="text-inherit no-underline after:absolute after:inset-0 after:z-1 after:content-[''] transition-[text-decoration-color] duration-300 hover:text-primary-foreground! group-fine:underline group-fine:decoration-primary-foreground/35 group-fine:underline-offset-[0.2em] motion-reduce:group-fine:no-underline"
 					>
 						{item.title}
 					</Link>
@@ -130,22 +130,20 @@ export function SoundSectionCards({
 	return (
 		<ScrollReveal className="mt-8 sm:mt-10 lg:mt-12">
 			<ScrollRevealItem>
-				<div className="overflow-hidden rounded-lg border border-primary-foreground/18 bg-primary-foreground/8 backdrop-blur-md">
-					<div className="flex px-5 pt-5 sm:px-6 sm:pt-6">
-						<Link
-							href={ctaHref}
-							variant="nav"
-							className={cn(soundCtaClass, "mr-auto")}
-						>
-							<span className="relative z-1">{ctaLabel}</span>
-							<DirectionalIcon
-								icon={ArrowRightIcon}
-								className="relative z-1 size-4"
-							/>
-						</Link>
-					</div>
+				<div className="relative overflow-hidden rounded-lg border border-primary-foreground/18 bg-primary-foreground/8 backdrop-blur-md">
+					<Link
+						href={ctaHref}
+						variant="nav"
+						className={cn(soundCtaClass, "absolute! left-0 top-0 z-10")}
+					>
+						<span className="relative z-1">{ctaLabel}</span>
+						<DirectionalIcon
+							icon={ArrowRightIcon}
+							className="relative z-1 size-4"
+						/>
+					</Link>
 
-					<div className="grid grid-cols-2 gap-3 p-5 sm:grid-cols-3 sm:gap-4 sm:p-6 lg:grid-cols-4 lg:gap-5">
+					<div className="grid grid-cols-2 gap-3 px-5 pb-5 pt-16 sm:grid-cols-3 sm:gap-4 sm:px-6 sm:pb-6 sm:pt-20 lg:grid-cols-4 lg:gap-5">
 						{visibleItems.map((item) => (
 							<SoundSectionCard key={item.id} item={item} />
 						))}
