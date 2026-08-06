@@ -6,8 +6,6 @@ import {
 import { SoundSectionContent } from "@/components/home/sound-section-content";
 import { SoundSectionVideo } from "@/components/home/sound-section-video";
 import { getAudioCarousel, getSoundReklamVideo } from "@/lib/api/audio";
-import { formatDuration } from "@/lib/audio/format";
-import { soundTypeLabel } from "@/lib/audio/sound-types";
 import { cn } from "@/lib/utils";
 
 type SoundSectionProps = {
@@ -21,31 +19,19 @@ export async function SoundSection({
 	className,
 }: SoundSectionProps = {}) {
 	const locale = await getLocale();
-	const [t, audioT, cards, reklam] = await Promise.all([
+	const [t, cards, reklam] = await Promise.all([
 		getTranslations("Sound"),
-		getTranslations("Audio"),
-		getAudioCarousel(locale, compact ? 3 : undefined),
+		getAudioCarousel(locale, compact ? 4 : undefined),
 		getSoundReklamVideo(),
 	]);
 
-	const cardItems: SoundSectionCardItem[] = cards.map((card) => {
-		const typeLabel = soundTypeLabel((key) => audioT(key), card.soundType);
-		const durationLabel = formatDuration(card.totalDurationSeconds);
-		const trackCountLabel =
-			card.trackState === "MULTI"
-				? audioT("card.albumTracks", { count: card.totalTracks ?? 0 })
-				: null;
-
-		return {
-			id: card.id,
-			title: card.title,
-			typeLabel,
-			durationLabel,
-			trackCountLabel,
-			coverUrl: card.coverUrl,
-			queue: card.queue,
-		};
-	});
+	const cardItems: SoundSectionCardItem[] = cards.map((card) => ({
+		id: card.id,
+		title: card.title,
+		subtitle: card.subtitle,
+		coverUrl: card.coverUrl,
+		queue: card.queue,
+	}));
 
 	return (
 		<section
@@ -81,14 +67,13 @@ export async function SoundSection({
 			/>
 
 			<div className="relative z-10 flex min-h-[inherit] flex-col justify-end px-6 pb-16 sm:px-10 sm:pb-20 lg:px-14 lg:pb-24">
-				<SoundSectionContent
-					eyebrow={t("eyebrow")}
-					title={t("title")}
-					description={t("description")}
-					cta={t("cta")}
+				<SoundSectionContent title={t("title")} />
+				<SoundSectionCards
+					items={cardItems}
+					compact={compact}
+					ctaLabel={t("cta")}
 					ctaHref="/audio"
 				/>
-				<SoundSectionCards items={cardItems} compact={compact} />
 			</div>
 		</section>
 	);

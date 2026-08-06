@@ -48,7 +48,7 @@ const SOUND_TRACKS_TAG = "sound-tracks";
 
 export const AUDIO_GRID_PAGE_SIZE = 12;
 export const AUDIO_MEMORIES_SIZE = 8;
-export const SOUND_SECTION_CARD_COUNT = 4;
+export const SOUND_SECTION_CARD_COUNT = 12;
 
 export type AudioListResult = {
 	items: ResolvedAudioCard[];
