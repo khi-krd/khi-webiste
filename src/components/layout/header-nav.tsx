@@ -6,7 +6,6 @@ import { useCallback, useRef, useState } from "react";
 import { LanguageSwitcher } from "@/components/layout/language-switcher";
 import { NAV_DRAWER_ID, NavDrawer } from "@/components/layout/nav-drawer";
 import { PublicationsDropdown } from "@/components/layout/publications-dropdown";
-import { Button } from "@/components/ui/button";
 import { DrawnBorder } from "@/components/ui/drawn-border";
 import { SERVICES_HREF } from "@/config/site";
 import { Link } from "@/i18n/navigation";
@@ -15,6 +14,20 @@ import { cn } from "@/lib/utils";
 const navLinkClass = cn(
 	"inline-flex h-11 items-center px-3.5",
 	"font-heading text-body font-bold text-foreground",
+	"underline decoration-transparent decoration-2 underline-offset-[0.22em]",
+	"transition-[color,text-decoration-color] duration-200",
+	"fine-hover:decoration-current",
+);
+
+// Matches PublicationsDropdown's trigger so بڵاوکراوە/ئەرشیڤ/کتێبخانە read as one
+// unstyled group with no visual difference between them.
+const navTriggerClass = cn(
+	"draw-border-host relative isolate inline-flex h-11 items-center gap-1.5 overflow-hidden rounded-md px-3.5",
+	"font-heading text-body font-bold text-foreground transition-colors fine-hover:bg-sunken",
+	"[&>:not(svg)]:relative [&>:not(svg)]:z-1",
+);
+
+const navTriggerLabelClass = cn(
 	"underline decoration-transparent decoration-2 underline-offset-[0.22em]",
 	"transition-[color,text-decoration-color] duration-200",
 	"fine-hover:decoration-current",
@@ -58,6 +71,18 @@ export function HeaderNav() {
 					aria-label={t("primary")}
 					className="hidden items-center gap-0.5 sm:flex sm:gap-1"
 				>
+					<PublicationsDropdown />
+
+					<button type="button" className={navTriggerClass}>
+						<DrawnBorder />
+						<span className={navTriggerLabelClass}>{t("archive")}</span>
+					</button>
+
+					<button type="button" className={navTriggerClass}>
+						<DrawnBorder />
+						<span className={navTriggerLabelClass}>{t("library")}</span>
+					</button>
+
 					<Link href="/about" className={navLinkClass}>
 						{t("us")}
 					</Link>
@@ -65,18 +90,7 @@ export function HeaderNav() {
 					<Link href={SERVICES_HREF} className={navLinkClass}>
 						{t("services")}
 					</Link>
-
-					<PublicationsDropdown />
 				</nav>
-
-				<div className="hidden items-center gap-2 sm:flex">
-					<Button type="button" variant="secondary" size="md">
-						{t("archive")}
-					</Button>
-					<Button type="button" variant="secondary" size="md">
-						{t("library")}
-					</Button>
-				</div>
 
 				<div
 					aria-hidden="true"
