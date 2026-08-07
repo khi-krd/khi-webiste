@@ -45,9 +45,17 @@ function SoundSectionCard({ item }: { item: SoundSectionCardItem }) {
 	return (
 		<article
 			className={cn(
-				"group relative flex flex-col overflow-hidden rounded-lg border border-primary-foreground/15 bg-primary-foreground/6 [will-change:transform] transition-[transform,box-shadow,background-color,border-color] duration-400 ease-[cubic-bezier(0.22,1,0.36,1)]",
-				"fine-hover:-translate-y-1 fine-hover:border-primary-foreground/30 fine-hover:bg-primary-foreground/10 fine-hover:shadow-[0_18px_38px_-20px_rgba(0,0,0,0.7)]",
-				"motion-reduce:fine-hover:translate-y-0",
+				// Grows on hover instead of lifting: a translate can slide the card out
+				// from under the pointer near its edge, which un-hovers it, drops it
+				// back, re-hovers — the flicker that made this feel broken. Scaling
+				// only ever adds area, so the pointer stays captured.
+				// NOTE: Tailwind v4 compiles `scale-*` to the standalone `scale` property,
+				// so it must be named in the transition list — `transform` does not cover
+				// it, and the change would otherwise snap with no animation at all.
+				"group relative flex flex-col overflow-hidden rounded-lg border border-primary-foreground/15 bg-primary-foreground/6 [will-change:scale] transition-[scale,box-shadow,background-color,border-color] duration-[320ms] ease-[cubic-bezier(0.4,0,0.2,1)]",
+				// Leaning in is quick and decisive; settling back is slower and calmer.
+				"fine-hover:z-10 fine-hover:scale-[1.025] fine-hover:border-primary-foreground/30 fine-hover:bg-primary-foreground/10 fine-hover:shadow-[0_18px_38px_-20px_rgba(0,0,0,0.7)] fine-hover:duration-[220ms] fine-hover:ease-[cubic-bezier(0.2,0.7,0.35,1)]",
+				"motion-reduce:fine-hover:scale-100",
 				isActive &&
 					"border-accent/40 bg-primary-foreground/12 shadow-[0_18px_38px_-20px_rgba(0,0,0,0.7)]",
 			)}
@@ -60,10 +68,12 @@ function SoundSectionCard({ item }: { item: SoundSectionCardItem }) {
 						fill
 						sizes="(max-width: 640px) 45vw, (max-width: 1024px) 30vw, 22vw"
 						className={cn(
-							"object-cover transition-[filter,transform] duration-700 ease-[cubic-bezier(0.22,1,0.36,1)]",
+							// Timed just behind the card so the two read as one gesture; the
+							// card's own 1.025 scale compounds on top of this.
+							"object-cover transition-[filter,scale] duration-[420ms] ease-[cubic-bezier(0.4,0,0.2,1)]",
 							isActive
 								? "brightness-100 saturate-100"
-								: "brightness-[0.85] saturate-[0.9] group-fine:scale-[1.04] group-fine:brightness-100 group-fine:saturate-100",
+								: "brightness-[0.85] saturate-[0.9] group-fine:scale-[1.03] group-fine:brightness-100 group-fine:saturate-100",
 						)}
 					/>
 				) : (
@@ -80,7 +90,7 @@ function SoundSectionCard({ item }: { item: SoundSectionCardItem }) {
 				<div
 					aria-hidden
 					className={cn(
-						"absolute inset-0 bg-linear-to-t from-foreground/80 via-foreground/10 to-transparent transition-opacity duration-500 ease-[cubic-bezier(0.22,1,0.36,1)]",
+						"absolute inset-0 bg-linear-to-t from-foreground/80 via-foreground/10 to-transparent transition-opacity duration-[420ms] ease-[cubic-bezier(0.4,0,0.2,1)]",
 						isPlaying ? "opacity-100" : "opacity-70 group-fine:opacity-85",
 					)}
 				/>

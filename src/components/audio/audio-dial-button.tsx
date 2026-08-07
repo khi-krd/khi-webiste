@@ -175,7 +175,8 @@ export function AudioDialButton({
 			aria-label={`${actionLabel} — ${target.title}`}
 			aria-pressed={isPlaying}
 			className={cn(
-				"relative inline-flex shrink-0 items-center justify-center rounded-full transition-transform duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] fine-hover:scale-[1.06] active:scale-[0.96] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-ring",
+				// `scale` (not `transform`) — see the note in sound-section-cards.
+				"relative inline-flex shrink-0 items-center justify-center rounded-full transition-[scale] duration-[320ms] ease-[cubic-bezier(0.4,0,0.2,1)] fine-hover:scale-[1.06] fine-hover:duration-[220ms] fine-hover:ease-[cubic-bezier(0.2,0.7,0.35,1)] active:scale-[0.96] active:duration-[120ms] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-ring",
 				className,
 			)}
 		>
@@ -210,14 +211,14 @@ export function AudioDialButton({
 				<PlayIcon
 					aria-hidden
 					className={cn(
-						"absolute size-3.5 translate-x-[6%] transition-[opacity,transform] duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] sm:size-4",
+						"absolute size-3.5 translate-x-[6%] transition-[opacity,scale] duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] sm:size-4",
 						isPlaying ? "scale-75 opacity-0" : "scale-100 opacity-100",
 					)}
 				/>
 				<PauseIcon
 					aria-hidden
 					className={cn(
-						"absolute size-3.5 transition-[opacity,transform] duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] sm:size-4",
+						"absolute size-3.5 transition-[opacity,scale] duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] sm:size-4",
 						isPlaying ? "scale-100 opacity-100" : "scale-75 opacity-0",
 					)}
 				/>
