@@ -12,11 +12,11 @@ import { Link } from "@/i18n/navigation";
 import { cn } from "@/lib/utils";
 
 const iconControlClass = cn(
-	"draw-border-host relative isolate inline-flex shrink-0 items-center justify-center overflow-hidden rounded-md text-foreground transition-colors fine-hover:bg-sunken",
+	"draw-border-host relative isolate inline-flex shrink-0 items-center justify-center overflow-hidden text-foreground transition-colors fine-hover:bg-sunken",
 );
 
 const utilityTrayClass =
-	"flex items-center gap-0.5 rounded-md border border-border bg-surface p-0.5 shadow-[0_1px_0_0_color-mix(in_oklch,var(--color-foreground)_5%,transparent)]";
+	"flex items-center gap-0.5 border border-border bg-surface p-0.5 shadow-[0_1px_0_0_color-mix(in_oklch,var(--color-foreground)_5%,transparent)]";
 
 type NavView = "nav" | "search";
 

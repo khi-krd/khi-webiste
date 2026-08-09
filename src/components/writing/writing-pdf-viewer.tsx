@@ -65,7 +65,7 @@ function touchDistance(
 }
 
 const INLINE_VIEWPORT_CLASS =
-	"h-[70dvh] min-h-[26rem] sm:h-[80dvh] sm:min-h-[36rem] sm:max-h-[56rem]";
+	"h-[72dvh] min-h-[28rem] sm:h-[82dvh] sm:min-h-[38rem] sm:max-h-[64rem]";
 const FULLSCREEN_VIEWPORT_CLASS = "min-h-0 flex-1";
 
 type FitMode = "width" | "height";

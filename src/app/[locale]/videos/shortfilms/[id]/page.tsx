@@ -81,7 +81,8 @@ export default async function ShortFilmDetailPage({
 		}));
 
 	return (
-		<main className="bg-foreground pb-16 text-primary-foreground sm:pb-20">
+		// Tail padding lives on the detail view's last wrapper — none on <main>.
+		<main className="bg-foreground text-primary-foreground">
 			<ShortFilmDetailView
 				detail={detail}
 				locale={locale}

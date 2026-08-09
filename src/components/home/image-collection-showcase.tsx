@@ -18,6 +18,7 @@ import {
 	HOME_IMAGE_BENTO_GRID_WRAPPER_CLASS,
 	HOME_IMAGE_BENTO_HEADER_CLASS,
 	HOME_IMAGE_BENTO_SECTION_CLASS,
+	HOME_IMAGE_BENTO_TILE_RADIUS_CLASS,
 	HOME_IMAGE_BENTO_TRAY_CLASS,
 } from "@/lib/home/image-bento";
 import type { ImageCollectionItem } from "@/lib/mock/image-collection";
@@ -71,7 +72,11 @@ function ImageCollectionBento({ items }: { items: ImageCollectionItem[] }) {
 							key={item.id}
 							className={HOME_IMAGE_BENTO_CELL_CLASS}
 						>
-							<ImageCollectionCard item={item} priority={index < 5} />
+							<ImageCollectionCard
+								item={item}
+								priority={index < 5}
+								className={HOME_IMAGE_BENTO_TILE_RADIUS_CLASS}
+							/>
 						</BentoRevealItem>
 					))}
 				</ScrollReveal>
@@ -92,7 +97,7 @@ export function ImageCollectionShowcase({
 		<div className={HOME_IMAGE_BENTO_SECTION_CLASS}>
 			<ScrollRevealBlock className={HOME_IMAGE_BENTO_HEADER_CLASS}>
 				<header>
-					<div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between sm:gap-6">
+					<div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between sm:gap-6">
 						<div className="max-w-2xl text-start">
 							<p className="label font-medium">{copy.eyebrow}</p>
 							<h2

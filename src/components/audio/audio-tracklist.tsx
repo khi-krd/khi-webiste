@@ -150,8 +150,10 @@ function buildContentEntries(
 }
 
 /**
- * Ordered file rows with play controls. Technical + content metadata sits
- * behind a collapsed “show more” details toggle (mirrors the admin editor).
+ * Ordered file rows with play controls, set like the printed tracklist on the
+ * back of a record sleeve: numbered hairline rows, tabular durations, no
+ * surface box. Technical + content metadata sits behind a collapsed
+ * “show more” details toggle (mirrors the admin editor).
  */
 export function AudioTracklist({
 	fileRows,
@@ -176,7 +178,7 @@ export function AudioTracklist({
 				) : null}
 			</div>
 
-			<ol className="mt-5 border border-border bg-surface">
+			<ol className="mt-4 border-y border-border">
 				{fileRows.map((row, index) => {
 					const queueIndex = queueIndexByFileId.get(row.id);
 					const durationLabel = formatDuration(row.durationSeconds);
@@ -189,11 +191,19 @@ export function AudioTracklist({
 						<li
 							key={row.id}
 							className={cn(
-								"px-4 py-3 sm:px-5",
+								"py-2.5 sm:py-3",
 								index > 0 && "border-t border-border",
 							)}
 						>
 							<div className="flex items-center gap-3 sm:gap-4">
+								<span
+									aria-hidden
+									dir="ltr"
+									className="label w-6 shrink-0 font-medium text-muted tabular-nums"
+								>
+									{trackNo(index)}
+								</span>
+
 								{row.playable && queueIndex != null ? (
 									<AudioPlayButton
 										queue={queue}
@@ -218,14 +228,6 @@ export function AudioTracklist({
 										—
 									</span>
 								)}
-
-								<span
-									aria-hidden
-									dir="ltr"
-									className="label hidden w-6 shrink-0 font-medium tabular-nums sm:inline"
-								>
-									{trackNo(index)}
-								</span>
 
 								{row.thumbUrl ? (
 									<span className="relative hidden size-10 shrink-0 overflow-hidden border border-border bg-sunken sm:block">
@@ -254,7 +256,9 @@ export function AudioTracklist({
 							</div>
 
 							{hasDetails ? (
-								<details className="group/details mt-3">
+								// ms offset = number column width + row gap, so the toggle
+								// aligns with the play control instead of the numbering.
+								<details className="group/details ms-9 mt-2.5 sm:ms-10">
 									<summary className="inline-flex cursor-pointer list-none items-center gap-1.5 text-label text-muted transition-colors fine-hover:text-foreground [&::-webkit-details-marker]:hidden">
 										<ChevronDownIcon
 											aria-hidden

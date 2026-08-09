@@ -15,23 +15,10 @@ type AudioStatsStripProps = {
 	className?: string;
 };
 
-function statsGridClass(count: number): string {
-	if (count <= 1) {
-		return "grid-cols-1";
-	}
-	if (count === 2) {
-		return "grid-cols-2";
-	}
-	if (count === 3) {
-		return "grid-cols-1 sm:grid-cols-3";
-	}
-	return "grid-cols-2 sm:grid-cols-4";
-}
-
 /**
- * Hairline stats grid (duration / size / tracks / year). `gap-px` over a
- * border-colored backdrop draws the inner rules; column count matches the
- * number of stats so empty cells never appear.
+ * Sleeve fine print (duration / size / tracks / year): a single centered line
+ * of stats between top and bottom hairlines, like the print run details on a
+ * record sleeve spine.
  */
 export function AudioStatsStrip({ stats, className }: AudioStatsStripProps) {
 	if (stats.length === 0) {
@@ -41,18 +28,17 @@ export function AudioStatsStrip({ stats, className }: AudioStatsStripProps) {
 	return (
 		<ScrollReveal
 			className={cn(
-				"grid gap-px border border-border bg-border",
-				statsGridClass(stats.length),
+				"flex flex-wrap items-baseline justify-center gap-x-10 gap-y-4 border-y border-border px-4 py-5",
 				className,
 			)}
 		>
 			{stats.map((stat) => (
 				<ScrollRevealItem key={stat.key}>
-					<div className="flex h-full flex-col gap-1.5 bg-surface px-4 py-5 text-start sm:px-5">
-						<p className="label font-medium">{stat.label}</p>
+					<div className="flex flex-col items-center gap-1 text-center">
+						<p className="label font-medium text-muted">{stat.label}</p>
 						<p
 							dir="ltr"
-							className="font-heading text-h2 font-bold leading-none tabular-nums"
+							className="font-heading text-h3 font-bold leading-none tabular-nums"
 						>
 							{stat.value}
 						</p>

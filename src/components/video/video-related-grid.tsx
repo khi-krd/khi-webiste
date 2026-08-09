@@ -13,6 +13,12 @@ type VideoRelatedGridProps = {
 	/** Dark theme for the cinema short-film detail page. */
 	dark?: boolean;
 	className?: string;
+	/**
+	 * Padding below the top hairline. A prop (not className) because cn() is a
+	 * plain joiner — a caller's pt-* utility cannot reliably override the
+	 * default in the compiled sheet.
+	 */
+	seamClassName?: string;
 };
 
 /**
@@ -23,6 +29,7 @@ export function VideoRelatedGrid({
 	cards,
 	dark = false,
 	className,
+	seamClassName = "pt-8 sm:pt-10",
 }: VideoRelatedGridProps) {
 	const visible = cards.slice(0, RELATED_VIDEOS_VISIBLE);
 
@@ -33,7 +40,8 @@ export function VideoRelatedGrid({
 	return (
 		<section
 			className={cn(
-				"border-t pt-8 sm:pt-10",
+				"border-t",
+				seamClassName,
 				dark ? "border-primary-foreground/20" : "border-border",
 				className,
 			)}

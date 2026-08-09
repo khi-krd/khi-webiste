@@ -22,7 +22,7 @@ const PUBLICATION_ITEMS = PUBLICATION_KEYS.map((key) => {
 });
 
 const panelClassName =
-	"absolute start-0 top-[calc(100%+0.375rem)] z-50 min-w-[11.5rem] overflow-hidden rounded-md border border-border-strong bg-surface py-1 shadow-[0_8px_24px_color-mix(in_oklch,var(--color-foreground)_12%,transparent),0_2px_6px_color-mix(in_oklch,var(--color-foreground)_6%,transparent)]";
+	"absolute start-0 top-[calc(100%+0.375rem)] z-50 min-w-[11.5rem] overflow-hidden border border-border-strong bg-surface py-1 shadow-[0_8px_24px_color-mix(in_oklch,var(--color-foreground)_12%,transparent),0_2px_6px_color-mix(in_oklch,var(--color-foreground)_6%,transparent)]";
 
 /** "بڵاوکراوە" dropdown trigger listing the sound/video/writings/gallery catalogue. */
 export function PublicationsDropdown() {

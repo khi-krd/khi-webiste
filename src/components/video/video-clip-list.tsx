@@ -108,7 +108,7 @@ export function VideoClipList({
 										: `${labels.play}: ${clip.title}`
 								}
 								className={cn(
-									"group relative block w-full overflow-hidden rounded-md border text-start transition-[border-color,box-shadow,opacity] duration-300",
+									"group relative block w-full overflow-hidden border text-start transition-[border-color,box-shadow,opacity] duration-300",
 									isActive
 										? "border-foreground ring-1 ring-foreground"
 										: "border-border bg-sunken fine-hover:border-border-strong",

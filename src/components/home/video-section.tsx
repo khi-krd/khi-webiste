@@ -4,14 +4,11 @@ import {
 	type HomeVideoCardItem,
 	VideoCard,
 } from "@/components/home/video-card";
-import {
-	ScrollReveal,
-	ScrollRevealBlock,
-	ScrollRevealItem,
-} from "@/components/motion/scroll-reveal";
+import { ScrollRevealBlock } from "@/components/motion/scroll-reveal";
 import { DirectionalIcon } from "@/components/ui/directional-icon";
 import { Link } from "@/components/ui/link";
 import { getVideoListing } from "@/lib/api/videos";
+import { cn } from "@/lib/utils";
 import { formatDuration } from "@/lib/video/format";
 import { buildVideoHref } from "@/lib/video-url";
 import type { ResolvedVideoCard } from "@/types/video";
@@ -35,7 +32,11 @@ export async function VideoSection() {
 		return null;
 	}
 
-	const [featured, second, third, fourth, fifth, ...more] = listing.items;
+	const [featured, second, third, ...rest] = listing.items;
+
+	// Every mosaic cell must be filled — an empty grid area would expose the
+	// border-colored backdrop between the hairline seams.
+	const hasSideColumn = Boolean(second || third);
 
 	const toItem = (card: ResolvedVideoCard): HomeVideoCardItem => ({
 		id: card.id,
@@ -50,12 +51,12 @@ export async function VideoSection() {
 
 	return (
 		<section
-			className="cv-auto flex w-full flex-col overflow-hidden border-t border-border bg-background [--cv-intrinsic:1400px]"
+			className="cv-auto flex w-full flex-col overflow-hidden border-t border-border bg-background [--cv-intrinsic:1800px]"
 			aria-labelledby="video-heading"
 		>
 			<ScrollRevealBlock className="shrink-0 px-6 pt-12 pb-8 sm:px-8 sm:pt-16 sm:pb-10 lg:pt-20">
 				<header>
-					<div className="flex flex-col gap-5 sm:flex-row sm:items-end sm:justify-between sm:gap-8">
+					<div className="flex flex-col gap-5 sm:flex-row sm:items-start sm:justify-between sm:gap-8">
 						<div className="max-w-2xl text-start">
 							<p className="label font-medium">{t("eyebrow")}</p>
 							<h2
@@ -83,76 +84,88 @@ export async function VideoSection() {
 			</ScrollRevealBlock>
 
 			<div className="px-6 pb-12 sm:px-8 sm:pb-16 lg:pb-20">
-				<ScrollReveal className="grid grid-cols-1 gap-3 sm:grid-cols-2 sm:gap-4 lg:grid-cols-12 lg:grid-rows-[minmax(28rem,1fr)_minmax(16rem,0.55fr)] lg:gap-4 lg:min-h-[min(100svh,56rem)]">
-					{featured ? (
-						<ScrollRevealItem className="relative aspect-video min-h-0 sm:col-span-2 lg:col-span-7 lg:row-start-1 lg:aspect-auto lg:h-full">
-							<VideoCard
-								item={toItem(featured)}
-								categoryLabel={categoryLabel(featured)}
-								variant="featured"
-								fill
-							/>
-						</ScrollRevealItem>
-					) : null}
+				{/* Hairline mosaic — one framed composition, cards split by 1px seams
+				    (gap-px over a border-colored backdrop). Revealed as a single block
+				    so the seams never show cards sliding independently.
 
-					<ScrollRevealItem className="grid grid-cols-1 gap-3 sm:col-span-2 sm:grid-cols-2 sm:gap-4 lg:col-span-5 lg:col-start-8 lg:row-start-1 lg:h-full lg:grid-cols-1 lg:grid-rows-2 lg:gap-4">
-						{second ? (
-							<div className="relative aspect-video min-h-0 lg:aspect-auto lg:h-full">
-								<VideoCard
-									item={toItem(second)}
-									categoryLabel={categoryLabel(second)}
-									fill
-								/>
-							</div>
-						) : null}
-						{third ? (
-							<div className="relative aspect-video min-h-0 lg:aspect-auto lg:h-full">
-								<VideoCard
-									item={toItem(third)}
-									categoryLabel={categoryLabel(third)}
-									fill
-								/>
-							</div>
-						) : null}
-					</ScrollRevealItem>
+				    lg geometry: the two aspect-square cells in the 3-col side column
+				    set the row height; the 9-col featured cell stretches to match, so
+				    the latest video lands at roughly 3:2 — far larger than the old
+				    7-col cell — while its 16:9 art still crops gently. */}
+				<ScrollRevealBlock delay={0.06}>
+					<div className="overflow-hidden border border-border bg-border">
+						<div className="grid grid-cols-1 gap-px sm:grid-cols-2 lg:grid-cols-12">
+							{featured ? (
+								<div
+									className={cn(
+										"relative aspect-video min-h-0 sm:col-span-2",
+										hasSideColumn
+											? "lg:col-span-9 lg:aspect-auto lg:h-full"
+											: "lg:col-span-12",
+									)}
+								>
+									<VideoCard
+										item={toItem(featured)}
+										categoryLabel={categoryLabel(featured)}
+										variant="featured"
+										fill
+									/>
+								</div>
+							) : null}
 
-					{fourth ? (
-						<ScrollRevealItem className="relative aspect-video min-h-0 lg:col-span-6 lg:row-start-2 lg:aspect-auto lg:h-full">
-							<VideoCard
-								item={toItem(fourth)}
-								categoryLabel={categoryLabel(fourth)}
-								fill
-							/>
-						</ScrollRevealItem>
-					) : null}
+							{hasSideColumn ? (
+								<div
+									className={cn(
+										"grid grid-cols-1 gap-px sm:col-span-2 sm:grid-cols-2 lg:col-span-3 lg:grid-cols-1",
+										// Lone side video: let it fill the sm row alone.
+										second && third ? null : "sm:grid-cols-1",
+									)}
+								>
+									{second ? (
+										<div className="relative aspect-video min-h-0 sm:aspect-square">
+											<VideoCard
+												item={toItem(second)}
+												categoryLabel={categoryLabel(second)}
+												fill
+											/>
+										</div>
+									) : null}
+									{third ? (
+										<div className="relative aspect-video min-h-0 sm:aspect-square">
+											<VideoCard
+												item={toItem(third)}
+												categoryLabel={categoryLabel(third)}
+												fill
+											/>
+										</div>
+									) : null}
+								</div>
+							) : null}
 
-					{fifth ? (
-						<ScrollRevealItem className="relative aspect-video min-h-0 lg:col-span-6 lg:col-start-7 lg:row-start-2 lg:aspect-auto lg:h-full">
-							<VideoCard
-								item={toItem(fifth)}
-								categoryLabel={categoryLabel(fifth)}
-								fill
-							/>
-						</ScrollRevealItem>
-					) : null}
-				</ScrollReveal>
-
-				{more.length > 0 ? (
-					<ScrollReveal className="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-2 sm:gap-4 lg:grid-cols-3 lg:gap-4">
-						{more.map((card) => (
-							<ScrollRevealItem
-								key={card.id}
-								className="relative aspect-video min-h-0"
-							>
-								<VideoCard
-									item={toItem(card)}
-									categoryLabel={categoryLabel(card)}
-									fill
-								/>
-							</ScrollRevealItem>
-						))}
-					</ScrollReveal>
-				) : null}
+							{rest.map((card, index) => {
+								const lastAndOdd =
+									rest.length % 2 === 1 && index === rest.length - 1;
+								return (
+									<div
+										key={card.id}
+										className={cn(
+											"relative aspect-video min-h-0",
+											lastAndOdd
+												? "sm:col-span-2 lg:col-span-12"
+												: "lg:col-span-6",
+										)}
+									>
+										<VideoCard
+											item={toItem(card)}
+											categoryLabel={categoryLabel(card)}
+											fill
+										/>
+									</div>
+								);
+							})}
+						</div>
+					</div>
+				</ScrollRevealBlock>
 			</div>
 		</section>
 	);

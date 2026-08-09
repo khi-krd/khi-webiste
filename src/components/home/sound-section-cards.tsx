@@ -1,6 +1,5 @@
 "use client";
 
-import { ArrowRightIcon } from "@heroicons/react/24/outline";
 import NextImage from "next/image";
 import { AudioDialButton } from "@/components/audio/audio-dial-button";
 import { usePlayer } from "@/components/audio/audio-player-context";
@@ -8,7 +7,6 @@ import {
 	ScrollReveal,
 	ScrollRevealItem,
 } from "@/components/motion/scroll-reveal";
-import { DirectionalIcon } from "@/components/ui/directional-icon";
 import { Link } from "@/components/ui/link";
 import { audioDetailHref } from "@/lib/audio/resolve";
 import { cn } from "@/lib/utils";
@@ -26,15 +24,10 @@ export type SoundSectionCardItem = {
 type SoundSectionCardsProps = {
 	items: SoundSectionCardItem[];
 	compact?: boolean;
-	ctaLabel: string;
-	ctaHref: string;
 };
 
 const GRID_MAX_ITEMS = 12;
 const COMPACT_MAX_ITEMS = 4;
-
-const soundCtaClass =
-	"group/sound-cta relative inline-flex h-10 w-fit shrink-0 items-center gap-2.5 overflow-hidden rounded-lg border border-primary-foreground/70 bg-primary-foreground/10 px-5 font-heading text-small font-semibold text-primary-foreground no-underline backdrop-blur-[2px] transition-[color,gap,box-shadow,background-color,border-color] duration-300 ease-out before:absolute before:inset-0 before:z-0 before:origin-bottom before:scale-y-0 before:bg-primary-foreground before:transition-transform before:duration-300 before:ease-[cubic-bezier(0.22,1,0.36,1)] fine-hover:gap-3.5 fine-hover:border-primary-foreground fine-hover:text-foreground fine-hover:shadow-[0_8px_24px_-12px_color-mix(in_oklch,var(--color-foreground)_55%,transparent)] fine-hover:before:scale-y-100 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-foreground motion-reduce:before:transition-none motion-reduce:fine-hover:before:scale-y-100 motion-reduce:fine-hover:gap-2.5";
 
 function SoundSectionCard({ item }: { item: SoundSectionCardItem }) {
 	const { state } = usePlayer();
@@ -52,7 +45,7 @@ function SoundSectionCard({ item }: { item: SoundSectionCardItem }) {
 				// NOTE: Tailwind v4 compiles `scale-*` to the standalone `scale` property,
 				// so it must be named in the transition list — `transform` does not cover
 				// it, and the change would otherwise snap with no animation at all.
-				"group relative flex flex-col overflow-hidden rounded-lg border border-primary-foreground/15 bg-primary-foreground/6 [will-change:scale] transition-[scale,box-shadow,background-color,border-color] duration-[320ms] ease-[cubic-bezier(0.4,0,0.2,1)]",
+				"group relative flex flex-col overflow-hidden border border-primary-foreground/15 bg-primary-foreground/6 [will-change:scale] transition-[scale,box-shadow,background-color,border-color] duration-[320ms] ease-[cubic-bezier(0.4,0,0.2,1)]",
 				// Leaning in is quick and decisive; settling back is slower and calmer.
 				"fine-hover:z-10 fine-hover:scale-[1.025] fine-hover:border-primary-foreground/30 fine-hover:bg-primary-foreground/10 fine-hover:shadow-[0_18px_38px_-20px_rgba(0,0,0,0.7)] fine-hover:duration-[220ms] fine-hover:ease-[cubic-bezier(0.2,0.7,0.35,1)]",
 				"motion-reduce:fine-hover:scale-100",
@@ -126,8 +119,6 @@ function SoundSectionCard({ item }: { item: SoundSectionCardItem }) {
 export function SoundSectionCards({
 	items,
 	compact = false,
-	ctaLabel,
-	ctaHref,
 }: SoundSectionCardsProps) {
 	if (items.length === 0) {
 		return null;
@@ -141,23 +132,7 @@ export function SoundSectionCards({
 	return (
 		<ScrollReveal className="mt-8 sm:mt-10 lg:mt-12">
 			<ScrollRevealItem>
-				{/* CTA sits above the panel, not inside it — `mr-auto` keeps it on the
-				    visual left in both scripts. */}
-				<div className="mb-4 flex sm:mb-5">
-					<Link
-						href={ctaHref}
-						variant="nav"
-						className={cn(soundCtaClass, "mr-auto")}
-					>
-						<span className="relative z-1">{ctaLabel}</span>
-						<DirectionalIcon
-							icon={ArrowRightIcon}
-							className="relative z-1 size-4"
-						/>
-					</Link>
-				</div>
-
-				<div className="overflow-hidden rounded-lg border border-primary-foreground/18 bg-primary-foreground/8 backdrop-blur-md">
+				<div className="overflow-hidden border border-primary-foreground/18 bg-primary-foreground/8 backdrop-blur-md">
 					<div className="grid grid-cols-2 gap-3 p-5 sm:grid-cols-3 sm:gap-4 sm:p-6 lg:grid-cols-4 lg:gap-5">
 						{visibleItems.map((item) => (
 							<SoundSectionCard key={item.id} item={item} />

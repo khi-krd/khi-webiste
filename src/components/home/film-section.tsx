@@ -78,7 +78,7 @@ export async function FilmSection() {
 
 			<div className="relative z-10 mx-auto max-w-7xl">
 				<ScrollRevealBlock className="px-6 pt-10 pb-6 sm:px-8 sm:pt-12 sm:pb-7">
-					<header className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between sm:gap-6">
+					<header className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between sm:gap-6">
 						<div className="max-w-xl text-start">
 							<p className="label font-medium text-primary-foreground/60">
 								{t("films.home.eyebrow")}

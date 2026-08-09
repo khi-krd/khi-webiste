@@ -112,12 +112,18 @@ export function VideoCard({
 					<span
 						className={cn(
 							"inline-flex size-14 items-center justify-center rounded-pill bg-foreground/70 text-white backdrop-blur-[2px]",
+							variant === "featured" && "lg:size-20",
 							"transition-[transform,background-color,opacity] duration-300",
 							"opacity-80 group-fine:scale-110 group-fine:bg-foreground/85 group-fine:opacity-100",
 							"motion-reduce:transition-none motion-reduce:group-fine:scale-100",
 						)}
 					>
-						<PlayIcon className="size-6 translate-x-0.5" />
+						<PlayIcon
+							className={cn(
+								"size-6 translate-x-0.5",
+								variant === "featured" && "lg:size-9",
+							)}
+						/>
 					</span>
 				</div>
 
@@ -126,7 +132,9 @@ export function VideoCard({
 						<h3
 							className={cn(
 								"font-heading font-semibold leading-snug text-balance",
-								variant === "featured" ? "text-h2" : "text-h3",
+								// The featured cell is much larger at lg — let its title grow
+								// with it so the "latest" hierarchy reads at a glance.
+								variant === "featured" ? "text-h2 lg:text-h1" : "text-h3",
 								"transition-[text-decoration-color] duration-300",
 								"group-fine:underline group-fine:decoration-white/40 group-fine:underline-offset-4",
 								"motion-reduce:group-fine:no-underline",

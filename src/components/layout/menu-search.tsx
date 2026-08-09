@@ -1,51 +1,53 @@
 "use client";
 
-import { ArrowLeftIcon } from "@heroicons/react/24/outline";
+import { CheckIcon } from "@heroicons/react/20/solid";
+import {
+	ArrowLeftIcon,
+	ArrowRightIcon,
+	ChevronDownIcon,
+} from "@heroicons/react/24/outline";
 import { useReducedMotion } from "motion/react";
 import { useLocale, useTranslations } from "next-intl";
-import { type FormEvent, useEffect, useMemo, useState } from "react";
+import { type FormEvent, useEffect, useMemo, useRef, useState } from "react";
 import { DirectionalIcon } from "@/components/ui/directional-icon";
 import { Input } from "@/components/ui/input";
 import { Link } from "@/components/ui/link";
-import { NAV_ITEMS, SEARCH_SUGGESTION_KEYS } from "@/config/site";
 import {
 	type ClientSearchItem,
 	type ClientSearchSectionKey,
 	fetchGlobalSearch,
-	fetchTaxonomyCatalog,
-	filterTaxonomyCatalog,
 	groupSearchItems,
-	type SearchTaxonomyItem,
 } from "@/lib/search/client";
-import {
-	getNavMenuTaxonomyItems,
-	groupTaxonomyItems,
-} from "@/lib/search/taxonomy-types";
 import { cn } from "@/lib/utils";
 
-/** Min characters before we filter the catalog or flag a too-short query. */
+/** Min characters before we query or flag a too-short submission. */
 const MIN_QUERY_LENGTH = 2;
 const SEARCH_DEBOUNCE_MS = 300;
 const SEARCH_SCOPE = "main" as const;
 
-type NavSearchResult = {
-	id: string;
-	href: string;
-	label: string;
-	parentLabel?: string;
-	navKey: string;
-	searchText: string;
-};
-
-type MenuSearchProps = {
-	onBack: () => void;
-	onNavigate: () => void;
-	/** Shared catalog from NavDrawer — avoids a second fetch. */
-	taxonomyCatalog?: SearchTaxonomyItem[] | null;
-	taxonomyUnavailable?: boolean;
-};
-
 const LAYOUT_MS = 400;
+
+/**
+ * Search sources. `site` queries this website's CMS; `library` (Koha) and
+ * `archive` have no API yet — their checkboxes render now so the UX is final,
+ * and each shows a "coming soon" note under its own heading while checked.
+ */
+type SearchSource = "site" | "library" | "archive";
+
+const SEARCH_SOURCES: {
+	key: SearchSource;
+	labelKey: "searchScopeMain" | "searchScopeLibrary" | "searchScopeArchive";
+}[] = [
+	{ key: "site", labelKey: "searchScopeMain" },
+	{ key: "library", labelKey: "searchScopeLibrary" },
+	{ key: "archive", labelKey: "searchScopeArchive" },
+];
+
+const ALL_SOURCES_ON: Record<SearchSource, boolean> = {
+	site: true,
+	library: true,
+	archive: true,
+};
 
 const SEARCH_SECTION_LABEL_KEYS: Record<ClientSearchSectionKey, string> = {
 	projects: "projects",
@@ -56,13 +58,19 @@ const SEARCH_SECTION_LABEL_KEYS: Record<ClientSearchSectionKey, string> = {
 	imageCollections: "gallery",
 };
 
-const SEARCH_TAXONOMY_KIND_LABEL_KEYS = {
-	category: "searchTaxonomyCategory",
-	tag: "searchTaxonomyTag",
-	topic: "searchTaxonomyTopic",
-	genre: "searchTaxonomyGenre",
-	type: "searchTaxonomyType",
-} as const satisfies Record<SearchTaxonomyItem["kind"], string>;
+/** Content types the ماڵپەر results can be narrowed to — all on by default. */
+const SEARCH_TYPE_KEYS: ClientSearchSectionKey[] = [
+	"projects",
+	"news",
+	"videos",
+	"writings",
+	"soundTracks",
+	"imageCollections",
+];
+
+const ALL_TYPES_ON = Object.fromEntries(
+	SEARCH_TYPE_KEYS.map((key) => [key, true]),
+) as Record<ClientSearchSectionKey, boolean>;
 
 /** Keeps overlay copy readable when background photos run bright. */
 const overlayTextShadow =
@@ -71,213 +79,238 @@ const overlayTextShadow =
 const scrollbarHiddenClass =
 	"[scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden";
 
-function normalizeSearchText(value: string) {
-	return value.trim().toLocaleLowerCase();
+type MenuSearchProps = {
+	onBack: () => void;
+	onNavigate: () => void;
+};
+
+/** Checkbox chip for one search source — a real checkbox, styled for the overlay. */
+function SearchSourceCheckbox({
+	label,
+	checked,
+	onChange,
+}: {
+	label: string;
+	checked: boolean;
+	onChange: (next: boolean) => void;
+}) {
+	return (
+		<label
+			className={cn(
+				"group/source inline-flex h-11 cursor-pointer select-none items-center gap-2.5 border px-4",
+				"text-small font-medium backdrop-blur-[2px] transition-colors duration-200",
+				checked
+					? "border-primary-foreground/75 bg-primary-foreground/12 text-primary-foreground"
+					: "border-primary-foreground/30 bg-primary-foreground/5 text-primary-foreground/65 hover:border-primary-foreground/55 hover:text-primary-foreground/85",
+				"has-[:focus-visible]:outline has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-offset-2 has-[:focus-visible]:outline-primary-foreground",
+				overlayTextShadow,
+			)}
+		>
+			<input
+				type="checkbox"
+				checked={checked}
+				onChange={(event) => onChange(event.target.checked)}
+				className="visually-hidden"
+			/>
+			<span
+				aria-hidden
+				className={cn(
+					"flex size-4 shrink-0 items-center justify-center border transition-colors duration-200",
+					checked
+						? "border-primary-foreground bg-primary-foreground"
+						: "border-primary-foreground/50 bg-transparent group-hover/source:border-primary-foreground/75",
+				)}
+			>
+				<CheckIcon
+					className={cn(
+						"size-3.5 text-foreground transition-opacity duration-150",
+						checked ? "opacity-100" : "opacity-0",
+					)}
+				/>
+			</span>
+			{label}
+		</label>
+	);
 }
 
-function buildSearchIndex(
-	t: ReturnType<typeof useTranslations<"Nav">>,
-	taxonomyCatalog: SearchTaxonomyItem[] | null,
-): NavSearchResult[] {
-	return NAV_ITEMS.flatMap((item) => {
-		const parentLabel = t(item.key);
-		const parentDescription = t(item.descriptionKey);
-		const parentSearchText = `${parentLabel} ${parentDescription}`;
+/** Content-type filter for ماڵپەر results — dropdown of checkboxes. */
+function SearchTypeFilter({
+	buttonLabel,
+	listLabel,
+	options,
+	onToggle,
+}: {
+	buttonLabel: string;
+	listLabel: string;
+	options: { key: ClientSearchSectionKey; label: string; checked: boolean }[];
+	onToggle: (key: ClientSearchSectionKey, next: boolean) => void;
+}) {
+	const [open, setOpen] = useState(false);
+	const wrapRef = useRef<HTMLDivElement>(null);
 
-		const parent: NavSearchResult = {
-			id: item.key,
-			href: item.href,
-			label: parentLabel,
-			navKey: item.key,
-			searchText: parentSearchText,
-		};
+	useEffect(() => {
+		if (!open) return;
 
-		const taxonomyChildren = getNavMenuTaxonomyItems(
-			item.key,
-			taxonomyCatalog ?? [],
-		);
-
-		let children: NavSearchResult[];
-
-		if (taxonomyChildren.length > 0) {
-			children = taxonomyChildren.map((entry) => ({
-				id: entry.id,
-				href: entry.href,
-				label: entry.label,
-				parentLabel,
-				navKey: item.key,
-				searchText: `${entry.searchText} ${parentSearchText}`,
-			}));
-
-			if (item.key === "video") {
-				const shortFilmsLabel = t("videoSubShortFilms");
-				children = [
-					{
-						id: "video-shortfilms",
-						href: "/videos/shortfilms",
-						label: shortFilmsLabel,
-						parentLabel,
-						navKey: item.key,
-						searchText: `${shortFilmsLabel} ${parentSearchText}`,
-					},
-					...children,
-				];
+		function onPointerDown(event: PointerEvent) {
+			if (!wrapRef.current?.contains(event.target as Node)) {
+				setOpen(false);
 			}
-		} else {
-			children = item.children.map((child) => {
-				const childLabel = t(child.key);
-				return {
-					id: `${item.key}-${child.key}`,
-					href: child.href,
-					label: childLabel,
-					parentLabel,
-					navKey: item.key,
-					searchText: `${childLabel} ${parentSearchText}`,
-				};
-			});
+		}
+		function onKeyDown(event: KeyboardEvent) {
+			if (event.key === "Escape") {
+				setOpen(false);
+			}
 		}
 
-		return [parent, ...children];
-	});
-}
-
-function filterNavSearchResults(
-	index: NavSearchResult[],
-	query: string,
-): NavSearchResult[] {
-	const normalizedQuery = normalizeSearchText(query);
-	if (!normalizedQuery) return [];
-
-	return index.filter((entry) => {
-		const haystack = [entry.searchText, entry.label, entry.parentLabel].filter(
-			(value): value is string => Boolean(value),
-		);
-
-		return haystack.some((value) =>
-			normalizeSearchText(value).includes(normalizedQuery),
-		);
-	});
-}
-
-function SearchResultsList({
-	groups,
-	isSearching,
-	isLoading,
-	onNavigate,
-	noResultsLabel,
-	loadingLabel,
-	getSectionLabel,
-	getItemDescription,
-}: {
-	groups: { key: ClientSearchSectionKey; items: ClientSearchItem[] }[];
-	isSearching: boolean;
-	isLoading: boolean;
-	onNavigate: () => void;
-	noResultsLabel: string;
-	loadingLabel: string;
-	getSectionLabel: (key: ClientSearchSectionKey) => string;
-	getItemDescription?: (item: ClientSearchItem) => string | undefined;
-}) {
-	if (isLoading) {
-		return (
-			<p
-				className={cn(
-					"py-3 text-body text-primary-foreground/55",
-					overlayTextShadow,
-				)}
-			>
-				{loadingLabel}
-			</p>
-		);
-	}
-
-	if (groups.length > 0) {
-		return (
-			<div className="flex flex-col gap-6 pb-4">
-				{groups.map((group) => (
-					<section key={group.key}>
-						<h4
-							className={cn(
-								"mb-2 text-small font-medium text-primary-foreground/55",
-								overlayTextShadow,
-							)}
-						>
-							{getSectionLabel(group.key)}
-						</h4>
-						<ul className="flex flex-col">
-							{group.items.map((result) => (
-								<li
-									key={result.id}
-									className="border-b border-primary-foreground/15 last:border-b-0"
-								>
-									<Link
-										href={result.href}
-										variant="nav"
-										onClick={onNavigate}
-										className={cn(
-											"block cursor-pointer py-3 text-body text-primary-foreground/80 transition-colors hover:text-primary-foreground",
-											overlayTextShadow,
-										)}
-									>
-										<span>{result.label}</span>
-										{(getItemDescription?.(result) ?? result.description) ? (
-											<span className="mt-1 block text-small text-primary-foreground/45">
-												{getItemDescription?.(result) ?? result.description}
-											</span>
-										) : null}
-									</Link>
-								</li>
-							))}
-						</ul>
-					</section>
-				))}
-			</div>
-		);
-	}
-
-	if (isSearching) {
-		return (
-			<p
-				className={cn(
-					"py-3 text-body text-primary-foreground/55",
-					overlayTextShadow,
-				)}
-			>
-				{noResultsLabel}
-			</p>
-		);
-	}
-
-	return null;
-}
-
-function TaxonomyResultsList({
-	groups,
-	onNavigate,
-	getSectionLabel,
-	getKindLabel,
-}: {
-	groups: { key: ClientSearchSectionKey; items: SearchTaxonomyItem[] }[];
-	onNavigate: () => void;
-	getSectionLabel: (key: ClientSearchSectionKey) => string;
-	getKindLabel: (item: SearchTaxonomyItem) => string;
-}) {
-	if (groups.length === 0) {
-		return null;
-	}
+		document.addEventListener("pointerdown", onPointerDown);
+		document.addEventListener("keydown", onKeyDown);
+		return () => {
+			document.removeEventListener("pointerdown", onPointerDown);
+			document.removeEventListener("keydown", onKeyDown);
+		};
+	}, [open]);
 
 	return (
-		<div className="flex flex-col gap-6 pb-4">
+		<div ref={wrapRef} className="relative">
+			<button
+				type="button"
+				aria-haspopup="true"
+				aria-expanded={open}
+				aria-label={listLabel}
+				onClick={() => setOpen((current) => !current)}
+				className={cn(
+					"inline-flex h-11 cursor-pointer select-none items-center gap-2.5 border px-4",
+					"text-small font-medium backdrop-blur-[2px] transition-colors duration-200",
+					open
+						? "border-primary-foreground/75 bg-primary-foreground/12 text-primary-foreground"
+						: "border-primary-foreground/30 bg-primary-foreground/5 text-primary-foreground/75 hover:border-primary-foreground/55 hover:text-primary-foreground",
+					"focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-foreground",
+					overlayTextShadow,
+				)}
+			>
+				{buttonLabel}
+				<ChevronDownIcon
+					className={cn(
+						"size-4 shrink-0 transition-transform duration-200",
+						open && "rotate-180",
+					)}
+				/>
+			</button>
+
+			{open ? (
+				<div
+					className={cn(
+						"absolute start-0 top-[calc(100%+0.375rem)] z-30 min-w-[13rem] border py-1",
+						"border-primary-foreground/30 bg-foreground/95 backdrop-blur-md",
+						"shadow-[0_12px_32px_color-mix(in_oklch,var(--color-foreground)_60%,transparent)]",
+					)}
+				>
+					{options.map((option) => (
+						<label
+							key={option.key}
+							className={cn(
+								"group/type flex h-10 cursor-pointer select-none items-center gap-2.5 px-3.5",
+								"text-small transition-colors duration-150",
+								option.checked
+									? "text-primary-foreground"
+									: "text-primary-foreground/60 hover:text-primary-foreground/85",
+								"hover:bg-primary-foreground/8",
+								"has-[:focus-visible]:outline has-[:focus-visible]:outline-2 has-[:focus-visible]:-outline-offset-2 has-[:focus-visible]:outline-primary-foreground",
+							)}
+						>
+							<input
+								type="checkbox"
+								checked={option.checked}
+								onChange={(event) => onToggle(option.key, event.target.checked)}
+								className="visually-hidden"
+							/>
+							<span
+								aria-hidden
+								className={cn(
+									"flex size-4 shrink-0 items-center justify-center border transition-colors duration-150",
+									option.checked
+										? "border-primary-foreground bg-primary-foreground"
+										: "border-primary-foreground/50 group-hover/type:border-primary-foreground/75",
+								)}
+							>
+								<CheckIcon
+									className={cn(
+										"size-3.5 text-foreground transition-opacity duration-150",
+										option.checked ? "opacity-100" : "opacity-0",
+									)}
+								/>
+							</span>
+							{option.label}
+						</label>
+					))}
+				</div>
+			) : null}
+		</div>
+	);
+}
+
+/** Scope-tier heading — sits above the per-content-type groups. */
+function SearchSourceHeading({ label }: { label: string }) {
+	return (
+		<div className="mb-3 flex items-center gap-3">
+			<h4
+				className={cn(
+					"shrink-0 text-small font-semibold text-primary-foreground/85",
+					overlayTextShadow,
+				)}
+			>
+				{label}
+			</h4>
+			<span aria-hidden className="h-px flex-1 bg-primary-foreground/20" />
+		</div>
+	);
+}
+
+/** Placeholder section for sources whose API is not wired up yet. */
+function SearchSourcePlaceholder({
+	label,
+	note,
+}: {
+	label: string;
+	note: string;
+}) {
+	return (
+		<section>
+			<SearchSourceHeading label={label} />
+			<p
+				className={cn(
+					"py-1 text-small text-primary-foreground/50",
+					overlayTextShadow,
+				)}
+			>
+				{note}
+			</p>
+		</section>
+	);
+}
+
+/** Real CMS results, grouped by content type. */
+function SearchResultsList({
+	groups,
+	onNavigate,
+	getSectionLabel,
+}: {
+	groups: { key: ClientSearchSectionKey; items: ClientSearchItem[] }[];
+	onNavigate: () => void;
+	getSectionLabel: (key: ClientSearchSectionKey) => string;
+}) {
+	return (
+		<div className="flex flex-col gap-6">
 			{groups.map((group) => (
 				<section key={group.key}>
-					<h4
+					<h5
 						className={cn(
-							"mb-2 text-small font-medium text-primary-foreground/55",
+							"mb-1 text-small font-medium text-primary-foreground/55",
 							overlayTextShadow,
 						)}
 					>
 						{getSectionLabel(group.key)}
-					</h4>
+					</h5>
 					<ul className="flex flex-col">
 						{group.items.map((result) => (
 							<li
@@ -289,14 +322,27 @@ function TaxonomyResultsList({
 									variant="nav"
 									onClick={onNavigate}
 									className={cn(
-										"block py-3 text-body text-primary-foreground/80 transition-colors hover:text-primary-foreground",
+										"group/result flex cursor-pointer items-center justify-between gap-3 py-3",
+										"text-primary-foreground/80 transition-colors hover:text-primary-foreground",
 										overlayTextShadow,
 									)}
 								>
-									<span>{result.label}</span>
-									<span className="mt-1 block text-small text-primary-foreground/45">
-										{getKindLabel(result)}
+									<span className="min-w-0 flex-1">
+										<span className="block text-body">{result.label}</span>
+										{result.description ? (
+											<span className="mt-1 block truncate text-small text-primary-foreground/45">
+												{result.description}
+											</span>
+										) : null}
 									</span>
+									<DirectionalIcon
+										icon={ArrowRightIcon}
+										className={cn(
+											"size-4 shrink-0 text-primary-foreground opacity-0 transition-opacity duration-300",
+											"group-hover/result:opacity-70 group-focus-visible/result:opacity-70",
+											"motion-reduce:transition-none",
+										)}
+									/>
 								</Link>
 							</li>
 						))}
@@ -307,70 +353,8 @@ function TaxonomyResultsList({
 	);
 }
 
-function NavFallbackResultsList({
-	results,
-	isSearching,
-	onNavigate,
-	noResultsLabel,
-}: {
-	results: NavSearchResult[];
-	isSearching: boolean;
-	onNavigate: () => void;
-	noResultsLabel: string;
-}) {
-	if (results.length > 0) {
-		return (
-			<ul className="flex flex-col pb-4">
-				{results.map((result) => (
-					<li
-						key={result.id}
-						className="border-b border-primary-foreground/15 last:border-b-0"
-					>
-						<Link
-							href={result.href}
-							variant="nav"
-							onClick={onNavigate}
-							className={cn(
-								"block py-3 text-body text-primary-foreground/80 transition-colors hover:text-primary-foreground",
-								overlayTextShadow,
-							)}
-						>
-							<span>{result.label}</span>
-							{result.parentLabel && (
-								<span className="ms-2 text-small text-primary-foreground/45">
-									{result.parentLabel}
-								</span>
-							)}
-						</Link>
-					</li>
-				))}
-			</ul>
-		);
-	}
-
-	if (isSearching) {
-		return (
-			<p
-				className={cn(
-					"py-3 text-body text-primary-foreground/55",
-					overlayTextShadow,
-				)}
-			>
-				{noResultsLabel}
-			</p>
-		);
-	}
-
-	return null;
-}
-
-/** In-overlay search — API results when available; nav catalog fallback otherwise. */
-export function MenuSearch({
-	onBack,
-	onNavigate,
-	taxonomyCatalog: taxonomyCatalogProp,
-	taxonomyUnavailable: taxonomyUnavailableProp,
-}: MenuSearchProps) {
+/** In-overlay search — real CMS content only, scoped by source + content type. */
+export function MenuSearch({ onBack, onNavigate }: MenuSearchProps) {
 	const t = useTranslations("Nav");
 	const locale = useLocale();
 	const reduceMotion = useReducedMotion();
@@ -382,92 +366,28 @@ export function MenuSearch({
 	const [isLoading, setIsLoading] = useState(false);
 	const [contentSearchUnavailable, setContentSearchUnavailable] =
 		useState(false);
-	const [localTaxonomyCatalog, setLocalTaxonomyCatalog] = useState<
-		SearchTaxonomyItem[] | null
-	>(null);
-	const [localTaxonomyUnavailable, setLocalTaxonomyUnavailable] =
-		useState(false);
-
-	const useParentTaxonomy = taxonomyCatalogProp !== undefined;
-	const taxonomyCatalog = useParentTaxonomy
-		? taxonomyCatalogProp
-		: localTaxonomyCatalog;
-	const taxonomyUnavailable = useParentTaxonomy
-		? Boolean(taxonomyUnavailableProp)
-		: localTaxonomyUnavailable;
+	// All sources checked by default; only `site` is queryable today.
+	const [sources, setSources] =
+		useState<Record<SearchSource, boolean>>(ALL_SOURCES_ON);
+	const [typeFilter, setTypeFilter] =
+		useState<Record<ClientSearchSectionKey, boolean>>(ALL_TYPES_ON);
 
 	const trimmedQuery = query.trim();
 	const hasQuery = trimmedQuery.length > 0;
 	const isSearching = trimmedQuery.length >= MIN_QUERY_LENGTH;
 	const showError = submitted && trimmedQuery.length < MIN_QUERY_LENGTH;
 
-	const searchIndex = useMemo(
-		() => buildSearchIndex(t, taxonomyCatalog),
-		[t, taxonomyCatalog],
-	);
-
-	const navFallbackResults = useMemo((): NavSearchResult[] => {
-		if (!isSearching) {
-			return SEARCH_SUGGESTION_KEYS.flatMap((key) => {
-				const item = NAV_ITEMS.find((entry) => entry.key === key);
-				if (!item) return [];
-
-				return [
-					{
-						id: item.key,
-						href: item.href,
-						label: t(item.key),
-						navKey: item.key,
-						searchText: `${t(item.key)} ${t(item.descriptionKey)}`,
-					} satisfies NavSearchResult,
-				];
-			});
-		}
-
-		return filterNavSearchResults(searchIndex, trimmedQuery);
-	}, [isSearching, searchIndex, t, trimmedQuery]);
-
-	const groupedApiResults = useMemo(() => {
+	const filteredGroups = useMemo(() => {
 		if (!apiResults) {
 			return [];
 		}
-		return groupSearchItems(apiResults);
-	}, [apiResults]);
-
-	const filteredTaxonomyResults = useMemo(() => {
-		if (!taxonomyCatalog || !isSearching) {
-			return [];
-		}
-		return filterTaxonomyCatalog(taxonomyCatalog, trimmedQuery, SEARCH_SCOPE);
-	}, [isSearching, taxonomyCatalog, trimmedQuery]);
-
-	const groupedTaxonomyResults = useMemo(
-		() => groupTaxonomyItems(filteredTaxonomyResults),
-		[filteredTaxonomyResults],
-	);
+		return groupSearchItems(apiResults).filter(
+			(group) => typeFilter[group.key],
+		);
+	}, [apiResults, typeFilter]);
 
 	useEffect(() => {
-		if (useParentTaxonomy) {
-			return;
-		}
-
-		let cancelled = false;
-
-		void fetchTaxonomyCatalog(locale).then(({ items, unavailable }) => {
-			if (cancelled) {
-				return;
-			}
-			setLocalTaxonomyCatalog(items);
-			setLocalTaxonomyUnavailable(unavailable);
-		});
-
-		return () => {
-			cancelled = true;
-		};
-	}, [locale, useParentTaxonomy]);
-
-	useEffect(() => {
-		if (!isSearching) {
+		if (!isSearching || !sources.site) {
 			setApiResults(null);
 			setIsLoading(false);
 			setContentSearchUnavailable(false);
@@ -475,8 +395,10 @@ export function MenuSearch({
 		}
 
 		const controller = new AbortController();
+		// Pending from the moment the debounce is scheduled — otherwise the empty
+		// state flashes "no results" for 300ms before the fetch even starts.
+		setIsLoading(true);
 		const timeoutId = window.setTimeout(async () => {
-			setIsLoading(true);
 			try {
 				const { items, unavailable } = await fetchGlobalSearch(
 					trimmedQuery,
@@ -487,9 +409,10 @@ export function MenuSearch({
 					return;
 				}
 				setContentSearchUnavailable(unavailable);
-				if (items.length > 0) {
-					setApiResults(items);
-				} else {
+				setApiResults(items.length > 0 ? items : null);
+			} catch {
+				if (!controller.signal.aborted) {
+					setContentSearchUnavailable(true);
 					setApiResults(null);
 				}
 			} finally {
@@ -503,7 +426,7 @@ export function MenuSearch({
 			controller.abort();
 			window.clearTimeout(timeoutId);
 		};
-	}, [isSearching, locale, trimmedQuery]);
+	}, [isSearching, locale, sources.site, trimmedQuery]);
 
 	useEffect(() => {
 		if (!hasQuery && !isSearching) {
@@ -520,16 +443,29 @@ export function MenuSearch({
 		return () => clearTimeout(id);
 	}, [hasQuery, isSearching, reduceMotion]);
 
-	const hasApiResults = groupedApiResults.length > 0;
-	const hasTaxonomyResults = groupedTaxonomyResults.length > 0;
-	const showNavResults = !isLoading && !hasApiResults;
-	const visibleNavResults = showNavResults ? navFallbackResults : [];
+	const hasApiResults = filteredGroups.length > 0;
+	const noSourceSelected =
+		!sources.site && !sources.library && !sources.archive;
+	// The site scope heading only earns its keep next to other source sections.
+	const showSourceHeadings = sources.library || sources.archive;
 	const showEmptyState =
-		isSearching &&
-		!isLoading &&
-		!hasApiResults &&
-		!hasTaxonomyResults &&
-		visibleNavResults.length === 0;
+		isSearching && sources.site && !isLoading && !hasApiResults;
+
+	const selectedTypeCount = SEARCH_TYPE_KEYS.filter(
+		(key) => typeFilter[key],
+	).length;
+	const filterButtonLabel =
+		selectedTypeCount === SEARCH_TYPE_KEYS.length
+			? t("searchFilterAll")
+			: t("searchFilterCount", { count: selectedTypeCount });
+
+	const toggleSource = (key: SearchSource, next: boolean) => {
+		setSources((prev) => ({ ...prev, [key]: next }));
+	};
+
+	const toggleType = (key: ClientSearchSectionKey, next: boolean) => {
+		setTypeFilter((prev) => ({ ...prev, [key]: next }));
+	};
 
 	const spacerClass = cn(
 		"min-h-0 shrink-0 basis-0",
@@ -543,9 +479,6 @@ export function MenuSearch({
 
 	const getSectionLabel = (key: ClientSearchSectionKey) =>
 		t(SEARCH_SECTION_LABEL_KEYS[key]);
-
-	const getTaxonomyKindLabel = (item: SearchTaxonomyItem) =>
-		t(SEARCH_TAXONOMY_KIND_LABEL_KEYS[item.kind]);
 
 	return (
 		<div className="flex min-h-0 flex-1 flex-col overflow-hidden">
@@ -614,132 +547,142 @@ export function MenuSearch({
 								{t("searchErrorMinLength")}
 							</p>
 						)}
+
+						<div className="mt-1 flex flex-wrap items-center gap-2 sm:gap-2.5">
+							<fieldset className="contents">
+								<legend className="visually-hidden">
+									{t("searchScopeLabel")}
+								</legend>
+								{SEARCH_SOURCES.map((source) => (
+									<SearchSourceCheckbox
+										key={source.key}
+										label={t(source.labelKey)}
+										checked={sources[source.key]}
+										onChange={(next) => toggleSource(source.key, next)}
+									/>
+								))}
+							</fieldset>
+
+							{sources.site ? (
+								<SearchTypeFilter
+									buttonLabel={filterButtonLabel}
+									listLabel={t("searchFilterLabel")}
+									options={SEARCH_TYPE_KEYS.map((key) => ({
+										key,
+										label: getSectionLabel(key),
+										checked: typeFilter[key],
+									}))}
+									onToggle={toggleType}
+								/>
+							) : null}
+						</div>
 					</form>
 				</div>
 
-				<section
-					className={cn(
-						"mt-10 flex w-full max-w-xl flex-col lg:max-w-2xl",
-						isExpanded ? "min-h-0 flex-1" : "shrink-0",
-					)}
-					aria-labelledby="menu-search-results"
-					aria-live="polite"
-				>
-					<h3
-						id="menu-search-results"
+				{isSearching ? (
+					<section
 						className={cn(
-							"mb-3 shrink-0 text-small text-primary-foreground/55",
-							overlayTextShadow,
+							"mt-10 flex w-full max-w-xl flex-col lg:max-w-2xl",
+							isExpanded ? "min-h-0 flex-1" : "shrink-0",
 						)}
+						aria-labelledby="menu-search-results"
+						aria-live="polite"
 					>
-						{isSearching ? t("searchResults") : t("secondaryLinkPrefix")}
-					</h3>
+						<h3
+							id="menu-search-results"
+							className={cn(
+								"mb-3 shrink-0 text-small text-primary-foreground/55",
+								overlayTextShadow,
+							)}
+						>
+							{t("searchResults")}
+						</h3>
 
-					<div
-						className={cn(
-							isExpanded && "min-h-0 flex-1 overflow-y-auto overscroll-contain",
-							isExpanded && scrollbarHiddenClass,
-						)}
-					>
-						{isSearching && isLoading ? (
-							<p
-								className={cn(
-									"py-3 text-body text-primary-foreground/55",
-									overlayTextShadow,
-								)}
-							>
-								{t("searchLoading")}
-							</p>
-						) : null}
+						<div
+							className={cn(
+								isExpanded &&
+									"min-h-0 flex-1 overflow-y-auto overscroll-contain",
+								isExpanded && scrollbarHiddenClass,
+							)}
+						>
+							{noSourceSelected ? (
+								<p
+									className={cn(
+										"py-3 text-body text-primary-foreground/55",
+										overlayTextShadow,
+									)}
+								>
+									{t("searchScopeNoneSelected")}
+								</p>
+							) : (
+								<div className="flex flex-col gap-7 pb-4">
+									{sources.site ? (
+										<div>
+											{showSourceHeadings ? (
+												<SearchSourceHeading label={t("searchScopeMain")} />
+											) : null}
 
-						{contentSearchUnavailable && isSearching && !isLoading ? (
-							<p
-								className={cn(
-									"mb-3 text-small text-primary-foreground/55",
-									overlayTextShadow,
-								)}
-							>
-								{t("searchContentUnavailable")}
-							</p>
-						) : null}
+											{isLoading ? (
+												<p
+													className={cn(
+														"py-3 text-body text-primary-foreground/55",
+														overlayTextShadow,
+													)}
+												>
+													{t("searchLoading")}
+												</p>
+											) : null}
 
-						{hasApiResults ? (
-							<SearchResultsList
-								groups={groupedApiResults}
-								isSearching={isSearching}
-								isLoading={false}
-								onNavigate={onNavigate}
-								noResultsLabel={t("searchNoResults")}
-								loadingLabel={t("searchLoading")}
-								getSectionLabel={getSectionLabel}
-							/>
-						) : null}
+											{contentSearchUnavailable && !isLoading ? (
+												<p
+													className={cn(
+														"mb-3 text-small text-primary-foreground/55",
+														overlayTextShadow,
+													)}
+												>
+													{t("searchContentUnavailable")}
+												</p>
+											) : null}
 
-						{hasTaxonomyResults ? (
-							<div className={hasApiResults ? "mt-6" : undefined}>
-								{hasApiResults ? (
-									<h4
-										className={cn(
-											"mb-2 text-small font-medium text-primary-foreground/55",
-											overlayTextShadow,
-										)}
-									>
-										{t("searchTaxonomy")}
-									</h4>
-								) : null}
-								<TaxonomyResultsList
-									groups={groupedTaxonomyResults}
-									onNavigate={onNavigate}
-									getSectionLabel={getSectionLabel}
-									getKindLabel={getTaxonomyKindLabel}
-								/>
-							</div>
-						) : null}
+											{hasApiResults ? (
+												<SearchResultsList
+													groups={filteredGroups}
+													onNavigate={onNavigate}
+													getSectionLabel={getSectionLabel}
+												/>
+											) : null}
 
-						{taxonomyUnavailable && isSearching && !hasTaxonomyResults ? (
-							<p
-								className={cn(
-									"mb-3 text-small text-primary-foreground/55",
-									overlayTextShadow,
-								)}
-							>
-								{t("searchTaxonomyUnavailable")}
-							</p>
-						) : null}
+											{showEmptyState && !contentSearchUnavailable ? (
+												<p
+													className={cn(
+														"py-3 text-body text-primary-foreground/55",
+														overlayTextShadow,
+													)}
+												>
+													{t("searchNoResults")}
+												</p>
+											) : null}
+										</div>
+									) : null}
 
-						{visibleNavResults.length > 0 ? (
-							<div className={hasApiResults ? "mt-6" : undefined}>
-								{isSearching && hasApiResults ? (
-									<h4
-										className={cn(
-											"mb-2 text-small font-medium text-primary-foreground/55",
-											overlayTextShadow,
-										)}
-									>
-										{t("searchNavFallback")}
-									</h4>
-								) : null}
-								<NavFallbackResultsList
-									results={visibleNavResults}
-									isSearching={isSearching}
-									onNavigate={onNavigate}
-									noResultsLabel={t("searchNoResults")}
-								/>
-							</div>
-						) : null}
+									{sources.library ? (
+										<SearchSourcePlaceholder
+											label={t("searchScopeLibrary")}
+											note={t("searchScopeComingSoon")}
+										/>
+									) : null}
 
-						{showEmptyState ? (
-							<p
-								className={cn(
-									"py-3 text-body text-primary-foreground/55",
-									overlayTextShadow,
-								)}
-							>
-								{t("searchNoResults")}
-							</p>
-						) : null}
-					</div>
-				</section>
+									{sources.archive ? (
+										<SearchSourcePlaceholder
+											label={t("searchScopeArchive")}
+											note={t("searchScopeComingSoon")}
+										/>
+									) : null}
+								</div>
+							)}
+						</div>
+					</section>
+				) : null}
 			</div>
 
 			<div

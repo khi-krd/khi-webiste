@@ -85,15 +85,23 @@ export function FilmSceneList({
 
 	return (
 		<section className={cn(className)} aria-label={labels.title}>
-			<div className="border-b border-primary-foreground/15 pb-3">
-				<p className="text-label font-medium tracking-[0.14em] text-primary-foreground/50 uppercase">
+			{/* Program strip: double hairline frame + two-digit reel count. */}
+			<div className="flex items-baseline justify-between gap-4 border-y border-primary-foreground/15 py-2.5">
+				<p className="label font-medium text-primary-foreground/55">
 					{labels.title}
 				</p>
+				<span
+					aria-hidden="true"
+					dir="ltr"
+					className="text-label tabular-nums text-primary-foreground/40"
+				>
+					{String(scenes.length).padStart(2, "0")}
+				</span>
 			</div>
 
 			<ol
 				className={cn(
-					"mt-5 grid gap-3 sm:mt-6 sm:gap-4",
+					"mt-4 grid gap-3 sm:mt-5 sm:gap-4",
 					scenes.length === 2 && "sm:grid-cols-2",
 					scenes.length === 3 && "sm:grid-cols-3",
 					scenes.length >= 4 && "grid-cols-2 lg:grid-cols-4",
@@ -104,7 +112,7 @@ export function FilmSceneList({
 					const duration = formatDuration(scene.durationSeconds);
 
 					return (
-						<li key={scene.clipNumber} className="min-w-0">
+						<li key={scene.clipNumber} className="@container min-w-0">
 							<button
 								type="button"
 								onClick={() => onSelect(scene.clipNumber)}
@@ -132,11 +140,11 @@ export function FilmSceneList({
 									{/* Top/bottom cinema bars */}
 									<span
 										aria-hidden
-										className="pointer-events-none absolute inset-x-0 top-0 z-2 h-1.5 bg-foreground/80 sm:h-2"
+										className="pointer-events-none absolute inset-x-0 top-0 z-2 h-2 bg-foreground/90 sm:h-2.5"
 									/>
 									<span
 										aria-hidden
-										className="pointer-events-none absolute inset-x-0 bottom-0 z-2 h-1.5 bg-foreground/80 sm:h-2"
+										className="pointer-events-none absolute inset-x-0 bottom-0 z-2 h-2 bg-foreground/90 sm:h-2.5"
 									/>
 
 									<div
@@ -174,24 +182,36 @@ export function FilmSceneList({
 										</span>
 									</span>
 
-									{(scene.title || isActive) && (
-										<div className="absolute inset-x-0 bottom-0 z-3 p-3 pt-8 sm:p-3.5 sm:pt-10">
-											{scene.title ? (
-												<span className="block font-heading text-small font-semibold leading-snug text-balance text-primary-foreground line-clamp-2 sm:text-body">
-													{scene.title}
-												</span>
-											) : null}
-											{isActive ? (
-												<span className="mt-1.5 inline-flex items-center gap-1.5 text-label text-primary-foreground/75">
-													<span
-														aria-hidden
-														className="size-1.5 rounded-pill bg-primary-foreground"
-													/>
-													{labels.nowPlaying}
-												</span>
-											) : null}
-										</div>
-									)}
+									{/* Overlay rows are gated on TILE width (@container): tiles
+									    narrower than ~17.5rem are too short (aspect 2.2/1) to hold
+									    the full three-row stack inside overflow-hidden, so they
+									    keep only a one-line title. */}
+									<div className="absolute inset-x-0 bottom-0 z-3 p-3 pt-8 sm:p-3.5 sm:pt-10">
+										{/* Program entry number — decorative; the button label carries meaning. */}
+										<span
+											aria-hidden
+											className="label hidden items-center gap-1.5 font-medium text-primary-foreground/60 @[17.5rem]:flex"
+										>
+											{labels.scene}
+											<span dir="ltr" className="tabular-nums">
+												{String(scene.clipNumber).padStart(2, "0")}
+											</span>
+										</span>
+										{scene.title ? (
+											<span className="mt-0.5 block font-heading text-small font-semibold leading-snug text-balance text-primary-foreground line-clamp-1 @[17.5rem]:line-clamp-2 sm:text-body">
+												{scene.title}
+											</span>
+										) : null}
+										{isActive ? (
+											<span className="mt-1.5 hidden items-center gap-1.5 text-label text-primary-foreground/75 @[17.5rem]:inline-flex">
+												<span
+													aria-hidden
+													className="size-1.5 rounded-pill bg-primary-foreground"
+												/>
+												{labels.nowPlaying}
+											</span>
+										) : null}
+									</div>
 								</div>
 							</button>
 						</li>

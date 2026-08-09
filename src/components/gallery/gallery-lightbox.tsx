@@ -120,6 +120,12 @@ export function GalleryLightbox({
 		if (event.key === (rtl ? "ArrowRight" : "ArrowLeft")) step(-1);
 	};
 
+	// Backdrop clicks dispatch with the <dialog> itself as target; clicks on the
+	// content hit inner elements — so this closes only clicks outside the card.
+	const onDialogClick = (event: React.MouseEvent<HTMLDialogElement>) => {
+		if (event.target === dialogRef.current) dialogRef.current?.close();
+	};
+
 	const item = activeIndex === null ? null : items[activeIndex];
 	const collectionTitle = fallbackTitle ?? "";
 	const headline = item?.caption ?? collectionTitle;
@@ -137,6 +143,7 @@ export function GalleryLightbox({
 			ref={dialogRef}
 			onClose={() => onActiveIndexChange(null)}
 			onKeyDown={onDialogKeyDown}
+			onClick={onDialogClick}
 			aria-label={headline}
 			className="m-auto max-h-[98svh] w-[min(98vw,180rem)] border border-border bg-background text-foreground backdrop:bg-foreground/85"
 		>

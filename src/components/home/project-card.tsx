@@ -15,6 +15,12 @@ type ProjectCardProps = {
 	item: ProjectItem;
 	className?: string;
 	variant?: "default" | "carousel";
+	/**
+	 * Pass -1 for cards rendered as a visual duplicate (ticker loop copy): they
+	 * stay clickable by pointer but leave the tab order, so each project is
+	 * reached once by keyboard.
+	 */
+	tabIndex?: number;
 };
 
 const imageShellClass = {
@@ -34,6 +40,7 @@ export function ProjectCard({
 	item,
 	className,
 	variant = "default",
+	tabIndex,
 }: ProjectCardProps) {
 	const href = projectDetailHref(item.slug);
 
@@ -41,6 +48,7 @@ export function ProjectCard({
 		<Link
 			href={href}
 			variant="nav"
+			tabIndex={tabIndex}
 			className={cn(
 				"group relative block h-full w-full overflow-hidden border border-border bg-surface no-underline",
 				variant === "carousel" && "[touch-action:pan-y_pinch-zoom]",

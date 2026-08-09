@@ -17,6 +17,7 @@ import { homeInsetClass } from "@/lib/layout";
 import { type NewsItem, newsItemCategoryLabel } from "@/lib/mock/news";
 import { isRichTextEmpty } from "@/lib/rich-text";
 import { newsCategoryHref, newsTagHref } from "@/lib/search/taxonomy-href";
+import { displayTitleSizeClass } from "@/lib/title-scale";
 import { cn } from "@/lib/utils";
 
 type NewsPostViewProps = {
@@ -55,10 +56,10 @@ function AdjacentLink({
 		<Link
 			href={newsDetailHref(item.slug)}
 			className={cn(
-				"group flex flex-col gap-3 py-8 no-underline sm:py-10",
+				"group flex flex-col gap-2 py-6 no-underline",
 				isNext &&
-					"items-end border-t border-border text-end sm:border-t-0 sm:border-s sm:ps-8",
-				!isNext && "sm:pe-8",
+					"items-end border-t border-border text-end sm:border-t-0 sm:border-s sm:ps-6",
+				!isNext && "sm:pe-6",
 			)}
 		>
 			<span className="label flex items-center gap-2 font-medium">
@@ -76,8 +77,9 @@ function AdjacentLink({
 }
 
 /**
- * Blog-style news article — cover beside a long-form rich-text body,
- * tags strip, optional media gallery, prev/next navigation, related by tags.
+ * Broadsheet front page — full-width masthead (dateline strip, headline,
+ * byline over a strong rule) above a cover + justified-body spread,
+ * then tags/gallery, prev/next navigation, and related by tags.
  */
 export function NewsPostView({
 	item,
@@ -125,7 +127,7 @@ export function NewsPostView({
 			previousLabel={lightboxPreviousLabel}
 			nextLabel={lightboxNextLabel}
 		>
-			<article className={cn(homeInsetClass, "pb-16 sm:pb-20")}>
+			<article className={cn(homeInsetClass, "pb-10 sm:pb-12")}>
 				<ScrollRevealBlock className="pt-10 sm:pt-12">
 					<Link
 						href="/news"
@@ -140,8 +142,62 @@ export function NewsPostView({
 						</span>
 					</Link>
 
-					<div className="mt-10 grid gap-10 lg:grid-cols-[minmax(0,32rem)_minmax(0,1fr)] lg:items-start lg:gap-12 xl:grid-cols-[minmax(0,38rem)_minmax(0,1fr)] xl:gap-16">
-						<div className="min-w-0 lg:sticky lg:top-32 lg:self-start">
+					<header className="mt-6 border-b-2 border-foreground pb-6 sm:mt-8 sm:pb-7">
+						{/* Every item carries a start-side separator; the wrapper's negative
+						    start margin pulls each row's leading separator outside the
+						    overflow-hidden strip, so wrapped rows never open with an
+						    orphaned hairline. */}
+						<div className="overflow-hidden border-y border-border py-2.5">
+							<div className="-ms-[calc(2rem+1px)] flex flex-wrap items-center gap-y-2">
+								<span className="ms-4 inline-flex border-s border-border ps-4">
+									<TaxonomyBadgeLink
+										href={newsCategoryHref(item.category)}
+										variant="outline"
+										size="sm"
+									>
+										{categoryLabel}
+									</TaxonomyBadgeLink>
+								</span>
+								<time className="ms-4 border-s border-border ps-4 text-small text-muted">
+									{dateLabel}
+								</time>
+								{readTimeLabel ? (
+									<span className="ms-4 border-s border-border ps-4 text-small text-muted">
+										{readTimeLabel}
+									</span>
+								) : null}
+							</div>
+						</div>
+
+						<h1
+							className={cn(
+								"news-post-title mt-6 sm:mt-8",
+								displayTitleSizeClass(item.title),
+							)}
+						>
+							{item.title}
+						</h1>
+
+						{authorLabel ? (
+							<p className="mt-4 text-lead text-muted">{authorLabel}</p>
+						) : null}
+					</header>
+
+					<div
+						className={cn(
+							"mt-6 sm:mt-8",
+							bodyContent &&
+								"grid gap-8 lg:grid-cols-[minmax(0,32rem)_minmax(0,1fr)] lg:items-start lg:gap-12 xl:grid-cols-[minmax(0,38rem)_minmax(0,1fr)] xl:gap-16",
+						)}
+					>
+						<div
+							className={cn(
+								"min-w-0",
+								bodyContent
+									? "lg:sticky lg:top-32 lg:self-start"
+									: "lg:max-w-xl",
+							)}
+						>
 							<div className="overflow-hidden border border-border bg-sunken">
 								<NewsCoverMedia
 									url={coverUrl}
@@ -160,48 +216,24 @@ export function NewsPostView({
 							</div>
 						</div>
 
-						<div className="min-w-0">
-							<div className="flex flex-wrap items-center gap-2">
-								<TaxonomyBadgeLink
-									href={newsCategoryHref(item.category)}
-									variant="outline"
-									size="sm"
-								>
-									{categoryLabel}
-								</TaxonomyBadgeLink>
-								<time className="text-small text-muted">{dateLabel}</time>
-								{readTimeLabel ? (
-									<span className="text-small text-muted">{readTimeLabel}</span>
-								) : null}
+						{bodyContent ? (
+							<div className="project-article-body news-article-body min-w-0">
+								{item.description ? (
+									<RichText content={item.description} />
+								) : (
+									<p className="text-body leading-relaxed text-justify text-foreground">
+										{item.excerpt}
+									</p>
+								)}
 							</div>
-
-							<h1 className="news-post-title mt-5 text-balance">
-								{item.title}
-							</h1>
-
-							{authorLabel ? (
-								<p className="mt-3 text-lead text-muted">{authorLabel}</p>
-							) : null}
-
-							{bodyContent ? (
-								<div className="project-article-body news-article-body mt-8 border-t border-border pt-8 sm:mt-10 sm:pt-10">
-									{item.description ? (
-										<RichText content={item.description} />
-									) : (
-										<p className="text-body leading-relaxed text-justify text-foreground">
-											{item.excerpt}
-										</p>
-									)}
-								</div>
-							) : null}
-						</div>
+						) : null}
 					</div>
 				</ScrollRevealBlock>
 
 				{(tags.length > 0 || mediaGallery.length > 0) && (
-					<ScrollReveal className="mt-12 border-t border-border sm:mt-16">
+					<ScrollReveal className="mt-10 space-y-8 border-t border-border pt-6 sm:mt-12 sm:pt-8">
 						{tags.length > 0 && (
-							<div className="border-b border-border py-6">
+							<div>
 								<p className="label font-medium">{tagsLabel}</p>
 								<ul className="mt-3 flex flex-wrap gap-2">
 									{tags.map((tag) => (
@@ -230,7 +262,7 @@ export function NewsPostView({
 				{(previous || next) && (
 					<nav
 						aria-label={navLabel}
-						className="mt-12 border-t border-border sm:mt-16"
+						className="mt-10 border-t border-border sm:mt-12"
 					>
 						<div className="grid sm:grid-cols-2">
 							{previous ? (
@@ -252,7 +284,7 @@ export function NewsPostView({
 				{related.length > 0 ? (
 					<section
 						aria-labelledby="news-related-heading"
-						className="mt-12 border-t border-border pt-10 sm:mt-16 sm:pt-12"
+						className="mt-10 border-t border-border pt-6 sm:mt-12 sm:pt-8"
 					>
 						<h2
 							id="news-related-heading"
@@ -260,7 +292,7 @@ export function NewsPostView({
 						>
 							{relatedLabel}
 						</h2>
-						<ScrollReveal className="mt-6 grid grid-cols-1 gap-3 sm:grid-cols-2 sm:gap-4 lg:grid-cols-3">
+						<ScrollReveal className="mt-5 grid grid-cols-1 gap-3 sm:grid-cols-2 sm:gap-4 lg:grid-cols-3">
 							{related.map((relatedItem) => (
 								<ScrollRevealItem key={relatedItem.id}>
 									<NewsCard

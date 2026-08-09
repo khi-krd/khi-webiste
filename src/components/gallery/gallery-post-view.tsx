@@ -3,13 +3,16 @@ import { GalleryAlbum } from "@/components/gallery/gallery-album";
 import type { GalleryAlbumMetadataLabels } from "@/components/gallery/gallery-album-item";
 import { ScrollRevealBlock } from "@/components/motion/scroll-reveal";
 import { Badge } from "@/components/ui/badge";
+import { CoverLightbox } from "@/components/ui/cover-lightbox";
 import { DirectionalIcon } from "@/components/ui/directional-icon";
+import { Image } from "@/components/ui/image";
 import { RichText } from "@/components/ui/rich-text";
 import { TaxonomyBadgeLink } from "@/components/ui/taxonomy-badge-link";
 import { Link } from "@/i18n/navigation";
 import { homeInsetClass } from "@/lib/layout";
 import type { GalleryPost, GalleryPostDetail } from "@/lib/mock/gallery";
 import { galleryTagHref } from "@/lib/search/taxonomy-href";
+import { displayTitleSizeClass } from "@/lib/title-scale";
 import { cn } from "@/lib/utils";
 
 type GalleryPostViewProps = {
@@ -33,20 +36,18 @@ type GalleryPostViewProps = {
 	metadataLabels: GalleryAlbumMetadataLabels;
 };
 
-/** One catalog-record cell: tiny label over the value. */
+/** One museum wall label: hairline-topped placard, tiny label over quiet value. */
 function CreditCell({
 	label,
 	children,
-	className,
 }: {
 	label: string;
 	children: React.ReactNode;
-	className?: string;
 }) {
 	return (
-		<div className={cn("flex flex-col gap-2 py-5 sm:py-6", className)}>
+		<div className="flex flex-col gap-1.5 border-t border-border pt-3">
 			<dt className="label font-medium">{label}</dt>
-			<dd className="text-small text-foreground">{children}</dd>
+			<dd className="text-small text-muted">{children}</dd>
 		</div>
 	);
 }
@@ -66,7 +67,7 @@ function AdjacentLink({
 		<Link
 			href={`/gallery/${post.id}`}
 			className={cn(
-				"group flex flex-col gap-3 py-8 no-underline sm:py-10",
+				"group flex flex-col gap-3 py-6 no-underline sm:py-8",
 				isNext &&
 					"items-end border-t border-border text-end sm:border-t-0 sm:border-s sm:ps-8",
 				!isNext && "sm:pe-8",
@@ -87,11 +88,10 @@ function AdjacentLink({
 }
 
 /**
- * Opened collection — the post detail, shaped after the public Image
- * Collection API: type + topic + date meta, Tiptap-HTML description rendered
- * as prose, a catalog-record credits block (location, collectedBy, tags),
- * the album as a dense contact sheet with per-item captions and the API's
- * auto-extracted metadata (dimensions, file size), and prev/next collection
+ * Opened collection as an exhibition-catalog spread: typographic header with
+ * an offset cover "plate" beside it (click-to-enlarge via CoverLightbox, with
+ * a museum-style label caption), wall-label credit placards (location,
+ * collectedBy, tags), the album as numbered plates, and prev/next collection
  * navigation. Server Component; mirrors in RTL via logical props.
  */
 export function GalleryPostView({
@@ -120,7 +120,7 @@ export function GalleryPostView({
 	return (
 		<article>
 			<ScrollRevealBlock
-				className={cn("pt-10 pb-10 sm:pt-12 lg:pb-12", homeInsetClass)}
+				className={cn("pt-8 pb-5 sm:pt-10 lg:pb-6", homeInsetClass)}
 			>
 				<Link
 					href="/gallery"
@@ -135,48 +135,77 @@ export function GalleryPostView({
 					</span>
 				</Link>
 
-				<p className="label mt-8 flex flex-wrap items-center gap-2 font-medium">
-					<span aria-hidden="true">{"//"}</span>
-					<span>{typeLabel}</span>
-					<span aria-hidden="true">·</span>
-					<span>{photosLabel}</span>
-					{dateLabel && (
-						<>
+				{/* Catalog spread: typographic header start, offset cover plate end. */}
+				<div className="mt-8 grid gap-8 lg:grid-cols-[minmax(0,7fr)_minmax(0,5fr)] lg:gap-16">
+					<div>
+						<p className="label flex flex-wrap items-center gap-2 font-medium text-foreground">
+							<span>{typeLabel}</span>
 							<span aria-hidden="true">·</span>
-							<span>{dateLabel}</span>
-						</>
-					)}
-					{post.topicName && (
-						<Badge variant="outline" size="sm" className="ms-1">
-							{post.topicName}
-						</Badge>
-					)}
-				</p>
-				<h1 className="display-title mt-4 max-w-4xl">{post.title}</h1>
+							<span>{photosLabel}</span>
+							{dateLabel && (
+								<>
+									<span aria-hidden="true">·</span>
+									<span>{dateLabel}</span>
+								</>
+							)}
+							{post.topicName && (
+								<Badge variant="outline" size="sm" className="ms-1">
+									{post.topicName}
+								</Badge>
+							)}
+						</p>
+						<h1
+							className={cn(
+								"display-title mt-3 max-w-4xl",
+								displayTitleSizeClass(post.title),
+							)}
+						>
+							{post.title}
+						</h1>
 
-				<RichText
-					content={post.description}
-					className="mt-6 max-w-xl text-justify [&>p]:text-justify [&>p]:text-muted"
-				/>
+						<RichText
+							content={post.description}
+							className="mt-5 max-w-xl text-justify [&>p]:text-justify [&>p]:text-muted"
+						/>
+					</div>
+
+					{post.coverUrl && (
+						<figure className="w-full max-w-md lg:mt-14 lg:justify-self-end">
+							<CoverLightbox
+								src={post.coverUrl}
+								alt={post.title}
+								caption={post.title}
+								closeLabel={closeLabel}
+							>
+								<Image
+									src={post.coverUrl}
+									alt=""
+									aspectRatio="4/3"
+									sizes="(max-width: 1023px) 100vw, 40vw"
+									className="border border-border bg-surface"
+								/>
+							</CoverLightbox>
+							{/* Museum label under the plate — photo count only; the title
+							    already sits in the adjacent h1. */}
+							<figcaption className="mt-2 border-t border-border pt-2">
+								<p className="label">{photosLabel}</p>
+							</figcaption>
+						</figure>
+					)}
+				</div>
 
 				{hasCredits && (
-					<dl className="mt-10 grid border-y border-border sm:grid-cols-2 lg:grid-cols-3">
+					<dl className="mt-8 grid gap-x-8 gap-y-5 sm:grid-cols-2 lg:mt-10 lg:grid-cols-3">
 						{post.location && (
 							<CreditCell label={locationLabel}>{post.location}</CreditCell>
 						)}
 						{post.collectedBy && (
-							<CreditCell
-								label={collectedByLabel}
-								className="border-t border-border sm:border-t-0 sm:border-s sm:ps-6"
-							>
+							<CreditCell label={collectedByLabel}>
 								{post.collectedBy}
 							</CreditCell>
 						)}
 						{post.tags.length > 0 && (
-							<CreditCell
-								label={tagsLabel}
-								className="border-t border-border lg:border-t-0 lg:border-s lg:ps-6"
-							>
+							<CreditCell label={tagsLabel}>
 								<span className="flex flex-wrap gap-1.5">
 									{post.tags.map((tag) => (
 										<TaxonomyBadgeLink
@@ -213,7 +242,7 @@ export function GalleryPostView({
 					<nav
 						aria-label={navLabel}
 						className={cn(
-							"mt-0 grid border-t border-border sm:grid-cols-2",
+							"grid border-t border-border sm:grid-cols-2",
 							homeInsetClass,
 						)}
 					>

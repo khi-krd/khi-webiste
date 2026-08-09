@@ -67,13 +67,12 @@ export async function SoundSection({
 			/>
 
 			<div className="relative z-10 flex min-h-[inherit] flex-col justify-end px-6 pb-16 sm:px-10 sm:pb-20 lg:px-14 lg:pb-24">
-				<SoundSectionContent title={t("title")} />
-				<SoundSectionCards
-					items={cardItems}
-					compact={compact}
+				<SoundSectionContent
+					title={t("title")}
 					ctaLabel={t("cta")}
 					ctaHref="/audio"
 				/>
+				<SoundSectionCards items={cardItems} compact={compact} />
 			</div>
 		</section>
 	);

@@ -5,7 +5,7 @@ import {
 } from "@/components/motion/scroll-reveal";
 import { ProjectCoverMedia } from "@/components/projects/project-cover-media";
 import { ProjectMediaGallery } from "@/components/projects/project-media-gallery";
-import { Badge } from "@/components/ui/badge";
+import { CoverLightbox } from "@/components/ui/cover-lightbox";
 import { DirectionalIcon } from "@/components/ui/directional-icon";
 import { RichText } from "@/components/ui/rich-text";
 import { TaxonomyBadgeLink } from "@/components/ui/taxonomy-badge-link";
@@ -15,38 +15,61 @@ import type { ProjectDetail, ProjectListItem } from "@/lib/mock/projects";
 import { projectDetailHref, projectsHref } from "@/lib/projects-url";
 import { isRichTextEmpty } from "@/lib/rich-text";
 import { projectTagHref } from "@/lib/search/taxonomy-href";
+import { displayTitleSizeClass, heroTitleBoostClass } from "@/lib/title-scale";
 import { cn } from "@/lib/utils";
 
 type ProjectDetailViewProps = {
 	detail: ProjectDetail;
 	backLabel: string;
-	locationLabel: string;
 	typeLabel: string;
 	statusLabel: string;
 	dateLabel: string;
 	tagsLabel: string;
+	contentLabel: string;
 	galleryLabel: string;
 	navLabel: string;
 	previousLabel: string;
 	nextLabel: string;
+	lightboxCloseLabel: string;
 	statusLabels: Record<string, string>;
 	formattedDate: string | null;
 };
 
-function CreditCell({
+/** One pinned fact in the spec band — quiet label over a confident value. */
+function FactCell({
 	label,
 	children,
-	className,
 }: {
 	label: string;
 	children: React.ReactNode;
-	className?: string;
 }) {
 	return (
-		<div className={cn("flex flex-col gap-2 py-5 sm:py-6", className)}>
+		<div className="min-w-0">
 			<dt className="label font-medium">{label}</dt>
-			<dd className="text-small text-foreground">{children}</dd>
+			<dd className="mt-1.5 text-body font-medium text-foreground">
+				{children}
+			</dd>
 		</div>
+	);
+}
+
+/** Numbered case-file eyebrow sitting above its section's hairline rule. */
+export function SectionEyebrow({
+	number,
+	label,
+	as: Tag = "p",
+}: {
+	number: string;
+	label: string;
+	as?: "p" | "h2";
+}) {
+	return (
+		<Tag className="label flex items-baseline gap-3 border-b border-border pb-3 font-medium">
+			<span className="tabular-nums font-semibold text-foreground">
+				{number}
+			</span>
+			{label}
+		</Tag>
 	);
 }
 
@@ -54,10 +77,13 @@ function AdjacentLink({
 	project,
 	label,
 	direction,
+	withDivider = false,
 }: {
 	project: ProjectListItem;
 	label: string;
 	direction: "previous" | "next";
+	/** Mobile hairline between stacked cells — only when a sibling exists. */
+	withDivider?: boolean;
 }) {
 	const isNext = direction === "next";
 
@@ -65,9 +91,9 @@ function AdjacentLink({
 		<Link
 			href={projectDetailHref(project.id)}
 			className={cn(
-				"group flex flex-col gap-3 py-8 no-underline sm:py-10",
-				isNext &&
-					"items-end border-t border-border text-end sm:border-t-0 sm:border-s sm:ps-8",
+				"group flex flex-col gap-3 py-6 no-underline sm:py-8",
+				isNext && "items-end border-border text-end sm:ps-8",
+				isNext && withDivider && "border-t sm:border-t-0 sm:border-s",
 				!isNext && "sm:pe-8",
 			)}
 		>
@@ -86,32 +112,61 @@ function AdjacentLink({
 }
 
 /**
- * Blog-style project article — cover beside a long-form rich-text body,
- * metadata strip, optional media gallery, prev/next navigation.
+ * Field-dossier project page — a large independent cover column (sticky,
+ * click-to-enlarge) beside the article column: display title, location
+ * dateline, a border-y spec band of facts (type / status / date / tags),
+ * then the narrative as numbered case-file sections.
  */
 export function ProjectDetailView({
 	detail,
 	backLabel,
-	locationLabel,
 	typeLabel,
 	statusLabel,
 	dateLabel,
 	tagsLabel,
+	contentLabel,
 	galleryLabel,
 	navLabel,
 	previousLabel,
 	nextLabel,
+	lightboxCloseLabel,
 	statusLabels,
 	formattedDate,
 }: ProjectDetailViewProps) {
 	const { previous, next, ...project } = detail;
 	const coverKind = project.coverMediaType ?? "IMAGE";
+	const coverAlt = project.image.alt ?? project.title;
 	const bodyContent = !isRichTextEmpty(project.description)
 		? project.description
 		: project.excerpt;
 
+	// Case-file numbering skips sections that have nothing to show.
+	let sectionCount = 0;
+	const nextSectionNumber = () => String(++sectionCount).padStart(2, "0");
+	const bodyNumber = bodyContent ? nextSectionNumber() : null;
+	const galleryNumber =
+		project.mediaGallery.length > 0 ? nextSectionNumber() : null;
+	const navNumber = previous || next ? nextSectionNumber() : null;
+
+	const cover = (
+		<ProjectCoverMedia
+			url={project.coverUrl}
+			alt={coverAlt}
+			kind={coverKind}
+			posterUrl={project.coverThumbnailUrl ?? project.image.url}
+			priority
+			className={cn(
+				coverKind === "IMAGE"
+					? "aspect-[4/5] w-full"
+					: "min-h-[16rem] w-full sm:min-h-[20rem]",
+			)}
+			sizes="(max-width: 1024px) 100vw, 34rem"
+			imageClassName="brightness-[0.94] saturate-[0.9]"
+		/>
+	);
+
 	return (
-		<article className={cn(homeInsetClass, "pb-16 sm:pb-20")}>
+		<article className={cn(homeInsetClass, "pb-12 sm:pb-16")}>
 			<ScrollRevealBlock className="pt-10 sm:pt-12">
 				<Link
 					href={projectsHref()}
@@ -126,49 +181,17 @@ export function ProjectDetailView({
 					</span>
 				</Link>
 
-				<div className="mt-10 grid gap-10 lg:grid-cols-[minmax(0,22rem)_minmax(0,1fr)] lg:items-start lg:gap-14 xl:grid-cols-[minmax(0,26rem)_minmax(0,1fr)] xl:gap-20">
-					<div className="min-w-0 lg:sticky lg:top-32 lg:self-start">
-						<div className="overflow-hidden border border-border bg-sunken">
-							<ProjectCoverMedia
-								url={project.coverUrl}
-								alt={project.image.alt ?? project.title}
-								kind={coverKind}
-								posterUrl={project.coverThumbnailUrl ?? project.image.url}
-								priority
-								className={cn(
-									coverKind === "IMAGE"
-										? "aspect-[4/5] w-full"
-										: "min-h-[16rem] w-full sm:min-h-[20rem]",
-								)}
-								sizes="(max-width: 1024px) 100vw, 26rem"
-								imageClassName="brightness-[0.94] saturate-[0.9]"
-							/>
-						</div>
-					</div>
-
-					<div className="min-w-0">
-						<div className="flex flex-wrap items-center gap-2">
-							{project.projectType && (
-								<Badge variant="outline" size="sm">
-									{project.projectType}
-								</Badge>
+				<div className="mt-10 grid gap-10 lg:grid-cols-[minmax(0,28rem)_minmax(0,1fr)] lg:items-start lg:gap-12 xl:grid-cols-[minmax(0,34rem)_minmax(0,1fr)] xl:gap-16">
+					{/* Article first in DOM so the title leads on mobile and for screen
+					    readers; the dossier rail takes column 1 only at lg. */}
+					<div className="min-w-0 lg:col-start-2 lg:row-start-1">
+						<h1
+							className={cn(
+								"display-title max-w-3xl text-balance",
+								displayTitleSizeClass(project.title),
+								heroTitleBoostClass(project.title),
 							)}
-							{project.status && (
-								<Badge variant="subtle" size="sm">
-									{statusLabels[project.status] ?? project.status}
-								</Badge>
-							)}
-							{formattedDate && (
-								<time
-									dateTime={project.projectDate ?? undefined}
-									className="text-small text-muted"
-								>
-									{formattedDate}
-								</time>
-							)}
-						</div>
-
-						<h1 className="display-title mt-5 max-w-3xl text-balance">
+						>
 							{project.title}
 						</h1>
 
@@ -176,64 +199,96 @@ export function ProjectDetailView({
 							<p className="mt-3 text-lead text-muted">{project.location}</p>
 						)}
 
-						{bodyContent ? (
-							<div className="project-article-body mt-8 max-w-3xl border-t border-border pt-8 sm:mt-10 sm:pt-10">
-								<RichText content={bodyContent} />
-							</div>
+						{(project.projectType ||
+							project.status ||
+							formattedDate ||
+							project.tags.length > 0) && (
+							<dl className="mt-8 grid max-w-3xl grid-cols-2 gap-x-6 gap-y-6 border-y border-border py-5 sm:grid-cols-3">
+								{project.projectType && (
+									<FactCell label={typeLabel}>{project.projectType}</FactCell>
+								)}
+								{project.status && (
+									<FactCell label={statusLabel}>
+										{statusLabels[project.status] ?? project.status}
+									</FactCell>
+								)}
+								{formattedDate && (
+									<FactCell label={dateLabel}>
+										<time dateTime={project.projectDate ?? undefined}>
+											{formattedDate}
+										</time>
+									</FactCell>
+								)}
+								{project.tags.length > 0 && (
+									<FactCell label={tagsLabel}>
+										<span className="flex flex-wrap gap-2">
+											{project.tags.map((tag) => (
+												<TaxonomyBadgeLink
+													key={tag}
+													href={projectTagHref(tag)}
+													variant="outline"
+													size="sm"
+												>
+													{tag}
+												</TaxonomyBadgeLink>
+											))}
+										</span>
+									</FactCell>
+								)}
+							</dl>
+						)}
+
+						{bodyContent && bodyNumber ? (
+							<section className="mt-8 sm:mt-10">
+								<SectionEyebrow
+									as="h2"
+									number={bodyNumber}
+									label={contentLabel}
+								/>
+								<div className="project-article-body max-w-3xl pt-6">
+									<RichText content={bodyContent} />
+								</div>
+							</section>
 						) : null}
+					</div>
+
+					{/* Independent cover column — just the image, large and clickable. */}
+					<div className="min-w-0 lg:sticky lg:top-32 lg:col-start-1 lg:row-start-1 lg:self-start">
+						{coverKind === "IMAGE" ? (
+							<CoverLightbox
+								src={project.coverUrl}
+								alt={coverAlt}
+								closeLabel={lightboxCloseLabel}
+								caption={project.title}
+							>
+								<div className="overflow-hidden border border-border bg-sunken">
+									{cover}
+								</div>
+							</CoverLightbox>
+						) : (
+							<div className="overflow-hidden border border-border bg-sunken">
+								{cover}
+							</div>
+						)}
 					</div>
 				</div>
 			</ScrollRevealBlock>
 
-			<ScrollReveal className="mt-12 sm:mt-16">
-				<dl className="grid gap-0 border-y border-border sm:grid-cols-2 lg:grid-cols-4">
-					{project.location && (
-						<CreditCell label={locationLabel}>{project.location}</CreditCell>
-					)}
-					{project.projectType && (
-						<CreditCell label={typeLabel}>{project.projectType}</CreditCell>
-					)}
-					{project.status && (
-						<CreditCell label={statusLabel}>
-							{statusLabels[project.status] ?? project.status}
-						</CreditCell>
-					)}
-					{formattedDate && (
-						<CreditCell label={dateLabel}>{formattedDate}</CreditCell>
-					)}
-				</dl>
+			{galleryNumber && (
+				<ScrollReveal className="mt-10 sm:mt-12">
+					<ProjectMediaGallery
+						items={project.mediaGallery}
+						title={galleryLabel}
+						projectTitle={project.title}
+						number={galleryNumber}
+						closeLabel={lightboxCloseLabel}
+					/>
+				</ScrollReveal>
+			)}
 
-				{project.tags.length > 0 && (
-					<div className="border-b border-border py-6">
-						<p className="label font-medium">{tagsLabel}</p>
-						<ul className="mt-3 flex flex-wrap gap-2">
-							{project.tags.map((tag) => (
-								<li key={tag}>
-									<TaxonomyBadgeLink
-										href={projectTagHref(tag)}
-										variant="outline"
-										size="sm"
-									>
-										{tag}
-									</TaxonomyBadgeLink>
-								</li>
-							))}
-						</ul>
-					</div>
-				)}
-
-				<ProjectMediaGallery
-					items={project.mediaGallery}
-					title={galleryLabel}
-					projectTitle={project.title}
-				/>
-			</ScrollReveal>
-
-			{(previous || next) && (
-				<nav
-					aria-label={navLabel}
-					className="mt-12 border-t border-border sm:mt-16"
-				>
+			{navNumber && (
+				<nav aria-label={navLabel} className="mt-10 sm:mt-12">
+					<SectionEyebrow number={navNumber} label={navLabel} />
 					<div className="grid sm:grid-cols-2">
 						{previous ? (
 							<AdjacentLink
@@ -245,7 +300,12 @@ export function ProjectDetailView({
 							<div aria-hidden className="hidden sm:block" />
 						)}
 						{next && (
-							<AdjacentLink project={next} label={nextLabel} direction="next" />
+							<AdjacentLink
+								project={next}
+								label={nextLabel}
+								direction="next"
+								withDivider={Boolean(previous)}
+							/>
 						)}
 					</div>
 				</nav>

@@ -1,6 +1,7 @@
 "use client";
 
 import { ProjectCoverImage } from "@/components/projects/project-cover-image";
+import { CoverLightbox } from "@/components/ui/cover-lightbox";
 import { VideoPlayer } from "@/components/ui/video-player";
 import { cn } from "@/lib/utils";
 import type { MediaItem } from "@/types/media";
@@ -8,12 +9,14 @@ import type { MediaItem } from "@/types/media";
 type ProjectMediaItemProps = {
 	item: MediaItem;
 	title: string;
+	closeLabel: string;
 	className?: string;
 };
 
 export function ProjectMediaItemBlock({
 	item,
 	title,
+	closeLabel,
 	className,
 }: ProjectMediaItemProps) {
 	const isWide = item.kind === "VIDEO" || item.kind === "AUDIO";
@@ -27,14 +30,21 @@ export function ProjectMediaItemBlock({
 			)}
 		>
 			{item.kind === "IMAGE" && (
-				<div className="relative aspect-[4/3] overflow-hidden border border-border bg-sunken">
-					<ProjectCoverImage
-						src={item.url}
-						alt={item.caption ?? title}
-						className="absolute inset-0"
-						sizes="(max-width: 768px) 100vw, 50vw"
-					/>
-				</div>
+				<CoverLightbox
+					src={item.url}
+					alt={item.caption ?? title}
+					closeLabel={closeLabel}
+					caption={item.caption}
+				>
+					<div className="relative aspect-[4/3] overflow-hidden border border-border bg-sunken">
+						<ProjectCoverImage
+							src={item.url}
+							alt={item.caption ?? title}
+							className="absolute inset-0"
+							sizes="(max-width: 768px) 100vw, 50vw"
+						/>
+					</div>
+				</CoverLightbox>
 			)}
 
 			{item.kind === "VIDEO" && (

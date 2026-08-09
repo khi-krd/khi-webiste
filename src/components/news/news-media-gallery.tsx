@@ -48,17 +48,16 @@ export function NewsMediaGallery({
 	if (items.length === 0) return null;
 
 	return (
-		<div className="pt-10 sm:pt-12">
-			<header className="border-b border-border pb-4">
-				<h2 className="label font-medium text-foreground">
-					<span aria-hidden="true" className="me-2">
-						{"//"}
-					</span>
-					{title}
-				</h2>
-			</header>
+		// Vertical rhythm (top spacing / hairlines) is owned by the parent section.
+		<div>
+			<h2 className="label font-medium text-foreground">
+				<span aria-hidden="true" className="me-2">
+					{"//"}
+				</span>
+				{title}
+			</h2>
 
-			<ul className="mt-5 flex flex-wrap gap-2.5 sm:mt-6 sm:gap-3">
+			<ul className="mt-4 flex flex-wrap gap-2.5 sm:gap-3">
 				{items.map((item, index) => {
 					const label = item.caption ?? articleTitle;
 

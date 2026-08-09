@@ -120,6 +120,12 @@ export function NewsMediaModal({
 		if (event.key === (rtl ? "ArrowRight" : "ArrowLeft")) step(-1);
 	};
 
+	// Backdrop clicks dispatch with the <dialog> itself as target; clicks on the
+	// content hit inner elements — so this closes only clicks outside the card.
+	const onDialogClick = (event: React.MouseEvent<HTMLDialogElement>) => {
+		if (event.target === dialogRef.current) dialogRef.current?.close();
+	};
+
 	const item = activeIndex === null ? null : items[activeIndex];
 	const showThumbs =
 		items.length > 1 && items.some((entry) => thumbPreview(entry));
@@ -129,6 +135,7 @@ export function NewsMediaModal({
 			ref={dialogRef}
 			onClose={() => onActiveIndexChange(null)}
 			onKeyDown={onDialogKeyDown}
+			onClick={onDialogClick}
 			aria-label={item?.caption ?? articleTitle}
 			className="m-auto max-h-[98svh] w-[min(98vw,72rem)] border border-border bg-background p-0 text-foreground backdrop:bg-foreground/85"
 		>

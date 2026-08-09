@@ -6,6 +6,7 @@ import {
 	ScrollRevealItem,
 } from "@/components/motion/scroll-reveal";
 import { Badge } from "@/components/ui/badge";
+import { CoverLightbox } from "@/components/ui/cover-lightbox";
 import { DirectionalIcon } from "@/components/ui/directional-icon";
 import { Link } from "@/components/ui/link";
 import { RichText } from "@/components/ui/rich-text";
@@ -14,6 +15,7 @@ import { WritingGridCard } from "@/components/writing/writing-grid-card";
 import { WritingPdfPreview } from "@/components/writing/writing-pdf-preview";
 import { homeInsetClass } from "@/lib/layout";
 import { writingGenreHref, writingTagHref } from "@/lib/search/taxonomy-href";
+import { displayTitleSizeClass } from "@/lib/title-scale";
 import { cn } from "@/lib/utils";
 import { buildWritingGridCards } from "@/lib/writing/catalog";
 import type {
@@ -45,22 +47,27 @@ type WritingPostViewProps = {
 	previousLabel: string;
 	nextLabel: string;
 	relatedLabel: string;
+	lightboxCloseLabel: string;
 	locale: string;
 };
 
-function MetaCell({
+function MetaRow({
 	label,
 	children,
-	className,
+	numeric = false,
 }: {
 	label: string;
 	children: React.ReactNode;
-	className?: string;
+	numeric?: boolean;
 }) {
 	return (
-		<div className={cn("flex flex-col gap-2 py-5 sm:py-6", className)}>
+		<div className="grid gap-1.5 px-4 py-3 sm:grid-cols-[8.5rem_minmax(0,1fr)] sm:gap-4 sm:px-5">
 			<dt className="label font-medium">{label}</dt>
-			<dd className="text-small text-foreground">{children}</dd>
+			<dd
+				className={cn("text-small text-foreground", numeric && "tabular-nums")}
+			>
+				{children}
+			</dd>
 		</div>
 	);
 }
@@ -132,21 +139,15 @@ export function WritingPostView({
 	previousLabel,
 	nextLabel,
 	relatedLabel,
+	lightboxCloseLabel,
 	locale,
 }: WritingPostViewProps) {
-	const hasMeta = Boolean(
-		detail.writer ||
-			detail.topicName ||
-			detail.seriesName ||
-			detail.keywords.length,
-	);
-
 	const relatedCards = buildWritingGridCards(related);
 
 	return (
 		<article>
 			<ScrollRevealBlock
-				className={cn("pt-10 pb-10 sm:pt-12 lg:pb-12", homeInsetClass)}
+				className={cn("pt-8 pb-8 sm:pt-10 sm:pb-10", homeInsetClass)}
 			>
 				<Link
 					href="/writings"
@@ -161,21 +162,33 @@ export function WritingPostView({
 					</span>
 				</Link>
 
-				<div className="mt-10 grid gap-10 lg:grid-cols-[minmax(0,28rem)_minmax(0,1fr)] lg:items-start lg:gap-14 xl:grid-cols-[minmax(0,32rem)_minmax(0,1fr)] xl:gap-20">
-					<div className="relative aspect-[4/3] w-full max-w-lg overflow-hidden border border-border bg-sunken lg:sticky lg:top-32 lg:max-w-none">
+				<div className="mt-6 grid gap-8 lg:grid-cols-[minmax(0,20rem)_minmax(0,1fr)] lg:items-start lg:gap-12 xl:grid-cols-[minmax(0,23rem)_minmax(0,1fr)]">
+					{/* Plated volume: mat frame around a portrait cover, book-on-table */}
+					<div className="w-full max-w-sm border border-border bg-surface p-3 sm:p-4 lg:sticky lg:top-32 lg:max-w-none">
 						{detail.coverUrl ? (
-							<NextImage
+							<CoverLightbox
 								src={detail.coverUrl}
-								alt=""
-								fill
-								priority
-								sizes="(max-width: 1024px) 80vw, 32rem"
-								className="object-cover brightness-[0.94] saturate-[0.9]"
-							/>
+								alt={detail.title}
+								caption={detail.title}
+								closeLabel={lightboxCloseLabel}
+								intrinsicWidth={1200}
+								intrinsicHeight={1600}
+							>
+								<span className="relative block aspect-[3/4] w-full overflow-hidden border border-border bg-sunken">
+									<NextImage
+										src={detail.coverUrl}
+										alt=""
+										fill
+										priority
+										sizes="(max-width: 1024px) 80vw, 23rem"
+										className="object-cover brightness-[0.94] saturate-[0.9]"
+									/>
+								</span>
+							</CoverLightbox>
 						) : (
 							<div
 								aria-hidden
-								className="flex h-full w-full items-center justify-center"
+								className="flex aspect-[3/4] w-full items-center justify-center border border-border bg-sunken"
 							>
 								<span className="font-heading text-display font-bold text-foreground/10">
 									{detail.title.charAt(0)}
@@ -212,7 +225,12 @@ export function WritingPostView({
 							) : null}
 						</div>
 
-						<h1 className="display-title mt-5 max-w-3xl text-balance">
+						<h1
+							className={cn(
+								"display-title mt-5 max-w-2xl text-balance",
+								displayTitleSizeClass(detail.title),
+							)}
+						>
 							{detail.title}
 						</h1>
 
@@ -236,15 +254,16 @@ export function WritingPostView({
 							</p>
 						) : null}
 
+						{/* Narrow manuscript measure for the record's descriptive text */}
 						{detail.description ? (
 							<RichText
 								content={detail.description}
-								className="mt-8 max-w-2xl"
+								className="mt-6 max-w-[58ch]"
 							/>
 						) : null}
 
 						{detail.tags.length > 0 ? (
-							<div className="mt-6 flex max-w-2xl flex-wrap gap-1.5">
+							<div className="mt-6 flex max-w-[58ch] flex-wrap gap-1.5">
 								{detail.tags.map((tag) => (
 									<TaxonomyBadgeLink
 										key={tag}
@@ -257,57 +276,49 @@ export function WritingPostView({
 								))}
 							</div>
 						) : null}
+
+						{/* Library card: catalog fields as hairline rows on a surface panel */}
+						<dl className="mt-8 max-w-2xl divide-y divide-border border border-border bg-surface">
+							{detail.writer ? (
+								<MetaRow label={writerLabel}>{detail.writer}</MetaRow>
+							) : null}
+							{detail.topicName ? (
+								<MetaRow label={topicLabel}>{detail.topicName}</MetaRow>
+							) : null}
+							{detail.seriesName ? (
+								<MetaRow label={seriesLabel}>{detail.seriesName}</MetaRow>
+							) : null}
+							{detail.keywords.length > 0 ? (
+								<MetaRow label={keywordsLabel}>
+									<span className="flex flex-wrap gap-1.5">
+										{detail.keywords.map((keyword) => (
+											<TaxonomyBadgeLink
+												key={keyword}
+												href={writingTagHref(keyword)}
+												variant="outline"
+												size="sm"
+											>
+												{keyword}
+											</TaxonomyBadgeLink>
+										))}
+									</span>
+								</MetaRow>
+							) : null}
+							<MetaRow label={publishedLabel} numeric>
+								{formatDate(locale, detail.createdAt)}
+							</MetaRow>
+							<MetaRow label={updatedLabel} numeric>
+								{formatDate(locale, detail.updatedAt)}
+							</MetaRow>
+						</dl>
 					</div>
 				</div>
-
-				{hasMeta ? (
-					<dl className="mt-12 grid border-y border-border sm:grid-cols-2 lg:grid-cols-3">
-						{detail.writer ? (
-							<MetaCell label={writerLabel}>{detail.writer}</MetaCell>
-						) : null}
-						{detail.topicName ? (
-							<MetaCell
-								label={topicLabel}
-								className="border-t border-border sm:border-t-0 sm:border-s sm:ps-6"
-							>
-								{detail.topicName}
-							</MetaCell>
-						) : null}
-						{detail.seriesName ? (
-							<MetaCell
-								label={seriesLabel}
-								className="border-t border-border lg:border-t-0 lg:border-s lg:ps-6"
-							>
-								{detail.seriesName}
-							</MetaCell>
-						) : null}
-						{detail.keywords.length > 0 ? (
-							<MetaCell
-								label={keywordsLabel}
-								className="border-t border-border sm:col-span-2"
-							>
-								<span className="flex flex-wrap gap-1.5">
-									{detail.keywords.map((keyword) => (
-										<TaxonomyBadgeLink
-											key={keyword}
-											href={writingTagHref(keyword)}
-											variant="outline"
-											size="sm"
-										>
-											{keyword}
-										</TaxonomyBadgeLink>
-									))}
-								</span>
-							</MetaCell>
-						) : null}
-					</dl>
-				) : null}
 			</ScrollRevealBlock>
 
 			<ScrollRevealBlock>
 				<section
 					className={cn(
-						"border-t border-border bg-sunken/40 py-12 sm:py-16",
+						"border-t border-border bg-sunken/40 py-8 sm:py-10",
 						homeInsetClass,
 					)}
 					aria-labelledby="writing-preview-heading"
@@ -333,7 +344,7 @@ export function WritingPostView({
 				<ScrollRevealBlock>
 					<section
 						className={cn(
-							"border-t border-border py-12 sm:py-16",
+							"border-t border-border py-8 sm:py-10",
 							homeInsetClass,
 						)}
 						aria-labelledby="writing-series-heading"
@@ -406,7 +417,7 @@ export function WritingPostView({
 					<section
 						aria-labelledby="writing-related-heading"
 						className={cn(
-							"border-t border-border py-12 sm:py-16",
+							"border-t border-border py-8 sm:py-10",
 							homeInsetClass,
 						)}
 					>
@@ -426,22 +437,6 @@ export function WritingPostView({
 					</section>
 				</ScrollRevealBlock>
 			) : null}
-
-			<ScrollRevealBlock>
-				<footer
-					className={cn(
-						"border-t border-border py-8 text-small text-muted sm:py-10",
-						homeInsetClass,
-					)}
-				>
-					<p>
-						{publishedLabel}: {formatDate(locale, detail.createdAt)}
-					</p>
-					<p className="mt-1">
-						{updatedLabel}: {formatDate(locale, detail.updatedAt)}
-					</p>
-				</footer>
-			</ScrollRevealBlock>
 		</article>
 	);
 }

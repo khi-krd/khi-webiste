@@ -51,15 +51,16 @@ export default async function ProjectDetailPage({
 			<ProjectDetailView
 				detail={detail}
 				backLabel={t("detail.back")}
-				locationLabel={t("detail.location")}
 				typeLabel={t("detail.type")}
 				statusLabel={t("detail.status")}
 				dateLabel={t("detail.date")}
 				tagsLabel={t("detail.tags")}
+				contentLabel={t("detail.content")}
 				galleryLabel={t("detail.gallery")}
 				navLabel={t("detail.navLabel")}
 				previousLabel={t("detail.previous")}
 				nextLabel={t("detail.next")}
+				lightboxCloseLabel={t("detail.lightboxClose")}
 				statusLabels={{
 					ACTIVE: t("detail.statusValues.ACTIVE"),
 					ONGOING: t("detail.statusValues.ONGOING"),

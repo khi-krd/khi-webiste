@@ -56,7 +56,7 @@ export async function LatestUpdates() {
 		>
 			<ScrollRevealBlock className="mb-8 px-6 sm:mb-10 sm:px-8">
 				<header>
-					<div className="flex flex-col gap-5 sm:flex-row sm:items-end sm:justify-between sm:gap-8">
+					<div className="flex flex-col gap-5 sm:flex-row sm:items-start sm:justify-between sm:gap-8">
 						<div className="max-w-2xl text-start">
 							<h2
 								id="latest-updates-heading"

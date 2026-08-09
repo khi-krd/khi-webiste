@@ -27,6 +27,12 @@
 	--media-slider-thumb-bg: var(--khi-player-track-fill);
 	--media-slider-thumb-border: 1px solid color-mix(in oklch, white 70%, transparent);
 
+	/* Vidstack fallbacks are hardcoded 2px — pin them to the radius tokens so
+	   the time chip / slider tooltip / seek preview go square with the theme. */
+	--media-time-border-radius: var(--radius-sm);
+	--media-slider-value-border-radius: var(--radius-sm);
+	--media-slider-preview-border-radius: var(--radius-sm);
+
 	position: relative;
 	display: block;
 	width: 100%;

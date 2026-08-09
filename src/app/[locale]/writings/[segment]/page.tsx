@@ -167,6 +167,7 @@ export default async function WritingsSegmentPage({
 				previousLabel={t("post.previous")}
 				nextLabel={t("post.next")}
 				relatedLabel={t("post.related")}
+				lightboxCloseLabel={t("post.lightboxClose")}
 			/>
 		</main>
 	);

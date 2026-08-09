@@ -12,9 +12,16 @@ export const HOME_IMAGE_BENTO_GRID_CLASS =
 /** Full-width collage inside the tray. */
 export const HOME_IMAGE_BENTO_GRID_WRAPPER_CLASS = "w-full";
 
-/** Inset frame around the collage — like the reference poster margin. */
+/**
+ * Inset frame around the collage — like the reference poster margin.
+ * Fixed radius by design (user request): the tray and its tiles stay rounded
+ * even though the site theme is square, so no `rounded-*` token here.
+ */
 export const HOME_IMAGE_BENTO_TRAY_CLASS =
-	"h-full min-h-0 w-full overflow-hidden rounded-lg bg-foreground p-2 ring-1 ring-border/60 ring-inset sm:p-3 lg:p-4";
+	"h-full min-h-0 w-full overflow-hidden rounded-[1rem] bg-foreground p-2 ring-1 ring-border/60 ring-inset sm:p-3 lg:p-4";
+
+/** Same deliberate fixed radius for each gallery tile inside the tray. */
+export const HOME_IMAGE_BENTO_TILE_RADIUS_CLASS = "rounded-[0.5rem]";
 
 /** Inner layout — height comes from the section (`h-svh`). */
 export const HOME_IMAGE_BENTO_SECTION_CLASS =

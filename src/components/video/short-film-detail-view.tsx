@@ -1,10 +1,14 @@
-import { ArrowLeftIcon } from "@heroicons/react/24/outline";
+import {
+	ArrowLeftIcon,
+	ArrowsPointingOutIcon,
+} from "@heroicons/react/24/outline";
 import NextImage from "next/image";
 import { getTranslations } from "next-intl/server";
 import {
 	ScrollReveal,
 	ScrollRevealItem,
 } from "@/components/motion/scroll-reveal";
+import { CoverLightbox } from "@/components/ui/cover-lightbox";
 import { DirectionalIcon } from "@/components/ui/directional-icon";
 import { Link } from "@/components/ui/link";
 import { RichText } from "@/components/ui/rich-text";
@@ -54,18 +58,36 @@ function MetaRow({
 	);
 }
 
-function SectionHeading({ children }: { children: React.ReactNode }) {
+/** Program-style section header: heading + two-digit entry count marker. */
+function SectionHeading({
+	children,
+	count,
+}: {
+	children: React.ReactNode;
+	count?: number;
+}) {
 	return (
-		<h2 className="font-heading text-h3 font-bold text-primary-foreground">
-			{children}
-		</h2>
+		<div className="flex items-baseline justify-between gap-4">
+			<h2 className="font-heading text-h3 font-bold text-primary-foreground">
+				{children}
+			</h2>
+			{count != null ? (
+				<span
+					aria-hidden="true"
+					dir="ltr"
+					className="text-label tabular-nums text-primary-foreground/40"
+				>
+					{String(count).padStart(2, "0")}
+				</span>
+			) : null}
+		</div>
 	);
 }
 
 function CastCard({ member }: { member: ResolvedVideoCastMember }) {
 	return (
 		<div className="flex w-28 shrink-0 flex-col gap-2 sm:w-32">
-			<div className="relative aspect-3/4 overflow-hidden rounded-md border border-primary-foreground/20 bg-primary-foreground/10">
+			<div className="relative aspect-3/4 overflow-hidden border border-primary-foreground/20 bg-primary-foreground/10">
 				{member.photoUrl ? (
 					<NextImage
 						src={member.photoUrl}
@@ -80,15 +102,21 @@ function CastCard({ member }: { member: ResolvedVideoCastMember }) {
 					</div>
 				)}
 			</div>
+			{/* Credits order: role eyebrow first, then the name. */}
 			<div>
-				<p className="text-small font-medium leading-snug text-primary-foreground">
-					{member.name}
-				</p>
 				{member.role ? (
-					<p className="mt-0.5 text-label text-primary-foreground/60">
+					<p className="label font-medium text-primary-foreground/50">
 						{member.role}
 					</p>
 				) : null}
+				<p
+					className={cn(
+						"text-small font-medium leading-snug text-primary-foreground",
+						member.role && "mt-0.5",
+					)}
+				>
+					{member.name}
+				</p>
 			</div>
 		</div>
 	);
@@ -97,7 +125,7 @@ function CastCard({ member }: { member: ResolvedVideoCastMember }) {
 function HighlightCard({ highlight }: { highlight: ResolvedVideoHighlight }) {
 	const content = (
 		<>
-			<div className="relative aspect-video w-full overflow-hidden rounded-md border border-primary-foreground/20 bg-primary-foreground/10">
+			<div className="relative aspect-video w-full overflow-hidden border border-primary-foreground/20 bg-primary-foreground/10">
 				{highlight.thumbnailUrl ? (
 					<NextImage
 						src={highlight.thumbnailUrl}
@@ -201,7 +229,8 @@ export async function ShortFilmDetailView({
 			<div
 				className={cn(
 					homeInsetClass,
-					"mx-auto max-w-7xl py-8 sm:py-10 lg:py-12",
+					// pb matches the shared section seam: pb + hairline + pt below.
+					"mx-auto max-w-7xl pt-8 pb-5 sm:pt-10 sm:pb-6 lg:pt-12",
 				)}
 			>
 				<ScrollReveal className="grid items-stretch gap-8 lg:grid-cols-[minmax(0,1.05fr)_minmax(17rem,24rem)] lg:gap-8 xl:grid-cols-[minmax(0,1.1fr)_minmax(19rem,26rem)] xl:gap-10">
@@ -213,7 +242,29 @@ export async function ShortFilmDetailView({
 							poster={detail.coverUrl}
 							noSourceLabel={t("detail.noSource")}
 							variant="cinema"
-							className="overflow-hidden rounded-md ring-1 ring-primary-foreground/15"
+							className="ring-1 ring-primary-foreground/15"
+							surfaceOverlay={
+								detail.coverUrl ? (
+									<CoverLightbox
+										src={detail.coverUrl}
+										alt={detail.title}
+										caption={detail.title}
+										closeLabel={t("detail.lightboxClose")}
+										triggerLabel={t("detail.lightboxOpen")}
+										// max-w-fit: the trigger's base w-full outranks a w-auto
+										// override in the compiled sheet (plain cn, no tw-merge) —
+										// cap the width instead.
+										className="absolute end-3 top-3 z-10 max-w-fit"
+									>
+										<span className="inline-flex size-9 items-center justify-center border border-primary-foreground/30 bg-foreground/70 text-primary-foreground transition-colors fine-hover:bg-foreground">
+											<ArrowsPointingOutIcon
+												aria-hidden="true"
+												className="size-4"
+											/>
+										</span>
+									</CoverLightbox>
+								) : null
+							}
 							clips={detail.clips}
 							activeClipNumber={detail.activeClipNumber}
 							sceneLabels={{
@@ -226,7 +277,7 @@ export async function ShortFilmDetailView({
 					</ScrollRevealItem>
 
 					<ScrollRevealItem className="flex min-w-0">
-						<aside className="flex w-full flex-col justify-between gap-6 rounded-md border border-primary-foreground/15 bg-primary-foreground/3 p-5 sm:p-6 lg:sticky lg:top-24 lg:self-start">
+						<aside className="flex w-full flex-col justify-between gap-6 border border-primary-foreground/15 bg-primary-foreground/3 p-5 sm:p-6 lg:sticky lg:top-24 lg:self-start">
 							<div className="flex flex-col gap-4">
 								{detail.topicName ? (
 									detail.topicId != null ? (
@@ -274,7 +325,7 @@ export async function ShortFilmDetailView({
 											<Link
 												key={tag}
 												href={videoTagHref(tag, "/videos/shortfilms")}
-												className="rounded-md border border-primary-foreground/15 px-1.5 py-0.5 text-label text-primary-foreground/65 transition-opacity fine-hover:opacity-80"
+												className="border border-primary-foreground/15 px-1.5 py-0.5 text-label text-primary-foreground/65 transition-opacity fine-hover:opacity-80"
 											>
 												{tag}
 											</Link>
@@ -299,11 +350,17 @@ export async function ShortFilmDetailView({
 				</ScrollReveal>
 			</div>
 
-			<div className={cn(homeInsetClass, "mx-auto max-w-7xl pb-10 sm:pb-14")}>
+			{/* One shared seam between program sections: space-y + hairline + pt. */}
+			<div
+				className={cn(
+					homeInsetClass,
+					"mx-auto max-w-7xl space-y-5 pb-10 sm:space-y-6 sm:pb-14",
+				)}
+			>
 				{detail.description ? (
 					<ScrollReveal>
 						<ScrollRevealItem>
-							<section className="border-t border-primary-foreground/20 pt-10 sm:pt-12">
+							<section className="border-t border-primary-foreground/20 pt-5 sm:pt-6">
 								<RichText
 									content={detail.description}
 									className="max-w-prose text-body leading-relaxed text-primary-foreground/85"
@@ -316,14 +373,11 @@ export async function ShortFilmDetailView({
 				{detail.cast.length > 0 ? (
 					<ScrollReveal>
 						<ScrollRevealItem>
-							<section
-								className={cn(
-									"border-t border-primary-foreground/20 pt-10 sm:pt-12",
-									detail.description ? "mt-10 sm:mt-12" : "",
-								)}
-							>
-								<SectionHeading>{t("shortfilms.detail.cast")}</SectionHeading>
-								<div className="mt-5 flex gap-4 overflow-x-auto pb-2">
+							<section className="border-t border-primary-foreground/20 pt-5 sm:pt-6">
+								<SectionHeading count={detail.cast.length}>
+									{t("shortfilms.detail.cast")}
+								</SectionHeading>
+								<div className="mt-4 flex gap-4 overflow-x-auto pb-2 sm:mt-5">
 									{detail.cast.map((member) => (
 										<CastCard key={member.name} member={member} />
 									))}
@@ -336,11 +390,11 @@ export async function ShortFilmDetailView({
 				{detail.highlights.length > 0 && detail.clips.length <= 1 ? (
 					<ScrollReveal>
 						<ScrollRevealItem>
-							<section className="mt-12 border-t border-primary-foreground/20 pt-12 sm:mt-16">
-								<SectionHeading>
+							<section className="border-t border-primary-foreground/20 pt-5 sm:pt-6">
+								<SectionHeading count={detail.highlights.length}>
 									{t("shortfilms.detail.selectedClips")}
 								</SectionHeading>
-								<div className="mt-5 flex gap-4 overflow-x-auto pb-2">
+								<div className="mt-4 flex gap-4 overflow-x-auto pb-2 sm:mt-5">
 									{detail.highlights.map((highlight) => (
 										<HighlightCard
 											key={highlight.title}
@@ -358,7 +412,7 @@ export async function ShortFilmDetailView({
 						title={t("shortfilms.detail.related")}
 						cards={relatedShortFilms}
 						dark
-						className="mt-10 sm:mt-12"
+						seamClassName="pt-5 sm:pt-6"
 					/>
 				) : null}
 			</div>

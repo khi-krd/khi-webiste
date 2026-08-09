@@ -31,6 +31,8 @@ type VideoPlayerFrameProps = {
 	variant?: "default" | "cinema";
 	/** Optional sidebar (metadata) rendered beside the player. */
 	aside?: ReactNode;
+	/** Optional overlay pinned over the player surface (e.g. an expand button). */
+	surfaceOverlay?: ReactNode;
 	clips?: ResolvedVideoClip[];
 	/** Initial gallery selection (e.g. from `?clip=` deep-link). */
 	activeClipNumber?: number | null;
@@ -104,6 +106,7 @@ export function VideoPlayerFrame({
 	className,
 	variant = "default",
 	aside,
+	surfaceOverlay,
 	clips = [],
 	activeClipNumber = null,
 	clipLabels,
@@ -223,10 +226,19 @@ export function VideoPlayerFrame({
 			) : null
 		) : null;
 
+	const framedSurface = surfaceOverlay ? (
+		<div className="relative">
+			{surface}
+			{surfaceOverlay}
+		</div>
+	) : (
+		surface
+	);
+
 	if (!aside) {
 		return (
 			<div className={cn(className)}>
-				{surface}
+				{framedSurface}
 				{clipList}
 			</div>
 		);
@@ -235,7 +247,7 @@ export function VideoPlayerFrame({
 	return (
 		<div className={cn(className)}>
 			<div className="grid items-start gap-5 lg:grid-cols-[minmax(0,1fr)_minmax(16rem,22rem)] lg:gap-6">
-				<div className="min-w-0">{surface}</div>
+				<div className="min-w-0">{framedSurface}</div>
 				<div className="min-w-0 lg:sticky lg:top-24">{aside}</div>
 			</div>
 			{clipList}

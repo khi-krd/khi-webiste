@@ -16,6 +16,11 @@ import { cn } from "@/lib/utils";
 
 const sliceEase = "ease-[cubic-bezier(0.22,1,0.36,1)]";
 
+/** Catalog plate number — zero-padded so "01–12" reads as a range. */
+function plateNumber(index: number): string {
+	return String(index + 1).padStart(2, "0");
+}
+
 type GalleryAlbumProps = {
 	items: GalleryAlbumItem[];
 	coverUrl?: string;
@@ -28,8 +33,9 @@ type GalleryAlbumProps = {
 };
 
 /**
- * Opened collection album — contact sheet grid. Every image opens the
- * lightbox with the full `ImageItemDto` record when present.
+ * Opened collection album as exhibition-catalog plates: each image carries a
+ * hairline-topped wall label with its plate number and caption. Every image
+ * opens the lightbox with the full `ImageItemDto` record when present.
  */
 export function GalleryAlbum({
 	items,
@@ -52,20 +58,22 @@ export function GalleryAlbum({
 		<>
 			<section
 				aria-label={photosLabel}
-				className={cn("pt-8 pb-12 lg:pt-10 lg:pb-16", homeInsetClass)}
+				className={cn("pt-5 pb-8 lg:pt-6 lg:pb-10", homeInsetClass)}
 			>
-				<header className="border-b border-border pb-4">
-					<p className="label font-medium text-foreground">
-						<span aria-hidden="true" className="me-2">
-							{"//"}
-						</span>
-						{photosLabel}
-					</p>
+				<header className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1 border-b border-border pb-3">
+					<p className="label font-medium text-foreground">{photosLabel}</p>
+					{items.length > 0 && (
+						<p aria-hidden="true" className="label">
+							{items.length > 1
+								? `${plateNumber(0)}–${plateNumber(items.length - 1)}`
+								: plateNumber(0)}
+						</p>
+					)}
 				</header>
 
-				<div className="columns-2 gap-2 pt-6 lg:columns-3">
+				<div className="columns-2 gap-4 pt-6 lg:columns-3">
 					{items.map((sheetItem, index) => (
-						<figure key={sheetItem.id} className="mb-2 break-inside-avoid">
+						<figure key={sheetItem.id} className="mb-5 break-inside-avoid">
 							<button
 								type="button"
 								onClick={() => open(index + albumIndexOffset)}
@@ -102,11 +110,19 @@ export function GalleryAlbum({
 									</div>
 								)}
 							</button>
-							{sheetItem.caption ? (
-								<figcaption className="px-0.5 pt-1.5 pb-2.5">
-									<p className="label text-foreground">{sheetItem.caption}</p>
-								</figcaption>
-							) : null}
+							{/* Wall label: hairline rule, plate number, quiet caption. */}
+							<figcaption className="mt-2 border-t border-border pt-2">
+								<p className="flex items-baseline gap-2">
+									<span aria-hidden="true" className="label">
+										{plateNumber(index)}
+									</span>
+									{sheetItem.caption ? (
+										<span className="text-small leading-snug text-muted">
+											{sheetItem.caption}
+										</span>
+									) : null}
+								</p>
+							</figcaption>
 						</figure>
 					))}
 				</div>

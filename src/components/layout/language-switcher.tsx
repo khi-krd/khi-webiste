@@ -106,10 +106,10 @@ const PANEL_GAP_PX = 6;
 const PANEL_MIN_WIDTH_PX = 184; // 11.5rem
 
 const triggerShell =
-	"draw-border-host relative isolate inline-flex items-center gap-2 overflow-hidden rounded-md text-small font-medium transition-colors [&>:not(svg)]:relative [&>:not(svg)]:z-1";
+	"draw-border-host relative isolate inline-flex items-center gap-2 overflow-hidden text-small font-medium transition-colors [&>:not(svg)]:relative [&>:not(svg)]:z-1";
 
 const panelClassName =
-	"min-w-[11.5rem] overflow-hidden rounded-md border py-1 shadow-[0_8px_24px_color-mix(in_oklch,var(--color-foreground)_12%,transparent),0_2px_6px_color-mix(in_oklch,var(--color-foreground)_6%,transparent)]";
+	"min-w-[11.5rem] overflow-hidden border py-1 shadow-[0_8px_24px_color-mix(in_oklch,var(--color-foreground)_12%,transparent),0_2px_6px_color-mix(in_oklch,var(--color-foreground)_6%,transparent)]";
 
 function LanguageDropdown({
 	activeLocale,
@@ -311,7 +311,7 @@ function LanguageDropdown({
 					alt=""
 					width={16}
 					height={16}
-					className="size-4 shrink-0 rounded-sm"
+					className="size-4 shrink-0"
 					aria-hidden="true"
 				/>
 				<span
