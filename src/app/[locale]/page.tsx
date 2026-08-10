@@ -35,7 +35,9 @@ export default async function Home({
 	const t = await getTranslations("Hero");
 
 	return (
-		<main>
+		// `data-snap-sections` opts this page into section-by-section snap
+		// scrolling (see globals.css) — one gesture lands on one whole section.
+		<main data-snap-sections>
 			<VisuallyHidden as="h1">{t("regionLabel")}</VisuallyHidden>
 			<FeaturedHero />
 			<LatestUpdates />

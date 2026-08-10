@@ -9,15 +9,15 @@ export async function ProjectsSection() {
 
 	return (
 		<section
-			className="cv-auto w-full overflow-hidden border-t border-border bg-background py-12 [--cv-intrinsic:800px] sm:py-16 lg:py-20"
+			// `min-h-svh` + flex column: the two card rows stretch to fill exactly
+			// one viewport, which is what the section-by-section snap scroll needs.
+			className="cv-auto flex min-h-svh w-full flex-col overflow-hidden border-t border-border bg-background pt-8 [--cv-intrinsic:100svh] sm:pt-10 lg:pt-12"
 			aria-labelledby="projects-heading"
 		>
 			<ProjectsShowcase
 				projects={projects}
 				copy={{
-					eyebrow: t("eyebrow"),
 					title: t("title"),
-					description: t("description"),
 					viewAll: t("viewAll"),
 				}}
 			/>

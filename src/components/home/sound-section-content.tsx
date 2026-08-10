@@ -29,13 +29,16 @@ export function SoundSectionContent({
 	ctaHref,
 }: SoundSectionContentProps) {
 	return (
-		<ScrollReveal className="text-primary-foreground">
+		<ScrollReveal className="shrink-0 text-primary-foreground">
 			{/* Heading start-side, CTA end-side and top-aligned — same header shape
 			    as the other home sections, so every "زیاتر" lands in the same spot. */}
 			<ScrollRevealItem className="flex flex-col items-start gap-6 sm:flex-row sm:items-start sm:justify-between sm:gap-10">
+				{/* One step down from the hero scale: this is a section label, not a
+				    full-viewport statement, and the height it gives back goes to the
+				    album grid below. */}
 				<h2
 					id="sound-heading"
-					className="hero-slide-title max-w-4xl text-start"
+					className="hero-slide-title max-w-4xl text-start text-[clamp(1.9rem,4vw,4rem)]"
 				>
 					{title}
 				</h2>

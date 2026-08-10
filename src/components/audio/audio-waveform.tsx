@@ -6,6 +6,8 @@ type AudioWaveformProps = {
 	seedId: number;
 	barCount?: number;
 	className?: string;
+	/** Per-bar classes — override the ink fill on dark surfaces. */
+	barClassName?: string;
 };
 
 /**
@@ -16,6 +18,7 @@ export function AudioWaveform({
 	seedId,
 	barCount = 56,
 	className,
+	barClassName,
 }: AudioWaveformProps) {
 	const bars = waveformBars(seedId, barCount);
 
@@ -25,7 +28,7 @@ export function AudioWaveform({
 				<div
 					// biome-ignore lint/suspicious/noArrayIndexKey: static decorative bars, never reordered
 					key={index}
-					className="min-w-0 flex-1 bg-foreground/15"
+					className={cn("min-w-0 flex-1 bg-foreground/15", barClassName)}
 					style={{ height: `${Math.round(height * 100)}%` }}
 				/>
 			))}

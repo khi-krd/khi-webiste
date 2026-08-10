@@ -68,7 +68,9 @@ export async function FilmSection() {
 
 	return (
 		<section
-			className="cv-auto relative w-full overflow-hidden border-t border-primary-foreground/15 bg-foreground text-primary-foreground [--cv-intrinsic:680px]"
+			// `min-h-svh` + centred content: the section owns a whole viewport, which
+			// is what the home page's section snap scrolls between.
+			className="cv-auto relative flex min-h-svh w-full flex-col justify-center overflow-hidden border-t border-primary-foreground/15 bg-foreground text-primary-foreground [--cv-intrinsic:100svh]"
 			aria-labelledby="film-heading"
 		>
 			<div
@@ -76,23 +78,18 @@ export async function FilmSection() {
 				className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_100%_60%_at_50%_0%,var(--color-primary-foreground)_0%,transparent_50%)] opacity-[0.035]"
 			/>
 
-			<div className="relative z-10 mx-auto max-w-7xl">
+			<div className="relative z-10">
+				{/* Header is full-bleed (not inside the centered 7xl column) so the
+				    CTA parks in the section's top corner, where every other home
+				    section keeps its زیاتر. One word, hero scale. */}
 				<ScrollRevealBlock className="px-6 pt-10 pb-6 sm:px-8 sm:pt-12 sm:pb-7">
-					<header className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between sm:gap-6">
-						<div className="max-w-xl text-start">
-							<p className="label font-medium text-primary-foreground/60">
-								{t("films.home.eyebrow")}
-							</p>
-							<h2
-								id="film-heading"
-								className="mt-2 font-heading text-h2 font-bold leading-[1.15] text-balance text-primary-foreground sm:text-h1"
-							>
-								{t("films.home.title")}
-							</h2>
-							<p className="mt-2 max-w-lg text-small leading-relaxed text-primary-foreground/70">
-								{t("films.home.description")}
-							</p>
-						</div>
+					<header className="flex flex-row items-center justify-between gap-6">
+						<h2
+							id="film-heading"
+							className="font-heading text-[clamp(1.9rem,4vw,4rem)] font-bold leading-[1.1] text-primary-foreground"
+						>
+							{t("films.home.title")}
+						</h2>
 
 						<Link
 							href={SHORT_FILMS_HREF}
@@ -108,30 +105,32 @@ export async function FilmSection() {
 					</header>
 				</ScrollRevealBlock>
 
-				<ScrollRevealBlock className="border-y border-primary-foreground/15">
-					<FilmCinemaHero
-						item={featured}
-						featuredLabel={t("films.home.featuredLabel")}
-					/>
-				</ScrollRevealBlock>
+				<div className="mx-auto max-w-7xl">
+					<ScrollRevealBlock className="border-y border-primary-foreground/15">
+						<FilmCinemaHero
+							item={featured}
+							featuredLabel={t("films.home.featuredLabel")}
+						/>
+					</ScrollRevealBlock>
 
-				{gridItems.length > 0 ? (
-					<div className="px-6 py-7 sm:px-8 sm:py-8">
-						<ScrollRevealBlock>
-							<p className="text-label font-medium text-primary-foreground/50">
-								{t("films.home.moreLabel")}
-							</p>
-						</ScrollRevealBlock>
+					{gridItems.length > 0 ? (
+						<div className="px-6 py-7 sm:px-8 sm:py-8">
+							<ScrollRevealBlock>
+								<p className="text-label font-medium text-primary-foreground/50">
+									{t("films.home.moreLabel")}
+								</p>
+							</ScrollRevealBlock>
 
-						<ScrollReveal className="mt-4 grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4">
-							{gridItems.map((item) => (
-								<ScrollRevealItem key={item.id}>
-									<FilmGridCard item={item} />
-								</ScrollRevealItem>
-							))}
-						</ScrollReveal>
-					</div>
-				) : null}
+							<ScrollReveal className="mt-4 grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4">
+								{gridItems.map((item) => (
+									<ScrollRevealItem key={item.id}>
+										<FilmGridCard item={item} />
+									</ScrollRevealItem>
+								))}
+							</ScrollReveal>
+						</div>
+					) : null}
+				</div>
 			</div>
 		</section>
 	);

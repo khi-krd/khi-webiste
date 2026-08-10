@@ -48,7 +48,8 @@ const SOUND_TRACKS_TAG = "sound-tracks";
 
 export const AUDIO_GRID_PAGE_SIZE = 12;
 export const AUDIO_MEMORIES_SIZE = 8;
-export const SOUND_SECTION_CARD_COUNT = 12;
+/** Home album wall: 5 columns × 2 rows at the widest breakpoint. */
+export const SOUND_SECTION_CARD_COUNT = 10;
 
 export type AudioListResult = {
 	items: ResolvedAudioCard[];

@@ -51,7 +51,9 @@ export async function LatestUpdates() {
 
 	return (
 		<section
-			className="cv-auto w-full bg-background py-12 [--cv-intrinsic:1600px] sm:py-16 lg:py-20"
+			// Fills one viewport so the home page's section snap lands on the whole
+			// block — never on a seam with the section below.
+			className="cv-auto flex min-h-svh w-full flex-col justify-center bg-background py-12 [--cv-intrinsic:100svh] sm:py-16 lg:py-20"
 			aria-labelledby="latest-updates-heading"
 		>
 			<ScrollRevealBlock className="mb-8 px-6 sm:mb-10 sm:px-8">

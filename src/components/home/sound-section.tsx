@@ -66,7 +66,10 @@ export async function SoundSection({
 				aria-hidden
 			/>
 
-			<div className="relative z-10 flex min-h-[inherit] flex-col justify-end px-6 pb-16 sm:px-10 sm:pb-20 lg:px-14 lg:pb-24">
+			{/* Heading + album wall share one flex column: the grid is `flex-1`, so
+			    it takes exactly the height the heading leaves over and both rows
+			    stay inside this section's viewport. `pt` clears the sticky header. */}
+			<div className="relative z-10 flex min-h-[inherit] flex-col justify-end gap-5 px-6 pt-20 pb-10 sm:gap-6 sm:px-10 sm:pt-24 sm:pb-12 lg:px-14">
 				<SoundSectionContent
 					title={t("title")}
 					ctaLabel={t("cta")}

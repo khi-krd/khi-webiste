@@ -8,7 +8,6 @@ export type WritingRowItem = {
 	writer: string;
 	excerpt: string;
 	coverUrl: string | null;
-	genreLabel: string;
 	fileUrl: string | null;
 };
 
@@ -41,10 +40,9 @@ export function WritingRow({ item, className }: WritingRowProps) {
 					className={cn(
 						// The cover is the hover's anchor: ring sharpens and a soft ink
 						// shadow lifts it off the page while the art zooms + warms.
-						// Sized between the old thumbnail (w-24) and the sound-album tiles:
-						// generous where the cell is wide, pulled in at lg where 4 columns
-						// squeeze hardest.
-						"relative aspect-3/4 w-36 shrink-0 overflow-hidden bg-sunken ring-1 ring-border/80 lg:w-28 xl:w-40 2xl:w-44",
+						// Three columns give each row real width, so the cover takes it:
+						// noticeably larger than the old 4-up thumbnail at every step.
+						"relative aspect-3/4 w-36 shrink-0 overflow-hidden bg-sunken ring-1 ring-border/80 sm:w-40 lg:w-44 xl:w-52 2xl:w-56",
 						"transition-[box-shadow] duration-500 ease-out",
 						"group-fine:ring-foreground/40 group-fine:shadow-[0_16px_32px_-16px_color-mix(in_oklch,var(--color-foreground)_50%,transparent)]",
 					)}
@@ -62,7 +60,7 @@ export function WritingRow({ item, className }: WritingRowProps) {
 								src={item.coverUrl}
 								alt=""
 								fill
-								sizes="(max-width: 1024px) 144px, (max-width: 1280px) 112px, (max-width: 1536px) 160px, 176px"
+								sizes="(max-width: 640px) 144px, (max-width: 1024px) 160px, (max-width: 1280px) 176px, (max-width: 1536px) 208px, 224px"
 								className="object-cover brightness-[0.92] saturate-[0.85] transition-[filter] duration-500 group-fine:brightness-100 group-fine:saturate-100"
 							/>
 						</div>
@@ -79,13 +77,9 @@ export function WritingRow({ item, className }: WritingRowProps) {
 				</div>
 
 				<div className="flex min-w-0 flex-1 flex-col text-start">
-					<span className="label w-fit border border-border bg-background px-2 py-0.5 font-medium text-muted transition-colors duration-300 group-fine:border-foreground/30 group-fine:text-foreground">
-						{item.genreLabel}
-					</span>
-
 					<h3
 						className={cn(
-							"mt-2.5 font-heading text-body font-semibold leading-snug text-balance text-foreground",
+							"font-heading text-body font-semibold leading-snug text-balance text-foreground",
 							"transition-[text-decoration-color] duration-300",
 							"group-fine:underline group-fine:decoration-border group-fine:underline-offset-4",
 							"motion-reduce:group-fine:no-underline",
