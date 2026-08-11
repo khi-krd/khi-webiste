@@ -325,27 +325,40 @@ function PlaylistRow({
 const SCROLL_IDLE_MS = 140;
 
 /**
- * Native scrolling for the queue column, kept out of everything else's way.
+ * Native scrolling for the queue column, with nothing standing between the
+ * notch and the movement.
  *
  * The queue scrolls itself — no wheel is ever translated into a scroll here.
- * Two things are done around the browser's own scrolling, both by touching the
- * DOM directly so a wheel never costs a React render:
+ * Everything below exists to keep the browser's own scroll from being made to
+ * wait, and none of it goes through React: a notch must never cost a render.
  *
- *  - A wheel that the queue can actually consume stops propagating. The page's
+ *  - THE WHEEL HANDLER READS NOTHING FROM THE DOM. `scrollHeight`, `clientHeight`
+ *    and `scrollTop` are layout reads, and on a page with Motion animations
+ *    running there is nearly always a pending style invalidation when a notch
+ *    lands — so reading them here forces a synchronous style-and-layout pass
+ *    BEFORE the browser is allowed to scroll. That is felt exactly as "it does
+ *    not move until I nudge the mouse". The three numbers are cached instead
+ *    and refreshed only where layout has already settled and the same reads
+ *    cost nothing: the `scroll` event and a ResizeObserver, both of which the
+ *    browser runs after layout. What is left in the handler is arithmetic on
+ *    three local variables.
+ *
+ *  - A wheel the queue can consume stops propagating. The page's
  *    <SectionScroll/> holds a NON-passive wheel listener on window, so every
  *    notch over this column waited on a handler that walked the ancestor chain
  *    through `getComputedStyle` before the queue was allowed to move. Stopping
- *    the event at the container skips that work entirely; when the queue is at
- *    an end the event is let through untouched, so the page steps its section
- *    exactly as it does anywhere else.
+ *    the event here skips that entirely. At either end the event is let through
+ *    untouched, so the page carries on exactly as it does anywhere else.
  *
- *  - While the queue is moving, a flag on the container freezes hover inside
- *    it. Scrolling drags rows under a stationary cursor, and every row that
- *    passes it starts its own scale/brightness/shadow transitions — a dozen
- *    animated filters on cover images is what turned a flick into a stutter.
+ *  - Hover inside the column freezes while it moves. Scrolling drags rows under
+ *    a stationary cursor, and every row that passes it starts its own
+ *    scale/brightness/shadow transitions — a dozen animated image filters is
+ *    what turned a flick into a stutter. Raised from the `scroll` event rather
+ *    than the wheel, so the style invalidation lands after the scroll it
+ *    belongs to instead of in front of it.
  *
- * The listener is passive: nothing here ever calls `preventDefault`, so the
- * scroll itself stays on the compositor.
+ * Both listeners are passive: nothing here ever calls `preventDefault`, so the
+ * scrolling itself is never taken off the compositor.
  */
 function useNativeQueueScroll() {
 	const ref = useRef<HTMLDivElement>(null);
@@ -355,9 +368,17 @@ function useNativeQueueScroll() {
 		if (!element) return;
 
 		let idleTimer = 0;
+		/** Scroll geometry as of the last settled layout — see the note above. */
+		let maxScroll = 0;
+		let position = 0;
 
-		/** Flag on, idle countdown restarted. Written straight to the DOM: a wheel
-		 *  notch must never cost a render, and the flag is nothing React owns. */
+		const measure = () => {
+			maxScroll = element.scrollHeight - element.clientHeight;
+			position = element.scrollTop;
+		};
+
+		/** Flag on, idle countdown restarted. Written straight to the DOM: the
+		 *  flag is nothing React owns, and a scroll must not re-render the queue. */
 		const markScrolling = () => {
 			// Guarded — re-writing the same value would invalidate style again on
 			// every event of the gesture for no change at all.
@@ -371,33 +392,49 @@ function useNativeQueueScroll() {
 		};
 
 		// Covers every way the column moves — wheel, keys, a drag of the scrollbar.
-		const onScroll = markScrolling;
+		// Fires after the scroll has been applied, so both reads are free here.
+		const onScroll = () => {
+			measure();
+			markScrolling();
+		};
 
 		const onWheel = (event: WheelEvent) => {
 			// Zoom and horizontal intent are not this column's business.
 			if (event.ctrlKey || event.deltaY === 0) return;
 			if (Math.abs(event.deltaX) > Math.abs(event.deltaY)) return;
-
-			const overflow = element.scrollHeight - element.clientHeight;
-			if (overflow <= 0) return;
+			if (maxScroll <= 0) return;
 
 			// Only the direction being asked for counts: at the bottom, an upward
 			// notch is still ours. `deltaMode` is irrelevant — only the sign is read.
-			const room =
-				event.deltaY > 0 ? overflow - element.scrollTop : element.scrollTop;
-			if (room <= 1) return;
-
-			event.stopPropagation();
-			// A frame ahead of the `scroll` event this notch is about to produce, so
-			// the first row to pass the cursor is already past hover.
-			markScrolling();
+			// A cached position can trail the live one by at most the frame in hand,
+			// and the only thing riding on that is which side of an end a single
+			// notch falls — never whether the queue moves.
+			const room = event.deltaY > 0 ? maxScroll - position : position;
+			if (room > 1) event.stopPropagation();
 		};
 
+		// Both run after layout, so `measure` is free from inside them. The column
+		// resizing covers the viewport; its children resizing covers a clip being
+		// promoted in or out of the queue, which is the only thing that changes how
+		// far it can scroll.
+		const resize = new ResizeObserver(measure);
+		const observeAll = () => {
+			resize.disconnect();
+			resize.observe(element);
+			for (const child of Array.from(element.children)) resize.observe(child);
+		};
+		const rows = new MutationObserver(observeAll);
+
+		measure();
+		observeAll();
+		rows.observe(element, { childList: true });
 		element.addEventListener("scroll", onScroll, { passive: true });
 		element.addEventListener("wheel", onWheel, { passive: true });
 
 		return () => {
 			window.clearTimeout(idleTimer);
+			resize.disconnect();
+			rows.disconnect();
 			element.removeEventListener("scroll", onScroll);
 			element.removeEventListener("wheel", onWheel);
 			delete element.dataset.scrolling;
