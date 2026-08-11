@@ -42,6 +42,22 @@ const MOUSE_NOTCH_DELTA = 90;
 const LINE_HEIGHT = 16;
 
 /**
+ * Momentum only ever decays; a tail event whose delta GROWS past the previous
+ * one by more than this jitter allowance is the user pushing again. That fresh
+ * input chains straight into the next section instead of being swallowed with
+ * the tail — waiting out a macOS momentum run before the page would listen
+ * again is what "the scroll has delay" was.
+ */
+const TAIL_GROWTH = 4;
+
+/** Tail deltas below this are noise, never a fresh push. */
+const TAIL_FLOOR = 12;
+
+/** Minimum ms between chained steps, so a hard wheel spin steps through
+ *  sections at a readable pace instead of teleporting across the page. */
+const CHAIN_COOLDOWN_MS = 160;
+
+/**
  * Wheel delta in PIXELS, whatever units the browser reports.
  *
  * Firefox sends mouse wheels as lines (`deltaMode` 1, `deltaY` 3) where Chrome
@@ -275,9 +291,21 @@ export function SectionScroll() {
 		let animating = false;
 		let settleTimer = 0;
 		let lastWheelAt = 0;
-		/** Set once a gesture has landed a section — its tail gets swallowed so
-		 *  one push moves one section however long the momentum runs on. */
+		/** Set once a gesture has landed a section — its momentum tail gets
+		 *  swallowed, but fresh input inside the tail chains the next step. */
 		let steppingGesture = false;
+		/** Whether the current gesture opened as a discrete mouse notch. */
+		let gestureIsMouse = false;
+		/** Where the running step animation is heading — chained steps resolve
+		 *  from here, not from wherever the document has scrolled to so far. */
+		let lastStepTarget = 0;
+		/** |delta| of the previous tail event, to tell a decaying momentum run
+		 *  from a fresh push that ramps up. */
+		let lastTailMagnitude = 0;
+		/** Fresh (growing) wheel travel accumulated inside a momentum tail. */
+		let tailDelta = 0;
+		/** No chained step before this timestamp. */
+		let chainReadyAt = 0;
 		/**
 		 * Wheel distance this gesture has asked for, in pixels.
 		 *
@@ -378,14 +406,65 @@ export function SectionScroll() {
 				}
 				event.preventDefault();
 				steppingGesture = true;
+				lastStepTarget = top;
+				tailDelta = 0;
+				lastTailMagnitude = Math.abs(pixelDelta(event));
+				chainReadyAt = now + CHAIN_COOLDOWN_MS;
 				run(top, STEP_DURATION);
 				return true;
 			};
 
 			if (!startsGesture) {
 				if (steppingGesture) {
-					// Already landed this gesture — swallow the momentum tail.
+					// A step has landed. The momentum tail is swallowed — but fresh
+					// input inside it must chain the next section, or the page ignores
+					// every scroll until the tail dies out, which reads as pure delay.
 					event.preventDefault();
+
+					const delta = pixelDelta(event);
+					const magnitude = Math.abs(delta);
+
+					const chain = () => {
+						if (now < chainReadyAt) return;
+						const top = stepTarget(
+							direction,
+							animating ? lastStepTarget : window.scrollY,
+						);
+						if (top === null) {
+							// Nothing to step to — a section taller than the viewport is
+							// read by scrolling through it. Hand the gesture back so the
+							// next events scroll natively instead of being swallowed.
+							if (!animating) {
+								steppingGesture = false;
+								gestureFreeScroll = true;
+								scheduleSettle();
+							}
+							return;
+						}
+						lastStepTarget = top;
+						tailDelta = 0;
+						chainReadyAt = now + CHAIN_COOLDOWN_MS;
+						run(top, STEP_DURATION);
+					};
+
+					if (gestureIsMouse) {
+						// Every further notch of a wheel spin is another deliberate step.
+						chain();
+					} else if (
+						magnitude > lastTailMagnitude + TAIL_GROWTH &&
+						magnitude > TAIL_FLOOR
+					) {
+						// Momentum only decays — a delta growing past the previous event
+						// is the user pushing again. Accumulate that fresh travel and
+						// step once it reads as intent, same bar as a first commit.
+						if (Math.sign(delta) !== Math.sign(tailDelta)) tailDelta = 0;
+						tailDelta += delta;
+						if (Math.abs(tailDelta) >= window.innerHeight * COMMIT_TRAVEL) {
+							chain();
+						}
+					}
+
+					lastTailMagnitude = magnitude;
 					return;
 				}
 				if (gestureFreeScroll) {
@@ -412,6 +491,7 @@ export function SectionScroll() {
 			// no gesture to follow, so it commits on the spot.
 			const isMouseNotch =
 				event.deltaMode !== 0 || Math.abs(gestureDelta) >= MOUSE_NOTCH_DELTA;
+			gestureIsMouse = isMouseNotch;
 			if (isMouseNotch) {
 				commit();
 				return;
