@@ -19,6 +19,13 @@ export type NavItem = {
 	/** Key under the "Nav" message namespace (e.g. Nav.writings). */
 	key: string;
 	/**
+	 * Key under "Nav" for the label the mega menu and the بڵاوکراوە dropdown
+	 * render (Nav.menu*). Deliberately separate from `key`: the menu uses short
+	 * catalogue names (نووسین) while other surfaces keep the long section title
+	 * (نووسینەکان), so renaming one must not silently rename the other.
+	 */
+	labelKey: string;
+	/**
 	 * Locale-RELATIVE route. The locale prefix is added by the locale-aware Link,
 	 * so paths here are unprefixed.
 	 */
@@ -38,6 +45,7 @@ export const NAV_DEFAULT_IMAGE = MENU_IMAGE("1.jpg");
 export const NAV_ITEMS: NavItem[] = [
 	{
 		key: "news",
+		labelKey: "menuNews",
 		href: "/news",
 		descriptionKey: "newsDescription",
 		imageSrc: MENU_IMAGE("2.jpg"),
@@ -51,6 +59,7 @@ export const NAV_ITEMS: NavItem[] = [
 	},
 	{
 		key: "projects",
+		labelKey: "menuProjects",
 		href: "/projects",
 		descriptionKey: "projectsDescription",
 		imageSrc: MENU_IMAGE("1.jpg"),
@@ -75,6 +84,7 @@ export const NAV_ITEMS: NavItem[] = [
 	},
 	{
 		key: "sound",
+		labelKey: "menuSound",
 		href: "/audio",
 		descriptionKey: "soundDescription",
 		imageSrc: MENU_IMAGE("3.jpg"),
@@ -86,6 +96,7 @@ export const NAV_ITEMS: NavItem[] = [
 	},
 	{
 		key: "video",
+		labelKey: "menuVideo",
 		href: "/videos",
 		descriptionKey: "videoDescription",
 		imageSrc: MENU_IMAGE("4.jpg"),
@@ -99,6 +110,7 @@ export const NAV_ITEMS: NavItem[] = [
 	},
 	{
 		key: "gallery",
+		labelKey: "menuGallery",
 		href: "/gallery",
 		descriptionKey: "galleryDescription",
 		imageSrc: MENU_IMAGE("5.jpg"),
@@ -110,6 +122,7 @@ export const NAV_ITEMS: NavItem[] = [
 	},
 	{
 		key: "writings",
+		labelKey: "menuWritings",
 		href: "/writings",
 		descriptionKey: "writingsDescription",
 		imageSrc: MENU_IMAGE("6.jpg"),
@@ -122,6 +135,7 @@ export const NAV_ITEMS: NavItem[] = [
 	},
 	{
 		key: "services",
+		labelKey: "menuServices",
 		href: "/services",
 		descriptionKey: "servicesDescription",
 		imageSrc: MENU_IMAGE("7.jpg"),
@@ -137,6 +151,7 @@ export const NAV_ITEMS: NavItem[] = [
 	},
 	{
 		key: "about",
+		labelKey: "menuAbout",
 		href: "/about",
 		descriptionKey: "aboutDescription",
 		imageSrc: MENU_IMAGE("7.jpg"),
@@ -145,6 +160,22 @@ export const NAV_ITEMS: NavItem[] = [
 			{ key: "aboutSubTeam", href: "/about" },
 			{ key: "aboutSubContact", href: "/contact" },
 		],
+	},
+	{
+		key: "contact",
+		labelKey: "menuContact",
+		href: "/contact",
+		descriptionKey: "contactDescription",
+		imageSrc: MENU_IMAGE("4.jpg"),
+		children: [],
+	},
+	{
+		key: "donate",
+		labelKey: "menuDonate",
+		href: "/donate",
+		descriptionKey: "donateDescription",
+		imageSrc: MENU_IMAGE("5.jpg"),
+		children: [],
 	},
 ];
 

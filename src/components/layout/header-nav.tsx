@@ -5,10 +5,7 @@ import { useTranslations } from "next-intl";
 import { useCallback, useRef, useState } from "react";
 import { LanguageSwitcher } from "@/components/layout/language-switcher";
 import { NAV_DRAWER_ID, NavDrawer } from "@/components/layout/nav-drawer";
-import { navLinkClass } from "@/components/layout/nav-styles";
 import { DrawnBorder } from "@/components/ui/drawn-border";
-import { SERVICES_HREF } from "@/config/site";
-import { Link } from "@/i18n/navigation";
 import { cn } from "@/lib/utils";
 
 const iconControlClass = cn(
@@ -21,8 +18,9 @@ const utilityTrayClass =
 type NavView = "nav" | "search";
 
 /**
- * Interactive header cluster: primary nav (about, services), utility group
- * (search, language), and the menu hamburger at the inline end.
+ * Interactive header cluster, pinned to the outer (physical right) edge of the
+ * bar: the search + language tray and the menu hamburger. Primary nav links are
+ * server-rendered in <Header/> — nothing here needs their markup.
  */
 export function HeaderNav() {
 	const t = useTranslations("Nav");
@@ -45,24 +43,6 @@ export function HeaderNav() {
 	return (
 		<>
 			<div className="flex items-center gap-2 sm:gap-3">
-				<nav
-					aria-label={t("primary")}
-					className="hidden items-center gap-0.5 sm:flex sm:gap-1"
-				>
-					<Link href="/about" className={navLinkClass}>
-						{t("us")}
-					</Link>
-
-					<Link href={SERVICES_HREF} className={navLinkClass}>
-						{t("services")}
-					</Link>
-				</nav>
-
-				<div
-					aria-hidden="true"
-					className="hidden h-6 w-px bg-border sm:block"
-				/>
-
 				<div className={cn(utilityTrayClass, "hidden sm:flex")}>
 					<button
 						type="button"

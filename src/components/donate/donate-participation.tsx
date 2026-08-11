@@ -9,12 +9,10 @@ import {
 	ScrollRevealBlock,
 	ScrollRevealItem,
 } from "@/components/motion/scroll-reveal";
+import { viewAllCtaClass } from "@/components/ui/cta-styles";
 import { DirectionalIcon } from "@/components/ui/directional-icon";
 import { Link } from "@/components/ui/link";
 import { cn } from "@/lib/utils";
-
-const viewAllClass =
-	"group/viewall relative inline-flex h-10 w-fit shrink-0 items-center gap-2.5 overflow-hidden border border-foreground px-5 font-heading text-small font-semibold text-foreground no-underline transition-[color,gap,box-shadow] duration-300 ease-out before:absolute before:inset-0 before:z-0 before:origin-bottom before:scale-y-0 before:bg-foreground before:transition-transform before:duration-300 before:ease-[cubic-bezier(0.22,1,0.36,1)] fine-hover:gap-3.5 fine-hover:text-primary-foreground fine-hover:shadow-[0_8px_24px_-12px_rgba(26,24,19,0.35)] fine-hover:before:scale-y-100 motion-reduce:before:transition-none motion-reduce:fine-hover:before:scale-y-100 motion-reduce:fine-hover:gap-2.5";
 
 type DonateParticipationProps = {
 	heading: string;
@@ -104,7 +102,7 @@ function PathCard({ label, body, cta, href }: PathCardProps) {
 		<article className="flex h-full flex-col border border-border bg-surface p-6 sm:p-8">
 			<p className="label font-medium text-muted">{label}</p>
 			<p className="mt-3 text-body leading-relaxed text-foreground">{body}</p>
-			<Link href={href} variant="nav" className={cn(viewAllClass, "mt-6")}>
+			<Link href={href} variant="nav" className={cn(viewAllCtaClass, "mt-6")}>
 				<span className="relative z-1">{cta}</span>
 				<DirectionalIcon
 					icon={ArrowRightIcon}

@@ -1,5 +1,9 @@
+"use client";
+
 import { PlayIcon } from "@heroicons/react/24/solid";
+import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 import NextImage from "next/image";
+import { useMemo, useState } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Link } from "@/components/ui/link";
 import { cn } from "@/lib/utils";
@@ -8,35 +12,81 @@ const imageEase = "ease-[cubic-bezier(0.25,0.46,0.45,0.94)]";
 
 /** Minimal shape the home video stage needs — fed from a `ResolvedVideoCard`. */
 export type HomeVideoCardItem = {
+	/**
+	 * Stable identity. NOT `id`: one video expands into several cards, one per
+	 * clip, and they all carry the parent's id — keying on it collapsed the
+	 * queue into duplicates and broke the swap.
+	 */
+	key: string;
 	id: number;
 	title: string;
 	subtitle: string | null;
 	durationLabel: string | null;
 	coverUrl: string | null;
 	coverAlt?: string | null;
+	/** Direct media URL. Without one the card can only link out. */
+	previewVideoUrl: string | null;
+	categoryLabel: string;
+	href: string;
 };
 
-type VideoCardProps = {
-	item: HomeVideoCardItem;
-	categoryLabel: string;
-	className?: string;
-};
+/** Square black play affordance — the same mark at both stage sizes. */
+function PlayMark({ size }: { size: "sm" | "lg" }) {
+	return (
+		<span
+			className={cn(
+				"inline-flex items-center justify-center bg-foreground text-white shadow-[0_6px_18px_-8px_rgba(0,0,0,0.8)]",
+				"transition-[transform,background-color] duration-300 ease-out",
+				"motion-reduce:transition-none",
+				size === "lg"
+					? "size-14 group-fine:scale-105 lg:size-18"
+					: "size-9 group-fine:scale-110",
+			)}
+		>
+			<PlayIcon
+				className={cn(
+					"translate-x-px",
+					size === "lg" ? "size-6 lg:size-7" : "size-4",
+				)}
+			/>
+		</span>
+	);
+}
 
 /**
- * The stage's hero cell — absolute-fills its (`relative`, sized) parent so the
- * cover keeps 16:9 on the grid and crops gently when the row height rules.
+ * The stage's hero cell. Nothing here navigates on its own: the cover plays the
+ * video IN PLACE, and only the title is a link out to the video's page — so a
+ * click on the artwork is never an accidental page change.
  */
-export function VideoCard({ item, categoryLabel, className }: VideoCardProps) {
+function StageHero({
+	item,
+	playing,
+	onPlay,
+}: {
+	item: HomeVideoCardItem;
+	playing: boolean;
+	onPlay: () => void;
+}) {
+	if (playing && item.previewVideoUrl) {
+		return (
+			<div className="absolute inset-0 bg-black">
+				{/* biome-ignore lint/a11y/useMediaCaption: archive clips ship without caption tracks */}
+				<video
+					key={item.key}
+					src={item.previewVideoUrl}
+					controls
+					autoPlay
+					playsInline
+					preload="metadata"
+					aria-label={item.title}
+					className="absolute inset-0 h-full w-full object-contain"
+				/>
+			</div>
+		);
+	}
+
 	return (
-		<Link
-			href={`/videos/${item.id}`}
-			variant="nav"
-			className={cn(
-				"group absolute inset-0 block h-full w-full overflow-hidden bg-surface no-underline",
-				className,
-			)}
-			aria-label={item.title}
-		>
+		<div className="group absolute inset-0 overflow-hidden bg-surface">
 			<div className="absolute inset-0 isolate overflow-hidden">
 				<div
 					className={cn(
@@ -53,7 +103,6 @@ export function VideoCard({ item, categoryLabel, className }: VideoCardProps) {
 							fill
 							sizes="(max-width: 1024px) 100vw, 62vw"
 							className="object-cover brightness-[0.78] contrast-[1.1] saturate-[0.65]"
-							priority={false}
 						/>
 					) : (
 						<div
@@ -81,42 +130,36 @@ export function VideoCard({ item, categoryLabel, className }: VideoCardProps) {
 				<Badge
 					variant="subtle"
 					size="sm"
-					className="w-fit border border-white/20 bg-white/10 text-white/90 transition-[background-color,border-color] duration-300 group-fine:border-white/35 group-fine:bg-white/20 motion-reduce:transition-none"
+					className="w-fit border border-white/20 bg-white/10 text-white/90"
 				>
-					{categoryLabel}
+					{item.categoryLabel}
 				</Badge>
 			</div>
 
-			<div
-				className="pointer-events-none absolute inset-0 z-10 flex items-center justify-center"
-				aria-hidden
+			{/* Fills the cell so the whole still is the play target. */}
+			<button
+				type="button"
+				onClick={onPlay}
+				disabled={!item.previewVideoUrl}
+				aria-label={item.title}
+				className="absolute inset-0 z-10 flex cursor-pointer items-center justify-center focus-visible:outline focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-white disabled:cursor-default"
 			>
-				<span
-					className={cn(
-						"inline-flex size-14 items-center justify-center rounded-pill bg-foreground/70 text-white backdrop-blur-[2px] lg:size-18",
-						"transition-[transform,background-color,opacity] duration-300",
-						"opacity-80 group-fine:scale-110 group-fine:bg-foreground/85 group-fine:opacity-100",
-						"motion-reduce:transition-none motion-reduce:group-fine:scale-100",
-					)}
-				>
-					<PlayIcon className="size-6 translate-x-0.5 lg:size-8" />
-				</span>
-			</div>
+				<PlayMark size="lg" />
+			</button>
 
-			<div className="absolute inset-x-0 bottom-0 z-10 flex items-end justify-between gap-4 p-4 sm:p-5 lg:p-6">
+			<div className="pointer-events-none absolute inset-x-0 bottom-0 z-20 flex items-end justify-between gap-4 p-4 sm:p-5 lg:p-6">
 				<div className="min-w-0 flex-1 text-start text-white">
-					<h3
-						className={cn(
-							"font-heading text-h2 font-semibold leading-snug text-balance lg:text-h1",
-							"transition-[text-decoration-color] duration-300",
-							"group-fine:underline group-fine:decoration-white/40 group-fine:underline-offset-4",
-							"motion-reduce:group-fine:no-underline",
-						)}
-					>
-						{item.title}
+					<h3 className="font-heading text-h2 font-semibold leading-snug text-balance lg:text-h1">
+						<Link
+							href={item.href}
+							variant="nav"
+							className="pointer-events-auto text-inherit no-underline hover:text-white! focus-visible:underline fine-hover:underline fine-hover:decoration-white/50 fine-hover:underline-offset-4"
+						>
+							{item.title}
+						</Link>
 					</h3>
 					{item.subtitle ? (
-						<p className="mt-1.5 line-clamp-2 text-small text-white/85 transition-opacity duration-300 group-fine:text-white/95 motion-reduce:transition-none">
+						<p className="mt-1.5 line-clamp-2 text-small text-white/85">
 							{item.subtitle}
 						</p>
 					) : null}
@@ -128,43 +171,44 @@ export function VideoCard({ item, categoryLabel, className }: VideoCardProps) {
 					</span>
 				) : null}
 			</div>
-		</Link>
+		</div>
 	);
 }
 
 /**
- * One line of the playlist column beside the hero. Rows are `flex-1` at `lg`
- * so the queue divides the hero's height evenly instead of leaving a gap under
- * the last item; `min-h` keeps them readable if the queue ever outgrows the
- * column (it then scrolls).
+ * One line of the queue beside the hero.
+ *
+ * The still is flush to the card — no inset, no rounding of its own — so it
+ * meets the frame on the same line the hero's cover does. The still swaps the
+ * clip onto the stage; the title is the only thing that leaves the page.
  */
-export function VideoPlaylistRow({
+function PlaylistRow({
 	item,
-	categoryLabel,
+	onActivate,
 	className,
 }: {
 	item: HomeVideoCardItem;
-	categoryLabel: string;
+	onActivate: () => void;
 	className?: string;
 }) {
 	return (
-		<Link
-			href={`/videos/${item.id}`}
-			variant="nav"
+		<article
 			className={cn(
-				"group relative flex min-w-0 items-center gap-3 border border-border/70 bg-surface/60 p-2 text-start no-underline sm:gap-4 sm:p-2.5",
+				"group relative flex min-h-20 min-w-0 items-stretch overflow-hidden border border-border/70 bg-surface/60 text-start sm:min-h-24",
 				"transition-[background-color,border-color,box-shadow] duration-300 ease-out",
 				"fine-hover:border-foreground/25 fine-hover:bg-surface fine-hover:shadow-[0_10px_28px_-18px_rgba(26,24,19,0.5)]",
-				"lg:min-h-0 lg:flex-1 lg:gap-4 lg:p-3",
+				"lg:min-h-0 lg:flex-1",
 				className,
 			)}
-			aria-label={item.title}
 		>
-			{/* The still always keeps 16:9 — a playlist reads as a stack of small
-			    screens. Beside the hero it takes its HEIGHT from the row (which the
-			    column divides evenly) and derives its width from that, so the queue
-			    can never outgrow the column and clip its last line. */}
-			<div className="relative aspect-video w-28 shrink-0 self-center overflow-hidden bg-surface sm:w-36 lg:h-full lg:w-auto">
+			<button
+				type="button"
+				onClick={onActivate}
+				disabled={!item.previewVideoUrl}
+				aria-label={item.title}
+				// The press registers instantly, before the stage has begun to change.
+				className="relative w-28 shrink-0 cursor-pointer self-stretch overflow-hidden bg-foreground/10 transition-transform duration-150 ease-out active:scale-[0.97] focus-visible:outline focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-ring motion-reduce:transition-none motion-reduce:active:scale-100 disabled:cursor-default sm:w-36 lg:w-44"
+			>
 				{item.coverUrl ? (
 					<NextImage
 						src={item.coverUrl}
@@ -174,7 +218,7 @@ export function VideoPlaylistRow({
 						className={cn(
 							"object-cover transition-[filter,scale] duration-[620ms]",
 							imageEase,
-							"brightness-[0.94] group-fine:scale-[1.05] group-fine:brightness-100",
+							"brightness-[0.9] group-fine:scale-[1.05] group-fine:brightness-100",
 							"motion-reduce:transition-none motion-reduce:group-fine:scale-100",
 						)}
 					/>
@@ -191,14 +235,9 @@ export function VideoPlaylistRow({
 
 				<span
 					aria-hidden
-					className={cn(
-						"pointer-events-none absolute inset-0 flex items-center justify-center bg-foreground/35 opacity-0",
-						"transition-opacity duration-300 ease-out group-fine:opacity-100 motion-reduce:transition-none",
-					)}
+					className="absolute inset-0 flex items-center justify-center bg-foreground/20 transition-colors duration-300 ease-out group-fine:bg-foreground/35 motion-reduce:transition-none"
 				>
-					<span className="inline-flex size-8 items-center justify-center rounded-pill bg-foreground/75 text-white">
-						<PlayIcon className="size-3.5 translate-x-px" />
-					</span>
+					<PlayMark size="sm" />
 				</span>
 
 				{item.durationLabel ? (
@@ -206,26 +245,179 @@ export function VideoPlaylistRow({
 						{item.durationLabel}
 					</span>
 				) : null}
-			</div>
+			</button>
 
-			<div className="flex min-w-0 flex-1 flex-col justify-center gap-1">
+			<div className="flex min-w-0 flex-1 flex-col justify-center gap-1 px-3 py-2 lg:px-4">
 				<p className="truncate text-label font-medium text-muted">
-					{categoryLabel}
+					{item.categoryLabel}
 				</p>
-				<h3
-					className={cn(
-						"line-clamp-2 font-heading text-small font-semibold leading-snug text-foreground sm:text-body",
-						"transition-[text-decoration-color] duration-300",
-						"group-fine:underline group-fine:decoration-foreground/30 group-fine:underline-offset-4",
-						"motion-reduce:group-fine:no-underline",
-					)}
-				>
-					{item.title}
+				<h3 className="line-clamp-2 font-heading text-small font-semibold leading-snug text-foreground sm:text-body">
+					<Link
+						href={item.href}
+						variant="nav"
+						className="text-inherit no-underline hover:text-foreground! fine-hover:underline fine-hover:decoration-foreground/30 fine-hover:underline-offset-4"
+					>
+						{item.title}
+					</Link>
 				</h3>
 				{item.subtitle ? (
 					<p className="line-clamp-1 text-label text-muted">{item.subtitle}</p>
 				) : null}
 			</div>
-		</Link>
+		</article>
+	);
+}
+
+/**
+ * The home video stage: one clip large, the rest queued beside it.
+ *
+ * Picking from the queue does NOT navigate — the chosen clip trades places with
+ * the one on stage and starts playing there. The hero crossfades while the
+ * queue re-flows around the gap with a layout animation, so the swap reads as
+ * one movement rather than two lists blinking.
+ */
+export function VideoStage({
+	items,
+	mobileQueueCount,
+}: {
+	items: HomeVideoCardItem[];
+	/** Queue lines that ride along when the column is stacked under the hero. */
+	mobileQueueCount: number;
+}) {
+	const byKey = useMemo(
+		() => new Map(items.map((item) => [item.key, item])),
+		[items],
+	);
+	const [order, setOrder] = useState(() => items.map((item) => item.key));
+	const [playingKey, setPlayingKey] = useState<string | null>(null);
+	const reduceMotion = useReducedMotion();
+
+	const hero = byKey.get(order[0]);
+	if (!hero) return null;
+
+	const queue = order
+		.slice(1)
+		.map((key) => byKey.get(key))
+		.filter((item): item is HomeVideoCardItem => Boolean(item));
+
+	const activate = (key: string) => {
+		setOrder((current) => {
+			const index = current.indexOf(key);
+			if (index <= 0) return current;
+			const next = [...current];
+			next[0] = current[index];
+			next[index] = current[0];
+			return next;
+		});
+		setPlayingKey(key);
+	};
+
+	/** House curve — a fast start that coasts into place. */
+	const ease = [0.22, 1, 0.36, 1] as const;
+	const queueTransition = reduceMotion
+		? { duration: 0 }
+		: { duration: 0.5, ease };
+
+	return (
+		<div className="overflow-hidden border border-border bg-border">
+			<div className="grid grid-cols-1 gap-px lg:h-[min(74svh,52rem)] lg:grid-cols-[minmax(0,1fr)_clamp(22rem,30vw,30rem)]">
+				<div className="relative aspect-video min-h-0 overflow-hidden lg:aspect-auto lg:h-full">
+					{/*
+					 * No `mode="wait"`. Waiting for the old clip to leave before the new
+					 * one arrives puts an empty frame between them, which reads as a cut
+					 * rather than a change. Both are absolutely positioned, so they can
+					 * occupy the cell together and genuinely cross-dissolve.
+					 *
+					 * The incoming clip settles in from slightly oversized while the
+					 * outgoing one recedes: the pair reads as one picture being replaced,
+					 * not two pictures blinking.
+					 */}
+					<AnimatePresence initial={false}>
+						<motion.div
+							key={hero.key}
+							className="absolute inset-0"
+							initial={reduceMotion ? false : { opacity: 0, scale: 1.07 }}
+							animate={{ opacity: 1, scale: 1 }}
+							exit={
+								reduceMotion
+									? { opacity: 0 }
+									: { opacity: 0, scale: 0.965, filter: "blur(6px)" }
+							}
+							transition={
+								reduceMotion
+									? { duration: 0 }
+									: {
+											duration: 0.62,
+											ease,
+											// The old clip clears quickly so it never muddies the
+											// new one; the new one takes its time arriving.
+											opacity: { duration: 0.34, ease: "easeOut" },
+										}
+							}
+						>
+							<StageHero
+								item={hero}
+								playing={playingKey === hero.key}
+								onPlay={() => setPlayingKey(hero.key)}
+							/>
+						</motion.div>
+					</AnimatePresence>
+				</div>
+
+				{queue.length > 0 ? (
+					<div className="flex min-h-0 flex-col bg-background lg:h-full">
+						<div className="flex min-h-0 flex-1 flex-col gap-2.5 overflow-y-auto p-3 lg:gap-3 lg:p-4">
+							{/* `layout` on every row so the ones that stay slide to their new
+							    place instead of jumping; the clip leaving for the stage and
+							    the one arriving from it trade in the same beat. */}
+							<AnimatePresence initial={false} mode="popLayout">
+								{queue.map((item, index) => (
+									<motion.div
+										key={item.key}
+										layout={!reduceMotion}
+										initial={
+											reduceMotion ? false : { opacity: 0, scale: 0.94, y: 8 }
+										}
+										// `popLayout` takes the leaving row out of flow, so it
+										// overlaps its replacement. Clear it out fast and hold the
+										// arrival back a beat, or both titles are legible at once
+										// and the slot turns to mush.
+										animate={{
+											opacity: 1,
+											scale: 1,
+											y: 0,
+											transition: reduceMotion
+												? { duration: 0 }
+												: { duration: 0.42, ease, delay: 0.12 },
+										}}
+										exit={
+											reduceMotion
+												? { opacity: 0 }
+												: {
+														opacity: 0,
+														scale: 0.92,
+														y: -8,
+														transition: { duration: 0.2, ease: "easeOut" },
+													}
+										}
+										transition={queueTransition}
+										className={cn(
+											"flex min-h-0 flex-col lg:flex-1",
+											index >= mobileQueueCount ? "max-lg:hidden" : "",
+										)}
+									>
+										<PlaylistRow
+											item={item}
+											onActivate={() => activate(item.key)}
+											className="lg:h-full"
+										/>
+									</motion.div>
+								))}
+							</AnimatePresence>
+						</div>
+					</div>
+				) : null}
+			</div>
+		</div>
 	);
 }

@@ -2,7 +2,10 @@
 
 import NextImage from "next/image";
 import { AudioPlayButton } from "@/components/audio/audio-play-button";
-import { usePlayer } from "@/components/audio/audio-player-context";
+import {
+	usePlayer,
+	usePlayerTime,
+} from "@/components/audio/audio-player-context";
 import { AudioWaveform } from "@/components/audio/audio-waveform";
 import {
 	ScrollReveal,
@@ -60,6 +63,52 @@ function visibilityClass(index: number): string {
 	if (index < 6) return "hidden sm:grid"; // 3 cols × 2 rows
 	if (index < 8) return "hidden lg:grid"; // 4 cols × 2 rows
 	return "hidden xl:grid"; // 5 cols × 2 rows
+}
+
+const WAVE_BAR_COUNT = 44;
+
+const waveClassName = "h-6 min-w-0 flex-1 sm:h-7";
+const idleBarClassName = "bg-primary-foreground/55";
+/** Elapsed fill. `accent` is the token reserved for player progress — the
+ *  deeper brand green loses too much contrast against the darkened sleeve. */
+const playedBarClassName = "bg-accent";
+
+/** Resting strip: no time subscription, so idle cards never re-render. */
+function AlbumWave({ seedId }: { seedId: number }) {
+	return (
+		<AudioWaveform
+			seedId={seedId}
+			barCount={WAVE_BAR_COUNT}
+			className={waveClassName}
+			barClassName={idleBarClassName}
+		/>
+	);
+}
+
+/**
+ * Elapsed-aware strip. Split into its own component and mounted ONLY for the
+ * album currently playing: `usePlayerTime` ticks 4×/sec, and subscribing every
+ * card in the grid would re-render the whole wall on every tick.
+ *
+ * Reads the CURRENT TRACK, exactly like the bottom bar's seek track — the two
+ * are the same playhead shown twice and have to agree. (Spreading the fill over
+ * the whole queue instead left a nearly finished track showing a sliver of
+ * green on a twenty-track album.) It carries on across track changes because
+ * the fill restarts with each new track, until the queue runs out.
+ */
+function PlayingAlbumWave({ seedId }: { seedId: number }) {
+	const { currentTime, duration } = usePlayerTime();
+
+	return (
+		<AudioWaveform
+			seedId={seedId}
+			barCount={WAVE_BAR_COUNT}
+			className={waveClassName}
+			barClassName={idleBarClassName}
+			playedBarClassName={playedBarClassName}
+			progress={duration > 0 ? currentTime / duration : 0}
+		/>
+	);
 }
 
 function SoundSectionCard({ item }: { item: SoundSectionCardItem }) {
@@ -120,21 +169,19 @@ function SoundSectionCard({ item }: { item: SoundSectionCardItem }) {
 				{/* Wave + play button, the same pairing the album page puts under its
 				    liner — shrunk to a control strip along the foot of the sleeve. */}
 				{item.queue.length > 0 ? (
-					<div className="absolute inset-x-0 bottom-0 z-2 flex items-center gap-2 p-2 sm:gap-2.5 sm:p-2.5">
+					// `dir-row-unmirrored`: transport controls read left-to-right in
+					// every locale — play first, then the strip it drives.
+					<div className="dir-row-unmirrored absolute inset-x-0 bottom-0 z-2 flex items-center gap-2 p-2 sm:gap-2.5 sm:p-2.5">
 						<AudioPlayButton
 							queue={item.queue}
 							size="overlay"
 							className="shrink-0"
 						/>
-						<AudioWaveform
-							seedId={item.id}
-							barCount={26}
-							className="h-6 min-w-0 flex-1 sm:h-7"
-							barClassName={cn(
-								"transition-colors duration-500 ease-out",
-								isActive ? "bg-accent" : "bg-primary-foreground/70",
-							)}
-						/>
+						{isActive ? (
+							<PlayingAlbumWave seedId={item.id} />
+						) : (
+							<AlbumWave seedId={item.id} />
+						)}
 					</div>
 				) : null}
 			</div>

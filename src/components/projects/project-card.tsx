@@ -59,11 +59,15 @@ export function ProjectCard({
 			<div className="flex flex-1 flex-col">
 				<Link href={href} className="group block no-underline">
 					<div className="relative">
+						{/* No fixed aspect: the frame takes the cover's own ratio, so a
+						    portrait book jacket stays whole instead of being cropped to
+						    4:3 — the card's height follows the artwork. */}
 						<ProjectCoverImage
 							src={item.image.url}
 							alt={item.image.alt ?? item.title}
 							priority={priority}
-							className="aspect-[4/3] w-full"
+							naturalRatio
+							className="w-full"
 							imageClassName="brightness-[0.92] contrast-[1.04] saturate-[0.88] transition-transform duration-[1.1s] ease-[cubic-bezier(0.25,0.46,0.45,0.94)] group-fine:scale-[1.03] motion-reduce:transition-none motion-reduce:group-fine:scale-100"
 						/>
 						<MediaKindBadge kind={coverKind} />

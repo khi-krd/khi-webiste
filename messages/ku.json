@@ -1,6 +1,18 @@
 {
 	"Nav": {
 		"brandAlt": "Enstîtuya Mîrateya Kurdî",
+		"brandNameCkb": "ئینستیتووتی کەلەپووری کوردی",
+		"brandNameKu": "Enstîtuya Mîrateya Kurdî",
+		"menuNews": "Nûçe",
+		"menuProjects": "Proje",
+		"menuSound": "Deng",
+		"menuVideo": "Deng û Reng",
+		"menuGallery": "Wêne",
+		"menuWritings": "Nivîs",
+		"menuServices": "Xizmet",
+		"menuAbout": "Em",
+		"menuContact": "Têkilî",
+		"menuDonate": "Hevkari",
 		"menuOpen": "Menûyê veke",
 		"menuClose": "Bigire",
 		"menuTitle": "Menûya malperê",
@@ -83,7 +95,9 @@
 		"aboutDescription": "Enstîtuya Mîrateya Kurdî — parastin, lêkolîn û belavkirina mîrateya Kurdî.",
 		"aboutSubMission": "Armanc û dîtbarî",
 		"aboutSubTeam": "Tîm",
-		"aboutSubContact": "Têkilî"
+		"aboutSubContact": "Têkilî",
+		"contactDescription": "Bi enstîtuyê re têkilî daynin — ofîsên Silêmanî û Dihokê, forma têkiliyê û tora civakî.",
+		"donateDescription": "Hevkarî û bexşîn — şandina arşîvê, piştgiriya darayî û parastina mîrateya kurdî."
 	},
 	"Footer": {
 		"newsletterEyebrow": "Agahdar bimîne",
@@ -633,7 +647,6 @@
 		}
 	},
 	"Video": {
-		"eyebrow": "Klîp & rêze",
 		"title": "Deng û Reng",
 		"description": "Rêzeyên klîp, dersên tomarkirî û tomarên wêneyî yên kurt — li ser bingeha mijaran têne rêzkirin.",
 		"viewAll": "Klîpan keşf bike",
@@ -774,9 +787,7 @@
 		}
 	},
 	"ImageCollection": {
-		"eyebrow": "Koleksiyona wêneyan",
-		"title": "Wêne, cil û mîrata dîtbarî ji Kurdistanê.",
-		"description": "Galeriyên bijartî yên mîmarî, tekstîl, arşîva malbatî û kariya destan.",
+		"title": "Wêne",
 		"viewAll": "Galeriyê bibîne"
 	},
 	"Hero": {

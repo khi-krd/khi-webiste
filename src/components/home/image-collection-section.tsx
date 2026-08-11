@@ -14,12 +14,7 @@ export async function ImageCollectionSection() {
 		>
 			<ImageCollectionShowcase
 				items={items}
-				copy={{
-					eyebrow: t("eyebrow"),
-					title: t("title"),
-					description: t("description"),
-					viewAll: t("viewAll"),
-				}}
+				copy={{ title: t("title"), viewAll: t("viewAll") }}
 			/>
 		</section>
 	);

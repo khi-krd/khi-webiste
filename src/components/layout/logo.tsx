@@ -6,8 +6,16 @@ import { cn } from "@/lib/utils";
 /**
  * Brand mark — links to the locale home. Server Component.
  *
- * Shows logo.png with the institute name in the active locale (Sorani on ckb,
- * Kurmanji on ku).
+ * Bilingual lockup: logo.png, then the institute name in Sorani with the
+ * Kurmanji name stacked directly under it. BOTH lines show in BOTH locales —
+ * it is one bilingual wordmark, not a translated string, so it must not switch
+ * with the active language.
+ *
+ * Geometry is physical, not logical, and therefore explicit: the mark always
+ * sits at the far LEFT with the name block to its right, in ckb (RTL) as well
+ * as ku (LTR). `dir-row-unmirrored` un-mirrors the row, and the name block runs
+ * `dir="ltr"` so `items-start` pins both lines flush left; each line then
+ * carries its own lang/dir so the Arabic-script line still shapes correctly.
  */
 export async function Logo({ className }: { className?: string } = {}) {
 	const t = await getTranslations("Nav");
@@ -17,7 +25,7 @@ export async function Logo({ className }: { className?: string } = {}) {
 			href="/"
 			aria-label={t("brandAlt")}
 			className={cn(
-				"inline-flex min-w-0 items-center gap-2.5 text-foreground sm:gap-3",
+				"dir-row-unmirrored inline-flex min-w-0 shrink-0 items-center gap-2.5 text-foreground sm:gap-3",
 				className,
 			)}
 		>
@@ -29,8 +37,27 @@ export async function Logo({ className }: { className?: string } = {}) {
 				className="size-11 shrink-0 sm:size-14"
 				priority
 			/>
-			<span className="hidden truncate font-heading text-body font-bold leading-tight sm:inline sm:text-title">
-				{t("brandAlt")}
+
+			<span
+				dir="ltr"
+				className="hidden min-w-0 flex-col items-start justify-center leading-[1.25] sm:flex"
+			>
+				<span
+					lang="ckb"
+					dir="rtl"
+					// Pinned to Vazirmatn rather than font-heading: on ku that token
+					// resolves to Clash Display, which has no Arabic glyphs.
+					className="whitespace-nowrap font-[family-name:var(--font-vazirmatn)] text-small font-bold lg:text-body"
+				>
+					{t("brandNameCkb")}
+				</span>
+				<span
+					lang="ku"
+					dir="ltr"
+					className="whitespace-nowrap font-heading text-small font-bold lg:text-body"
+				>
+					{t("brandNameKu")}
+				</span>
 			</span>
 		</Link>
 	);

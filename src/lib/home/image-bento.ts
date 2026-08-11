@@ -5,9 +5,15 @@ export const HOME_IMAGE_BENTO_COUNT = 15;
 export const HOME_IMAGE_BENTO_CELL_CLASS =
 	"relative aspect-square min-h-0 min-w-0";
 
-/** 3 rows × 5 columns — square cells span the full tray width. */
+/**
+ * 3 rows × 5 columns — square cells span the full tray width.
+ *
+ * Fewer columns on narrow screens. Five squares across a phone works out at
+ * about 60px a side, which is too small to read a photograph in; the collage
+ * keeps its full 5-up form from `lg`, where the layout is designed.
+ */
 export const HOME_IMAGE_BENTO_GRID_CLASS =
-	"grid w-full grid-cols-5 gap-1 sm:gap-1.5 lg:gap-2";
+	"grid w-full grid-cols-3 gap-1 sm:grid-cols-4 sm:gap-1.5 lg:grid-cols-5 lg:gap-2";
 
 /** Full-width collage inside the tray. */
 export const HOME_IMAGE_BENTO_GRID_WRAPPER_CLASS = "w-full";

@@ -44,6 +44,11 @@
 	/* Kurdish-identity green — calm, archival (flag green, desaturated to sit
 	   on the warm paper). Referenced ONLY via --color-accent below. */
 	--green-600: oklch(0.52 0.105 152); /* ≈ #2E7B4D */
+
+	/* Deep institute green. Authored as a literal hex, NOT an oklch ramp step:
+	   it is an exact brand value handed to us, so it must round-trip byte-for-
+	   byte rather than stay "tunable". Referenced ONLY via --color-brand below. */
+	--green-700: #1a563a; /* ≈ oklch(0.406 0.078 159) */
 }
 
 /* ----------------------------------------------------------------------------
@@ -77,6 +82,11 @@
 	   The single Kurdish accent color. Swappable via THIS ONE LINE — no
 	   component edits required. Used sparingly: player progress/visualizer. */
 	--color-accent: var(--green-600);
+
+	/* Interactive brand green — the ONE hover color across the site: nav
+	   underlines, the ئەرشیڤ/کتێبخانە boxes, publication menu rows and the
+	   "زیاتر" CTA fills. Text on top is always pure white (7.6:1 — WCAG AA ✓). */
+	--color-brand: var(--green-700);
 
 	/* Focus ring — ink for a strong, accessible outline on the cream canvas. */
 	--color-ring: var(--warm-900);
@@ -376,6 +386,12 @@ html[data-corners="rounded"]
 }
 .draw-border-host.bg-primary .draw-border {
 	color: var(--color-sunken); /* light stroke on ink fill — border-strong vanishes */
+}
+/* Header boxes (ئەرشیڤ / کتێبخانە): the stroke is only ever visible while the
+   trigger is hovered/focused, and by then the brand-green fill has landed
+   underneath it — so it traces in white, not border-strong. */
+.draw-border-host.nav-box .draw-border {
+	color: #fff;
 }
 :where([dir="rtl"]) .draw-border {
 	transform: scaleX(-1); /* origin → top-RIGHT, trace counter-clockwise (ckb) */
@@ -739,6 +755,32 @@ html[data-corners="rounded"]
 	}
 }
 
+/* A subtree can opt back into physical LTR (the audio player bar runs the
+   universal media-player layout in both locales). The rule above keys off ANY
+   rtl ancestor, so <html dir="rtl"> would keep flipping icons inside it —
+   this wins on specificity and restores them. Harmless on ku, where the
+   document is already ltr and the icons are unflipped anyway. */
+[dir="ltr"] .directional-flip {
+	scale: 1 1;
+}
+
+/* --- Un-mirrored flex row --------------------------------------------------
+   Opts a single flex row OUT of RTL mirroring, so its children keep the same
+   PHYSICAL left-to-right order in ckb and ku alike. Used by the header: the
+   brand lockup is pinned to the far left and the nav/utility cluster to the
+   far right in both locales, and inside the lockup the logo always precedes
+   the name block.
+
+   Same reasoning as .directional-flip above — `rtl:` is unusable because it
+   compiles to a language list containing :lang(ku), which would fire on the
+   LTR Kurmanji site. Only `dir` is authoritative.
+
+   Not in @layer components: it must outrank the `flex-row` utility a consumer
+   may also be carrying. */
+[dir="rtl"] .dir-row-unmirrored {
+	flex-direction: row-reverse;
+}
+
 /* --- Gallery hero: display headline + vertical marquee --------------------
    .display-title is the ink-on-paper sibling of .hero-slide-title — same
    fluid scale and per-script handling, minus the text-shadow (that shadow is
@@ -839,6 +881,17 @@ html[data-corners="rounded"]
 	);
 }
 
+/* Must come AFTER the rtl rule (same specificity, source order decides): inside
+   the ltr-locked player bar the input itself fills left-to-right, so the track
+   gradient has to as well or the fill runs opposite the thumb. */
+[dir="ltr"] .khi-audio-range::-webkit-slider-runnable-track {
+	background: linear-gradient(
+		to right,
+		var(--color-foreground) calc(var(--progress, 0) * 100%),
+		var(--color-border) calc(var(--progress, 0) * 100%)
+	);
+}
+
 .khi-audio-range::-webkit-slider-thumb {
 	-webkit-appearance: none;
 	appearance: none;
@@ -921,4 +974,15 @@ html[data-corners="rounded"]
 	body:has(main[data-snap-sections]) > footer {
 		scroll-snap-align: start;
 	}
+
+	/* <SectionScroll/> stamps data-section-scroll on <html> once it has taken the
+	   step over on fine pointers, animating it on the house easing instead of the
+	   browser's unstyleable ~250ms settle. Native snap must stand down there:
+	   two engines correcting the same scroll offset mid-animation stutter and
+	   fight. Touch and reduced-motion never set the attribute, so they keep the
+	   native behavior above. */
+	html[data-section-scroll]:has(main[data-snap-sections]) {
+		scroll-snap-type: none;
+	}
+
 }

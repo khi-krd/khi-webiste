@@ -1,6 +1,18 @@
 {
 	"Nav": {
 		"brandAlt": "ئینستیتووتی کەلەپووری کوردی",
+		"brandNameCkb": "ئینستیتووتی کەلەپووری کوردی",
+		"brandNameKu": "Enstîtuya Mîrateya Kurdî",
+		"menuNews": "هەواڵ",
+		"menuProjects": "پڕۆژە",
+		"menuSound": "دەنگ",
+		"menuVideo": "دەنگ و ڕەنگ",
+		"menuGallery": "وێنە",
+		"menuWritings": "نووسین",
+		"menuServices": "خزمەتگوزاری",
+		"menuAbout": "ئێمە",
+		"menuContact": "پەیوەندی",
+		"menuDonate": "هاوکاری",
 		"menuOpen": "کردنەوەی مێنیو",
 		"menuClose": "داخستن",
 		"menuTitle": "مێنیوی ماڵپەڕ",
@@ -83,7 +95,9 @@
 		"aboutDescription": "ئینستیتووی میراتی کوردی — پاراستن، لێکۆڵینەوە و بڵاوکردنەوەی میراتی کوردی.",
 		"aboutSubMission": "ئامانج و بینین",
 		"aboutSubTeam": "تیم",
-		"aboutSubContact": "پەیوەندی"
+		"aboutSubContact": "پەیوەندی",
+		"contactDescription": "پەیوەندی بە ئینستیتوو — ئۆفیسەکانی سلێمانی و دهۆک، فۆرمی پەیوەندی و تۆڕە کۆمەڵایەتییەکان.",
+		"donateDescription": "هاوکاری و بەخشین — سپاردنی ئەرشیڤ، پشتیوانیی دارایی و بەشداری لە پاراستنی میراتی کوردی."
 	},
 	"Footer": {
 		"newsletterEyebrow": "ئاگادار بمێنەوە",
@@ -633,7 +647,6 @@
 		}
 	},
 	"Video": {
-		"eyebrow": "ڤیدیۆ و زنجیرە",
 		"title": "دەنگ و ڕەنگ",
 		"description": "زنجیرەی klîp، وتارە تۆمارکراوەکان و تۆمارە کورتەکانی وێنەیی — بەپێی بابەت ڕێکخراون.",
 		"viewAll": "زیاتر",
@@ -774,9 +787,7 @@
 		}
 	},
 	"ImageCollection": {
-		"eyebrow": "کۆلێکشنەی وێنە",
-		"title": "وێنەگری، جل و میراتی بینراو لە سەرانسەری کوردستان.",
-		"description": "گالەریی هەڵبژێردراو لە تەلارسازی، قوماش، ئارشیڤی خێزانی و پیشەسازی دەستی.",
+		"title": "وێنە",
 		"viewAll": "زیاتر"
 	},
 	"Hero": {

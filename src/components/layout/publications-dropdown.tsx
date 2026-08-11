@@ -4,21 +4,25 @@ import { ChevronDownIcon } from "@heroicons/react/24/outline";
 import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 import { useTranslations } from "next-intl";
 import { useEffect, useId, useRef, useState } from "react";
-import { DrawnBorder } from "@/components/ui/drawn-border";
 import { NAV_ITEMS } from "@/config/site";
 import { Link } from "@/i18n/navigation";
 import { cn } from "@/lib/utils";
-import {
-	navTriggerLabelClass,
-	navTriggerClass as triggerClass,
-} from "./nav-styles";
+import { navDropdownTriggerClass, navUnderlineLabelClass } from "./nav-styles";
 
-/** Same catalogue entries as the hamburger menu — sound/video/writings/gallery. */
-const PUBLICATION_KEYS = ["sound", "video", "writings", "gallery"] as const;
+/**
+ * The catalogue, in the order the menu must read: دەنگ · دەنگ و ڕەنگ · وێنە ·
+ * نووسین. Route AND label both come from NAV_ITEMS, so this dropdown always
+ * names a section exactly as the hamburger menu does.
+ */
+const PUBLICATION_ORDER = ["sound", "video", "gallery", "writings"] as const;
 
-const PUBLICATION_ITEMS = PUBLICATION_KEYS.map((key) => {
+const PUBLICATION_ITEMS = PUBLICATION_ORDER.map((key) => {
 	const item = NAV_ITEMS.find((navItem) => navItem.key === key);
-	return { key, href: item?.href ?? "/" };
+	return {
+		key,
+		labelKey: item?.labelKey ?? key,
+		href: item?.href ?? "/",
+	};
 });
 
 const panelClassName =
@@ -61,10 +65,9 @@ export function PublicationsDropdown() {
 				aria-haspopup="menu"
 				aria-controls={menuId}
 				onClick={() => setOpen((current) => !current)}
-				className={triggerClass}
+				className={navDropdownTriggerClass}
 			>
-				<DrawnBorder />
-				<span className={navTriggerLabelClass}>{t("publications")}</span>
+				<span className={navUnderlineLabelClass}>{t("publications")}</span>
 				<ChevronDownIcon
 					className={cn(
 						"size-3.5 shrink-0 text-muted transition-transform duration-200",
@@ -91,15 +94,15 @@ export function PublicationsDropdown() {
 						transition={{ duration: reduceMotion ? 0 : 0.16, ease: "easeOut" }}
 						className={panelClassName}
 					>
-						{PUBLICATION_ITEMS.map(({ key, href }) => (
+						{PUBLICATION_ITEMS.map(({ key, labelKey, href }) => (
 							<li key={key} role="presentation">
 								<Link
 									href={href}
 									role="menuitem"
 									onClick={() => setOpen(false)}
-									className="flex w-full items-center px-3 py-2.5 text-start text-small font-normal text-muted transition-colors fine-hover:bg-sunken fine-hover:text-foreground"
+									className="flex w-full items-center px-3 py-2.5 text-start text-small font-normal text-muted transition-colors fine-hover:bg-brand fine-hover:text-white"
 								>
-									{t(key)}
+									{t(labelKey)}
 								</Link>
 							</li>
 						))}

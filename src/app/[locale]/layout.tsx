@@ -88,11 +88,13 @@ export default async function LocaleLayout({ children, params }: Props) {
 			dir={getDir(locale)}
 			data-script={isLatin ? "latin" : "arabic"}
 			{...getBorderRadiusHtmlAttrs()}
-			className={
-				isLatin
-					? `${archivo.variable} ${clashDisplay.variable}`
-					: vazirmatn.variable
-			}
+			// Vazirmatn ships on BOTH locales: the header wordmark always renders
+			// the Sorani institute name, and Archivo/Clash carry no Arabic glyphs,
+			// so ku would otherwise fall back to a random system Arabic face.
+			className={cn(
+				vazirmatn.variable,
+				isLatin && `${archivo.variable} ${clashDisplay.variable}`,
+			)}
 		>
 			<body
 				className={cn(

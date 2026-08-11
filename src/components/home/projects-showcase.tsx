@@ -5,6 +5,7 @@ import {
 	ScrollRevealBlock,
 	ScrollRevealItem,
 } from "@/components/motion/scroll-reveal";
+import { viewAllCtaClass } from "@/components/ui/cta-styles";
 import { DirectionalIcon } from "@/components/ui/directional-icon";
 import { Link } from "@/components/ui/link";
 import type { ProjectItem } from "@/lib/mock/projects";
@@ -56,9 +57,6 @@ function visibilityClass(index: number): string {
 	return "hidden xl:grid"; // 5 cols × 2 rows
 }
 
-const viewAllClass =
-	"group/viewall relative inline-flex h-10 w-fit shrink-0 items-center gap-2.5 overflow-hidden border border-foreground px-5 font-heading text-small font-semibold text-foreground no-underline transition-[color,gap,box-shadow] duration-300 ease-out before:absolute before:inset-0 before:z-0 before:origin-bottom before:scale-y-0 before:bg-foreground before:transition-transform before:duration-300 before:ease-[cubic-bezier(0.22,1,0.36,1)] fine-hover:gap-3.5 fine-hover:text-primary-foreground fine-hover:shadow-[0_8px_24px_-12px_rgba(26,24,19,0.35)] fine-hover:before:scale-y-100 motion-reduce:before:transition-none motion-reduce:fine-hover:before:scale-y-100 motion-reduce:fine-hover:gap-2.5";
-
 /**
  * Static two-row grid of project covers — no ticker, no auto-scroll, no drag.
  *
@@ -85,7 +83,7 @@ export function ProjectsShowcase({ projects, copy }: ProjectsShowcaseProps) {
 						{copy.title}
 					</h2>
 
-					<Link href="/projects" variant="nav" className={viewAllClass}>
+					<Link href="/projects" variant="nav" className={viewAllCtaClass}>
 						<span className="relative z-1">{copy.viewAll}</span>
 						<DirectionalIcon
 							icon={ArrowRightIcon}

@@ -214,7 +214,7 @@ function NavSecondaryPanel({
 					overlayTextShadow,
 				)}
 			>
-				{t(item.key)}
+				{t(item.labelKey)}
 			</Link>
 
 			{/* Section description — wired from Nav.{item}Description */}
@@ -227,32 +227,36 @@ function NavSecondaryPanel({
 				{t(item.descriptionKey)}
 			</p>
 
-			<div className="border-t border-primary-foreground/30 pt-5">
-				<h3 className="mb-2.5 text-label font-medium uppercase tracking-[0.08em] text-primary-foreground/80">
-					{t("secondaryLinkPrefix")}
-				</h3>
+			{/* Entries without sub-navigation (پەیوەندی، هاوکاری) would otherwise
+			    render a bare "لێکۆڵین" heading over an empty list. */}
+			{links.length > 0 && (
+				<div className="border-t border-primary-foreground/30 pt-5">
+					<h3 className="mb-2.5 text-label font-medium uppercase tracking-[0.08em] text-primary-foreground/80">
+						{t("secondaryLinkPrefix")}
+					</h3>
 
-				<ul className="flex flex-col">
-					{links.map((link) => (
-						<li
-							key={link.id}
-							className="border-b border-primary-foreground/15 last:border-b-0"
-						>
-							<Link
-								href={link.href}
-								variant="nav"
-								onClick={onNavigate}
-								className={cn(
-									"block py-2.5 text-small text-primary-foreground/80 hover:text-primary-foreground",
-									overlayTextShadow,
-								)}
+					<ul className="flex flex-col">
+						{links.map((link) => (
+							<li
+								key={link.id}
+								className="border-b border-primary-foreground/15 last:border-b-0"
 							>
-								{link.label}
-							</Link>
-						</li>
-					))}
-				</ul>
-			</div>
+								<Link
+									href={link.href}
+									variant="nav"
+									onClick={onNavigate}
+									className={cn(
+										"block py-2.5 text-small text-primary-foreground/80 hover:text-primary-foreground",
+										overlayTextShadow,
+									)}
+								>
+									{link.label}
+								</Link>
+							</li>
+						))}
+					</ul>
+				</div>
+			)}
 		</div>
 	);
 }
@@ -634,7 +638,9 @@ export function NavDrawer({
 																											primaryLabelRowClass
 																										}
 																									>
-																										<span>{t(item.key)}</span>
+																										<span>
+																											{t(item.labelKey)}
+																										</span>
 																										{!isActive && (
 																											<DirectionalIcon
 																												icon={ArrowRightIcon}
@@ -750,7 +756,7 @@ export function NavDrawer({
 																							<span
 																								className={primaryLabelRowClass}
 																							>
-																								<span>{t(item.key)}</span>
+																								<span>{t(item.labelKey)}</span>
 																								{!isActive && (
 																									<DirectionalIcon
 																										icon={ArrowRightIcon}

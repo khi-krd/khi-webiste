@@ -69,7 +69,16 @@ export function AudioPlayerBar() {
 					/>
 				</div>
 
+				{/* dir="ltr" in BOTH locales. A transport bar is not prose: artwork →
+				    title → transport → elapsed/seek/remaining → volume is the layout
+				    every media player uses, and mirroring it in ckb put the artwork
+				    on the right and ran the seek fill backwards under a thumb that
+				    still travelled left-to-right. Kurdish titles inside stay correct:
+				    an all-RTL string is one bidi run and shapes the same either way,
+				    it just sits flush against the artwork instead of drifting to the
+				    far side of its own box. */}
 				<div
+					dir="ltr"
 					className={cn(
 						homeInsetClass,
 						"flex h-16 items-center gap-3 sm:h-18 sm:gap-4",
