@@ -3,7 +3,7 @@
 import { PlayIcon } from "@heroicons/react/24/solid";
 import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 import NextImage from "next/image";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { type RefObject, useEffect, useMemo, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { Badge } from "@/components/ui/badge";
 import { Link } from "@/components/ui/link";
@@ -83,16 +83,31 @@ function StageHero({
 	item,
 	playing,
 	onPlay,
+	videoRef,
 }: {
 	item: HomeVideoCardItem;
 	playing: boolean;
 	onPlay: () => void;
+	/** The live player, shared with the stage so Space can reach it. */
+	videoRef: RefObject<HTMLVideoElement | null>;
 }) {
-	if (playing && item.previewVideoUrl) {
+	const live = playing && Boolean(item.previewVideoUrl);
+
+	// Focus follows the clip onto the stage. The player is what the user just
+	// asked for, so it should be what the keyboard is holding — Space then goes
+	// straight to the native controls instead of paging the document.
+	// `preventScroll` because taking focus must never move the page under them.
+	useEffect(() => {
+		if (!live) return;
+		videoRef.current?.focus({ preventScroll: true });
+	}, [live, videoRef]);
+
+	if (live && item.previewVideoUrl) {
 		return (
 			<div className="absolute inset-0 bg-black">
 				{/* biome-ignore lint/a11y/useMediaCaption: archive clips ship without caption tracks */}
 				<video
+					ref={videoRef}
 					key={item.key}
 					src={item.previewVideoUrl}
 					controls
@@ -443,8 +458,66 @@ export function VideoStage({
 	const inFlightRef = useRef(false);
 	/** The queue column scrolls itself, natively, with no state behind it. */
 	const queueScrollRef = useNativeQueueScroll();
+	/** The clip currently on stage, for the Space key below. */
+	const videoRef = useRef<HTMLVideoElement>(null);
 
 	useEffect(() => setMounted(true), []);
+
+	/**
+	 * Space belongs to the clip on stage, not to the page.
+	 *
+	 * Once a clip is playing, Space is a transport control: it pauses and it
+	 * resumes. Left to the document it scrolls instead, and on the home page a
+	 * scroll is a whole section change — so watching a clip and reaching for
+	 * pause threw the viewer off the video entirely.
+	 *
+	 * Only while the stage is actually on screen. Space has to go back to being
+	 * page-down once the viewer has moved on to another section, or a clip left
+	 * paused at the top of the page would hold the key hostage for the whole
+	 * document.
+	 */
+	useEffect(() => {
+		if (!playingKey) return;
+
+		const onKeyDown = (event: KeyboardEvent) => {
+			if (event.key !== " " && event.code !== "Space") return;
+			if (event.ctrlKey || event.metaKey || event.altKey) return;
+
+			const video = videoRef.current;
+			if (!video) return;
+
+			// The player already has it: the native controls toggle playback on
+			// Space themselves, and swallow the scroll while they do.
+			if (event.target === video) return;
+			// Anything else that answers to Space keeps it — a focused button is
+			// being pressed, a field is being typed into.
+			if (
+				event.target instanceof HTMLElement &&
+				event.target.closest(
+					"input, textarea, select, button, a, summary, [role='button'], [contenteditable=''], [contenteditable='true']",
+				)
+			) {
+				return;
+			}
+
+			// Off screen, or barely on it, Space is the page's again.
+			const box = video.getBoundingClientRect();
+			const onScreen =
+				Math.min(box.bottom, window.innerHeight) - Math.max(box.top, 0);
+			if (onScreen < box.height / 2) return;
+
+			event.preventDefault();
+			if (video.paused) {
+				// Autoplay policy can still refuse; nothing to do but leave it paused.
+				void video.play().catch(() => {});
+			} else {
+				video.pause();
+			}
+		};
+
+		window.addEventListener("keydown", onKeyDown);
+		return () => window.removeEventListener("keydown", onKeyDown);
+	}, [playingKey]);
 
 	const hero = byKey.get(order[0]);
 
@@ -582,6 +655,7 @@ export function VideoStage({
 								item={hero}
 								playing={playingKey === hero.key}
 								onPlay={() => setPlayingKey(hero.key)}
+								videoRef={videoRef}
 							/>
 						</motion.div>
 					</AnimatePresence>
@@ -593,11 +667,19 @@ export function VideoStage({
 							ref={queueScrollRef}
 							className={cn(
 								"flex min-h-0 flex-1 flex-col gap-2.5 overflow-y-auto p-3 lg:gap-3 lg:p-4",
-								// `overscroll-contain`: an end is an end. The wheel stops here
-								// instead of chaining into the page mid-flick. `scroll-auto`
-								// keeps the wheel on the browser's own 1:1 response — a smooth
-								// scroll-behavior would put an animation between notch and move.
-								"overscroll-contain scroll-auto",
+								// NOT `overscroll-contain`. The rows are `lg:flex-1`, so a short
+								// queue stretches to fill the column and never overflows — and
+								// `contain` still applies to a scroll container with nothing to
+								// scroll. It swallowed the wheel and refused to chain to the
+								// page, and the browser latches that for the whole gesture, so
+								// the page sat dead until the mouse moved and re-hit-tested.
+								// Propagation is handled per-notch in `useNativeQueueScroll`
+								// instead, which can tell "we have room" from "we are done".
+								//
+								// `scroll-auto` keeps the wheel on the browser's own 1:1
+								// response — a smooth scroll-behavior would put an animation
+								// between the notch and the movement.
+								"scroll-auto",
 								// Style and paint invalidation stay inside the column, so a long
 								// queue costs no more per frame than a short one.
 								"[contain:layout_paint]",
