@@ -225,6 +225,9 @@ function PlaylistRow({
 				"transition-[background-color,border-color,box-shadow] duration-300 ease-out",
 				"fine-hover:border-foreground/25 fine-hover:bg-surface fine-hover:shadow-[0_10px_28px_-18px_rgba(26,24,19,0.5)]",
 				"lg:min-h-0 lg:flex-1",
+				// A row repaints on its own account — a hover on one is never a reflow
+				// of the queue above it, however many rows are in the column.
+				"[contain:layout_paint]",
 				className,
 			)}
 		>
@@ -301,6 +304,94 @@ function PlaylistRow({
 	);
 }
 
+/** Wheel silence that ends a scroll, before hover is handed back. Long enough
+ *  to cover the gap between notches in a continuous flick, short enough that
+ *  the row under the cursor lights up as soon as the queue is at rest. */
+const SCROLL_IDLE_MS = 140;
+
+/**
+ * Native scrolling for the queue column, kept out of everything else's way.
+ *
+ * The queue scrolls itself — no wheel is ever translated into a scroll here.
+ * Two things are done around the browser's own scrolling, both by touching the
+ * DOM directly so a wheel never costs a React render:
+ *
+ *  - A wheel that the queue can actually consume stops propagating. The page's
+ *    <SectionScroll/> holds a NON-passive wheel listener on window, so every
+ *    notch over this column waited on a handler that walked the ancestor chain
+ *    through `getComputedStyle` before the queue was allowed to move. Stopping
+ *    the event at the container skips that work entirely; when the queue is at
+ *    an end the event is let through untouched, so the page steps its section
+ *    exactly as it does anywhere else.
+ *
+ *  - While the queue is moving, a flag on the container freezes hover inside
+ *    it. Scrolling drags rows under a stationary cursor, and every row that
+ *    passes it starts its own scale/brightness/shadow transitions — a dozen
+ *    animated filters on cover images is what turned a flick into a stutter.
+ *
+ * The listener is passive: nothing here ever calls `preventDefault`, so the
+ * scroll itself stays on the compositor.
+ */
+function useNativeQueueScroll() {
+	const ref = useRef<HTMLDivElement>(null);
+
+	useEffect(() => {
+		const element = ref.current;
+		if (!element) return;
+
+		let idleTimer = 0;
+
+		/** Flag on, idle countdown restarted. Written straight to the DOM: a wheel
+		 *  notch must never cost a render, and the flag is nothing React owns. */
+		const markScrolling = () => {
+			// Guarded — re-writing the same value would invalidate style again on
+			// every event of the gesture for no change at all.
+			if (element.dataset.scrolling === undefined) {
+				element.dataset.scrolling = "";
+			}
+			window.clearTimeout(idleTimer);
+			idleTimer = window.setTimeout(() => {
+				delete element.dataset.scrolling;
+			}, SCROLL_IDLE_MS);
+		};
+
+		// Covers every way the column moves — wheel, keys, a drag of the scrollbar.
+		const onScroll = markScrolling;
+
+		const onWheel = (event: WheelEvent) => {
+			// Zoom and horizontal intent are not this column's business.
+			if (event.ctrlKey || event.deltaY === 0) return;
+			if (Math.abs(event.deltaX) > Math.abs(event.deltaY)) return;
+
+			const overflow = element.scrollHeight - element.clientHeight;
+			if (overflow <= 0) return;
+
+			// Only the direction being asked for counts: at the bottom, an upward
+			// notch is still ours. `deltaMode` is irrelevant — only the sign is read.
+			const room =
+				event.deltaY > 0 ? overflow - element.scrollTop : element.scrollTop;
+			if (room <= 1) return;
+
+			event.stopPropagation();
+			// A frame ahead of the `scroll` event this notch is about to produce, so
+			// the first row to pass the cursor is already past hover.
+			markScrolling();
+		};
+
+		element.addEventListener("scroll", onScroll, { passive: true });
+		element.addEventListener("wheel", onWheel, { passive: true });
+
+		return () => {
+			window.clearTimeout(idleTimer);
+			element.removeEventListener("scroll", onScroll);
+			element.removeEventListener("wheel", onWheel);
+			delete element.dataset.scrolling;
+		};
+	}, []);
+
+	return ref;
+}
+
 /**
  * The home video stage: one clip large, the rest queued beside it.
  *
@@ -350,6 +441,8 @@ export function VideoStage({
 	 *  pre-render state, so guarding on the state alone lets the LAST one win —
 	 *  the ref makes it the first, which is the one the user aimed at. */
 	const inFlightRef = useRef(false);
+	/** The queue column scrolls itself, natively, with no state behind it. */
+	const queueScrollRef = useNativeQueueScroll();
 
 	useEffect(() => setMounted(true), []);
 
@@ -496,7 +589,24 @@ export function VideoStage({
 
 				{queue.length > 0 ? (
 					<div className="flex min-h-0 flex-col bg-background lg:h-full">
-						<div className="flex min-h-0 flex-1 flex-col gap-2.5 overflow-y-auto p-3 lg:gap-3 lg:p-4">
+						<div
+							ref={queueScrollRef}
+							className={cn(
+								"flex min-h-0 flex-1 flex-col gap-2.5 overflow-y-auto p-3 lg:gap-3 lg:p-4",
+								// `overscroll-contain`: an end is an end. The wheel stops here
+								// instead of chaining into the page mid-flick. `scroll-auto`
+								// keeps the wheel on the browser's own 1:1 response — a smooth
+								// scroll-behavior would put an animation between notch and move.
+								"overscroll-contain scroll-auto",
+								// Style and paint invalidation stay inside the column, so a long
+								// queue costs no more per frame than a short one.
+								"[contain:layout_paint]",
+								// Hover frozen for the length of a scroll (see
+								// `useNativeQueueScroll`). Non-layout properties only: flipping
+								// these invalidates style, never geometry.
+								"[&[data-scrolling]_*]:pointer-events-none [&[data-scrolling]_*]:transition-none",
+							)}
+						>
 							{/* `layout` on every row so the ones that stay slide to their new
 							    place instead of jumping; the clip leaving for the stage and
 							    the one arriving from it trade in the same beat. */}
