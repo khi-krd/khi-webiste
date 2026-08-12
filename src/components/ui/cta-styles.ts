@@ -41,3 +41,23 @@ export const viewAllCtaOnDarkClass = cn(
 	"focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-foreground",
 	"motion-reduce:before:transition-none motion-reduce:fine-hover:before:scale-y-100 motion-reduce:fine-hover:gap-2.5",
 );
+
+/**
+ * Same CTA sitting directly on a brand-green surface (the footer donate
+ * band): filling to `bg-brand` on hover — like the two variants above — would
+ * vanish into a green backdrop, so this wipes to white with brand-green text
+ * instead. Mechanics (wipe timing, gap growth, shadow lift) stay identical.
+ */
+export const viewAllCtaOnBrandClass = cn(
+	"group/viewall relative inline-flex h-10 w-fit shrink-0 items-center gap-2.5 overflow-hidden",
+	"border border-white/70 bg-white/10 px-5",
+	"font-heading text-small font-semibold text-white no-underline backdrop-blur-[2px]",
+	"transition-[color,gap,box-shadow,background-color,border-color] duration-300 ease-out",
+	"before:absolute before:inset-0 before:z-0 before:origin-bottom before:scale-y-0 before:bg-white",
+	"before:transition-transform before:duration-300 before:ease-[cubic-bezier(0.22,1,0.36,1)]",
+	"fine-hover:gap-3.5 fine-hover:border-white fine-hover:text-brand",
+	"fine-hover:shadow-[0_12px_36px_-14px_rgba(0,0,0,0.55)]",
+	"fine-hover:before:scale-y-100",
+	"focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white",
+	"motion-reduce:before:transition-none motion-reduce:fine-hover:before:scale-y-100 motion-reduce:fine-hover:gap-2.5",
+);

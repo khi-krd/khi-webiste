@@ -26,7 +26,6 @@ export type VideoCardProps = {
 	topicLabel?: string | null;
 	/** Timecode, e.g. "12:00" — rendered LTR. */
 	durationLabel: string | null;
-	yearLabel?: string | null;
 	memories?: boolean;
 	memoriesLabel?: string | null;
 	/** Override detail href (e.g. short-films route or clip deep-link). */
@@ -162,7 +161,6 @@ export function VideoCard({
 	typeLabel,
 	topicLabel,
 	durationLabel,
-	yearLabel,
 	memories = false,
 	memoriesLabel,
 	href,
@@ -274,7 +272,6 @@ export function VideoCard({
 				{subtitle ? (
 					<p className="text-small text-foreground/80">{subtitle}</p>
 				) : null}
-				{yearLabel ? <p className="label text-muted">{yearLabel}</p> : null}
 			</div>
 		</Link>
 	);

@@ -1,14 +1,10 @@
-import {
-	ArrowLeftIcon,
-	ArrowsPointingOutIcon,
-} from "@heroicons/react/24/outline";
+import { ArrowsPointingOutIcon } from "@heroicons/react/24/outline";
 import { getTranslations } from "next-intl/server";
 import {
 	ScrollReveal,
 	ScrollRevealItem,
 } from "@/components/motion/scroll-reveal";
 import { CoverLightbox } from "@/components/ui/cover-lightbox";
-import { DirectionalIcon } from "@/components/ui/directional-icon";
 import { Link } from "@/components/ui/link";
 import { RichText } from "@/components/ui/rich-text";
 import { TaxonomyBadgeLink } from "@/components/ui/taxonomy-badge-link";
@@ -164,26 +160,9 @@ export async function VideoDetailView({
 	return (
 		<article>
 			<ScrollReveal>
-				<div className={cn("pt-6 sm:pt-8", homeInsetClass)}>
-					<ScrollRevealItem className="mx-auto max-w-6xl">
-						<Link
-							href="/videos"
-							className="group inline-flex w-fit items-center gap-2 no-underline"
-						>
-							<DirectionalIcon
-								icon={ArrowLeftIcon}
-								className="size-4 text-muted transition-colors group-fine:text-foreground"
-							/>
-							<span className="label font-medium transition-colors group-fine:text-foreground">
-								{t("detail.back")}
-							</span>
-						</Link>
-					</ScrollRevealItem>
-				</div>
-
 				<ScrollRevealItem>
 					{/* Full-bleed sunken screening band: the player sits on a recessed stage. */}
-					<section className="mt-6 border-y border-border bg-sunken">
+					<section className="mt-6 border-y border-border bg-sunken sm:mt-8">
 						<div
 							className={cn("mx-auto max-w-6xl py-6 sm:py-8", homeInsetClass)}
 						>

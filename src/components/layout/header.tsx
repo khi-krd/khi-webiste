@@ -20,12 +20,12 @@ import { Link } from "@/i18n/navigation";
  *
  * Layout is PHYSICAL, not logical — the same geometry in ckb (RTL) and ku (LTR):
  *
- *   [logo · brand · ئێمە · خزمەتگوزارییەکان] … [کتێبخانە · ئەرشیڤ · بڵاوکراوە · ☰ · search|lang]
+ *   [logo · brand · ئێمە · خزمەتگوزارییەکان] … [کتێبخانە · ئەرشیڤ · بڵاوکراوە · search|lang · ☰]
  *
  * `dir-row-unmirrored` un-mirrors the three structural rows (the bar and its two
  * clusters) so those blocks never swap sides between locales. Everything nested
- * inside them keeps normal flow, so ckb still READS right-to-left: search/lang,
- * ☰, بڵاوکراوە, ئەرشیڤ, کتێبخانە … ئێمە, خزمەتگوزارییەکان, brand.
+ * inside them keeps normal flow, so ckb still READS right-to-left: ☰,
+ * search/lang, بڵاوکراوە, ئەرشیڤ, کتێبخانە … ئێمە, خزمەتگوزارییەکان, brand.
  *
  * Only ئەرشیڤ/کتێبخانە carry the drawn rectangle; بڵاوکراوە deliberately
  * shares the plain underline hover of ئێمە/خزمەتگوزارییەکان.

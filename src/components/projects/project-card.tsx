@@ -74,10 +74,8 @@ export function ProjectCard({
 					</div>
 
 					<div className="mt-5 flex flex-wrap items-center gap-2 sm:mt-6">
-						{(item.projectType || item.year) && (
-							<p className="label font-medium text-muted">
-								{[item.projectType, item.year].filter(Boolean).join(" · ")}
-							</p>
+						{item.projectType && (
+							<p className="label font-medium text-muted">{item.projectType}</p>
 						)}
 						{hasGallery && (
 							<span className="inline-flex items-center gap-1 label font-medium text-muted">

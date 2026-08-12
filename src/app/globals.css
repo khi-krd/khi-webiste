@@ -781,6 +781,81 @@ html[data-corners="rounded"]
 	flex-direction: row-reverse;
 }
 
+/* --- News detail spread: cover pinned physically left ----------------------
+   Same un-mirroring idea as .dir-row-unmirrored above (cover image always on
+   the physical left, article text always on the physical right, in ckb and
+   ku alike — an editorial layout choice, not a reading-direction one) but
+   this row is a stacked column below `lg` and only becomes a row at `lg` up.
+   Reusing the unconditional rule above would force row-reverse on the mobile
+   stack too, breaking it. Scoped to the same breakpoint as the `lg:flex-row`
+   utility it overrides; kept unlayered for the same reason: must outrank
+   that utility. */
+@media (min-width: 1024px) {
+	[dir="rtl"] .news-post-spread {
+		flex-direction: row-reverse;
+	}
+}
+
+/* --- Project detail spread: cover pinned physically left --------------------
+   Same physical-left cover / physical-right text choice as the news detail
+   spread above, and the same flex-direction technique — but the DOM order
+   here is TEXT then cover (the article has to lead in the DOM for mobile
+   stacking and screen readers), the reverse of the news spread's cover-then-
+   text order. Plain "row" already puts the first DOM child (text) at the
+   inline-start edge, which is physical LEFT in ku (ltr) — wrong, that's the
+   cover's spot — but physical RIGHT in ckb (rtl) — correct as-is. So unlike
+   the news spread, it's ltr that needs reversing here, not rtl.
+
+   (A tempting alternative — swap which grid column each item starts in,
+   instead of switching to flex — is a trap: column TRACK SIZES are
+   positional, not tied to the item placed there, so swapping only the
+   item↔column assignment hands the cover the wide `1fr` track and squeezes
+   the text into the narrow capped one. Flex avoids this because each item
+   carries its own sizing regardless of visual order.) */
+@media (min-width: 1024px) {
+	[dir="ltr"] .project-detail-spread {
+		flex-direction: row-reverse;
+	}
+}
+
+/* --- Footer donate band: mirrored diagonal seam ----------------------------
+   The green panel's clip-path and the photo's counter-skew are percentage /
+   angle values with no logical equivalent, so the seam has to be authored
+   twice — once per physical direction. Same reasoning as .directional-flip
+   above: Tailwind's `rtl:` compiles to a language list containing :lang(ku),
+   which is Latin/LTR here, so `dir` is the only reliable signal.
+
+   Default (unprefixed) rules are the ltr shape: the green panel sits on the
+   physical left, so its trailing (right) edge is the one cut inward. [dir=rtl]
+   mirrors both the cut and the skew for the panel sitting on the right.
+
+   The photo is skewed on its wrapper and counter-skewed on the <img> itself
+   (opposite equal angles on the same axis cancel exactly) — the wrapper's
+   overflow-hidden box becomes the visible parallelogram while the photo
+   content inside renders unskewed. The extra scale keeps the oversized image
+   covering the corners the parallelogram exposes beyond the wrapper's
+   un-transformed rectangle. */
+@media (min-width: 640px) {
+	.footer-donate-cut {
+		clip-path: polygon(0 0, 92% 0, 100% 100%, 0 100%);
+	}
+	.footer-donate-photo {
+		transform: skewX(6deg);
+	}
+	.footer-donate-photo > img {
+		transform: skewX(-6deg) scale(1.2);
+	}
+	[dir="rtl"] .footer-donate-cut {
+		clip-path: polygon(8% 0, 100% 0, 100% 100%, 0 100%);
+	}
+	[dir="rtl"] .footer-donate-photo {
+		transform: skewX(-6deg);
+	}
+	[dir="rtl"] .footer-donate-photo > img {
+		transform: skewX(6deg) scale(1.2);
+	}
+}
+
 /* --- Gallery hero: display headline + vertical marquee --------------------
    .display-title is the ink-on-paper sibling of .hero-slide-title — same
    fluid scale and per-script handling, minus the text-shadow (that shadow is

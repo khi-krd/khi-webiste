@@ -36,7 +36,6 @@ function toFilmItem(
 		subtitle: card.subtitle,
 		topicLabel: card.topicName ?? categoryLabel,
 		durationLabel: formatDuration(card.durationSeconds),
-		yearLabel: card.year ? String(card.year) : null,
 		coverUrl: card.coverUrl,
 	};
 }

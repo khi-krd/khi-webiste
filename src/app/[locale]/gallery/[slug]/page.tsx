@@ -57,7 +57,6 @@ export default async function GalleryPostPage({
 				})}
 				typeLabel={t(`posts.types.${detail.post.collectionType}`)}
 				dateLabel={formatPublishmentDate(locale, detail.post.publishmentDate)}
-				backLabel={t("post.back")}
 				locationLabel={t("post.location")}
 				collectedByLabel={t("post.collectedBy")}
 				tagsLabel={t("post.tags")}

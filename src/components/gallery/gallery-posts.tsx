@@ -39,7 +39,6 @@ type GalleryPostsProps = {
 const sliceEase = "ease-[cubic-bezier(0.22,1,0.36,1)]";
 
 function PostRow({ post }: { post: GalleryPostWithMeta }) {
-	const year = post.publishmentDate.slice(0, 4);
 	const stripItems = post.album.filter((item) => item.imageUrl).slice(0, 4);
 
 	return (
@@ -51,8 +50,6 @@ function PostRow({ post }: { post: GalleryPostWithMeta }) {
 						<span>{post.typeLabel}</span>
 						<span aria-hidden="true">·</span>
 						<span>{post.photosLabel}</span>
-						<span aria-hidden="true">·</span>
-						<span>{year}</span>
 						{post.topicName && (
 							<Badge variant="outline" size="sm" className="ms-1">
 								{post.topicName}

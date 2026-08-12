@@ -67,7 +67,6 @@ export async function LatestUpdates() {
 							>
 								{t("title")}
 							</h2>
-							<p className="mt-3 text-body text-muted">{t("description")}</p>
 						</div>
 
 						<Link href="/news" variant="nav" className={viewAllCtaClass}>

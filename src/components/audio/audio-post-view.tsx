@@ -1,5 +1,3 @@
-import { ArrowLeftIcon, ArrowRightIcon } from "@heroicons/react/24/outline";
-import NextImage from "next/image";
 import { getTranslations } from "next-intl/server";
 import { AudioAlbumVideo } from "@/components/audio/audio-album-video";
 import { AudioAttachmentSlider } from "@/components/audio/audio-attachment-slider";
@@ -9,10 +7,6 @@ import { AudioBrochures } from "@/components/audio/audio-brochures";
 import { AudioCard, type AudioCardProps } from "@/components/audio/audio-card";
 import { AudioPlayButton } from "@/components/audio/audio-play-button";
 import {
-	type AudioStat,
-	AudioStatsStrip,
-} from "@/components/audio/audio-stats-strip";
-import {
 	AudioTracklist,
 	type AudioTracklistLabels,
 } from "@/components/audio/audio-tracklist";
@@ -21,14 +15,14 @@ import {
 	ScrollReveal,
 	ScrollRevealItem,
 } from "@/components/motion/scroll-reveal";
+import { ProjectCoverImage } from "@/components/projects/project-cover-image";
 import { Badge } from "@/components/ui/badge";
 import { CoverLightbox } from "@/components/ui/cover-lightbox";
-import { DirectionalIcon } from "@/components/ui/directional-icon";
 import { Link } from "@/components/ui/link";
 import { RichText } from "@/components/ui/rich-text";
 import { TaxonomyBadgeLink } from "@/components/ui/taxonomy-badge-link";
+import { Link as NavLink } from "@/i18n/navigation";
 import { formatDuration, formatFileSize } from "@/lib/audio/format";
-import { audioDetailHref } from "@/lib/audio/resolve";
 import { soundTypeLabel } from "@/lib/audio/sound-types";
 import { homeInsetClass } from "@/lib/layout";
 import {
@@ -43,11 +37,10 @@ import type { ResolvedAudioCard, ResolvedAudioDetail } from "@/types/audio";
 type AudioPostViewProps = {
 	detail: ResolvedAudioDetail;
 	locale: string;
-	previous: ResolvedAudioCard | null;
-	next: ResolvedAudioCard | null;
 	related: ResolvedAudioCard[];
 };
 
+/** One entry in the liner-notes card — quiet label over a confident value. */
 function MetaCell({
 	label,
 	children,
@@ -58,66 +51,21 @@ function MetaCell({
 	return (
 		<div className="min-w-0 text-start">
 			<dt className="label font-medium text-muted">{label}</dt>
-			<dd className="mt-0.5 text-small leading-snug text-foreground">
+			<dd className="mt-1 text-small font-bold leading-relaxed text-foreground">
 				{children}
 			</dd>
 		</div>
 	);
 }
 
-function MetaRow({ children }: { children: React.ReactNode }) {
-	return (
-		<div className="grid grid-cols-1 gap-x-6 gap-y-3 border-b border-border py-3 sm:grid-cols-2 sm:gap-x-10 sm:py-3.5">
-			{children}
-		</div>
-	);
-}
-
-function AdjacentLink({
-	item,
-	label,
-	direction,
-}: {
-	item: ResolvedAudioCard;
-	label: string;
-	direction: "previous" | "next";
-}) {
-	const isNext = direction === "next";
-
-	return (
-		<Link
-			href={audioDetailHref(item.id)}
-			variant="nav"
-			className={cn(
-				"group flex flex-col gap-3 py-6 no-underline sm:py-8",
-				isNext &&
-					"items-end border-t border-border text-end sm:border-t-0 sm:border-s sm:ps-8",
-				!isNext && "items-start text-start sm:pe-8",
-			)}
-		>
-			<span className="label flex items-center gap-2 font-medium">
-				<DirectionalIcon
-					icon={isNext ? ArrowRightIcon : ArrowLeftIcon}
-					className="size-3.5"
-				/>
-				{label}
-			</span>
-			<span className="font-heading text-h3 font-bold text-foreground underline decoration-transparent decoration-2 underline-offset-4 transition-[text-decoration-color] duration-300 group-fine:decoration-current">
-				{item.title}
-			</span>
-		</Link>
-	);
-}
-
-function formatDate(locale: string, iso: string): string {
+/** ckb has no Intl data — ar-IQ is the closest match (Eastern Arabic digits). */
+function formatNumber(locale: string, value: number): string {
 	try {
-		return new Intl.DateTimeFormat(locale, {
-			year: "numeric",
-			month: "long",
-			day: "numeric",
-		}).format(new Date(iso));
+		return new Intl.NumberFormat(locale === "ckb" ? "ar-IQ" : locale, {
+			useGrouping: false,
+		}).format(value);
 	} catch {
-		return iso;
+		return String(value);
 	}
 }
 
@@ -142,8 +90,6 @@ function toAudioCardProps(
 			? t("card.instituteBadge")
 			: null,
 		durationLabel: formatDuration(card.totalDurationSeconds),
-		yearLabel:
-			card.publishmentYear != null ? String(card.publishmentYear) : null,
 		memories: card.albumOfMemories,
 		memoriesLabel: card.albumOfMemories ? t("memories.badge") : null,
 		queue: card.queue,
@@ -153,8 +99,6 @@ function toAudioCardProps(
 export async function AudioPostView({
 	detail,
 	locale,
-	previous,
-	next,
 	related,
 }: AudioPostViewProps) {
 	const t = await getTranslations("Audio");
@@ -166,59 +110,41 @@ export async function AudioPostView({
 	const isAlbum = detail.trackState === "MULTI";
 	const playLabel = isAlbum ? t("post.playAlbum") : t("post.playTrack");
 
-	const stats: AudioStat[] = [
-		detail.totalDurationSeconds != null &&
-			detail.totalDurationSeconds > 0 && {
-				key: "duration",
-				label: t("stats.duration"),
-				value: formatDuration(detail.totalDurationSeconds) ?? "",
-			},
-		detail.totalSizeBytes != null &&
-			detail.totalSizeBytes > 0 && {
-				key: "size",
-				label: t("stats.size"),
-				value: formatFileSize(detail.totalSizeBytes) ?? "",
-			},
-		detail.totalTracks != null && {
-			key: "tracks",
-			label: t("stats.tracks"),
-			value: String(detail.totalTracks),
-		},
-		detail.publishmentYear != null && {
-			key: "year",
-			label: t("stats.year"),
-			value: String(detail.publishmentYear),
-		},
-	].filter(Boolean) as AudioStat[];
+	const totalSizeLabel =
+		detail.totalSizeBytes != null && detail.totalSizeBytes > 0
+			? formatFileSize(detail.totalSizeBytes)
+			: null;
+	const totalDurationLabel =
+		detail.totalDurationSeconds != null && detail.totalDurationSeconds > 0
+			? formatDuration(detail.totalDurationSeconds)
+			: null;
+
+	// Hero fact pills — track count reads as a phrase, sizes stay Latin.
+	const statPills = [
+		detail.totalTracks != null &&
+			t("stats.trackCount", {
+				count: formatNumber(locale, detail.totalTracks),
+			}),
+		totalDurationLabel && `${t("stats.duration")} ${totalDurationLabel}`,
+		totalSizeLabel,
+	].filter(Boolean) as string[];
 
 	const tracklistLabels: AudioTracklistLabels = {
 		title: t("post.tracklist"),
+		count:
+			detail.totalTracks != null
+				? t("stats.trackCount", {
+						count: formatNumber(locale, detail.totalTracks),
+					})
+				: null,
+		totalSize: totalSizeLabel ? `${t("stats.size")} ${totalSizeLabel}` : null,
 		subheading:
 			isAlbum && detail.albumName
 				? detail.cdNumber != null
 					? `${detail.albumName} — ${t("post.cdNumber", { number: detail.cdNumber })}`
 					: detail.albumName
 				: null,
-		fileDetails: t("post.fileDetails"),
-		techSection: t("post.techSection"),
-		contentSection: t("post.contentSection"),
 		externalLink: t("post.externalLink"),
-		channelLabels: {
-			STEREO: t("channel.STEREO"),
-			MONO: t("channel.MONO"),
-		},
-		techLabels: {
-			fileFormat: t("tech.fileFormat"),
-			bitRate: t("tech.bitRate"),
-			sampleRate: t("tech.sampleRate"),
-			audioChannel: t("tech.audioChannel"),
-			size: t("tech.size"),
-			duration: t("tech.duration"),
-			form: t("tech.form"),
-			genre: t("tech.genre"),
-			recordingVenue: t("tech.recordingVenue"),
-			year: t("tech.year"),
-		},
 	};
 
 	const languageLabels = detail.contentLanguages.map((language) =>
@@ -261,83 +187,36 @@ export async function AudioPostView({
 
 	const relatedCards = related.map((card) => toAudioCardProps(card, t));
 
+	// Hashtag row under the description, set like the news article tags.
+	const tagsBlock =
+		detail.tags.length > 0 ? (
+			<div className="flex flex-wrap items-baseline gap-x-4 gap-y-2 text-start">
+				<span className="label shrink-0 font-medium text-muted">
+					{t("post.tags")}
+				</span>
+				{detail.tags.map((tag) => (
+					<NavLink
+						key={tag}
+						href={audioTagHref(tag)}
+						className="text-body font-bold text-brand no-underline transition-opacity fine-hover:opacity-75"
+					>
+						#{tag}
+					</NavLink>
+				))}
+			</div>
+		) : null;
+
 	return (
 		<article>
 			<div className={cn("pt-10 pb-12 sm:pt-12 sm:pb-16", homeInsetClass)}>
 				<ScrollReveal>
 					<ScrollRevealItem>
-						<Link
-							href="/audio"
-							className="group inline-flex w-fit items-center gap-2 no-underline"
-						>
-							<DirectionalIcon
-								icon={ArrowLeftIcon}
-								className="size-4 text-muted transition-colors group-fine:text-foreground"
-							/>
-							<span className="label font-medium transition-colors group-fine:text-foreground">
-								{t("post.back")}
-							</span>
-						</Link>
-					</ScrollRevealItem>
-
-					<ScrollRevealItem>
-						{/* Opened gatefold sleeve — one bordered spread: cover-art panel on
-						    the start side, liner panel (badges, title, credits, waveform
-						    grooves, play control) beside it. Album-of-Memories records keep
-						    the sepia mat inside the cover panel. */}
-						<div className="mt-8 grid overflow-hidden border border-border bg-surface sm:mt-10 lg:grid-cols-[minmax(0,26rem)_minmax(0,1fr)] xl:grid-cols-[minmax(0,30rem)_minmax(0,1fr)]">
-							<div className="border-b border-border bg-sunken lg:border-b-0 lg:border-e">
-								{detail.coverUrl ? (
-									<CoverLightbox
-										src={detail.coverUrl}
-										alt={detail.title}
-										caption={detail.title}
-										closeLabel={t("brochures.close")}
-									>
-										<div className={cn(detail.albumOfMemories && "p-3 sm:p-4")}>
-											<div
-												className={cn(
-													"relative aspect-square w-full overflow-hidden bg-sunken",
-													detail.albumOfMemories && "border border-border",
-												)}
-											>
-												<NextImage
-													src={detail.coverUrl}
-													alt=""
-													fill
-													priority
-													sizes="(max-width: 1024px) 100vw, 30rem"
-													className={cn(
-														"object-cover brightness-[0.94] saturate-[0.9]",
-														detail.albumOfMemories &&
-															"sepia-[0.3] contrast-[0.96]",
-													)}
-												/>
-											</div>
-										</div>
-									</CoverLightbox>
-								) : (
-									<div className={cn(detail.albumOfMemories && "p-3 sm:p-4")}>
-										<div
-											className={cn(
-												"relative aspect-square w-full overflow-hidden bg-sunken",
-												detail.albumOfMemories && "border border-border",
-											)}
-										>
-											<div
-												aria-hidden
-												className="flex h-full w-full items-center justify-center"
-											>
-												<span className="font-heading text-display font-bold text-foreground/10">
-													{detail.title.charAt(0)}
-												</span>
-											</div>
-										</div>
-									</div>
-								)}
-							</div>
-
-							<div className="flex min-w-0 flex-col p-6 sm:p-8 xl:p-10">
+						{/* Open hero — liner text (badges, title, album subtitle, fact
+						    pills, play row over waveform grooves) beside the record
+						    jacket, shown in full at its own ratio instead of a square
+						    crop. Album-of-Memories covers keep the sepia treatment. */}
+						<div className="grid items-center gap-8 lg:grid-cols-[minmax(0,1fr)_minmax(0,29rem)] lg:gap-10 xl:grid-cols-[minmax(0,1fr)_minmax(0,33rem)] xl:gap-14">
+							<div className="min-w-0 text-start">
 								<div className="flex flex-wrap items-center gap-2">
 									{detail.thisProjectOfInstitute ? (
 										<Badge variant="solid" size="sm">
@@ -363,126 +242,170 @@ export async function AudioPostView({
 
 								<h1
 									className={cn(
-										"display-title mt-5",
+										"display-title mt-4",
 										displayTitleSizeClass(detail.title),
 									)}
 								>
 									{detail.title}
 								</h1>
 
-								{hasCredits ? (
-									<p className="mt-3 text-lead text-foreground/80">
+								{detail.albumName ? (
+									<p className="mt-2 text-lead text-muted">
+										{t("post.albumSubtitle", { name: detail.albumName })}
+									</p>
+								) : hasCredits ? (
+									<p className="mt-2 text-lead text-foreground/80">
 										{[detail.reader, ...detail.directors]
 											.filter(Boolean)
 											.join(" · ")}
 									</p>
 								) : null}
 
-								{/* Grooves + needle: the waveform signature sits above the play
-								    control, pinned to the liner's foot on tall panels. */}
-								<div className="mt-8 border-t border-border pt-6 lg:mt-auto">
-									<AudioWaveform seedId={detail.id} barCount={96} />
-									{detail.queue.length > 0 ? (
+								{statPills.length > 0 ? (
+									<div className="mt-5 flex flex-wrap gap-2">
+										{statPills.map((pill) => (
+											<span
+												key={pill}
+												dir="auto"
+												className="rounded-md bg-sunken px-3.5 py-1.5 text-small font-semibold text-foreground tabular-nums"
+											>
+												{pill}
+											</span>
+										))}
+									</div>
+								) : null}
+
+								{detail.queue.length > 0 ? (
+									<div className="mt-7 flex items-center gap-4 sm:gap-5">
 										<AudioPlayButton
 											queue={detail.queue}
 											size="hero"
 											label={playLabel}
-											className="mt-6"
 										/>
-									) : null}
-								</div>
+										<AudioWaveform
+											seedId={detail.id}
+											barCount={72}
+											className="h-11 min-w-0 flex-1"
+											barClassName="bg-brand/40"
+										/>
+									</div>
+								) : null}
 							</div>
+
+							{/* Full jacket — natural ratio, click to enlarge. First on
+							    mobile so the artwork leads, beside the text from lg up. */}
+							<figure className="min-w-0 max-lg:order-first">
+								{detail.coverUrl ? (
+									<CoverLightbox
+										src={detail.coverUrl}
+										alt={detail.title}
+										caption={detail.title}
+										closeLabel={t("brochures.close")}
+									>
+										<div className="overflow-hidden rounded-md border border-border">
+											<ProjectCoverImage
+												src={detail.coverUrl}
+												alt={detail.title}
+												priority
+												naturalRatio
+												sizes="(max-width: 1024px) 100vw, 33rem"
+												imageClassName={
+													detail.albumOfMemories
+														? "sepia-[0.3] contrast-[0.96]"
+														: undefined
+												}
+											/>
+										</div>
+									</CoverLightbox>
+								) : (
+									<div
+										aria-hidden
+										className="flex aspect-[4/3] w-full items-center justify-center rounded-md border border-border bg-sunken"
+									>
+										<span className="font-heading text-display font-bold text-foreground/10">
+											{detail.title.charAt(0)}
+										</span>
+									</div>
+								)}
+							</figure>
 						</div>
 					</ScrollRevealItem>
 
 					{detail.description || hasMeta ? (
 						<ScrollRevealItem>
-							{/* Liner notes — description and credits fine print return to
-				    the full-width start-aligned flow beneath the sleeve. */}
-							<div className="mt-10 text-start sm:mt-12">
+							{/* Liner notes — the bio under an "about" heading + hairline
+							    rule, with the credits fine print collected on a recessed
+							    card beside it (below it on small screens). */}
+							<div className="mt-10 grid items-start gap-8 text-start sm:mt-12 lg:grid-cols-[minmax(0,1fr)_minmax(0,23rem)] lg:gap-10 xl:gap-12">
 								{detail.description ? (
-									<div className="audio-article-body max-w-prose">
-										<RichText
-											content={detail.description}
-											className="text-body leading-relaxed text-foreground/90"
-										/>
+									<div className="min-w-0">
+										<div className="flex items-center gap-3">
+											<h2 className="shrink-0 font-heading text-body font-bold text-foreground">
+												{t("post.about")}
+											</h2>
+											<span aria-hidden className="h-px flex-1 bg-border" />
+										</div>
+										<div className="audio-article-body max-w-prose pt-4">
+											<RichText
+												content={detail.description}
+												className="text-body leading-relaxed text-foreground/90"
+											/>
+										</div>
+										{tagsBlock ? (
+											<div className="mt-8 sm:mt-10">{tagsBlock}</div>
+										) : null}
 									</div>
 								) : null}
 
 								{hasMeta ? (
-									<dl
-										className={cn(
-											"border-t border-border",
-											detail.description && "mt-8",
-										)}
-									>
-										{detail.topicName || detail.terms ? (
-											<MetaRow>
-												{detail.topicName ? (
-													<MetaCell label={t("post.topic")}>
-														{detail.topicId != null ? (
-															<Link
-																href={audioTopicHref(detail.topicId)}
-																className="underline decoration-border underline-offset-2 transition-colors fine-hover:decoration-foreground"
-															>
-																{detail.topicName}
-															</Link>
-														) : (
-															detail.topicName
-														)}
-													</MetaCell>
-												) : null}
-												{detail.terms ? (
-													<MetaCell label={t("post.terms")}>
-														{detail.terms}
-													</MetaCell>
-												) : null}
-											</MetaRow>
+									<dl className="grid min-w-0 grid-cols-2 gap-x-5 gap-y-4 rounded-md bg-sunken p-5 sm:p-6">
+										{detail.topicName ? (
+											<MetaCell label={t("post.topic")}>
+												{detail.topicId != null ? (
+													<Link
+														href={audioTopicHref(detail.topicId)}
+														className="underline decoration-border underline-offset-2 transition-colors fine-hover:decoration-foreground"
+													>
+														{detail.topicName}
+													</Link>
+												) : (
+													detail.topicName
+												)}
+											</MetaCell>
 										) : null}
-										{detail.genre || detail.locations.length > 0 ? (
-											<MetaRow>
-												{detail.genre ? (
-													<MetaCell label={t("post.genre")}>
-														{detail.genre}
-													</MetaCell>
-												) : null}
-												{detail.locations.length > 0 ? (
-													<MetaCell label={t("post.locations")}>
-														{detail.locations.join(" · ")}
-													</MetaCell>
-												) : null}
-											</MetaRow>
+										{detail.genre ? (
+											<MetaCell label={t("post.genre")}>
+												{detail.genre}
+											</MetaCell>
 										) : null}
-										{detail.reader || detail.directors.length > 0 ? (
-											<MetaRow>
-												{detail.reader ? (
-													<MetaCell label={t("post.reader")}>
-														{detail.reader}
-													</MetaCell>
-												) : null}
-												{detail.directors.length > 0 ? (
-													<MetaCell label={t("post.directors")}>
-														{detail.directors.join(" · ")}
-													</MetaCell>
-												) : null}
-											</MetaRow>
+										{detail.terms ? (
+											<MetaCell label={t("post.terms")}>
+												{detail.terms}
+											</MetaCell>
+										) : null}
+										{detail.locations.length > 0 ? (
+											<MetaCell label={t("post.locations")}>
+												{detail.locations.join(" · ")}
+											</MetaCell>
+										) : null}
+										{detail.reader ? (
+											<MetaCell label={t("post.reader")}>
+												{detail.reader}
+											</MetaCell>
+										) : null}
+										{detail.directors.length > 0 ? (
+											<MetaCell label={t("post.directors")}>
+												{detail.directors.join(" · ")}
+											</MetaCell>
 										) : null}
 										{languageLabels.length > 0 ? (
-											<MetaRow>
-												<MetaCell label={t("post.languagesLabel")}>
-													{languageLabels.join(" · ")}
-												</MetaCell>
-											</MetaRow>
+											<MetaCell label={t("post.languagesLabel")}>
+												{languageLabels.join(" · ")}
+											</MetaCell>
 										) : null}
 									</dl>
 								) : null}
 							</div>
-						</ScrollRevealItem>
-					) : null}
-
-					{stats.length > 0 ? (
-						<ScrollRevealItem>
-							<AudioStatsStrip stats={stats} className="mt-10 sm:mt-12" />
 						</ScrollRevealItem>
 					) : null}
 
@@ -491,6 +414,7 @@ export async function AudioPostView({
 							fileRows={detail.fileRows}
 							queue={detail.queue}
 							labels={tracklistLabels}
+							fallbackThumbUrl={detail.coverUrl}
 							className="mt-10 sm:mt-12"
 						/>
 					</ScrollRevealItem>
@@ -591,89 +515,9 @@ export async function AudioPostView({
 						</ScrollRevealItem>
 					) : null}
 
-					{detail.tags.length > 0 || detail.keywords.length > 0 ? (
+					{!detail.description && tagsBlock ? (
 						<ScrollRevealItem>
-							<div className="mt-10 space-y-6 border-t border-border pt-8 text-start sm:mt-12">
-								{detail.tags.length > 0 ? (
-									<div>
-										<p className="label font-medium">{t("post.tags")}</p>
-										<div className="mt-3 flex flex-wrap gap-2">
-											{detail.tags.map((tag) => (
-												<TaxonomyBadgeLink
-													key={tag}
-													href={audioTagHref(tag)}
-													variant="outline"
-													size="sm"
-												>
-													{tag}
-												</TaxonomyBadgeLink>
-											))}
-										</div>
-									</div>
-								) : null}
-								{detail.keywords.length > 0 ? (
-									<div>
-										<p className="label font-medium">{t("post.keywords")}</p>
-										<div className="mt-3 flex flex-wrap gap-2">
-											{detail.keywords.map((keyword) => (
-												<TaxonomyBadgeLink
-													key={keyword}
-													href={audioTagHref(keyword)}
-													variant="subtle"
-													size="sm"
-												>
-													{keyword}
-												</TaxonomyBadgeLink>
-											))}
-										</div>
-									</div>
-								) : null}
-							</div>
-						</ScrollRevealItem>
-					) : null}
-
-					<ScrollRevealItem>
-						<footer className="mt-10 flex flex-wrap items-center justify-between gap-4 border-t border-border pt-6 text-start sm:mt-12">
-							<p className="text-label text-muted">
-								{t("post.published")}: {formatDate(locale, detail.createdAt)}
-								{detail.updatedAt !== detail.createdAt ? (
-									<>
-										{" · "}
-										{t("post.updated")}: {formatDate(locale, detail.updatedAt)}
-									</>
-								) : null}
-							</p>
-							<Link href="/audio" className="label font-medium no-underline">
-								{t("post.back")}
-							</Link>
-						</footer>
-					</ScrollRevealItem>
-
-					{previous || next ? (
-						<ScrollRevealItem>
-							<nav
-								aria-label={t("post.navLabel")}
-								className="mt-10 border-t border-border sm:mt-12"
-							>
-								<div className="grid sm:grid-cols-2">
-									{previous ? (
-										<AdjacentLink
-											item={previous}
-											label={t("post.previous")}
-											direction="previous"
-										/>
-									) : (
-										<div aria-hidden className="hidden sm:block" />
-									)}
-									{next ? (
-										<AdjacentLink
-											item={next}
-											label={t("post.next")}
-											direction="next"
-										/>
-									) : null}
-								</div>
-							</nav>
+							<div className="mt-10 sm:mt-12">{tagsBlock}</div>
 						</ScrollRevealItem>
 					) : null}
 

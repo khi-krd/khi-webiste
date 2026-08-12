@@ -10,7 +10,6 @@ export type FilmCardItem = {
 	subtitle: string | null;
 	topicLabel: string | null;
 	durationLabel: string | null;
-	yearLabel: string | null;
 	coverUrl: string | null;
 };
 
@@ -103,11 +102,6 @@ export function FilmCinemaHero({ item, featuredLabel }: FilmCinemaHeroProps) {
 						{item.durationLabel ? (
 							<span dir="ltr" className="tabular-nums">
 								{item.durationLabel}
-							</span>
-						) : null}
-						{item.yearLabel ? (
-							<span dir="ltr" className="tabular-nums">
-								{item.yearLabel}
 							</span>
 						) : null}
 					</div>

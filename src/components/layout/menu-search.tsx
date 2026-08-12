@@ -599,6 +599,7 @@ export function MenuSearch({ onBack, onNavigate }: MenuSearchProps) {
 						</h3>
 
 						<div
+							data-wheel-scrollable={isExpanded ? "" : undefined}
 							className={cn(
 								isExpanded &&
 									"min-h-0 flex-1 overflow-y-auto overscroll-contain",

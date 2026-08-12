@@ -7,9 +7,11 @@ import {
 	FooterRevealItem,
 } from "@/components/motion/scroll-reveal";
 import { Container } from "@/components/ui/container";
+import { viewAllCtaOnBrandClass } from "@/components/ui/cta-styles";
 import { DirectionalIcon } from "@/components/ui/directional-icon";
 import { Link } from "@/components/ui/link";
 import {
+	DONATE_HREF,
 	FOOTER_COLUMNS,
 	FOOTER_SOCIAL_LINKS,
 	type FooterLink,
@@ -18,6 +20,62 @@ import { cn } from "@/lib/utils";
 
 const footerCtaClass =
 	"group/footer-cta relative inline-flex h-11 w-fit shrink-0 items-center gap-2.5 overflow-hidden border border-primary-foreground/70 bg-primary-foreground/10 px-5 font-heading text-small font-semibold text-primary-foreground no-underline backdrop-blur-[2px] transition-[color,gap,box-shadow,background-color,border-color] duration-300 ease-out before:absolute before:inset-0 before:z-0 before:origin-bottom before:scale-y-0 before:bg-primary-foreground before:transition-transform before:duration-300 before:ease-[cubic-bezier(0.22,1,0.36,1)] fine-hover:gap-3.5 fine-hover:border-primary-foreground fine-hover:text-foreground fine-hover:shadow-[0_8px_24px_-12px_color-mix(in_oklch,var(--color-foreground)_55%,transparent)] fine-hover:before:scale-y-100 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-foreground motion-reduce:before:transition-none motion-reduce:fine-hover:before:scale-y-100 motion-reduce:fine-hover:gap-2.5";
+
+/** Placeholder archive photo — swap for a real institute/archive image. */
+const DONATE_IMAGE_SRC =
+	"https://images.unsplash.com/photo-1584967918940-a7d51b064268?w=1600&q=80";
+
+type FooterDonateBandProps = {
+	title: string;
+	description: string;
+	cta: string;
+};
+
+/**
+ * Full-bleed donate banner at the top of the footer: a slanted brand-green
+ * panel over a skewed archive photo. The seam mirrors by `dir` (see
+ * `.footer-donate-cut` / `.footer-donate-photo` in globals.css) — DOM order
+ * alone already flips the panel/photo sides correctly since `flex-row`
+ * follows the inline-start direction.
+ */
+function FooterDonateBand({ title, description, cta }: FooterDonateBandProps) {
+	return (
+		<section className="relative z-10 flex flex-col overflow-hidden bg-foreground sm:h-[30rem] sm:flex-row lg:h-[34rem]">
+			<div className="footer-donate-cut relative flex flex-col justify-center gap-5 bg-brand px-6 py-14 text-start sm:w-[54%] sm:px-10 sm:py-0 lg:px-16 xl:px-20">
+				<h2 className="max-w-lg text-balance font-heading text-[clamp(1.75rem,3.6vw,2.75rem)] font-bold leading-[1.2] text-white">
+					{title}
+				</h2>
+				<p className="max-w-md text-body leading-relaxed text-white/80">
+					{description}
+				</p>
+				<Link
+					href={DONATE_HREF}
+					variant="nav"
+					className={cn(viewAllCtaOnBrandClass, "mt-2")}
+				>
+					<span className="relative z-1">{cta}</span>
+					<DirectionalIcon
+						icon={ArrowRightIcon}
+						className="relative z-1 size-4"
+					/>
+				</Link>
+			</div>
+
+			<div className="relative h-56 sm:h-auto sm:flex-1">
+				<div className="footer-donate-photo absolute -inset-y-10 inset-x-10 overflow-hidden border border-primary-foreground/15 sm:-inset-y-14 sm:inset-x-16">
+					<NextImage
+						src={DONATE_IMAGE_SRC}
+						alt=""
+						fill
+						sizes="(min-width: 640px) 46vw, 100vw"
+						quality={75}
+						className="object-cover"
+					/>
+				</div>
+			</div>
+		</section>
+	);
+}
 
 type FooterNavPanelProps = {
 	index: string;
@@ -145,7 +203,13 @@ export async function Footer() {
 	];
 
 	return (
-		<footer className="relative overflow-hidden pt-20">
+		<footer className="relative overflow-hidden">
+			<FooterDonateBand
+				title={t("donateTitle")}
+				description={t("donateDescription")}
+				cta={t("donateCta")}
+			/>
+
 			<div
 				aria-hidden="true"
 				className="absolute inset-0 scale-125 saturate-150 contrast-125"
@@ -176,69 +240,7 @@ export async function Footer() {
 				<Container className="max-w-none">
 					<FooterReveal>
 						<FooterRevealItem>
-							<section className="grid gap-10 border-b border-primary-foreground/12 pb-12 lg:grid-cols-[minmax(0,1.15fr)_minmax(0,0.85fr)] lg:items-end lg:gap-16 lg:pb-14">
-								<div className="max-w-2xl">
-									<p className="label font-medium text-primary-foreground/55">
-										{t("newsletterEyebrow")}
-									</p>
-									<h2 className="mt-3 font-heading text-[clamp(2rem,4.1vw,3.25rem)] font-semibold leading-[1.05] text-balance text-primary-foreground">
-										{t("newsletterTitle")}
-									</h2>
-									<p className="mt-4 max-w-xl text-body leading-relaxed text-primary-foreground/72">
-										{t("newsletterDescription")}
-									</p>
-								</div>
-
-								<form
-									className="w-full max-w-xl lg:ms-auto lg:max-w-none"
-									action="#"
-									method="post"
-								>
-									<div
-										className={cn(
-											"flex flex-col gap-2 sm:flex-row sm:items-stretch sm:gap-0",
-											"sm:overflow-hidden sm:rounded-md sm:border sm:border-primary-foreground/22 sm:bg-primary-foreground/8 sm:backdrop-blur-[2px]",
-											"sm:transition-[border-color,background-color,box-shadow] sm:duration-300",
-											"sm:focus-within:border-primary-foreground/45 sm:focus-within:bg-primary-foreground/12",
-											"sm:focus-within:shadow-[0_0_0_1px_color-mix(in_oklch,var(--color-primary-foreground)_18%,transparent)]",
-										)}
-									>
-										<input
-											type="email"
-											name="email"
-											autoComplete="email"
-											placeholder={t("emailPlaceholder")}
-											aria-label={t("emailLabel")}
-											className={cn(
-												"h-12 w-full rounded-md bg-primary-foreground/10 px-4 text-body text-primary-foreground",
-												"border border-primary-foreground/22 placeholder:text-primary-foreground/45 outline-none",
-												"transition-[border-color,background-color] focus:border-primary-foreground/45 focus:bg-primary-foreground/14",
-												"sm:flex-1 sm:rounded-none sm:border-0 sm:bg-transparent sm:focus:border-0 sm:focus:bg-transparent",
-											)}
-										/>
-										<button
-											type="submit"
-											className={cn(
-												"inline-flex h-12 shrink-0 items-center justify-center gap-2 rounded-md px-6",
-												"border border-primary bg-primary font-heading text-small font-semibold text-primary-foreground",
-												"transition-[opacity,gap] duration-200 fine-hover:gap-3 fine-hover:opacity-92",
-												"focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-foreground/45 focus-visible:ring-offset-2 focus-visible:ring-offset-foreground",
-												"sm:rounded-none sm:border-0 sm:border-s sm:border-primary-foreground/15",
-											)}
-										>
-											{t("signUp")}
-											<DirectionalIcon
-												icon={ArrowRightIcon}
-												className="size-4 shrink-0"
-											/>
-										</button>
-									</div>
-								</form>
-							</section>
-						</FooterRevealItem>
-
-						<FooterRevealItem>
-							<section className="mt-12 text-primary-foreground lg:mt-14">
+							<section className="text-primary-foreground">
 								<div className="overflow-hidden border border-primary-foreground/14 bg-primary-foreground/4 backdrop-blur-[2px]">
 									<div className="grid lg:grid-cols-[minmax(0,20rem)_1fr] xl:grid-cols-[minmax(0,23rem)_1fr]">
 										<div className="flex flex-col justify-between gap-10 border-b border-primary-foreground/12 p-8 sm:p-9 lg:border-b-0 lg:border-e lg:p-10">

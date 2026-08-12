@@ -10,17 +10,6 @@ type ProjectDetailPageProps = {
 	params: Promise<{ locale: string; id: string }>;
 };
 
-function formatProjectDate(locale: string, isoDate: string | null) {
-	if (!isoDate) return null;
-	try {
-		return new Intl.DateTimeFormat(locale, { dateStyle: "long" }).format(
-			new Date(isoDate),
-		);
-	} catch {
-		return isoDate;
-	}
-}
-
 export async function generateMetadata({
 	params,
 }: ProjectDetailPageProps): Promise<Metadata> {
@@ -50,16 +39,13 @@ export default async function ProjectDetailPage({
 		<main className="bg-background">
 			<ProjectDetailView
 				detail={detail}
-				backLabel={t("detail.back")}
+				locale={locale}
 				typeLabel={t("detail.type")}
 				statusLabel={t("detail.status")}
 				dateLabel={t("detail.date")}
 				tagsLabel={t("detail.tags")}
 				contentLabel={t("detail.content")}
 				galleryLabel={t("detail.gallery")}
-				navLabel={t("detail.navLabel")}
-				previousLabel={t("detail.previous")}
-				nextLabel={t("detail.next")}
 				lightboxCloseLabel={t("detail.lightboxClose")}
 				statusLabels={{
 					ACTIVE: t("detail.statusValues.ACTIVE"),
@@ -67,7 +53,6 @@ export default async function ProjectDetailPage({
 					COMPLETED: t("detail.statusValues.COMPLETED"),
 					ARCHIVED: t("detail.statusValues.ARCHIVED"),
 				}}
-				formattedDate={formatProjectDate(locale, detail.projectDate)}
 			/>
 		</main>
 	);

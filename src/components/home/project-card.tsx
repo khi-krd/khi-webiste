@@ -38,10 +38,12 @@ export function ProjectCard({ item, className }: ProjectCardProps) {
 			aria-label={item.title}
 		>
 			<div className="relative min-h-0 w-full flex-1 overflow-hidden bg-sunken">
-				{/* `object-contain`: two rows inside one viewport makes the cells
-				    landscape, and `cover` would slice the top and foot off every
-				    portrait book cover. Contain shows each cover whole, at its own
-				    proportions, filling the cell edge to edge. */}
+				{/* `object-cover object-top`: two rows inside one viewport makes the
+				    cells landscape, and a portrait cover under `contain` left empty
+				    margins down both sides of the cell. `cover` fills the cell edge
+				    to edge instead, cropping height rather than padding width;
+				    `object-top` keeps the crop on the foot of the cover, where a
+				    jacket's title and art almost never are. */}
 				<div
 					className={cn(
 						"absolute inset-0 origin-center",
@@ -55,7 +57,7 @@ export function ProjectCard({ item, className }: ProjectCardProps) {
 						alt={item.image.alt ?? item.title}
 						fill
 						sizes="(max-width: 640px) 46vw, (max-width: 1024px) 31vw, (max-width: 1280px) 23vw, 19vw"
-						className="object-contain"
+						className="object-cover object-top"
 					/>
 				</div>
 			</div>

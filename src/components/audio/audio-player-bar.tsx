@@ -10,11 +10,11 @@ import {
 import { PauseIcon, PlayIcon } from "@heroicons/react/24/solid";
 import NextImage from "next/image";
 import { useTranslations } from "next-intl";
+import type { ComponentProps } from "react";
 import {
 	usePlayer,
 	usePlayerTime,
 } from "@/components/audio/audio-player-context";
-import { DirectionalIcon } from "@/components/ui/directional-icon";
 import { Link } from "@/components/ui/link";
 import { formatDuration } from "@/lib/audio/format";
 import { homeInsetClass } from "@/lib/layout";
@@ -24,6 +24,53 @@ import { cn } from "@/lib/utils";
 
 const controlButtonClass =
 	"inline-flex size-9 shrink-0 items-center justify-center rounded-md text-foreground transition-colors fine-hover:bg-sunken focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring";
+
+/**
+ * Skip-track glyphs (triangle + bar) — NOT `BackwardIcon`/`ForwardIcon`
+ * (Heroicons' double-triangle rewind/fast-forward pair, which reads as a
+ * seek-by-seconds control and backs the ±5s buttons instead). These buttons
+ * jump the queue, so they get the standard "previous/next track" glyph
+ * instead. Always physical LTR — like
+ * the transport bar itself, previous/next follow universal media-player
+ * convention, not reading direction, so there's no DirectionalIcon flip.
+ */
+function PreviousTrackIcon(props: ComponentProps<"svg">) {
+	return (
+		<svg
+			xmlns="http://www.w3.org/2000/svg"
+			viewBox="0 0 24 24"
+			fill="none"
+			stroke="currentColor"
+			strokeWidth={1.5}
+			strokeLinecap="round"
+			strokeLinejoin="round"
+			aria-hidden="true"
+			{...props}
+		>
+			<line x1="5.5" y1="5" x2="5.5" y2="19" />
+			<polygon points="18.5,5 18.5,19 7,12" />
+		</svg>
+	);
+}
+
+function NextTrackIcon(props: ComponentProps<"svg">) {
+	return (
+		<svg
+			xmlns="http://www.w3.org/2000/svg"
+			viewBox="0 0 24 24"
+			fill="none"
+			stroke="currentColor"
+			strokeWidth={1.5}
+			strokeLinecap="round"
+			strokeLinejoin="round"
+			aria-hidden="true"
+			{...props}
+		>
+			<polygon points="5.5,5 5.5,19 17,12" />
+			<line x1="18.5" y1="5" x2="18.5" y2="19" />
+		</svg>
+	);
+}
 
 /**
  * Persistent SoundCloud-style bottom bar. Renders nothing until a queue is
@@ -79,10 +126,7 @@ export function AudioPlayerBar() {
 				    far side of its own box. */}
 				<div
 					dir="ltr"
-					className={cn(
-						homeInsetClass,
-						"flex h-16 items-center gap-3 sm:h-18 sm:gap-4",
-					)}
+					className={cn(homeInsetClass, "flex h-16 items-center gap-3 sm:h-18")}
 				>
 					<div className="relative size-11 shrink-0 overflow-hidden border border-border bg-sunken sm:size-12">
 						{current.coverUrl ? (
@@ -96,7 +140,7 @@ export function AudioPlayerBar() {
 						) : null}
 					</div>
 
-					<div className="min-w-0 flex-1 md:w-56 md:flex-none">
+					<div className="min-w-0 flex-1 md:w-fit md:max-w-48 md:flex-none">
 						<Link
 							href={current.href}
 							variant="nav"
@@ -116,7 +160,15 @@ export function AudioPlayerBar() {
 							aria-label={t("previous")}
 							className={controlButtonClass}
 						>
-							<DirectionalIcon icon={BackwardIcon} className="size-4" />
+							<PreviousTrackIcon aria-hidden className="size-4" />
+						</button>
+						<button
+							type="button"
+							onClick={() => actions.seek(Math.max(0, currentTime - 5))}
+							aria-label={t("rewind")}
+							className={cn(controlButtonClass, "hidden sm:inline-flex")}
+						>
+							<BackwardIcon aria-hidden className="size-4" />
 						</button>
 						<button
 							type="button"
@@ -136,11 +188,25 @@ export function AudioPlayerBar() {
 						</button>
 						<button
 							type="button"
+							onClick={() =>
+								actions.seek(
+									duration > 0
+										? Math.min(duration, currentTime + 5)
+										: currentTime + 5,
+								)
+							}
+							aria-label={t("forward")}
+							className={cn(controlButtonClass, "hidden sm:inline-flex")}
+						>
+							<ForwardIcon aria-hidden className="size-4" />
+						</button>
+						<button
+							type="button"
 							onClick={actions.next}
 							aria-label={t("next")}
 							className={controlButtonClass}
 						>
-							<DirectionalIcon icon={ForwardIcon} className="size-4" />
+							<NextTrackIcon aria-hidden className="size-4" />
 						</button>
 					</div>
 

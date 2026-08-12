@@ -547,6 +547,7 @@ export function NavDrawer({
 											) : (
 												<motion.div
 													key="nav"
+													data-wheel-scrollable=""
 													className="flex min-h-0 flex-1 flex-col overflow-x-hidden overflow-y-auto"
 													{...contentMotion}
 													transition={{
@@ -665,6 +666,7 @@ export function NavDrawer({
 																		activeItem && (
 																			<motion.div
 																				key={`mobile-panel-${activeItem.key}`}
+																				data-wheel-scrollable=""
 																				className="absolute inset-0 flex flex-col overflow-y-auto"
 																				initial={panelSlideInitial}
 																				animate={{ opacity: 1, x: 0 }}

@@ -23,7 +23,6 @@ type GalleryPostViewProps = {
 	typeLabel: string;
 	/** publishmentDate formatted for the active locale (built in the page). */
 	dateLabel?: string;
-	backLabel: string;
 	locationLabel: string;
 	collectedByLabel: string;
 	tagsLabel: string;
@@ -99,7 +98,6 @@ export function GalleryPostView({
 	photosLabel,
 	typeLabel,
 	dateLabel,
-	backLabel,
 	locationLabel,
 	collectedByLabel,
 	tagsLabel,
@@ -122,21 +120,8 @@ export function GalleryPostView({
 			<ScrollRevealBlock
 				className={cn("pt-8 pb-5 sm:pt-10 lg:pb-6", homeInsetClass)}
 			>
-				<Link
-					href="/gallery"
-					className="group inline-flex w-fit items-center gap-2 no-underline"
-				>
-					<DirectionalIcon
-						icon={ArrowLeftIcon}
-						className="size-4 text-muted transition-colors group-fine:text-foreground"
-					/>
-					<span className="label font-medium transition-colors group-fine:text-foreground">
-						{backLabel}
-					</span>
-				</Link>
-
 				{/* Catalog spread: typographic header start, offset cover plate end. */}
-				<div className="mt-8 grid gap-8 lg:grid-cols-[minmax(0,7fr)_minmax(0,5fr)] lg:gap-16">
+				<div className="grid gap-8 lg:grid-cols-[minmax(0,7fr)_minmax(0,5fr)] lg:gap-16">
 					<div>
 						<p className="label flex flex-wrap items-center gap-2 font-medium text-foreground">
 							<span>{typeLabel}</span>

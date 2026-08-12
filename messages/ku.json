@@ -100,12 +100,9 @@
 		"donateDescription": "Hevkarî û bexşîn — şandina arşîvê, piştgiriya darayî û parastina mîrateya kurdî."
 	},
 	"Footer": {
-		"newsletterEyebrow": "Agahdar bimîne",
-		"newsletterTitle": "Nûçeyên Enstîtuyê",
-		"newsletterDescription": "Nûçeyên demdemî li ser koleksiyon, weşan û bûyerên Enstîtuya Mîrateya Kurdî.",
-		"emailPlaceholder": "E-nameya xwe binivîse",
-		"emailLabel": "Navnîşana e-nameyê",
-		"signUp": "Tomar Bibe",
+		"donateTitle": "Neteweyek arşîva xwe diparêze",
+		"donateDescription": "Bi bexşînek beşdar bibe di parastina deng, wêne û nivîsên mîrateya kurdî de.",
+		"donateCta": "Niha Bexşîne",
 		"brandEyebrow": "Enstîtuya Mîrateya Kurdî",
 		"brandTagline": "Em arşîva neteweyekê diparêzin.",
 		"getInTouch": "Têkilî Dayne",
@@ -138,7 +135,6 @@
 	"LatestUpdates": {
 		"eyebrow": "Nûçe",
 		"title": "Nûvekirina Dawî",
-		"description": "Nûçe, lêkolîn û çîrok li ser çand, dîrok, ziman û mîrateya Kurdî.",
 		"viewAll": "Hemû nûçeyan bibîne",
 		"byAuthor": "Ji aliyê {author}",
 		"categories": {
@@ -411,6 +407,8 @@
 			"pause": "Rawestîne",
 			"previous": "Parçeya berê",
 			"next": "Parçeya paş",
+			"rewind": "5 çirke şûnde",
+			"forward": "5 çirke pêşde",
 			"seek": "Di parçeyê de bigere",
 			"volume": "Asta dengê",
 			"mute": "Bêdeng bike",
@@ -421,6 +419,8 @@
 			"back": "Vegere arşîvê",
 			"playAlbum": "Albûmê lê bide",
 			"playTrack": "Tomarê lê bide",
+			"albumSubtitle": "Albûma «{name}»",
+			"about": "Derbarê",
 			"topic": "Mijar",
 			"terms": "Zarava / têgîn",
 			"genre": "Janr",
@@ -449,6 +449,7 @@
 			"duration": "Dirêjahiya giştî",
 			"size": "Mezinahiya giştî",
 			"tracks": "Parçe",
+			"trackCount": "{count} parçe",
 			"year": "Sal"
 		},
 		"channel": {

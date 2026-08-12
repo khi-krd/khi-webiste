@@ -1,35 +1,13 @@
 "use client";
 
 import { PlayIcon } from "@heroicons/react/24/solid";
-import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 import NextImage from "next/image";
 import { type RefObject, useEffect, useMemo, useRef, useState } from "react";
-import { createPortal } from "react-dom";
 import { Badge } from "@/components/ui/badge";
 import { Link } from "@/components/ui/link";
 import { cn } from "@/lib/utils";
 
 const imageEase = "ease-[cubic-bezier(0.25,0.46,0.45,0.94)]";
-
-/** Travel time for the still flying from the queue onto the stage. */
-const FLIGHT_DURATION = 0.52;
-
-/** Ease-out with a long tail — quick to leave, gentle to arrive. */
-const FLIGHT_EASE = [0.22, 1, 0.36, 1] as const;
-
-/** Dissolve that hands the landed still over to the live player underneath. */
-const HANDOVER_DURATION = 0.18;
-
-/** A still in transit from its queue slot to the stage. */
-type Flight = {
-	item: HomeVideoCardItem;
-	from: DOMRect;
-	to: DOMRect;
-	fromRadius: string;
-	toRadius: string;
-	/** True once it has arrived and the stage below has taken over. */
-	landed: boolean;
-};
 
 /** Minimal shape the home video stage needs — fed from a `ResolvedVideoCard`. */
 export type HomeVideoCardItem = {
@@ -221,16 +199,10 @@ function StageHero({
 function PlaylistRow({
 	item,
 	onActivate,
-	stillRef,
-	inFlight = false,
 	className,
 }: {
 	item: HomeVideoCardItem;
 	onActivate: () => void;
-	/** The still itself — measured for the flight's starting box. */
-	stillRef?: (node: HTMLButtonElement | null) => void;
-	/** This still is currently in the air, so its slot sits empty. */
-	inFlight?: boolean;
 	className?: string;
 }) {
 	return (
@@ -247,18 +219,11 @@ function PlaylistRow({
 			)}
 		>
 			<button
-				ref={stillRef}
 				type="button"
 				onClick={onActivate}
 				disabled={!item.previewVideoUrl}
 				aria-label={item.title}
-				// The press registers instantly, before the stage has begun to change.
-				// `inFlight` empties the slot: the copy the user is watching travel is
-				// the one in the portal, and two of them at once breaks the illusion.
-				className={cn(
-					"relative w-28 shrink-0 cursor-pointer self-stretch overflow-hidden bg-foreground/10 transition-transform duration-150 ease-out active:scale-[0.97] focus-visible:outline focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-ring motion-reduce:transition-none motion-reduce:active:scale-100 disabled:cursor-default sm:w-36 lg:w-44",
-					inFlight && "opacity-0",
-				)}
+				className="relative w-28 shrink-0 cursor-pointer self-stretch overflow-hidden bg-foreground/10 focus-visible:outline focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-ring disabled:cursor-default sm:w-36 lg:w-44"
 			>
 				{item.coverUrl ? (
 					<NextImage
@@ -447,24 +412,9 @@ function useNativeQueueScroll() {
 /**
  * The home video stage: one clip large, the rest queued beside it.
  *
- * Picking from the queue does NOT navigate, and does not cut either. The still
- * you clicked LIFTS OUT of its slot and flies to the stage, growing into it, and
- * the clip already playing dissolves underneath it. Only when it lands does the
- * chosen clip become the active video and start playing — so the stage is never
- * empty and nothing jumps.
- *
- * The flight is a FLIP: measure the still's box and the stage's box before
- * anything changes, then animate the gap between them. It runs in a PORTAL on a
- * fixed-position layer because the two boxes live in different `overflow:hidden`
- * containers — the queue column clips its rows and the stage clips its cover, so
- * anything animating between them inside the tree gets cut in half. Motion's own
- * `layoutId` has the same problem for the same reason.
- *
- * Position is a transform and the dissolve is opacity, both composited. Width
- * and height animate directly: the still is 4:3-ish and the stage is 16:9, so a
- * single scale factor cannot serve both axes without visibly squashing faces.
- * On a fixed-position element that costs one isolated layout per frame and no
- * document reflow.
+ * Picking from the queue swaps it straight onto the stage and starts it
+ * playing — a plain state swap, no transition standing between the click and
+ * the change.
  */
 export function VideoStage({
 	items,
@@ -480,25 +430,10 @@ export function VideoStage({
 	);
 	const [order, setOrder] = useState(() => items.map((item) => item.key));
 	const [playingKey, setPlayingKey] = useState<string | null>(null);
-	const [flight, setFlight] = useState<Flight | null>(null);
-	const [mounted, setMounted] = useState(false);
-	const reduceMotion = useReducedMotion();
-
-	const stageRef = useRef<HTMLDivElement>(null);
-	const stillRefs = useRef(new Map<string, HTMLButtonElement>());
-	/** Set for the clip that arrived by flight, so the stage does not re-animate
-	 *  it in underneath a still that is already sitting exactly on top of it. */
-	const arrivedByFlight = useRef<string | null>(null);
-	/** Mirrors `flight` synchronously. Two clicks inside one tick both read the
-	 *  pre-render state, so guarding on the state alone lets the LAST one win —
-	 *  the ref makes it the first, which is the one the user aimed at. */
-	const inFlightRef = useRef(false);
 	/** The queue column scrolls itself, natively, with no state behind it. */
 	const queueScrollRef = useNativeQueueScroll();
 	/** The clip currently on stage, for the Space key below. */
 	const videoRef = useRef<HTMLVideoElement>(null);
-
-	useEffect(() => setMounted(true), []);
 
 	/**
 	 * Space belongs to the clip on stage, not to the page.
@@ -575,133 +510,25 @@ export function VideoStage({
 		setPlayingKey(key);
 	};
 
-	const activate = (key: string) => {
-		// One flight at a time — a second launch mid-air would measure boxes that
-		// are already moving and land somewhere nonsensical.
-		if (inFlightRef.current) return;
-
-		const item = byKey.get(key);
-		const still = stillRefs.current.get(key);
-		const stage = stageRef.current;
-
-		if (reduceMotion || !item || !still || !stage) {
-			arrivedByFlight.current = null;
-			promote(key);
-			return;
-		}
-
-		const from = still.getBoundingClientRect();
-		const to = stage.getBoundingClientRect();
-		if (from.width === 0 || to.width === 0) {
-			arrivedByFlight.current = null;
-			promote(key);
-			return;
-		}
-
-		inFlightRef.current = true;
-		setFlight({
-			item,
-			from,
-			to,
-			fromRadius: getComputedStyle(still).borderTopLeftRadius,
-			toRadius: getComputedStyle(stage).borderTopLeftRadius,
-			landed: false,
-		});
-	};
-
-	/**
-	 * Two beats, both ending here: the still finishes travelling, so the clip it
-	 * carried takes the stage and starts playing UNDERNEATH it; then the still
-	 * dissolves off the top, revealing the live player already in place.
-	 */
-	const onFlightSettled = () => {
-		if (!flight) return;
-
-		if (!flight.landed) {
-			arrivedByFlight.current = flight.item.key;
-			promote(flight.item.key);
-			setFlight({ ...flight, landed: true });
-			return;
-		}
-
-		inFlightRef.current = false;
-		setFlight(null);
-	};
-
-	/** House curve — a fast start that coasts into place. */
-	const ease = [0.22, 1, 0.36, 1] as const;
-	const queueTransition = reduceMotion
-		? { duration: 0 }
-		: { duration: 0.5, ease };
-
 	if (!hero) return null;
-
-	/** A still is on its way here, so the clip on stage bows out under it. */
-	const handingOver = Boolean(flight && flight.item.key !== hero.key);
-	/** This clip was carried in — the still is already sitting on top of it at
-	 *  exactly this size, so fading it up would show through as a double image. */
-	const arrived = arrivedByFlight.current === hero.key;
 
 	return (
 		<div className="overflow-hidden border border-border bg-border">
 			<div className="grid grid-cols-1 gap-px lg:h-[min(74svh,52rem)] lg:grid-cols-[minmax(0,1fr)_clamp(22rem,30vw,30rem)]">
-				<div
-					ref={stageRef}
-					className="relative aspect-video min-h-0 overflow-hidden lg:aspect-auto lg:h-full"
-				>
-					{/*
-					 * No `mode="wait"`. Waiting for the old clip to leave before the new
-					 * one arrives puts an empty frame between them, which reads as a cut
-					 * rather than a change. Both are absolutely positioned, so they can
-					 * occupy the cell together and genuinely cross-dissolve.
-					 *
-					 * The incoming clip settles in from slightly oversized while the
-					 * outgoing one recedes: the pair reads as one picture being replaced,
-					 * not two pictures blinking.
-					 */}
-					<AnimatePresence initial={false}>
-						<motion.div
-							key={hero.key}
-							className="absolute inset-0"
-							initial={
-								reduceMotion || arrived ? false : { opacity: 0, scale: 1.07 }
-							}
-							animate={{ opacity: handingOver ? 0 : 1, scale: 1 }}
-							exit={
-								reduceMotion
-									? { opacity: 0 }
-									: { opacity: 0, scale: 0.965, filter: "blur(6px)" }
-							}
-							transition={
-								reduceMotion
-									? { duration: 0 }
-									: {
-											duration: 0.62,
-											ease,
-											// Bowing out under an incoming still is a crossfade timed
-											// to the flight; a plain swap clears fast so the old clip
-											// never muddies the new one.
-											opacity: {
-												duration: handingOver ? FLIGHT_DURATION * 0.8 : 0.34,
-												ease: "easeOut",
-											},
-										}
-							}
-						>
-							<StageHero
-								item={hero}
-								playing={playingKey === hero.key}
-								onPlay={() => setPlayingKey(hero.key)}
-								videoRef={videoRef}
-							/>
-						</motion.div>
-					</AnimatePresence>
+				<div className="relative aspect-video min-h-0 overflow-hidden lg:aspect-auto lg:h-full">
+					<StageHero
+						item={hero}
+						playing={playingKey === hero.key}
+						onPlay={() => setPlayingKey(hero.key)}
+						videoRef={videoRef}
+					/>
 				</div>
 
 				{queue.length > 0 ? (
 					<div className="flex min-h-0 flex-col bg-background lg:h-full">
 						<div
 							ref={queueScrollRef}
+							data-wheel-scrollable=""
 							className={cn(
 								"flex min-h-0 flex-1 flex-col gap-2.5 overflow-y-auto p-3 lg:gap-3 lg:p-4",
 								// NOT `overscroll-contain`. The rows are `lg:flex-1`, so a short
@@ -726,116 +553,25 @@ export function VideoStage({
 								"[&[data-scrolling]_*]:pointer-events-none [&[data-scrolling]_*]:transition-none",
 							)}
 						>
-							{/* `layout` on every row so the ones that stay slide to their new
-							    place instead of jumping; the clip leaving for the stage and
-							    the one arriving from it trade in the same beat. */}
-							<AnimatePresence initial={false} mode="popLayout">
-								{queue.map((item, index) => (
-									<motion.div
-										key={item.key}
-										layout={!reduceMotion}
-										initial={
-											reduceMotion ? false : { opacity: 0, scale: 0.94, y: 8 }
-										}
-										// `popLayout` takes the leaving row out of flow, so it
-										// overlaps its replacement. Clear it out fast and hold the
-										// arrival back a beat, or both titles are legible at once
-										// and the slot turns to mush.
-										animate={{
-											opacity: 1,
-											scale: 1,
-											y: 0,
-											transition: reduceMotion
-												? { duration: 0 }
-												: { duration: 0.42, ease, delay: 0.12 },
-										}}
-										exit={
-											reduceMotion
-												? { opacity: 0 }
-												: {
-														opacity: 0,
-														scale: 0.92,
-														y: -8,
-														transition: { duration: 0.2, ease: "easeOut" },
-													}
-										}
-										transition={queueTransition}
-										className={cn(
-											"flex min-h-0 flex-col lg:flex-1",
-											index >= mobileQueueCount ? "max-lg:hidden" : "",
-										)}
-									>
-										<PlaylistRow
-											item={item}
-											onActivate={() => activate(item.key)}
-											stillRef={(node) => {
-												if (node) stillRefs.current.set(item.key, node);
-												else stillRefs.current.delete(item.key);
-											}}
-											inFlight={flight?.item.key === item.key}
-											className="lg:h-full"
-										/>
-									</motion.div>
-								))}
-							</AnimatePresence>
+							{queue.map((item, index) => (
+								<div
+									key={item.key}
+									className={cn(
+										"flex min-h-0 flex-col lg:flex-1",
+										index >= mobileQueueCount ? "max-lg:hidden" : "",
+									)}
+								>
+									<PlaylistRow
+										item={item}
+										onActivate={() => promote(item.key)}
+										className="lg:h-full"
+									/>
+								</div>
+							))}
 						</div>
 					</div>
 				) : null}
 			</div>
-
-			{/*
-			 * The still in transit. Portalled to <body> on a fixed layer so it is
-			 * clipped by nothing: its start box is inside the queue's scroll
-			 * container and its end box is inside the stage's, and either one would
-			 * otherwise slice it in half on the way across.
-			 */}
-			{mounted && flight
-				? createPortal(
-						<motion.div
-							aria-hidden
-							className="pointer-events-none fixed top-0 left-0 z-[60] overflow-hidden bg-foreground shadow-[0_40px_90px_-40px_rgba(0,0,0,0.7)]"
-							style={{ willChange: "transform, width, height" }}
-							initial={{
-								x: flight.from.left,
-								y: flight.from.top,
-								width: flight.from.width,
-								height: flight.from.height,
-								borderRadius: flight.fromRadius,
-								opacity: 1,
-							}}
-							animate={{
-								x: flight.to.left,
-								y: flight.to.top,
-								width: flight.to.width,
-								height: flight.to.height,
-								borderRadius: flight.toRadius,
-								opacity: flight.landed ? 0 : 1,
-							}}
-							transition={{
-								duration: FLIGHT_DURATION,
-								ease: FLIGHT_EASE,
-								// Opaque for the whole journey; the dissolve only runs on the
-								// second beat, once the player below is already in place.
-								opacity: {
-									duration: flight.landed ? HANDOVER_DURATION : 0,
-									ease: "easeOut",
-								},
-							}}
-							onAnimationComplete={onFlightSettled}
-						>
-							{flight.item.coverUrl ? (
-								<NextImage
-									src={flight.item.coverUrl}
-									alt=""
-									fill
-									sizes="100vw"
-									className="object-cover"
-								/>
-							) : null}
-						</motion.div>,
-						document.body,
-					)
-				: null}
 		</div>
 	);
 }

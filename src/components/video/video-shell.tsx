@@ -77,7 +77,6 @@ export async function VideoShell({
 		typeLabel: t(`typeBadge.${card.videoType}`),
 		topicLabel: card.topicName,
 		durationLabel: formatDuration(card.durationSeconds),
-		yearLabel: card.year != null ? String(card.year) : null,
 		memories: card.albumOfMemories,
 		memoriesLabel: card.albumOfMemories ? t("card.memoriesBadge") : null,
 		href: isShortFilm(card)

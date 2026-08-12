@@ -15,7 +15,6 @@ export type AudioCardProps = {
 	metaLabel: string;
 	instituteLabel: string | null;
 	durationLabel: string | null;
-	yearLabel: string | null;
 	/** Album-of-Memories records get an aged (sepia) cover + corner label. */
 	memories?: boolean;
 	memoriesLabel?: string | null;
@@ -55,7 +54,6 @@ export function AudioCard({
 	metaLabel,
 	instituteLabel,
 	durationLabel,
-	yearLabel,
 	memories = false,
 	memoriesLabel,
 	queue,
@@ -64,7 +62,7 @@ export function AudioCard({
 	const showHoverCover = Boolean(
 		hoverCoverUrl && coverUrl && hoverCoverUrl !== coverUrl,
 	);
-	const footerItems = [durationLabel, yearLabel].filter(Boolean);
+	const footerItems = [durationLabel].filter(Boolean);
 
 	return (
 		<article

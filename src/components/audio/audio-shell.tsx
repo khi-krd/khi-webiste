@@ -69,8 +69,6 @@ export async function AudioShell({
 				? t("card.instituteBadge")
 				: null,
 			durationLabel: formatDuration(card.totalDurationSeconds),
-			yearLabel:
-				card.publishmentYear != null ? String(card.publishmentYear) : null,
 			memories: card.albumOfMemories,
 			memoriesLabel: card.albumOfMemories ? t("memories.badge") : null,
 			queue: card.queue,

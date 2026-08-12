@@ -17,6 +17,8 @@ type ProjectCoverMediaProps = {
 	sizes?: string;
 	/** Dark hero treatment for detail pages. */
 	variant?: "card" | "hero";
+	/** IMAGE covers only: frame takes the artwork's own ratio — full jacket, no crop. */
+	naturalRatio?: boolean;
 };
 
 export function ProjectCoverMedia({
@@ -29,6 +31,7 @@ export function ProjectCoverMedia({
 	imageClassName,
 	sizes,
 	variant = "card",
+	naturalRatio = false,
 }: ProjectCoverMediaProps) {
 	const isHero = variant === "hero";
 
@@ -105,6 +108,7 @@ export function ProjectCoverMedia({
 			sizes={sizes}
 			className={className}
 			imageClassName={imageClassName}
+			naturalRatio={naturalRatio}
 		/>
 	);
 }

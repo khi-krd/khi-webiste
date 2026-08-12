@@ -1,4 +1,3 @@
-import { ArrowLeftIcon, ArrowRightIcon } from "@heroicons/react/24/outline";
 import { NewsCard } from "@/components/home/news-card";
 import {
 	ScrollReveal,
@@ -8,98 +7,53 @@ import {
 import { NewsCoverMedia } from "@/components/news/news-cover-media";
 import { NewsMediaGallery } from "@/components/news/news-media-gallery";
 import { NewsPostLightboxProvider } from "@/components/news/news-post-lightbox";
-import { DirectionalIcon } from "@/components/ui/directional-icon";
 import { RichText } from "@/components/ui/rich-text";
 import { TaxonomyBadgeLink } from "@/components/ui/taxonomy-badge-link";
 import { Link } from "@/i18n/navigation";
-import { newsDetailHref } from "@/lib/content/href";
 import { homeInsetClass } from "@/lib/layout";
 import { type NewsItem, newsItemCategoryLabel } from "@/lib/mock/news";
 import { isRichTextEmpty } from "@/lib/rich-text";
-import { newsCategoryHref, newsTagHref } from "@/lib/search/taxonomy-href";
-import { displayTitleSizeClass } from "@/lib/title-scale";
+import { newsTagHref } from "@/lib/search/taxonomy-href";
 import { cn } from "@/lib/utils";
+
+/**
+ * News headlines run smaller than the other detail pages' display titles —
+ * length-adaptive like displayTitleSizeClass, just scaled down a tier.
+ */
+function newsTitleSizeClass(title: string): string {
+	const length = title.trim().length;
+	if (length <= 24) return "text-[clamp(1.75rem,3vw+1rem,3rem)]";
+	if (length <= 48) return "text-[clamp(1.5rem,1.8vw+0.9rem,2.25rem)]";
+	return "text-[clamp(1.3rem,1.2vw+0.8rem,1.875rem)]";
+}
 
 type NewsPostViewProps = {
 	item: NewsItem;
-	categoryLabel: string;
-	dateLabel: string;
-	backLabel: string;
 	authorLabel?: string;
-	readTimeLabel?: string;
 	tagsLabel: string;
 	galleryLabel: string;
 	closeLabel: string;
 	lightboxPreviousLabel: string;
 	lightboxNextLabel: string;
-	previous: NewsItem | null;
-	next: NewsItem | null;
 	related: NewsItem[];
 	relatedLabel: string;
-	navLabel: string;
-	previousLabel: string;
-	nextLabel: string;
 };
-
-function AdjacentLink({
-	item,
-	label,
-	direction,
-}: {
-	item: NewsItem;
-	label: string;
-	direction: "previous" | "next";
-}) {
-	const isNext = direction === "next";
-
-	return (
-		<Link
-			href={newsDetailHref(item.slug)}
-			className={cn(
-				"group flex flex-col gap-2 py-6 no-underline",
-				isNext &&
-					"items-end border-t border-border text-end sm:border-t-0 sm:border-s sm:ps-6",
-				!isNext && "sm:pe-6",
-			)}
-		>
-			<span className="label flex items-center gap-2 font-medium">
-				<DirectionalIcon
-					icon={isNext ? ArrowRightIcon : ArrowLeftIcon}
-					className="size-3.5"
-				/>
-				{label}
-			</span>
-			<span className="font-heading text-h3 font-bold text-foreground underline decoration-transparent decoration-2 underline-offset-4 transition-[text-decoration-color] duration-300 group-fine:decoration-current">
-				{item.title}
-			</span>
-		</Link>
-	);
-}
 
 /**
  * Broadsheet front page — full-width masthead (dateline strip, headline,
- * byline over a strong rule) above a cover + justified-body spread,
- * then tags/gallery, prev/next navigation, and related by tags.
+ * byline) above a cover + justified-body spread, then tags/gallery and
+ * related by tags.
  */
 export function NewsPostView({
 	item,
-	categoryLabel,
-	dateLabel,
-	backLabel,
 	authorLabel,
-	readTimeLabel,
 	tagsLabel,
 	galleryLabel,
 	closeLabel,
 	lightboxPreviousLabel,
 	lightboxNextLabel,
-	previous,
-	next,
 	related,
 	relatedLabel,
-	navLabel,
-	previousLabel,
-	nextLabel,
 }: NewsPostViewProps) {
 	const coverUrl = item.coverUrl ?? item.image.url;
 	const coverKind = item.coverMediaType ?? "IMAGE";
@@ -129,51 +83,9 @@ export function NewsPostView({
 		>
 			<article className={cn(homeInsetClass, "pb-10 sm:pb-12")}>
 				<ScrollRevealBlock className="pt-10 sm:pt-12">
-					<Link
-						href="/news"
-						className="group inline-flex w-fit items-center gap-2 no-underline"
-					>
-						<DirectionalIcon
-							icon={ArrowLeftIcon}
-							className="size-4 text-muted transition-colors group-fine:text-foreground"
-						/>
-						<span className="label font-medium transition-colors group-fine:text-foreground">
-							{backLabel}
-						</span>
-					</Link>
-
-					<header className="mt-6 border-b-2 border-foreground pb-6 sm:mt-8 sm:pb-7">
-						{/* Every item carries a start-side separator; the wrapper's negative
-						    start margin pulls each row's leading separator outside the
-						    overflow-hidden strip, so wrapped rows never open with an
-						    orphaned hairline. */}
-						<div className="overflow-hidden border-y border-border py-2.5">
-							<div className="-ms-[calc(2rem+1px)] flex flex-wrap items-center gap-y-2">
-								<span className="ms-4 inline-flex border-s border-border ps-4">
-									<TaxonomyBadgeLink
-										href={newsCategoryHref(item.category)}
-										variant="outline"
-										size="sm"
-									>
-										{categoryLabel}
-									</TaxonomyBadgeLink>
-								</span>
-								<time className="ms-4 border-s border-border ps-4 text-small text-muted">
-									{dateLabel}
-								</time>
-								{readTimeLabel ? (
-									<span className="ms-4 border-s border-border ps-4 text-small text-muted">
-										{readTimeLabel}
-									</span>
-								) : null}
-							</div>
-						</div>
-
+					<header className="pb-6 sm:pb-7">
 						<h1
-							className={cn(
-								"news-post-title mt-6 sm:mt-8",
-								displayTitleSizeClass(item.title),
-							)}
+							className={cn("news-post-title", newsTitleSizeClass(item.title))}
 						>
 							{item.title}
 						</h1>
@@ -187,14 +99,14 @@ export function NewsPostView({
 						className={cn(
 							"mt-6 sm:mt-8",
 							bodyContent &&
-								"grid gap-8 lg:grid-cols-[minmax(0,32rem)_minmax(0,1fr)] lg:items-start lg:gap-12 xl:grid-cols-[minmax(0,38rem)_minmax(0,1fr)] xl:gap-16",
+								"news-post-spread flex flex-col gap-8 lg:flex-row lg:items-start lg:gap-12 xl:gap-16",
 						)}
 					>
 						<div
 							className={cn(
 								"min-w-0",
 								bodyContent
-									? "lg:sticky lg:top-32 lg:self-start"
+									? "lg:sticky lg:top-32 lg:w-[32rem] lg:shrink-0 lg:self-start xl:w-[38rem]"
 									: "lg:max-w-xl",
 							)}
 						>
@@ -217,7 +129,7 @@ export function NewsPostView({
 						</div>
 
 						{bodyContent ? (
-							<div className="project-article-body news-article-body min-w-0">
+							<div className="project-article-body news-article-body min-w-0 flex-1">
 								{item.description ? (
 									<RichText content={item.description} />
 								) : (
@@ -225,14 +137,31 @@ export function NewsPostView({
 										{item.excerpt}
 									</p>
 								)}
+
+								{tags.length > 0 && (
+									<div className="mt-8 flex flex-wrap items-baseline gap-x-4 gap-y-2 sm:mt-10">
+										<span className="label shrink-0 font-medium text-muted">
+											{tagsLabel}
+										</span>
+										{tags.map((tag) => (
+											<Link
+												key={tag}
+												href={newsTagHref(tag)}
+												className="text-body font-bold text-accent no-underline transition-opacity fine-hover:opacity-75"
+											>
+												#{tag}
+											</Link>
+										))}
+									</div>
+								)}
 							</div>
 						) : null}
 					</div>
 				</ScrollRevealBlock>
 
-				{(tags.length > 0 || mediaGallery.length > 0) && (
+				{((!bodyContent && tags.length > 0) || mediaGallery.length > 0) && (
 					<ScrollReveal className="mt-10 space-y-8 border-t border-border pt-6 sm:mt-12 sm:pt-8">
-						{tags.length > 0 && (
+						{!bodyContent && tags.length > 0 && (
 							<div>
 								<p className="label font-medium">{tagsLabel}</p>
 								<ul className="mt-3 flex flex-wrap gap-2">
@@ -257,28 +186,6 @@ export function NewsPostView({
 							articleTitle={item.title}
 						/>
 					</ScrollReveal>
-				)}
-
-				{(previous || next) && (
-					<nav
-						aria-label={navLabel}
-						className="mt-10 border-t border-border sm:mt-12"
-					>
-						<div className="grid sm:grid-cols-2">
-							{previous ? (
-								<AdjacentLink
-									item={previous}
-									label={previousLabel}
-									direction="previous"
-								/>
-							) : (
-								<div aria-hidden className="hidden sm:block" />
-							)}
-							{next ? (
-								<AdjacentLink item={next} label={nextLabel} direction="next" />
-							) : null}
-						</div>
-					</nav>
 				)}
 
 				{related.length > 0 ? (

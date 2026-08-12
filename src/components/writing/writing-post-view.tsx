@@ -34,7 +34,6 @@ type WritingPostViewProps = {
 	next: WritingNeighbor | null;
 	related: ResolvedWritingCard[];
 	genreLabels: Record<BookGenre, string>;
-	backLabel: string;
 	writerLabel: string;
 	seriesLabel: string;
 	seriesVolumeLabel: (order: number, total: number | null) => string;
@@ -126,7 +125,6 @@ export function WritingPostView({
 	next,
 	related,
 	genreLabels,
-	backLabel,
 	writerLabel,
 	seriesLabel,
 	seriesVolumeLabel,
@@ -149,20 +147,7 @@ export function WritingPostView({
 			<ScrollRevealBlock
 				className={cn("pt-8 pb-8 sm:pt-10 sm:pb-10", homeInsetClass)}
 			>
-				<Link
-					href="/writings"
-					className="group inline-flex w-fit items-center gap-2 no-underline"
-				>
-					<DirectionalIcon
-						icon={ArrowLeftIcon}
-						className="size-4 text-muted transition-colors group-fine:text-foreground"
-					/>
-					<span className="label font-medium transition-colors group-fine:text-foreground">
-						{backLabel}
-					</span>
-				</Link>
-
-				<div className="mt-6 grid gap-8 lg:grid-cols-[minmax(0,20rem)_minmax(0,1fr)] lg:items-start lg:gap-12 xl:grid-cols-[minmax(0,23rem)_minmax(0,1fr)]">
+				<div className="grid gap-8 lg:grid-cols-[minmax(0,20rem)_minmax(0,1fr)] lg:items-start lg:gap-12 xl:grid-cols-[minmax(0,23rem)_minmax(0,1fr)]">
 					{/* Plated volume: mat frame around a portrait cover, book-on-table */}
 					<div className="w-full max-w-sm border border-border bg-surface p-3 sm:p-4 lg:sticky lg:top-32 lg:max-w-none">
 						{detail.coverUrl ? (

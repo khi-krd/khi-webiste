@@ -98,7 +98,7 @@ export function ProjectsShowcase({ projects, copy }: ProjectsShowcaseProps) {
 			    the rows would collapse to the cover images' intrinsic height. */}
 			<ScrollReveal
 				className={cn(
-					"grid min-h-0 flex-1 grid-rows-2 gap-3 px-6 pb-10 sm:gap-4 sm:px-8 sm:pb-12",
+					"grid min-h-0 flex-1 grid-rows-2 gap-6 px-6 pb-10 sm:gap-8 sm:px-8 sm:pb-12",
 					gridColumnsClass[columns],
 				)}
 			>

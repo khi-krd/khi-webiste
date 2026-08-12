@@ -95,30 +95,39 @@ const SCROLLABLE_SLACK = 24;
  * True when the pointer sits over something with its own scrollbar that has not
  * yet hit the end in this direction — a media carousel, the menu overlay, a
  * scrollable dialog. Those own the gesture.
+ *
+ * Looks for the nearest ancestor marked `data-wheel-scrollable` rather than
+ * walking every ancestor with `getComputedStyle`. This runs on every wheel
+ * event anywhere on the page — the listener is on `window` — and the old walk
+ * called `getComputedStyle` plus `scrollHeight`/`clientHeight` on each node up
+ * to `document.body`. `getComputedStyle` forces a synchronous style-and-layout
+ * flush, the exact hot-path cost `useNativeQueueScroll` in video-card.tsx is
+ * written to avoid — done here on EVERY notch, over EVERY part of the page,
+ * that was the app-wide "two-finger scroll has delay" complaint. `closest()`
+ * is a plain DOM-tree walk, so the common case — scrolling over ordinary
+ * content with no scrollable ancestor — costs nothing.
+ *
+ * Any element that wants to claim the wheel over `<SectionScroll/>` (the video
+ * queue, the nav drawer's panels, the header search results) carries the
+ * marker itself; nothing here discovers it structurally.
  */
 function insideScrollable(
 	target: EventTarget | null,
 	direction: 1 | -1,
 ): boolean {
 	const node = target instanceof Node ? target : null;
-	let element =
-		node instanceof HTMLElement ? node : (node?.parentElement ?? null);
+	const element =
+		node instanceof HTMLElement
+			? node.closest<HTMLElement>("[data-wheel-scrollable]")
+			: null;
+	if (!element) return false;
 
-	while (element && element !== document.body) {
-		const { overflowY } = getComputedStyle(element);
-		const scrolls = overflowY === "auto" || overflowY === "scroll";
-		const overflow = element.scrollHeight - element.clientHeight;
+	const overflow = element.scrollHeight - element.clientHeight;
+	if (overflow <= SCROLLABLE_SLACK) return false;
 
-		if (scrolls && overflow > SCROLLABLE_SLACK) {
-			const room =
-				direction === 1 ? overflow - element.scrollTop : element.scrollTop;
-			if (room > 1) return true;
-		}
-
-		element = element.parentElement;
-	}
-
-	return false;
+	const room =
+		direction === 1 ? overflow - element.scrollTop : element.scrollTop;
+	return room > 1;
 }
 
 /**

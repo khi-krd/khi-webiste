@@ -19,7 +19,7 @@ type NavView = "nav" | "search";
 
 /**
  * Interactive header cluster, pinned to the outer (physical right) edge of the
- * bar: the search + language tray and the menu hamburger. Primary nav links are
+ * bar: the menu hamburger and the search + language tray. Primary nav links are
  * server-rendered in <Header/> — nothing here needs their markup.
  */
 export function HeaderNav() {
@@ -43,23 +43,6 @@ export function HeaderNav() {
 	return (
 		<>
 			<div className="flex items-center gap-2 sm:gap-3">
-				<div className={cn(utilityTrayClass, "hidden sm:flex")}>
-					<button
-						type="button"
-						onClick={openSearch}
-						aria-label={t("searchOpen")}
-						className={cn(iconControlClass, "size-10")}
-					>
-						<DrawnBorder />
-						<MagnifyingGlassIcon
-							className="relative z-1 size-[1.125rem] stroke-[1.75]"
-							aria-hidden="true"
-						/>
-					</button>
-
-					<LanguageSwitcher variant="dropdown" embedded />
-				</div>
-
 				<button
 					ref={menuTriggerRef}
 					type="button"
@@ -78,6 +61,23 @@ export function HeaderNav() {
 						aria-hidden="true"
 					/>
 				</button>
+
+				<div className={cn(utilityTrayClass, "hidden sm:flex")}>
+					<button
+						type="button"
+						onClick={openSearch}
+						aria-label={t("searchOpen")}
+						className={cn(iconControlClass, "size-10")}
+					>
+						<DrawnBorder />
+						<MagnifyingGlassIcon
+							className="relative z-1 size-[1.125rem] stroke-[1.75]"
+							aria-hidden="true"
+						/>
+					</button>
+
+					<LanguageSwitcher variant="dropdown" embedded />
+				</div>
 			</div>
 
 			<NavDrawer
