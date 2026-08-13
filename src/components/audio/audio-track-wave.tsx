@@ -52,9 +52,9 @@ function CurrentTrackWave({
 			aria-label={t("seek")}
 			disabled={duration <= 0}
 			onClick={(event) => {
-				// The strip is always LTR (`dir-row-unmirrored`): the elapsed side
-				// grows from the left in both locales, so the click fraction maps
-				// straight onto the timeline.
+				// The strip carries dir="ltr": the elapsed side grows from the
+				// left in both locales, so the click fraction maps straight onto
+				// the timeline.
 				const rect = event.currentTarget.getBoundingClientRect();
 				if (rect.width <= 0) {
 					return;

@@ -20,9 +20,12 @@ type AudioWaveformProps = {
  * Math.random). Decorative on its own; fed a `progress`, the elapsed bars
  * take the played fill and the strip reads as a live playhead.
  *
- * `dir-row-unmirrored` because this is a TIME axis, not text: elapsed has to
- * grow from the same edge the play button sits on in both locales, matching the
- * player bar's seek track.
+ * The strip carries its own `dir="ltr"` because this is a TIME axis, not
+ * text: elapsed always grows from the left like any player timeline,
+ * whatever the direction of the page or wrapper it lands in. (The
+ * `.dir-row-unmirrored` class can't do this job here — it keys off the
+ * page's `[dir="rtl"]` root, so inside an LTR wrapper it would flip a row
+ * that was never mirrored.)
  *
  * A bar takes EITHER the played or the idle class, never both — `cn()` is a
  * plain joiner, and two competing `bg-*` utilities would be resolved by
@@ -48,10 +51,8 @@ export function AudioWaveform({
 	return (
 		<div
 			aria-hidden
-			className={cn(
-				"dir-row-unmirrored flex items-center justify-between gap-px",
-				className,
-			)}
+			dir="ltr"
+			className={cn("flex items-center justify-between gap-px", className)}
 		>
 			{bars.map((height, index) => (
 				<div
