@@ -2,6 +2,7 @@ import { ArrowTopRightOnSquareIcon } from "@heroicons/react/24/outline";
 import NextImage from "next/image";
 import { AudioPlayButton } from "@/components/audio/audio-play-button";
 import { AudioTrackRow } from "@/components/audio/audio-track-row";
+import { AudioTrackWave } from "@/components/audio/audio-track-wave";
 import { formatDuration, formatFileSize } from "@/lib/audio/format";
 import type { PlayerTrackPayload, ResolvedAudioFileRow } from "@/types/audio";
 
@@ -29,9 +30,10 @@ function trackNo(index: number): string {
 }
 
 /**
- * Ordered file rows set as quiet recessed cards: number, cover thumb, title
- * over a format · size · genre fine-print line, play control at the row's
- * end.
+ * Ordered file rows set as quiet recessed cards, laid out LTR like a printed
+ * sleeve tracklist: number, cover thumb carrying the play control, title over
+ * a format · size · genre fine-print line, then the now-playing equalizer and
+ * duration at the row's end.
  */
 export function AudioTracklist({
 	fileRows,
@@ -81,75 +83,68 @@ export function AudioTracklist({
 
 					return (
 						<AudioTrackRow key={row.id} fileId={row.id}>
-							<div className="flex items-center gap-3 sm:gap-4">
+							{/* LTR row whatever the locale: the number leads on the left,
+							    then the jacket (with the play control ON the artwork),
+							    then the mostly-Latin title — reading like a record
+							    sleeve's printed tracklist. */}
+							<div dir="ltr" className="flex items-center gap-3 sm:gap-4">
 								<span
 									aria-hidden
-									dir="ltr"
 									className="label w-6 shrink-0 font-medium text-muted tabular-nums"
 								>
 									{trackNo(index)}
 								</span>
 
-								{thumbUrl ? (
-									<span className="relative hidden size-11 shrink-0 overflow-hidden rounded-md border border-border bg-surface sm:block">
+								<span className="relative size-14 shrink-0 overflow-hidden rounded-md border border-border bg-surface sm:size-16">
+									{thumbUrl ? (
 										<NextImage
 											src={thumbUrl}
 											alt=""
 											fill
-											sizes="2.75rem"
+											sizes="4rem"
 											className="object-cover"
 										/>
-									</span>
-								) : null}
+									) : null}
+									{row.playable && queueIndex != null ? (
+										<AudioPlayButton
+											queue={queue}
+											startIndex={queueIndex}
+											size="cover"
+										/>
+									) : row.externalUrl ? (
+										<a
+											href={row.externalUrl}
+											target="_blank"
+											rel="noopener noreferrer"
+											aria-label={`${labels.externalLink} — ${row.title}`}
+											className="absolute inset-0 inline-flex items-center justify-center bg-foreground/30 text-white transition-colors fine-hover:bg-foreground/50 focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-ring"
+										>
+											<ArrowTopRightOnSquareIcon
+												aria-hidden
+												className="size-5 drop-shadow-[0_1px_4px_rgba(0,0,0,0.45)]"
+											/>
+										</a>
+									) : null}
+								</span>
 
 								<span className="min-w-0 flex-1 text-start">
 									<span className="block truncate text-body font-bold text-foreground">
 										{row.title}
 									</span>
 									{finePrint ? (
-										// LRM: the line may start with digits ("74.7 MB") whose
-										// direction is weak — without it the RTL paragraph
-										// shuffles the number to the end of the Latin run.
 										<span className="mt-0.5 block text-label text-muted">
-											{`‎${finePrint}`}
+											{finePrint}
 										</span>
 									) : null}
 								</span>
 
+								<AudioTrackWave fileId={row.id} />
+
 								{formatDuration(row.durationSeconds) ? (
-									<span
-										dir="ltr"
-										className="label shrink-0 text-muted tabular-nums"
-									>
+									<span className="label shrink-0 text-muted tabular-nums">
 										{formatDuration(row.durationSeconds)}
 									</span>
 								) : null}
-
-								{row.playable && queueIndex != null ? (
-									<AudioPlayButton
-										queue={queue}
-										startIndex={queueIndex}
-										size="row"
-										className="border-brand bg-surface text-brand fine-hover:bg-brand fine-hover:text-primary-foreground"
-									/>
-								) : row.externalUrl ? (
-									<a
-										href={row.externalUrl}
-										target="_blank"
-										rel="noopener noreferrer"
-										aria-label={`${labels.externalLink} — ${row.title}`}
-										className="inline-flex size-9 shrink-0 items-center justify-center rounded-md border border-brand bg-surface text-brand transition-colors fine-hover:bg-brand fine-hover:text-primary-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
-									>
-										<ArrowTopRightOnSquareIcon aria-hidden className="size-4" />
-									</a>
-								) : (
-									<span
-										aria-hidden
-										className="inline-flex size-9 shrink-0 items-center justify-center rounded-md border border-border text-muted/50"
-									>
-										—
-									</span>
-								)}
 							</div>
 						</AudioTrackRow>
 					);

@@ -5,7 +5,6 @@ import { AudioAttachments } from "@/components/audio/audio-attachments";
 import { AudioBookletReader } from "@/components/audio/audio-booklet-reader";
 import { AudioBrochures } from "@/components/audio/audio-brochures";
 import { AudioCard, type AudioCardProps } from "@/components/audio/audio-card";
-import { AudioPlayButton } from "@/components/audio/audio-play-button";
 import {
 	AudioTracklist,
 	type AudioTracklistLabels,
@@ -108,7 +107,6 @@ export async function AudioPostView({
 		detail.trackState === "MULTI" ? "state.multi" : "state.single",
 	);
 	const isAlbum = detail.trackState === "MULTI";
-	const playLabel = isAlbum ? t("post.playAlbum") : t("post.playTrack");
 
 	const totalSizeLabel =
 		detail.totalSizeBytes != null && detail.totalSizeBytes > 0
@@ -118,16 +116,6 @@ export async function AudioPostView({
 		detail.totalDurationSeconds != null && detail.totalDurationSeconds > 0
 			? formatDuration(detail.totalDurationSeconds)
 			: null;
-
-	// Hero fact pills — track count reads as a phrase, sizes stay Latin.
-	const statPills = [
-		detail.totalTracks != null &&
-			t("stats.trackCount", {
-				count: formatNumber(locale, detail.totalTracks),
-			}),
-		totalDurationLabel && `${t("stats.duration")} ${totalDurationLabel}`,
-		totalSizeLabel,
-	].filter(Boolean) as string[];
 
 	const tracklistLabels: AudioTracklistLabels = {
 		title: t("post.tracklist"),
@@ -159,7 +147,10 @@ export async function AudioPostView({
 			detail.genre ||
 			detail.locations.length > 0 ||
 			hasCredits ||
-			languageLabels.length > 0,
+			languageLabels.length > 0 ||
+			detail.totalTracks != null ||
+			totalDurationLabel ||
+			totalSizeLabel,
 	);
 
 	const downloadableAttachments = detail.attachments.filter((attachment) => {
@@ -246,46 +237,13 @@ export async function AudioPostView({
 									{detail.title}
 								</h1>
 
-								{detail.albumName ? (
-									<p className="mt-2 text-lead text-muted">
-										{t("post.albumSubtitle", { name: detail.albumName })}
-									</p>
-								) : hasCredits ? (
-									<p className="mt-2 text-lead text-foreground/80">
-										{[detail.reader, ...detail.directors]
-											.filter(Boolean)
-											.join(" · ")}
-									</p>
-								) : null}
-
-								{statPills.length > 0 ? (
-									<div className="mt-5 flex flex-wrap gap-2">
-										{statPills.map((pill) => (
-											<span
-												key={pill}
-												dir="auto"
-												className="rounded-md bg-sunken px-3.5 py-1.5 text-small font-semibold text-foreground tabular-nums"
-											>
-												{pill}
-											</span>
-										))}
-									</div>
-								) : null}
-
 								{detail.queue.length > 0 ? (
-									<div className="mt-7 flex items-center gap-4 sm:gap-5">
-										<AudioPlayButton
-											queue={detail.queue}
-											size="hero"
-											label={playLabel}
-										/>
-										<AudioWaveform
-											seedId={detail.id}
-											barCount={72}
-											className="h-11 min-w-0 flex-1"
-											barClassName="bg-brand/40"
-										/>
-									</div>
+									<AudioWaveform
+										seedId={detail.id}
+										barCount={72}
+										className="mt-8 h-11 min-w-0"
+										barClassName="bg-brand/40"
+									/>
 								) : null}
 							</div>
 
@@ -336,13 +294,7 @@ export async function AudioPostView({
 							<div className="mt-10 grid items-start gap-8 text-start sm:mt-12 lg:grid-cols-[minmax(0,1fr)_minmax(0,23rem)] lg:gap-10 xl:gap-12">
 								{detail.description ? (
 									<div className="min-w-0">
-										<div className="flex items-center gap-3">
-											<h2 className="shrink-0 font-heading text-body font-bold text-foreground">
-												{t("post.about")}
-											</h2>
-											<span aria-hidden className="h-px flex-1 bg-border" />
-										</div>
-										<div className="audio-article-body max-w-prose pt-4">
+										<div className="audio-article-body max-w-prose">
 											<RichText
 												content={detail.description}
 												className="text-body leading-relaxed text-foreground/90"
@@ -398,6 +350,23 @@ export async function AudioPostView({
 										{languageLabels.length > 0 ? (
 											<MetaCell label={t("post.languagesLabel")}>
 												{languageLabels.join(" · ")}
+											</MetaCell>
+										) : null}
+										{detail.totalTracks != null ? (
+											<MetaCell label={t("stats.tracks")}>
+												{t("stats.trackCount", {
+													count: formatNumber(locale, detail.totalTracks),
+												})}
+											</MetaCell>
+										) : null}
+										{totalDurationLabel ? (
+											<MetaCell label={t("stats.duration")}>
+												<span dir="ltr">{totalDurationLabel}</span>
+											</MetaCell>
+										) : null}
+										{totalSizeLabel ? (
+											<MetaCell label={t("stats.size")}>
+												<span dir="ltr">{totalSizeLabel}</span>
 											</MetaCell>
 										) : null}
 									</dl>

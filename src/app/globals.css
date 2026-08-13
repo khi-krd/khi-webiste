@@ -1010,6 +1010,61 @@ html[data-corners="rounded"]
 	contain-intrinsic-size: auto var(--cv-intrinsic, 800px);
 }
 
+/* ==========================================================================
+   Tracklist "now playing" equalizer (<AudioTrackWave/>)
+   --------------------------------------------------------------------------
+   Five brand-green bars bouncing out of phase. Animated with scaleY on
+   full-height bars (compositor-only — no layout work per frame). The paused
+   player keeps the shape but freezes it via animation-play-state, so pause
+   reads as "held" rather than "gone".
+   ========================================================================== */
+.track-eq {
+	display: inline-flex;
+	align-items: flex-end;
+	gap: 2px;
+	height: 1.125rem;
+}
+.track-eq > span {
+	width: 2.5px;
+	height: 100%;
+	border-radius: 1px;
+	background: var(--color-brand);
+	transform-origin: bottom;
+	animation: track-eq-bounce 0.9s ease-in-out infinite alternate;
+}
+.track-eq > span:nth-child(1) {
+	animation-delay: -0.72s;
+}
+.track-eq > span:nth-child(2) {
+	animation-delay: -0.3s;
+}
+.track-eq > span:nth-child(3) {
+	animation-delay: -0.54s;
+}
+.track-eq > span:nth-child(4) {
+	animation-delay: -0.12s;
+}
+.track-eq > span:nth-child(5) {
+	animation-delay: -0.42s;
+}
+.track-eq[data-paused] > span {
+	animation-play-state: paused;
+}
+@keyframes track-eq-bounce {
+	from {
+		transform: scaleY(0.22);
+	}
+	to {
+		transform: scaleY(1);
+	}
+}
+@media (prefers-reduced-motion: reduce) {
+	.track-eq > span {
+		animation: none;
+		transform: scaleY(0.6);
+	}
+}
+
 
 /* ==========================================================================
    Section-by-section snap scrolling (homepage only)

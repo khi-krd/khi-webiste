@@ -6,7 +6,7 @@ import { usePlayer } from "@/components/audio/audio-player-context";
 import { cn } from "@/lib/utils";
 import type { PlayerTrackPayload } from "@/types/audio";
 
-type Size = "overlay" | "row" | "hero";
+type Size = "overlay" | "row" | "hero" | "cover";
 
 type AudioPlayButtonProps = {
 	/** Full queue this button starts (e.g. the whole album). */
@@ -24,6 +24,9 @@ const sizeClasses: Record<Size, string> = {
 		"size-10 bg-primary text-primary-foreground transition-opacity fine-hover:opacity-90 [&_svg]:size-4",
 	row: "size-9 border border-border-strong bg-transparent text-foreground transition-colors fine-hover:bg-sunken [&_svg]:size-4",
 	hero: "h-11 gap-2.5 bg-primary px-6 text-small font-medium text-primary-foreground transition-opacity fine-hover:opacity-90 [&_svg]:size-4",
+	// Fills a cover thumbnail: a dark wash over the art with the glyph centered.
+	cover:
+		"absolute inset-0 rounded-none bg-foreground/30 text-white transition-colors fine-hover:bg-foreground/50 [&_svg]:size-5 [&_svg]:drop-shadow-[0_1px_4px_rgba(0,0,0,0.45)]",
 };
 
 /**
