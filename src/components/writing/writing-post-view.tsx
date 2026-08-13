@@ -1,4 +1,3 @@
-import { ArrowLeftIcon, ArrowRightIcon } from "@heroicons/react/24/outline";
 import NextImage from "next/image";
 import {
 	ScrollReveal,
@@ -7,7 +6,6 @@ import {
 } from "@/components/motion/scroll-reveal";
 import { Badge } from "@/components/ui/badge";
 import { CoverLightbox } from "@/components/ui/cover-lightbox";
-import { DirectionalIcon } from "@/components/ui/directional-icon";
 import { Link } from "@/components/ui/link";
 import { RichText } from "@/components/ui/rich-text";
 import { WritingGridCard } from "@/components/writing/writing-grid-card";
@@ -25,13 +23,9 @@ import type {
 	ResolvedWritingDetail,
 } from "@/types/writing";
 
-type WritingNeighbor = Pick<ResolvedWritingCard, "id" | "title">;
-
 type WritingPostViewProps = {
 	detail: ResolvedWritingDetail;
 	seriesBooks: ResolvedSeriesBook[];
-	previous: WritingNeighbor | null;
-	next: WritingNeighbor | null;
 	related: ResolvedWritingCard[];
 	genreLabels: Record<BookGenre, string>;
 	writerLabel: string;
@@ -43,9 +37,6 @@ type WritingPostViewProps = {
 	formatLabel: string;
 	languagesLabel: string;
 	previewTitle: string;
-	navLabel: string;
-	previousLabel: string;
-	nextLabel: string;
 	relatedLabel: string;
 	lightboxCloseLabel: string;
 	locale: string;
@@ -59,46 +50,9 @@ const chipLineClass = cn(
 	"border border-foreground/25 text-foreground",
 );
 
-function AdjacentLink({
-	item,
-	label,
-	direction,
-}: {
-	item: WritingNeighbor;
-	label: string;
-	direction: "previous" | "next";
-}) {
-	const isNext = direction === "next";
-
-	return (
-		<Link
-			href={`/writings/${item.id}`}
-			className={cn(
-				"group flex flex-col gap-3 py-8 no-underline sm:py-10",
-				isNext &&
-					"items-end border-t border-border text-end sm:border-t-0 sm:border-s sm:ps-8",
-				!isNext && "sm:pe-8",
-			)}
-		>
-			<span className="label flex items-center gap-2 font-medium">
-				<DirectionalIcon
-					icon={isNext ? ArrowRightIcon : ArrowLeftIcon}
-					className="size-3.5"
-				/>
-				{label}
-			</span>
-			<span className="font-heading text-h3 font-bold text-foreground underline decoration-transparent decoration-2 underline-offset-4 transition-[text-decoration-color] duration-300 group-fine:decoration-current">
-				{item.title}
-			</span>
-		</Link>
-	);
-}
-
 export function WritingPostView({
 	detail,
 	seriesBooks,
-	previous,
-	next,
 	related,
 	genreLabels,
 	writerLabel,
@@ -109,9 +63,6 @@ export function WritingPostView({
 	formatLabel,
 	languagesLabel,
 	previewTitle,
-	navLabel,
-	previousLabel,
-	nextLabel,
 	relatedLabel,
 	lightboxCloseLabel,
 	locale,
@@ -366,28 +317,6 @@ export function WritingPostView({
 					</section>
 				</ScrollRevealBlock>
 			) : null}
-
-			{(previous || next) && (
-				<nav
-					aria-label={navLabel}
-					className={cn("border-t border-border", homeInsetClass)}
-				>
-					<div className="grid sm:grid-cols-2">
-						{previous ? (
-							<AdjacentLink
-								item={previous}
-								label={previousLabel}
-								direction="previous"
-							/>
-						) : (
-							<div aria-hidden className="hidden sm:block" />
-						)}
-						{next ? (
-							<AdjacentLink item={next} label={nextLabel} direction="next" />
-						) : null}
-					</div>
-				</nav>
-			)}
 
 			{relatedCards.length > 0 ? (
 				<ScrollRevealBlock>

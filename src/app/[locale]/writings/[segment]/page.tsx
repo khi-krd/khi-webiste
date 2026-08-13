@@ -6,7 +6,6 @@ import { WritingsShell } from "@/components/writing/writings-shell";
 import {
 	getRelatedWritings,
 	getWritingById,
-	getWritingNeighbors,
 	getWritingSeriesBooks,
 } from "@/lib/api/writings";
 import { localeAlternates } from "@/lib/seo/metadata";
@@ -131,12 +130,7 @@ export default async function WritingsSegmentPage({
 			? await getWritingSeriesBooks(locale, detail.seriesId, detail.id)
 			: [];
 
-	const { previous, next } = await getWritingNeighbors(locale, detail.id);
-	const related = await getRelatedWritings(locale, detail, {
-		excludeIds: [previous?.id, next?.id].filter(
-			(id): id is number => typeof id === "number",
-		),
-	});
+	const related = await getRelatedWritings(locale, detail);
 
 	const genreLabels = Object.fromEntries(
 		BOOK_GENRES.map((genre) => [genre, t(`genres.${genre}`)]),
@@ -147,8 +141,6 @@ export default async function WritingsSegmentPage({
 			<WritingPostView
 				detail={detail}
 				seriesBooks={seriesBooks}
-				previous={previous}
-				next={next}
 				related={related}
 				genreLabels={genreLabels}
 				locale={locale}
@@ -162,9 +154,6 @@ export default async function WritingsSegmentPage({
 				formatLabel={t("post.format")}
 				languagesLabel={t("post.languagesLabel")}
 				previewTitle={t("post.preview.title")}
-				navLabel={t("post.navLabel")}
-				previousLabel={t("post.previous")}
-				nextLabel={t("post.next")}
 				relatedLabel={t("post.related")}
 				lightboxCloseLabel={t("post.lightboxClose")}
 			/>
