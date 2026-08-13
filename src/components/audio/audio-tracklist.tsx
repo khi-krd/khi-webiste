@@ -8,11 +8,6 @@ import type { PlayerTrackPayload, ResolvedAudioFileRow } from "@/types/audio";
 
 export type AudioTracklistLabels = {
 	title: string;
-	/** Track-count pill next to the heading, e.g. "٨ تراک". */
-	count: string | null;
-	/** Total album size line at the header's far end. */
-	totalSize: string | null;
-	subheading: string | null;
 	externalLink: string;
 };
 
@@ -52,20 +47,9 @@ export function AudioTracklist({
 
 	return (
 		<section aria-label={labels.title} className={className}>
-			<div className="flex flex-wrap items-center gap-3 text-start">
-				<h2 className="font-heading text-h3 font-bold">{labels.title}</h2>
-				{labels.count ? (
-					<span className="rounded-md bg-accent/10 px-2.5 py-1 text-label font-semibold text-brand">
-						{labels.count}
-					</span>
-				) : null}
-				{labels.subheading ? (
-					<p className="text-small text-muted">{labels.subheading}</p>
-				) : null}
-				{labels.totalSize ? (
-					<p className="ms-auto text-small text-muted">{labels.totalSize}</p>
-				) : null}
-			</div>
+			<h2 className="text-start font-heading text-h3 font-bold">
+				{labels.title}
+			</h2>
 
 			<ol className="mt-4 flex flex-col gap-2">
 				{fileRows.map((row, index) => {
@@ -138,7 +122,12 @@ export function AudioTracklist({
 									) : null}
 								</span>
 
-								<AudioTrackWave fileId={row.id} />
+								{/* Fills all the free width between the title and the
+								    duration while this row's track is loaded. */}
+								<AudioTrackWave
+									fileId={row.id}
+									className="min-w-0 flex-[3] max-sm:hidden"
+								/>
 
 								{formatDuration(row.durationSeconds) ? (
 									<span className="label shrink-0 text-muted tabular-nums">

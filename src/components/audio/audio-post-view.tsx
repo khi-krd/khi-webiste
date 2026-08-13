@@ -106,8 +106,6 @@ export async function AudioPostView({
 	const stateLabel = t(
 		detail.trackState === "MULTI" ? "state.multi" : "state.single",
 	);
-	const isAlbum = detail.trackState === "MULTI";
-
 	const totalSizeLabel =
 		detail.totalSizeBytes != null && detail.totalSizeBytes > 0
 			? formatFileSize(detail.totalSizeBytes)
@@ -119,19 +117,6 @@ export async function AudioPostView({
 
 	const tracklistLabels: AudioTracklistLabels = {
 		title: t("post.tracklist"),
-		count:
-			detail.totalTracks != null
-				? t("stats.trackCount", {
-						count: formatNumber(locale, detail.totalTracks),
-					})
-				: null,
-		totalSize: totalSizeLabel ? `${t("stats.size")} ${totalSizeLabel}` : null,
-		subheading:
-			isAlbum && detail.albumName
-				? detail.cdNumber != null
-					? `${detail.albumName} — ${t("post.cdNumber", { number: detail.cdNumber })}`
-					: detail.albumName
-				: null,
 		externalLink: t("post.externalLink"),
 	};
 
