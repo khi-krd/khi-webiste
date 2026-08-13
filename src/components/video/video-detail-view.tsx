@@ -106,10 +106,15 @@ export async function VideoDetailView({
 					    player on the end side, mirroring the audio album spread.
 					    The player leads on mobile so the film is never below the
 					    fold. */}
-					<section className="bg-foreground text-primary-foreground">
-						<div
-							className={cn("mx-auto max-w-6xl py-8 sm:py-10", homeInsetClass)}
-						>
+					{/* Same container recipe as the body below (inset outside,
+					    max-w inside) so every zone's text starts on one line. */}
+					<section
+						className={cn(
+							"bg-foreground text-primary-foreground",
+							homeInsetClass,
+						)}
+					>
+						<div className="mx-auto max-w-6xl py-8 sm:py-10">
 							<div className="grid items-center gap-8 lg:grid-cols-[minmax(0,1fr)_minmax(0,39rem)] lg:gap-12">
 								<div className="min-w-0 text-start">
 									<div className="flex flex-wrap items-center gap-2">
@@ -193,13 +198,10 @@ export async function VideoDetailView({
 				    confident value, flowing inline like a film print's edge codes. */}
 				{metaRows.length > 0 ? (
 					<ScrollRevealItem>
-						<section className="border-b border-border bg-sunken">
-							<dl
-								className={cn(
-									"mx-auto flex max-w-6xl flex-wrap items-baseline gap-x-8 gap-y-2.5 py-4 text-start",
-									homeInsetClass,
-								)}
-							>
+						<section
+							className={cn("border-b border-border bg-sunken", homeInsetClass)}
+						>
+							<dl className="mx-auto flex max-w-6xl flex-wrap items-baseline gap-x-8 gap-y-2.5 py-4 text-start">
 								{metaRows.map((row) => (
 									<div key={row.label} className="flex items-baseline gap-2.5">
 										<dt className="label font-medium text-muted">
