@@ -4,11 +4,8 @@ type ScrollToSectionOptions = {
 	immediate?: boolean;
 };
 
-/**
- * House easing — long settle, Apple-like deceleration. Exported so the
- * section stepper glides on exactly the same curve as a hash-link jump.
- */
-export const SCROLL_EASE = [0.16, 1, 0.3, 1] as const;
+/** House easing — long settle, Apple-like deceleration. */
+const SCROLL_EASE = [0.16, 1, 0.3, 1] as const;
 
 const MIN_DURATION = 0.5;
 const MAX_DURATION = 1.15;

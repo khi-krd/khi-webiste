@@ -8,7 +8,6 @@ import { ProjectsSection } from "@/components/home/projects-section";
 import { SoundSection } from "@/components/home/sound-section";
 import { VideoSection } from "@/components/home/video-section";
 import { WritingsSection } from "@/components/home/writings-section";
-import { SectionScroll } from "@/components/motion/section-scroll";
 import { VisuallyHidden } from "@/components/ui/visually-hidden";
 import { localeAlternates } from "@/lib/seo/metadata";
 
@@ -36,10 +35,7 @@ export default async function Home({
 	const t = await getTranslations("Hero");
 
 	return (
-		// `data-snap-sections` opts this page into section-by-section snap
-		// scrolling (see globals.css) — one gesture lands on one whole section.
-		<main data-snap-sections>
-			<SectionScroll />
+		<main>
 			<VisuallyHidden as="h1">{t("regionLabel")}</VisuallyHidden>
 			<FeaturedHero />
 			<LatestUpdates />
