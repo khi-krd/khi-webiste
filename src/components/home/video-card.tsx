@@ -308,10 +308,12 @@ const SCROLL_IDLE_MS = 140;
  *    browser runs after layout. What is left in the handler is arithmetic on
  *    three local variables.
  *
- *  - A wheel the queue can consume stops propagating, so nothing listening
- *    higher up the tree ever handles a notch that belongs to this column. At
- *    either end the event is let through untouched, so the page carries on
- *    exactly as it does anywhere else.
+ *  - A wheel the queue can consume stops propagating. The page's
+ *    <SectionScroll/> holds a NON-passive wheel listener on window, so every
+ *    notch over this column waited on a handler that walked the ancestor chain
+ *    through `getComputedStyle` before the queue was allowed to move. Stopping
+ *    the event here skips that entirely. At either end the event is let through
+ *    untouched, so the page carries on exactly as it does anywhere else.
  *
  *  - Hover inside the column freezes while it moves. Scrolling drags rows under
  *    a stationary cursor, and every row that passes it starts its own
