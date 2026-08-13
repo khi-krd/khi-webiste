@@ -85,7 +85,6 @@ export default async function ShortFilmDetailPage({
 		<main className="bg-foreground text-primary-foreground">
 			<ShortFilmDetailView
 				detail={detail}
-				locale={locale}
 				relatedShortFilms={relatedShortFilms}
 			/>
 		</main>

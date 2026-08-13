@@ -158,10 +158,7 @@ export default async function WritingsSegmentPage({
 					t("post.seriesVolume", { order, total: total ?? order })
 				}
 				topicLabel={t("post.topic")}
-				keywordsLabel={t("post.keywords")}
 				previewTitle={t("post.preview.title")}
-				publishedLabel={t("post.published")}
-				updatedLabel={t("post.updated")}
 				navLabel={t("post.navLabel")}
 				previousLabel={t("post.previous")}
 				nextLabel={t("post.next")}

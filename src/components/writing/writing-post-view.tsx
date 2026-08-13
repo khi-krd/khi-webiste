@@ -39,10 +39,7 @@ type WritingPostViewProps = {
 	seriesLabel: string;
 	seriesVolumeLabel: (order: number, total: number | null) => string;
 	topicLabel: string;
-	keywordsLabel: string;
 	previewTitle: string;
-	publishedLabel: string;
-	updatedLabel: string;
 	navLabel: string;
 	previousLabel: string;
 	nextLabel: string;
@@ -107,18 +104,6 @@ function AdjacentLink({
 	);
 }
 
-function formatDate(locale: string, iso: string): string {
-	try {
-		return new Intl.DateTimeFormat(locale, {
-			year: "numeric",
-			month: "long",
-			day: "numeric",
-		}).format(new Date(iso));
-	} catch {
-		return iso;
-	}
-}
-
 export function WritingPostView({
 	detail,
 	seriesBooks,
@@ -130,10 +115,7 @@ export function WritingPostView({
 	seriesLabel,
 	seriesVolumeLabel,
 	topicLabel,
-	keywordsLabel,
 	previewTitle,
-	publishedLabel,
-	updatedLabel,
 	navLabel,
 	previousLabel,
 	nextLabel,
@@ -273,28 +255,6 @@ export function WritingPostView({
 							{detail.seriesName ? (
 								<MetaRow label={seriesLabel}>{detail.seriesName}</MetaRow>
 							) : null}
-							{detail.keywords.length > 0 ? (
-								<MetaRow label={keywordsLabel}>
-									<span className="flex flex-wrap gap-1.5">
-										{detail.keywords.map((keyword) => (
-											<TaxonomyBadgeLink
-												key={keyword}
-												href={writingTagHref(keyword)}
-												variant="outline"
-												size="sm"
-											>
-												{keyword}
-											</TaxonomyBadgeLink>
-										))}
-									</span>
-								</MetaRow>
-							) : null}
-							<MetaRow label={publishedLabel} numeric>
-								{formatDate(locale, detail.createdAt)}
-							</MetaRow>
-							<MetaRow label={updatedLabel} numeric>
-								{formatDate(locale, detail.updatedAt)}
-							</MetaRow>
 						</dl>
 					</div>
 				</div>

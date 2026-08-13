@@ -100,11 +100,7 @@ export default async function VideoDetailPage({
 
 	return (
 		<main className="bg-background">
-			<VideoDetailView
-				detail={detail}
-				locale={locale}
-				relatedVideos={relatedVideos}
-			/>
+			<VideoDetailView detail={detail} relatedVideos={relatedVideos} />
 		</main>
 	);
 }

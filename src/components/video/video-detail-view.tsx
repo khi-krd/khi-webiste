@@ -20,16 +20,11 @@ import {
 	videoTypeHref,
 } from "@/lib/search/taxonomy-href";
 import { cn } from "@/lib/utils";
-import {
-	formatDuration,
-	formatFileSizeMb,
-	formatPublishmentDate,
-} from "@/lib/video/format";
+import { formatDuration, formatFileSizeMb } from "@/lib/video/format";
 import type { ResolvedVideoDetail } from "@/types/video";
 
 type VideoDetailViewProps = {
 	detail: ResolvedVideoDetail;
-	locale: string;
 	relatedVideos?: VideoPosterCardProps[];
 };
 
@@ -55,21 +50,8 @@ function MetaRow({
 	);
 }
 
-function formatDate(locale: string, iso: string): string {
-	try {
-		return new Intl.DateTimeFormat(locale, {
-			year: "numeric",
-			month: "long",
-			day: "numeric",
-		}).format(new Date(iso));
-	} catch {
-		return iso;
-	}
-}
-
 export async function VideoDetailView({
 	detail,
-	locale,
 	relatedVideos = [],
 }: VideoDetailViewProps) {
 	const t = await getTranslations("Video");
@@ -79,10 +61,6 @@ export async function VideoDetailView({
 		.join(" · ");
 	const durationLabel = formatDuration(detail.durationSeconds);
 	const fileSizeLabel = formatFileSizeMb(detail.fileSizeMb);
-	const publishedDateLabel = formatPublishmentDate(
-		locale,
-		detail.publishmentDate,
-	);
 	const languageLabels = detail.contentLanguages.map((language) =>
 		t(`detail.languages.${language}`),
 	);
@@ -129,9 +107,6 @@ export async function VideoDetailView({
 					value: detail.fileFormat.toUpperCase(),
 					ltr: true,
 				}
-			: null,
-		publishedDateLabel
-			? { label: t("detail.publishmentDate"), value: publishedDateLabel }
 			: null,
 		fileSizeLabel
 			? { label: t("detail.fileSize"), value: fileSizeLabel, ltr: true }
@@ -250,41 +225,18 @@ export async function VideoDetailView({
 							) : null}
 						</ScrollRevealItem>
 
-						{detail.tags.length > 0 || detail.keywords.length > 0 ? (
+						{detail.tags.length > 0 ? (
 							<ScrollRevealItem>
-								<div className="mt-8 space-y-6 border-t border-border pt-8">
-									{detail.tags.length > 0 ? (
-										<div className="flex flex-wrap items-baseline gap-x-4 gap-y-2">
-											{detail.tags.map((tag) => (
-												<NavLink
-													key={tag}
-													href={videoTagHref(tag)}
-													className="text-body font-bold text-brand no-underline transition-opacity fine-hover:opacity-75"
-												>
-													#{tag}
-												</NavLink>
-											))}
-										</div>
-									) : null}
-									{detail.keywords.length > 0 ? (
-										<div>
-											<p className="label font-medium">
-												{t("detail.keywords")}
-											</p>
-											<div className="mt-3 flex flex-wrap gap-2">
-												{detail.keywords.map((keyword) => (
-													<TaxonomyBadgeLink
-														key={keyword}
-														href={videoTagHref(keyword)}
-														variant="subtle"
-														size="sm"
-													>
-														{keyword}
-													</TaxonomyBadgeLink>
-												))}
-											</div>
-										</div>
-									) : null}
+								<div className="mt-8 flex flex-wrap items-baseline gap-x-4 gap-y-2 border-t border-border pt-8">
+									{detail.tags.map((tag) => (
+										<NavLink
+											key={tag}
+											href={videoTagHref(tag)}
+											className="text-body font-bold text-brand no-underline transition-opacity fine-hover:opacity-75"
+										>
+											#{tag}
+										</NavLink>
+									))}
 								</div>
 							</ScrollRevealItem>
 						) : null}
@@ -300,18 +252,7 @@ export async function VideoDetailView({
 						) : null}
 
 						<ScrollRevealItem>
-							<footer className="mt-8 flex flex-wrap items-center justify-between gap-4 border-t border-border pt-6">
-								<p className="text-label text-muted">
-									{t("detail.published")}:{" "}
-									{formatDate(locale, detail.createdAt)}
-									{detail.updatedAt !== detail.createdAt ? (
-										<>
-											{" · "}
-											{t("detail.updated")}:{" "}
-											{formatDate(locale, detail.updatedAt)}
-										</>
-									) : null}
-								</p>
+							<footer className="mt-8 flex flex-wrap items-center justify-end gap-4 border-t border-border pt-6">
 								<Link href="/videos" className="label font-medium no-underline">
 									{t("detail.back")}
 								</Link>

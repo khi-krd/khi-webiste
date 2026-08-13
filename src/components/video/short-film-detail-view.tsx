@@ -18,7 +18,7 @@ import { VideoRelatedGrid } from "@/components/video/video-related-grid";
 import { homeInsetClass } from "@/lib/layout";
 import { videoTagHref, videoTopicHref } from "@/lib/search/taxonomy-href";
 import { cn } from "@/lib/utils";
-import { formatDuration, formatPublishmentDate } from "@/lib/video/format";
+import { formatDuration } from "@/lib/video/format";
 import type {
 	ResolvedVideoCastMember,
 	ResolvedVideoDetail,
@@ -27,7 +27,6 @@ import type {
 
 type ShortFilmDetailViewProps = {
 	detail: ResolvedVideoDetail;
-	locale: string;
 	relatedShortFilms?: VideoPosterCardProps[];
 };
 
@@ -164,28 +163,16 @@ function HighlightCard({ highlight }: { highlight: ResolvedVideoHighlight }) {
 
 export async function ShortFilmDetailView({
 	detail,
-	locale,
 	relatedShortFilms = [],
 }: ShortFilmDetailViewProps) {
 	const t = await getTranslations("Video");
 
 	const durationLabel = formatDuration(detail.durationSeconds);
-	const releaseDateLabel = formatPublishmentDate(
-		locale,
-		detail.publishmentDate,
-	);
 	const genreLabel = detail.tags[0] ?? detail.topicName ?? "—";
 	const directorLabel = detail.director ?? null;
 	const producerLabel = detail.producer ?? null;
-	const publishYear = detail.publishmentDate?.slice(0, 4) ?? null;
 
 	const metaRows = [
-		releaseDateLabel
-			? {
-					label: t("shortfilms.detail.releaseDate"),
-					value: releaseDateLabel,
-				}
-			: null,
 		genreLabel !== "—"
 			? { label: t("shortfilms.detail.genre"), value: genreLabel }
 			: null,
@@ -301,19 +288,11 @@ export async function ShortFilmDetailView({
 									{detail.title}
 								</h2>
 
-								{(durationLabel || publishYear) && (
+								{durationLabel && (
 									<div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-label text-primary-foreground/50">
 										{durationLabel ? (
 											<span dir="ltr" className="tabular-nums">
 												{durationLabel}
-											</span>
-										) : null}
-										{durationLabel && publishYear ? (
-											<span aria-hidden="true">·</span>
-										) : null}
-										{publishYear ? (
-											<span dir="ltr" className="tabular-nums">
-												{publishYear}
 											</span>
 										) : null}
 									</div>
