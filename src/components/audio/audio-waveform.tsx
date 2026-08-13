@@ -15,9 +15,10 @@ type AudioWaveformProps = {
 };
 
 /**
- * Deterministic waveform strip — same output on server and client (no
- * Math.random). Decorative, but doubles as a progress readout when `progress`
- * is fed in.
+ * SoundCloud-style waveform strip — rounded bars mirrored around the center
+ * line, deterministic so server and client render identical output (no
+ * Math.random). Decorative on its own; fed a `progress`, the elapsed bars
+ * take the played fill and the strip reads as a live playhead.
  *
  * `dir-row-unmirrored` because this is a TIME axis, not text: elapsed has to
  * grow from the same edge the play button sits on in both locales, matching the
@@ -26,6 +27,10 @@ type AudioWaveformProps = {
  * A bar takes EITHER the played or the idle class, never both — `cn()` is a
  * plain joiner, and two competing `bg-*` utilities would be resolved by
  * stylesheet order rather than by the order they were passed here.
+ *
+ * No default height — pass one via `className` (the h-* conflict a default
+ * would create with callers' heights is resolved by stylesheet order, not by
+ * the order classes are passed).
  *
  * Server component.
  */
@@ -44,7 +49,7 @@ export function AudioWaveform({
 		<div
 			aria-hidden
 			className={cn(
-				"dir-row-unmirrored flex h-10 items-end justify-between gap-px",
+				"dir-row-unmirrored flex items-center justify-between gap-px",
 				className,
 			)}
 		>
@@ -53,15 +58,16 @@ export function AudioWaveform({
 					// biome-ignore lint/suspicious/noArrayIndexKey: static decorative bars, never reordered
 					key={index}
 					className={cn(
-						// Capped width + `justify-between`: hairline strokes spread evenly
+						// Capped width + `justify-between`: rounded strokes spread evenly
 						// across the strip instead of fat blocks that butt up against
 						// each other whatever the container width.
-						"min-w-0 max-w-[2px] flex-1",
+						"min-w-0 max-w-[3px] flex-1 rounded-full transition-colors duration-300",
 						playedBarClassName && index < playedCount
 							? playedBarClassName
 							: barClassName,
 					)}
-					style={{ height: `${Math.round(height * 100)}%` }}
+					// Mirrored around the center: never shorter than a dot.
+					style={{ height: `${Math.max(8, Math.round(height * 100))}%` }}
 				/>
 			))}
 		</div>

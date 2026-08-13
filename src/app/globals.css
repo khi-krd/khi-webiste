@@ -1010,49 +1010,6 @@ html[data-corners="rounded"]
 	contain-intrinsic-size: auto var(--cv-intrinsic, 800px);
 }
 
-/* ==========================================================================
-   Tracklist "now playing" equalizer (<AudioTrackWave/>)
-   --------------------------------------------------------------------------
-   Five brand-green bars bouncing out of phase. Animated with scaleY on
-   full-height bars (compositor-only — no layout work per frame). The paused
-   player keeps the shape but freezes it via animation-play-state, so pause
-   reads as "held" rather than "gone".
-   ========================================================================== */
-.track-eq {
-	display: flex;
-	align-items: flex-end;
-	justify-content: space-between;
-	gap: 1px;
-	height: 1.5rem;
-}
-.track-eq > span {
-	/* Capped width + space-between: hairline strokes spread evenly across
-	   whatever width the row grants, matching the hero waveform's texture. */
-	flex: 1;
-	min-width: 0;
-	max-width: 2.5px;
-	border-radius: 1px;
-	background: var(--color-brand);
-	transform-origin: bottom;
-	animation: track-eq-bounce 0.9s ease-in-out infinite alternate;
-}
-.track-eq[data-paused] > span {
-	animation-play-state: paused;
-}
-@keyframes track-eq-bounce {
-	from {
-		transform: scaleY(0.22);
-	}
-	to {
-		transform: scaleY(1);
-	}
-}
-@media (prefers-reduced-motion: reduce) {
-	.track-eq > span {
-		animation: none;
-		transform: scaleY(0.6);
-	}
-}
 
 
 /* ==========================================================================

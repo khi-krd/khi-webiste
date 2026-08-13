@@ -1,18 +1,23 @@
 "use client";
 
-import { useIsCurrentTrack } from "@/components/audio/audio-player-context";
-import { waveformBars } from "@/lib/audio/waveform";
+import { useTranslations } from "next-intl";
+import {
+	useIsCurrentTrack,
+	usePlayer,
+	usePlayerTime,
+} from "@/components/audio/audio-player-context";
+import { AudioWaveform } from "@/components/audio/audio-waveform";
 import { cn } from "@/lib/utils";
 
-const BAR_COUNT = 44;
-
 /**
- * Waveform equalizer that fills the free width of the tracklist row whose
- * track is loaded in the player: brand-green bars in the track's own
- * deterministic contour, each pulsing out of phase while it plays and frozen
- * while it is paused, absent everywhere else. Pure CSS animation (`.track-eq`
- * in globals.css) — no per-frame JS, and reduced motion collapses it to a
- * static reading.
+ * SoundCloud-style playhead for the tracklist row whose track is loaded in
+ * the player: the track's own deterministic contour, with the elapsed bars
+ * filling in brand green as the audio actually advances (the same
+ * `usePlayerTime` tick the bottom bar's seek track reads — the two playheads
+ * always agree). Clicking the strip seeks. Absent on every other row.
+ *
+ * Split so only the current row subscribes to time: the strip ticks 4×/sec,
+ * and every idle row re-rendering on each tick would be wasted work.
  */
 export function AudioTrackWave({
 	fileId,
@@ -21,30 +26,55 @@ export function AudioTrackWave({
 	fileId: number;
 	className?: string;
 }) {
-	const { isCurrent, isPlaying } = useIsCurrentTrack(fileId);
+	const { isCurrent } = useIsCurrentTrack(fileId);
 	if (!isCurrent) {
 		return null;
 	}
+	return <CurrentTrackWave fileId={fileId} className={className} />;
+}
 
-	const bars = waveformBars(fileId, BAR_COUNT);
+function CurrentTrackWave({
+	fileId,
+	className,
+}: {
+	fileId: number;
+	className?: string;
+}) {
+	const { actions } = usePlayer();
+	const { currentTime, duration } = usePlayerTime();
+	const t = useTranslations("Audio.player");
+
+	const progress = duration > 0 ? currentTime / duration : 0;
 
 	return (
-		<span
-			aria-hidden
-			className={cn("track-eq", className)}
-			data-paused={isPlaying ? undefined : ""}
+		<button
+			type="button"
+			aria-label={t("seek")}
+			disabled={duration <= 0}
+			onClick={(event) => {
+				// The strip is always LTR (`dir-row-unmirrored`): the elapsed side
+				// grows from the left in both locales, so the click fraction maps
+				// straight onto the timeline.
+				const rect = event.currentTarget.getBoundingClientRect();
+				if (rect.width <= 0) {
+					return;
+				}
+				const fraction = (event.clientX - rect.left) / rect.width;
+				actions.seek(Math.min(1, Math.max(0, fraction)) * duration);
+			}}
+			className={cn(
+				"cursor-pointer focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-ring disabled:cursor-default",
+				className,
+			)}
 		>
-			{bars.map((height, index) => (
-				<span
-					// biome-ignore lint/suspicious/noArrayIndexKey: static decorative bars, never reordered
-					key={index}
-					style={{
-						height: `${Math.round(height * 100)}%`,
-						// Prime-stepped phase so neighbours never bounce in lockstep.
-						animationDelay: `-${(index * 173) % 900}ms`,
-					}}
-				/>
-			))}
-		</span>
+			<AudioWaveform
+				seedId={fileId}
+				barCount={64}
+				className="h-8"
+				barClassName="bg-brand/25"
+				playedBarClassName="bg-brand"
+				progress={progress}
+			/>
+		</button>
 	);
 }

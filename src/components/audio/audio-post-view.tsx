@@ -5,11 +5,11 @@ import { AudioAttachments } from "@/components/audio/audio-attachments";
 import { AudioBookletReader } from "@/components/audio/audio-booklet-reader";
 import { AudioBrochures } from "@/components/audio/audio-brochures";
 import { AudioCard, type AudioCardProps } from "@/components/audio/audio-card";
+import { AudioHeroWave } from "@/components/audio/audio-hero-wave";
 import {
 	AudioTracklist,
 	type AudioTracklistLabels,
 } from "@/components/audio/audio-tracklist";
-import { AudioWaveform } from "@/components/audio/audio-waveform";
 import {
 	ScrollReveal,
 	ScrollRevealItem,
@@ -223,11 +223,10 @@ export async function AudioPostView({
 								</h1>
 
 								{detail.queue.length > 0 ? (
-									<AudioWaveform
+									<AudioHeroWave
 										seedId={detail.id}
-										barCount={72}
+										fileIds={detail.queue.map((payload) => payload.fileId)}
 										className="mt-8 h-11 min-w-0"
-										barClassName="bg-brand/40"
 									/>
 								) : null}
 							</div>
