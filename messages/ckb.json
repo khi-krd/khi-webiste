@@ -599,7 +599,10 @@
 				"errorDescription": "ڕەنگە فایلەکە بەردەست نەبێت یان وەشانەکەت ڕێگری لێ بکات. دواتر دووبارە هەوڵ بدەرەوە.",
 				"unavailableTitle": "پێشبینین بەردەست نییە",
 				"unavailableDescription": "ئەم نووسراوە فایلی PDFی بۆ پیشاندان نییە."
-			}
+			},
+			"by": "نووسینی",
+			"format": "فۆرمات",
+			"languagesLabel": "زمانەکان"
 		},
 		"subcategories": {
 			"literature": {

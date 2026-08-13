@@ -10,7 +10,6 @@ import { CoverLightbox } from "@/components/ui/cover-lightbox";
 import { DirectionalIcon } from "@/components/ui/directional-icon";
 import { Link } from "@/components/ui/link";
 import { RichText } from "@/components/ui/rich-text";
-import { TaxonomyBadgeLink } from "@/components/ui/taxonomy-badge-link";
 import { WritingGridCard } from "@/components/writing/writing-grid-card";
 import { WritingPdfPreview } from "@/components/writing/writing-pdf-preview";
 import { Link as NavLink } from "@/i18n/navigation";
@@ -36,9 +35,13 @@ type WritingPostViewProps = {
 	related: ResolvedWritingCard[];
 	genreLabels: Record<BookGenre, string>;
 	writerLabel: string;
+	/** "نووسینی" — byline prefix before the bold writer name. */
+	byLabel: string;
 	seriesLabel: string;
 	seriesVolumeLabel: (order: number, total: number | null) => string;
 	topicLabel: string;
+	formatLabel: string;
+	languagesLabel: string;
 	previewTitle: string;
 	navLabel: string;
 	previousLabel: string;
@@ -48,26 +51,13 @@ type WritingPostViewProps = {
 	locale: string;
 };
 
-function MetaRow({
-	label,
-	children,
-	numeric = false,
-}: {
-	label: string;
-	children: React.ReactNode;
-	numeric?: boolean;
-}) {
-	return (
-		<div className="grid gap-1.5 px-4 py-3 sm:grid-cols-[8.5rem_minmax(0,1fr)] sm:gap-4 sm:px-5">
-			<dt className="label font-medium">{label}</dt>
-			<dd
-				className={cn("text-small text-foreground", numeric && "tabular-nums")}
-			>
-				{children}
-			</dd>
-		</div>
-	);
-}
+const chipBase =
+	"px-3.5 py-1.5 text-label font-semibold no-underline transition-opacity fine-hover:opacity-85";
+const chipSolidClass = cn(chipBase, "bg-brand text-white");
+const chipLineClass = cn(
+	chipBase,
+	"border border-foreground/25 text-foreground",
+);
 
 function AdjacentLink({
 	item,
@@ -112,9 +102,12 @@ export function WritingPostView({
 	related,
 	genreLabels,
 	writerLabel,
+	byLabel,
 	seriesLabel,
 	seriesVolumeLabel,
 	topicLabel,
+	formatLabel,
+	languagesLabel,
 	previewTitle,
 	navLabel,
 	previousLabel,
@@ -125,77 +118,83 @@ export function WritingPostView({
 }: WritingPostViewProps) {
 	const relatedCards = buildWritingGridCards(related);
 
+	// Genre chips — the first reads as the record's primary class (solid
+	// brand), the rest as quieter outlined qualifiers, per the house mock.
+	const genreChips = [
+		...detail.genres.map((genre) => ({
+			key: `genre-${genre}`,
+			href: writingGenreHref(genre),
+			label: genreLabels[genre],
+		})),
+		...(detail.freeTextGenre
+			? [
+					{
+						key: "free-genre",
+						href: writingTagHref(detail.freeTextGenre),
+						label: detail.freeTextGenre,
+					},
+				]
+			: []),
+	];
+
+	const volumeLine =
+		detail.seriesName && detail.isPartOfSeries
+			? seriesVolumeLabel(
+					Math.round(detail.seriesOrder ?? 1),
+					detail.seriesTotalBooks,
+				)
+			: detail.seriesName;
+
+	// Spec-strip values sourced from the file offers (PDF · languages).
+	const formatValue =
+		Array.from(
+			new Set(
+				detail.fileOffers
+					.map((offer) => offer.fileFormat?.toUpperCase())
+					.filter(Boolean),
+			),
+		).join(" · ") || null;
+	const languagesValue =
+		Array.from(
+			new Set(
+				detail.fileOffers.map((offer) => offer.languageLabel).filter(Boolean),
+			),
+		).join(" · ") || null;
+
+	const stripFields = [
+		detail.writer ? { label: writerLabel, value: detail.writer } : null,
+		detail.topicName ? { label: topicLabel, value: detail.topicName } : null,
+		formatValue ? { label: formatLabel, value: formatValue, ltr: true } : null,
+		languagesValue ? { label: languagesLabel, value: languagesValue } : null,
+	].filter((field): field is NonNullable<typeof field> => field != null);
+
 	return (
 		<article>
+			{/* Liner hero, per the house mock: text column beside the cover
+			    plate (physically at the end side), the cover leading on mobile. */}
 			<ScrollRevealBlock
 				className={cn("pt-8 pb-8 sm:pt-10 sm:pb-10", homeInsetClass)}
 			>
-				<div className="grid gap-8 lg:grid-cols-[minmax(0,20rem)_minmax(0,1fr)] lg:items-start lg:gap-12 xl:grid-cols-[minmax(0,23rem)_minmax(0,1fr)]">
-					{/* Plated volume: mat frame around a portrait cover, book-on-table */}
-					<div className="w-full max-w-sm border border-border bg-surface p-3 sm:p-4 lg:sticky lg:top-32 lg:max-w-none">
-						{detail.coverUrl ? (
-							<CoverLightbox
-								src={detail.coverUrl}
-								alt={detail.title}
-								caption={detail.title}
-								closeLabel={lightboxCloseLabel}
-								intrinsicWidth={1200}
-								intrinsicHeight={1600}
-							>
-								<span className="relative block aspect-[3/4] w-full overflow-hidden border border-border bg-sunken">
-									<NextImage
-										src={detail.coverUrl}
-										alt=""
-										fill
-										priority
-										sizes="(max-width: 1024px) 80vw, 23rem"
-										className="object-cover brightness-[0.94] saturate-[0.9]"
-									/>
-								</span>
-							</CoverLightbox>
-						) : (
-							<div
-								aria-hidden
-								className="flex aspect-[3/4] w-full items-center justify-center border border-border bg-sunken"
-							>
-								<span className="font-heading text-display font-bold text-foreground/10">
-									{detail.title.charAt(0)}
-								</span>
-							</div>
-						)}
-					</div>
-
-					<div className="min-w-0">
+				<div className="grid gap-8 lg:grid-cols-[minmax(0,1fr)_minmax(0,25rem)] lg:items-center lg:gap-12">
+					<div className="min-w-0 text-start">
 						<div className="flex flex-wrap items-center gap-2">
-							{detail.genres.map((genre) => (
-								<TaxonomyBadgeLink
-									key={genre}
-									href={writingGenreHref(genre)}
-									variant="subtle"
-									size="sm"
+							{genreChips.map((chip, index) => (
+								<NavLink
+									key={chip.key}
+									href={chip.href}
+									className={index === 0 ? chipSolidClass : chipLineClass}
 								>
-									{genreLabels[genre]}
-								</TaxonomyBadgeLink>
+									{chip.label}
+								</NavLink>
 							))}
-							{detail.freeTextGenre ? (
-								<TaxonomyBadgeLink
-									href={writingTagHref(detail.freeTextGenre)}
-									variant="subtle"
-									size="sm"
-								>
-									{detail.freeTextGenre}
-								</TaxonomyBadgeLink>
-							) : null}
 							{detail.topicName ? (
-								<Badge variant="outline" size="sm">
-									{detail.topicName}
-								</Badge>
+								<span className={chipLineClass}>{detail.topicName}</span>
 							) : null}
 						</div>
 
 						<h1
 							className={cn(
-								"display-title mt-5 max-w-2xl text-balance",
+								"display-title mt-6 max-w-2xl text-balance",
 								displayTitleSizeClass(detail.title),
 							)}
 						>
@@ -203,35 +202,26 @@ export function WritingPostView({
 						</h1>
 
 						{detail.writer ? (
-							<p className="mt-4 text-lead text-muted">
-								<span className="text-foreground/80">{detail.writer}</span>
+							<p className="mt-3 text-body text-muted">
+								{byLabel}{" "}
+								<span className="font-bold text-foreground">
+									{detail.writer}
+								</span>
+								{volumeLine ? <> · {volumeLine}</> : null}
 							</p>
+						) : volumeLine ? (
+							<p className="mt-3 text-body text-muted">{volumeLine}</p>
 						) : null}
 
-						{detail.seriesName && detail.isPartOfSeries ? (
-							<p className="mt-2 text-small italic text-muted">
-								{seriesVolumeLabel(
-									Math.round(detail.seriesOrder ?? 1),
-									detail.seriesTotalBooks,
-								)}
-								{detail.seriesName ? ` · ${detail.seriesName}` : null}
-							</p>
-						) : detail.seriesName ? (
-							<p className="mt-2 text-small italic text-muted">
-								{detail.seriesName}
-							</p>
-						) : null}
-
-						{/* Narrow manuscript measure for the record's descriptive text */}
 						{detail.description ? (
 							<RichText
 								content={detail.description}
-								className="mt-6 max-w-[58ch]"
+								className="mt-5 max-w-3xl text-justify text-body leading-loose text-foreground/85"
 							/>
 						) : null}
 
 						{detail.tags.length > 0 ? (
-							<div className="mt-6 flex max-w-[58ch] flex-wrap items-baseline gap-x-4 gap-y-2">
+							<div className="mt-6 flex flex-wrap items-baseline gap-x-4 gap-y-2">
 								{detail.tags.map((tag) => (
 									<NavLink
 										key={tag}
@@ -243,22 +233,64 @@ export function WritingPostView({
 								))}
 							</div>
 						) : null}
-
-						{/* Library card: catalog fields as hairline rows on a surface panel */}
-						<dl className="mt-8 max-w-2xl divide-y divide-border border border-border bg-surface">
-							{detail.writer ? (
-								<MetaRow label={writerLabel}>{detail.writer}</MetaRow>
-							) : null}
-							{detail.topicName ? (
-								<MetaRow label={topicLabel}>{detail.topicName}</MetaRow>
-							) : null}
-							{detail.seriesName ? (
-								<MetaRow label={seriesLabel}>{detail.seriesName}</MetaRow>
-							) : null}
-						</dl>
 					</div>
+
+					{/* Cover plate — shadowed volume, click to enlarge. */}
+					<figure className="w-full max-w-sm max-lg:order-first lg:max-w-none">
+						{detail.coverUrl ? (
+							<CoverLightbox
+								src={detail.coverUrl}
+								alt={detail.title}
+								caption={detail.title}
+								closeLabel={lightboxCloseLabel}
+								intrinsicWidth={1200}
+								intrinsicHeight={1600}
+							>
+								<span className="relative block aspect-[3/4] w-full overflow-hidden rounded-md border border-border bg-sunken shadow-[0_12px_32px_rgba(23,21,18,0.14)]">
+									<NextImage
+										src={detail.coverUrl}
+										alt=""
+										fill
+										priority
+										sizes="(max-width: 1024px) 80vw, 25rem"
+										className="object-cover brightness-[0.94] saturate-[0.9]"
+									/>
+								</span>
+							</CoverLightbox>
+						) : (
+							<div
+								aria-hidden
+								className="flex aspect-[3/4] w-full items-center justify-center rounded-md border border-border bg-sunken"
+							>
+								<span className="font-heading text-display font-bold text-foreground/10">
+									{detail.title.charAt(0)}
+								</span>
+							</div>
+						)}
+					</figure>
 				</div>
 			</ScrollRevealBlock>
+
+			{/* Always-visible spec strip: quiet label beside a confident value. */}
+			{stripFields.length > 0 ? (
+				<section
+					className={cn("border-t border-border bg-sunken", homeInsetClass)}
+				>
+					<dl className="flex flex-wrap items-baseline gap-x-8 gap-y-2.5 py-4 text-start">
+						{stripFields.map((field) => (
+							<div key={field.label} className="flex items-baseline gap-2.5">
+								<dt className="label font-medium text-muted">{field.label}</dt>
+								<dd
+									dir={field.ltr ? "ltr" : undefined}
+									className="text-small font-bold text-foreground"
+								>
+									{field.value}
+								</dd>
+							</div>
+						))}
+					</dl>
+				</section>
+			) : null}
 
 			<ScrollRevealBlock>
 				<section

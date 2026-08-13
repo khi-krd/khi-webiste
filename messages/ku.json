@@ -599,7 +599,10 @@
 				"errorDescription": "Dibe ku pel ne berdest be an ji hêla geroka te ve were astengkirin. Paşê dîsa biceribîne.",
 				"unavailableTitle": "Pêşdîtin tune",
 				"unavailableDescription": "Ev nivîs PDFek ji bo nîşandanê tune."
-			}
+			},
+			"by": "Nivîsîna",
+			"format": "Format",
+			"languagesLabel": "Ziman"
 		},
 		"subcategories": {
 			"literature": {
