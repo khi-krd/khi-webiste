@@ -11,6 +11,7 @@ import { TaxonomyBadgeLink } from "@/components/ui/taxonomy-badge-link";
 import { VideoPlayerFrame } from "@/components/video/video-player-frame";
 import type { VideoPosterCardProps } from "@/components/video/video-poster-card";
 import { VideoRelatedGrid } from "@/components/video/video-related-grid";
+import { Link as NavLink } from "@/i18n/navigation";
 import { homeInsetClass } from "@/lib/layout";
 import {
 	videoMemoriesHref,
@@ -253,20 +254,16 @@ export async function VideoDetailView({
 							<ScrollRevealItem>
 								<div className="mt-8 space-y-6 border-t border-border pt-8">
 									{detail.tags.length > 0 ? (
-										<div>
-											<p className="label font-medium">{t("detail.tags")}</p>
-											<div className="mt-3 flex flex-wrap gap-2">
-												{detail.tags.map((tag) => (
-													<TaxonomyBadgeLink
-														key={tag}
-														href={videoTagHref(tag)}
-														variant="outline"
-														size="sm"
-													>
-														{tag}
-													</TaxonomyBadgeLink>
-												))}
-											</div>
+										<div className="flex flex-wrap items-baseline gap-x-4 gap-y-2">
+											{detail.tags.map((tag) => (
+												<NavLink
+													key={tag}
+													href={videoTagHref(tag)}
+													className="text-body font-bold text-brand no-underline transition-opacity fine-hover:opacity-75"
+												>
+													#{tag}
+												</NavLink>
+											))}
 										</div>
 									) : null}
 									{detail.keywords.length > 0 ? (

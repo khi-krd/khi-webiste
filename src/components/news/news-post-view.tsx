@@ -8,7 +8,6 @@ import { NewsCoverMedia } from "@/components/news/news-cover-media";
 import { NewsMediaGallery } from "@/components/news/news-media-gallery";
 import { NewsPostLightboxProvider } from "@/components/news/news-post-lightbox";
 import { RichText } from "@/components/ui/rich-text";
-import { TaxonomyBadgeLink } from "@/components/ui/taxonomy-badge-link";
 import { Link } from "@/i18n/navigation";
 import { homeInsetClass } from "@/lib/layout";
 import { type NewsItem, newsItemCategoryLabel } from "@/lib/mock/news";
@@ -30,7 +29,6 @@ function newsTitleSizeClass(title: string): string {
 type NewsPostViewProps = {
 	item: NewsItem;
 	authorLabel?: string;
-	tagsLabel: string;
 	galleryLabel: string;
 	closeLabel: string;
 	lightboxPreviousLabel: string;
@@ -47,7 +45,6 @@ type NewsPostViewProps = {
 export function NewsPostView({
 	item,
 	authorLabel,
-	tagsLabel,
 	galleryLabel,
 	closeLabel,
 	lightboxPreviousLabel,
@@ -140,14 +137,11 @@ export function NewsPostView({
 
 								{tags.length > 0 && (
 									<div className="mt-8 flex flex-wrap items-baseline gap-x-4 gap-y-2 sm:mt-10">
-										<span className="label shrink-0 font-medium text-muted">
-											{tagsLabel}
-										</span>
 										{tags.map((tag) => (
 											<Link
 												key={tag}
 												href={newsTagHref(tag)}
-												className="text-body font-bold text-accent no-underline transition-opacity fine-hover:opacity-75"
+												className="text-body font-bold text-brand no-underline transition-opacity fine-hover:opacity-75"
 											>
 												#{tag}
 											</Link>
@@ -163,17 +157,15 @@ export function NewsPostView({
 					<ScrollReveal className="mt-10 space-y-8 border-t border-border pt-6 sm:mt-12 sm:pt-8">
 						{!bodyContent && tags.length > 0 && (
 							<div>
-								<p className="label font-medium">{tagsLabel}</p>
-								<ul className="mt-3 flex flex-wrap gap-2">
+								<ul className="flex flex-wrap items-baseline gap-x-4 gap-y-2">
 									{tags.map((tag) => (
 										<li key={tag}>
-											<TaxonomyBadgeLink
+											<Link
 												href={newsTagHref(tag)}
-												variant="outline"
-												size="sm"
+												className="text-body font-bold text-brand no-underline transition-opacity fine-hover:opacity-75"
 											>
-												{tag}
-											</TaxonomyBadgeLink>
+												#{tag}
+											</Link>
 										</li>
 									))}
 								</ul>

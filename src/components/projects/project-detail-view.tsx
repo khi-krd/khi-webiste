@@ -31,8 +31,6 @@ type ProjectDetailViewProps = {
 	typeLabel: string;
 	statusLabel: string;
 	dateLabel: string;
-	tagsLabel: string;
-	contentLabel: string;
 	galleryLabel: string;
 	lightboxCloseLabel: string;
 	statusLabels: Record<string, string>;
@@ -89,8 +87,8 @@ export function SectionEyebrow({
 
 /**
  * Field-dossier project page — a large independent cover column (sticky,
- * click-to-enlarge) beside the article column: display title, location,
- * a spec row of stat tiles (type / status), tags, then the narrative body.
+ * click-to-enlarge) beside the article column: display title, the narrative
+ * body, a hashtag row, then a spec row of stat tiles (type / status / date).
  * The cover sits physically left and the article physically right in both
  * locales — see .project-detail-spread in globals.css.
  */
@@ -100,8 +98,6 @@ export function ProjectDetailView({
 	typeLabel,
 	statusLabel,
 	dateLabel,
-	tagsLabel,
-	contentLabel,
 	galleryLabel,
 	lightboxCloseLabel,
 	statusLabels,
@@ -153,12 +149,28 @@ export function ProjectDetailView({
 							{project.title}
 						</h1>
 
-						{project.location && (
-							<p className="mt-3 text-lead text-muted">{project.location}</p>
+						{bodyContent ? (
+							<div className="project-article-body mt-6 max-w-3xl">
+								<RichText content={bodyContent} />
+							</div>
+						) : null}
+
+						{project.tags.length > 0 && (
+							<div className="mt-8 flex flex-wrap items-baseline gap-x-4 gap-y-2">
+								{project.tags.map((tag) => (
+									<Link
+										key={tag}
+										href={projectTagHref(tag)}
+										className="text-body font-bold text-brand no-underline transition-opacity fine-hover:opacity-75"
+									>
+										#{tag}
+									</Link>
+								))}
+							</div>
 						)}
 
 						{(project.projectType || project.status || project.projectDate) && (
-							<dl className="mt-6 grid grid-cols-2 gap-2.5 sm:grid-cols-3">
+							<dl className="mt-8 grid grid-cols-2 gap-2.5 sm:grid-cols-3">
 								{project.projectType && (
 									<FactCell label={typeLabel}>{project.projectType}</FactCell>
 								)}
@@ -180,37 +192,6 @@ export function ProjectDetailView({
 								)}
 							</dl>
 						)}
-
-						{project.tags.length > 0 && (
-							<div className="mt-5 flex flex-wrap items-center gap-2">
-								<span className="label font-medium text-muted">
-									{tagsLabel}
-								</span>
-								{project.tags.map((tag) => (
-									<Link
-										key={tag}
-										href={projectTagHref(tag)}
-										className="rounded-md bg-accent/10 px-3.5 py-1.5 text-small font-bold text-brand no-underline transition-colors fine-hover:bg-brand fine-hover:text-white"
-									>
-										{tag}
-									</Link>
-								))}
-							</div>
-						)}
-
-						{bodyContent ? (
-							<section className="mt-8 sm:mt-10">
-								<div className="flex items-center gap-3">
-									<h2 className="shrink-0 font-heading text-body font-bold text-foreground">
-										{contentLabel}
-									</h2>
-									<span aria-hidden className="h-px flex-1 bg-border" />
-								</div>
-								<div className="project-article-body max-w-3xl pt-5">
-									<RichText content={bodyContent} />
-								</div>
-							</section>
-						) : null}
 					</div>
 
 					{/* Independent cover column — just the image, large and clickable. */}
@@ -231,9 +212,6 @@ export function ProjectDetailView({
 								{cover}
 							</div>
 						)}
-						<figcaption className="mt-2.5 text-small text-muted">
-							{project.title}
-						</figcaption>
 					</figure>
 				</div>
 			</ScrollRevealBlock>

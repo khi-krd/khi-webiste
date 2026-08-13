@@ -7,7 +7,6 @@ import { CoverLightbox } from "@/components/ui/cover-lightbox";
 import { DirectionalIcon } from "@/components/ui/directional-icon";
 import { Image } from "@/components/ui/image";
 import { RichText } from "@/components/ui/rich-text";
-import { TaxonomyBadgeLink } from "@/components/ui/taxonomy-badge-link";
 import { Link } from "@/i18n/navigation";
 import { homeInsetClass } from "@/lib/layout";
 import type { GalleryPost, GalleryPostDetail } from "@/lib/mock/gallery";
@@ -25,7 +24,6 @@ type GalleryPostViewProps = {
 	dateLabel?: string;
 	locationLabel: string;
 	collectedByLabel: string;
-	tagsLabel: string;
 	navLabel: string;
 	previousLabel: string;
 	nextLabel: string;
@@ -89,8 +87,9 @@ function AdjacentLink({
 /**
  * Opened collection as an exhibition-catalog spread: typographic header with
  * an offset cover "plate" beside it (click-to-enlarge via CoverLightbox, with
- * a museum-style label caption), wall-label credit placards (location,
- * collectedBy, tags), the album as numbered plates, and prev/next collection
+ * a museum-style label caption), a hashtag row under the description,
+ * wall-label credit placards (location, collectedBy),
+ * the album as numbered plates, and prev/next collection
  * navigation. Server Component; mirrors in RTL via logical props.
  */
 export function GalleryPostView({
@@ -100,7 +99,6 @@ export function GalleryPostView({
 	dateLabel,
 	locationLabel,
 	collectedByLabel,
-	tagsLabel,
 	navLabel,
 	previousLabel,
 	nextLabel,
@@ -111,9 +109,7 @@ export function GalleryPostView({
 }: GalleryPostViewProps) {
 	const { post, previous, next } = detail;
 	const albumImages = [...post.album].sort((a, b) => a.sortOrder - b.sortOrder);
-	const hasCredits = Boolean(
-		post.location || post.collectedBy || post.tags.length,
-	);
+	const hasCredits = Boolean(post.location || post.collectedBy);
 
 	return (
 		<article>
@@ -152,6 +148,20 @@ export function GalleryPostView({
 							content={post.description}
 							className="mt-5 max-w-xl text-justify [&>p]:text-justify [&>p]:text-muted"
 						/>
+
+						{post.tags.length > 0 && (
+							<div className="mt-6 flex flex-wrap items-baseline gap-x-4 gap-y-2">
+								{post.tags.map((tag) => (
+									<Link
+										key={tag}
+										href={galleryTagHref(tag)}
+										className="text-body font-bold text-brand no-underline transition-opacity fine-hover:opacity-75"
+									>
+										#{tag}
+									</Link>
+								))}
+							</div>
+						)}
 					</div>
 
 					{post.coverUrl && (
@@ -187,22 +197,6 @@ export function GalleryPostView({
 						{post.collectedBy && (
 							<CreditCell label={collectedByLabel}>
 								{post.collectedBy}
-							</CreditCell>
-						)}
-						{post.tags.length > 0 && (
-							<CreditCell label={tagsLabel}>
-								<span className="flex flex-wrap gap-1.5">
-									{post.tags.map((tag) => (
-										<TaxonomyBadgeLink
-											key={tag}
-											href={galleryTagHref(tag)}
-											variant="subtle"
-											size="sm"
-										>
-											{tag}
-										</TaxonomyBadgeLink>
-									))}
-								</span>
 							</CreditCell>
 						)}
 					</dl>

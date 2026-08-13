@@ -13,6 +13,7 @@ import { RichText } from "@/components/ui/rich-text";
 import { TaxonomyBadgeLink } from "@/components/ui/taxonomy-badge-link";
 import { WritingGridCard } from "@/components/writing/writing-grid-card";
 import { WritingPdfPreview } from "@/components/writing/writing-pdf-preview";
+import { Link as NavLink } from "@/i18n/navigation";
 import { homeInsetClass } from "@/lib/layout";
 import { writingGenreHref, writingTagHref } from "@/lib/search/taxonomy-href";
 import { displayTitleSizeClass } from "@/lib/title-scale";
@@ -248,16 +249,15 @@ export function WritingPostView({
 						) : null}
 
 						{detail.tags.length > 0 ? (
-							<div className="mt-6 flex max-w-[58ch] flex-wrap gap-1.5">
+							<div className="mt-6 flex max-w-[58ch] flex-wrap items-baseline gap-x-4 gap-y-2">
 								{detail.tags.map((tag) => (
-									<TaxonomyBadgeLink
+									<NavLink
 										key={tag}
 										href={writingTagHref(tag)}
-										variant="subtle"
-										size="sm"
+										className="text-body font-bold text-brand no-underline transition-opacity fine-hover:opacity-75"
 									>
-										{tag}
-									</TaxonomyBadgeLink>
+										#{tag}
+									</NavLink>
 								))}
 							</div>
 						) : null}

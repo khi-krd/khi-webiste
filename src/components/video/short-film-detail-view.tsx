@@ -320,14 +320,14 @@ export async function ShortFilmDetailView({
 								)}
 
 								{detail.tags.length > 1 ? (
-									<div className="flex flex-wrap gap-1.5">
+									<div className="flex flex-wrap items-baseline gap-x-4 gap-y-2">
 										{detail.tags.slice(1, 5).map((tag) => (
 											<Link
 												key={tag}
 												href={videoTagHref(tag, "/videos/shortfilms")}
-												className="border border-primary-foreground/15 px-1.5 py-0.5 text-label text-primary-foreground/65 transition-opacity fine-hover:opacity-80"
+												className="text-body font-bold text-primary-foreground/80 no-underline transition-opacity fine-hover:opacity-75"
 											>
-												{tag}
+												#{tag}
 											</Link>
 										))}
 									</div>

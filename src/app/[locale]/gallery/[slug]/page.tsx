@@ -59,7 +59,6 @@ export default async function GalleryPostPage({
 				dateLabel={formatPublishmentDate(locale, detail.post.publishmentDate)}
 				locationLabel={t("post.location")}
 				collectedByLabel={t("post.collectedBy")}
-				tagsLabel={t("post.tags")}
 				navLabel={t("post.navLabel")}
 				previousLabel={t("post.previous")}
 				nextLabel={t("post.next")}

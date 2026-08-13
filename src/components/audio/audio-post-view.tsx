@@ -191,9 +191,6 @@ export async function AudioPostView({
 	const tagsBlock =
 		detail.tags.length > 0 ? (
 			<div className="flex flex-wrap items-baseline gap-x-4 gap-y-2 text-start">
-				<span className="label shrink-0 font-medium text-muted">
-					{t("post.tags")}
-				</span>
 				{detail.tags.map((tag) => (
 					<NavLink
 						key={tag}
