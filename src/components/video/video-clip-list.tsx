@@ -82,9 +82,12 @@ export function VideoClipList({
 		return null;
 	}
 
+	// Lives on the dark screening-room hero — chrome keys off primary-foreground.
 	return (
 		<section className={cn(className)} aria-label={labels.title}>
-			<p className="label font-medium">{labels.title}</p>
+			<p className="label font-medium text-primary-foreground/70">
+				{labels.title}
+			</p>
 			<ol
 				className={cn(
 					"mt-4 grid gap-3 sm:mt-5 sm:gap-4",
@@ -110,8 +113,8 @@ export function VideoClipList({
 								className={cn(
 									"group relative block w-full overflow-hidden border text-start transition-[border-color,box-shadow,opacity] duration-300",
 									isActive
-										? "border-foreground ring-1 ring-foreground"
-										: "border-border bg-sunken fine-hover:border-border-strong",
+										? "border-primary-foreground ring-1 ring-primary-foreground"
+										: "border-primary-foreground/20 fine-hover:border-primary-foreground/50",
 								)}
 							>
 								<div className="relative aspect-video w-full overflow-hidden">

@@ -7,7 +7,6 @@ import {
 import { CoverLightbox } from "@/components/ui/cover-lightbox";
 import { Link } from "@/components/ui/link";
 import { RichText } from "@/components/ui/rich-text";
-import { TaxonomyBadgeLink } from "@/components/ui/taxonomy-badge-link";
 import { VideoPlayerFrame } from "@/components/video/video-player-frame";
 import type { VideoPosterCardProps } from "@/components/video/video-poster-card";
 import { VideoRelatedGrid } from "@/components/video/video-related-grid";
@@ -28,37 +27,17 @@ type VideoDetailViewProps = {
 	relatedVideos?: VideoPosterCardProps[];
 };
 
-function MetaRow({
-	label,
-	children,
-	ltr = false,
-}: {
-	label: string;
-	children: React.ReactNode;
-	ltr?: boolean;
-}) {
-	return (
-		<div className="flex items-baseline justify-between gap-4 py-3 first:pt-0 last:pb-0">
-			<dt className="shrink-0 text-label text-muted">{label}</dt>
-			<dd
-				className="text-end text-small font-medium leading-snug text-foreground"
-				dir={ltr ? "ltr" : undefined}
-			>
-				{children}
-			</dd>
-		</div>
-	);
-}
-
 export async function VideoDetailView({
 	detail,
 	relatedVideos = [],
 }: VideoDetailViewProps) {
 	const t = await getTranslations("Video");
 
-	const credits = [detail.director, detail.producer]
-		.filter(Boolean)
-		.join(" · ");
+	// De-duplicated: the institute is often both director and producer, and
+	// "X · X" reads as a mistake in a byline.
+	const credits = Array.from(
+		new Set([detail.director, detail.producer].filter(Boolean)),
+	).join(" · ");
 	const durationLabel = formatDuration(detail.durationSeconds);
 	const fileSizeLabel = formatFileSizeMb(detail.fileSizeMb);
 	const languageLabels = detail.contentLanguages.map((language) =>
@@ -119,115 +98,140 @@ export async function VideoDetailView({
 			: null,
 	].filter((row): row is NonNullable<typeof row> => row != null);
 
-	/** "Screening card": surface panel that sits on the sunken screening band. */
-	const metaAside =
-		metaRows.length > 0 ? (
-			<aside className="border border-border bg-surface p-4 sm:p-5">
-				<dl className="divide-y divide-border">
-					{metaRows.map((row) => (
-						<MetaRow key={row.label} label={row.label} ltr={row.ltr}>
-							{row.value}
-						</MetaRow>
-					))}
-				</dl>
-			</aside>
-		) : null;
-
 	return (
 		<article>
 			<ScrollReveal>
 				<ScrollRevealItem>
-					{/* Full-bleed sunken screening band: the player sits on a recessed stage. */}
-					<section className="mt-6 border-y border-border bg-sunken sm:mt-8">
+					{/* Dark screening-room hero: liner text on the start side, the
+					    player on the end side, mirroring the audio album spread.
+					    The player leads on mobile so the film is never below the
+					    fold. */}
+					<section className="bg-foreground text-primary-foreground">
 						<div
-							className={cn("mx-auto max-w-6xl py-6 sm:py-8", homeInsetClass)}
+							className={cn("mx-auto max-w-6xl py-8 sm:py-10", homeInsetClass)}
 						>
-							<VideoPlayerFrame
-								playerKind={detail.playerKind}
-								playableSrc={detail.playableSrc}
-								title={detail.title}
-								poster={detail.coverUrl}
-								noSourceLabel={t("detail.noSource")}
-								aside={metaAside}
-								surfaceOverlay={
-									detail.coverUrl ? (
-										<CoverLightbox
-											src={detail.coverUrl}
-											alt={detail.title}
-											caption={detail.title}
-											closeLabel={t("detail.lightboxClose")}
-											triggerLabel={t("detail.lightboxOpen")}
-											className="absolute end-3 top-3 z-10 max-w-fit"
+							<div className="grid items-center gap-8 lg:grid-cols-[minmax(0,1fr)_minmax(0,39rem)] lg:gap-12">
+								<div className="min-w-0 text-start">
+									<div className="flex flex-wrap items-center gap-2">
+										<NavLink
+											href={videoTypeHref(detail.videoType)}
+											className="bg-background px-3.5 py-1.5 text-label font-semibold text-foreground no-underline transition-opacity fine-hover:opacity-85"
 										>
-											<span className="inline-flex size-9 items-center justify-center border border-border/80 bg-background/90 text-foreground transition-colors fine-hover:bg-background">
-												<ArrowsPointingOutIcon aria-hidden className="size-4" />
-											</span>
-										</CoverLightbox>
-									) : null
-								}
-								clips={detail.clips}
-								activeClipNumber={detail.activeClipNumber}
-								clipLabels={{
-									title: t("detail.clips"),
-									play: t("detail.playClip"),
-									nowPlaying: t("detail.nowPlaying"),
-								}}
-							/>
+											{t(`typeBadge.${detail.videoType}`)}
+										</NavLink>
+										{detail.topicName && detail.topicId != null ? (
+											<NavLink
+												href={videoTopicHref(detail.topicId)}
+												className="border border-primary-foreground/40 px-3.5 py-1.5 text-label font-semibold text-primary-foreground no-underline transition-colors fine-hover:border-primary-foreground"
+											>
+												{detail.topicName}
+											</NavLink>
+										) : null}
+										{detail.albumOfMemories ? (
+											<NavLink
+												href={videoMemoriesHref()}
+												className="border border-primary-foreground/40 px-3.5 py-1.5 text-label font-semibold text-primary-foreground no-underline transition-colors fine-hover:border-primary-foreground"
+											>
+												{t("card.memoriesBadge")}
+											</NavLink>
+										) : null}
+									</div>
+
+									<h1 className="mt-6 font-heading text-[clamp(1.9rem,3.2vw,2.75rem)] font-bold leading-[1.35] text-balance text-primary-foreground">
+										{detail.title}
+									</h1>
+
+									{credits ? (
+										<p className="mt-3 text-small text-primary-foreground/65">
+											{credits}
+										</p>
+									) : null}
+								</div>
+
+								<div className="min-w-0 max-lg:order-first">
+									<VideoPlayerFrame
+										playerKind={detail.playerKind}
+										playableSrc={detail.playableSrc}
+										title={detail.title}
+										poster={detail.coverUrl}
+										noSourceLabel={t("detail.noSource")}
+										className="shadow-[0_14px_40px_rgba(0,0,0,0.45)]"
+										surfaceOverlay={
+											detail.coverUrl ? (
+												<CoverLightbox
+													src={detail.coverUrl}
+													alt={detail.title}
+													caption={detail.title}
+													closeLabel={t("detail.lightboxClose")}
+													triggerLabel={t("detail.lightboxOpen")}
+													className="absolute end-3 top-3 z-10 max-w-fit"
+												>
+													<span className="inline-flex size-9 items-center justify-center border border-border/80 bg-background/90 text-foreground transition-colors fine-hover:bg-background">
+														<ArrowsPointingOutIcon
+															aria-hidden
+															className="size-4"
+														/>
+													</span>
+												</CoverLightbox>
+											) : null
+										}
+										clips={detail.clips}
+										activeClipNumber={detail.activeClipNumber}
+										clipLabels={{
+											title: t("detail.clips"),
+											play: t("detail.playClip"),
+											nowPlaying: t("detail.nowPlaying"),
+										}}
+									/>
+								</div>
+							</div>
 						</div>
 					</section>
 				</ScrollRevealItem>
 
+				{/* Always-visible spec strip under the hero: quiet label beside a
+				    confident value, flowing inline like a film print's edge codes. */}
+				{metaRows.length > 0 ? (
+					<ScrollRevealItem>
+						<section className="border-b border-border bg-sunken">
+							<dl
+								className={cn(
+									"mx-auto flex max-w-6xl flex-wrap items-baseline gap-x-8 gap-y-2.5 py-4 text-start",
+									homeInsetClass,
+								)}
+							>
+								{metaRows.map((row) => (
+									<div key={row.label} className="flex items-baseline gap-2.5">
+										<dt className="label font-medium text-muted">
+											{row.label}
+										</dt>
+										<dd
+											dir={row.ltr ? "ltr" : undefined}
+											className="text-small font-bold text-foreground"
+										>
+											{row.value}
+										</dd>
+									</div>
+								))}
+							</dl>
+						</section>
+					</ScrollRevealItem>
+				) : null}
+
 				<div className={cn("pb-8 lg:pb-10", homeInsetClass)}>
 					<div className="mx-auto max-w-6xl">
-						{/* The band's bottom hairline opens this zone — pt only, no extra rule. */}
-						<ScrollRevealItem className="pt-8">
-							<div className="flex flex-wrap items-center gap-2">
-								<TaxonomyBadgeLink
-									href={videoTypeHref(detail.videoType)}
-									variant="outline"
-									size="sm"
-								>
-									{t(`typeBadge.${detail.videoType}`)}
-								</TaxonomyBadgeLink>
-								{detail.topicName && detail.topicId != null ? (
-									<TaxonomyBadgeLink
-										href={videoTopicHref(detail.topicId)}
-										variant="subtle"
-										size="sm"
-									>
-										{detail.topicName}
-									</TaxonomyBadgeLink>
-								) : null}
-								{detail.albumOfMemories ? (
-									<TaxonomyBadgeLink
-										href={videoMemoriesHref()}
-										variant="outline"
-										size="sm"
-									>
-										{t("card.memoriesBadge")}
-									</TaxonomyBadgeLink>
-								) : null}
-							</div>
-
-							<h1 className="mt-5 font-heading text-h1 font-bold leading-tight text-balance">
-								{detail.title}
-							</h1>
-
-							{credits ? (
-								<p className="mt-3 text-lead text-foreground/80">{credits}</p>
-							) : null}
-
-							{detail.description ? (
+						{detail.description ? (
+							<ScrollRevealItem className="pt-7">
 								<RichText
 									content={detail.description}
-									className="mt-5 max-w-prose text-body leading-relaxed text-foreground/90"
+									className="max-w-4xl text-justify text-body leading-loose text-foreground/85"
 								/>
-							) : null}
-						</ScrollRevealItem>
+							</ScrollRevealItem>
+						) : null}
 
 						{detail.tags.length > 0 ? (
 							<ScrollRevealItem>
-								<div className="mt-8 flex flex-wrap items-baseline gap-x-4 gap-y-2 border-t border-border pt-8">
+								<div className="mt-8 flex flex-wrap items-baseline gap-x-4 gap-y-2">
 									{detail.tags.map((tag) => (
 										<NavLink
 											key={tag}
