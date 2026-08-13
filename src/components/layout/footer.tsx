@@ -40,18 +40,18 @@ type FooterDonateBandProps = {
  */
 function FooterDonateBand({ title, description, cta }: FooterDonateBandProps) {
 	return (
-		<section className="relative z-10 flex flex-col overflow-hidden bg-foreground sm:h-[30rem] sm:flex-row lg:h-[34rem]">
-			<div className="footer-donate-cut relative flex flex-col justify-center gap-5 bg-brand px-6 py-14 text-start sm:w-[54%] sm:px-10 sm:py-0 lg:px-16 xl:px-20">
-				<h2 className="max-w-lg text-balance font-heading text-[clamp(1.75rem,3.6vw,2.75rem)] font-bold leading-[1.2] text-white">
+		<section className="relative z-10 flex flex-col overflow-hidden bg-foreground sm:h-[15rem] sm:flex-row lg:h-[17rem]">
+			<div className="footer-donate-cut relative flex flex-col justify-center gap-3 bg-brand px-6 py-8 text-start sm:w-[54%] sm:px-10 sm:py-0 lg:px-16 xl:px-20">
+				<h2 className="max-w-lg text-balance font-heading text-[clamp(1.375rem,2.2vw,1.875rem)] font-bold leading-[1.2] text-white">
 					{title}
 				</h2>
-				<p className="max-w-md text-body leading-relaxed text-white/80">
+				<p className="max-w-md text-small leading-relaxed text-white/80">
 					{description}
 				</p>
 				<Link
 					href={DONATE_HREF}
 					variant="nav"
-					className={cn(viewAllCtaOnBrandClass, "mt-2")}
+					className={cn(viewAllCtaOnBrandClass, "mt-1")}
 				>
 					<span className="relative z-1">{cta}</span>
 					<DirectionalIcon
@@ -61,8 +61,8 @@ function FooterDonateBand({ title, description, cta }: FooterDonateBandProps) {
 				</Link>
 			</div>
 
-			<div className="relative h-56 sm:h-auto sm:flex-1">
-				<div className="footer-donate-photo absolute -inset-y-10 inset-x-10 overflow-hidden border border-primary-foreground/15 sm:-inset-y-14 sm:inset-x-16">
+			<div className="relative h-40 sm:h-auto sm:flex-1">
+				<div className="footer-donate-photo absolute -inset-y-8 inset-x-10 overflow-hidden border border-primary-foreground/15 sm:inset-x-16">
 					<NextImage
 						src={DONATE_IMAGE_SRC}
 						alt=""
