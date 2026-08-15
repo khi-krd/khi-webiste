@@ -15,6 +15,7 @@ import {
 	type RefObject,
 	useCallback,
 	useEffect,
+	useMemo,
 	useRef,
 	useState,
 } from "react";
@@ -25,7 +26,8 @@ import { Container } from "@/components/ui/container";
 import { DirectionalIcon } from "@/components/ui/directional-icon";
 import { DrawnBorder } from "@/components/ui/drawn-border";
 import { Link } from "@/components/ui/link";
-import { NAV_DEFAULT_IMAGE, NAV_ITEMS, type NavItem } from "@/config/site";
+import { NAV_ITEMS, type NavItem } from "@/config/site";
+import type { NavMenuOverride, NavMenuOverrideLink } from "@/lib/api/nav-menu";
 import {
 	fetchTaxonomyCatalog,
 	type SearchTaxonomyItem,
@@ -149,8 +151,67 @@ type SecondaryLink = {
 	label: string;
 };
 
+/**
+ * A menu section after the CMS overlay is applied: static config supplies the
+ * section list and its i18n labels, the CMS wins per field where it has data.
+ */
+type ResolvedNavItem = {
+	key: string;
+	href: string;
+	label: string;
+	description: string;
+	imageSrc?: string;
+	/** Static i18n-keyed fallback links from `@/config/site`. */
+	children: NavItem["children"];
+	/** Editor-authored links from the CMS. */
+	cmsLinks: NavMenuOverrideLink[];
+};
+
+function mergeNavItems(
+	items: NavItem[],
+	overrides: NavMenuOverride[],
+	t: ReturnType<typeof useTranslations<"Nav">>,
+): ResolvedNavItem[] {
+	const byKey = new Map(overrides.map((o) => [o.itemKey, o]));
+
+	const merged: ResolvedNavItem[] = items.map((item) => {
+		const cms = byKey.get(item.key.toLowerCase());
+		const resolved: ResolvedNavItem = {
+			key: item.key,
+			href: cms?.href ?? item.href,
+			label: cms?.label ?? t(item.labelKey),
+			description: cms?.description ?? t(item.descriptionKey),
+			children: item.children,
+			cmsLinks: cms?.links ?? [],
+		};
+		const imageSrc = cms?.imageSrc ?? item.imageSrc;
+		if (imageSrc) resolved.imageSrc = imageSrc;
+		return resolved;
+	});
+
+	// Sections that exist only in the CMS still deserve a place in the menu.
+	const known = new Set(items.map((item) => item.key.toLowerCase()));
+	for (const cms of overrides) {
+		if (known.has(cms.itemKey) || !cms.label || !cms.href) {
+			continue;
+		}
+		const extra: ResolvedNavItem = {
+			key: cms.itemKey,
+			href: cms.href,
+			label: cms.label,
+			description: cms.description ?? "",
+			children: [],
+			cmsLinks: cms.links,
+		};
+		if (cms.imageSrc) extra.imageSrc = cms.imageSrc;
+		merged.push(extra);
+	}
+
+	return merged;
+}
+
 function resolveSecondaryLinks(
-	item: NavItem,
+	item: ResolvedNavItem,
 	taxonomyCatalog: SearchTaxonomyItem[] | null,
 	t: ReturnType<typeof useTranslations<"Nav">>,
 ): SecondaryLink[] {
@@ -180,6 +241,12 @@ function resolveSecondaryLinks(
 		return limitNavMenuLinks(links);
 	}
 
+	// No taxonomy for this section: editor-authored CMS links come next, and the
+	// static i18n children are the last resort (documented in §6.7).
+	if (item.cmsLinks.length > 0) {
+		return limitNavMenuLinks(item.cmsLinks);
+	}
+
 	return limitNavMenuLinks(
 		item.children.map((child) => ({
 			id: child.key,
@@ -190,7 +257,7 @@ function resolveSecondaryLinks(
 }
 
 type NavSecondaryPanelProps = {
-	item: NavItem;
+	item: ResolvedNavItem;
 	onNavigate: () => void;
 	taxonomyCatalog: SearchTaxonomyItem[] | null;
 };
@@ -214,17 +281,17 @@ function NavSecondaryPanel({
 					overlayTextShadow,
 				)}
 			>
-				{t(item.labelKey)}
+				{item.label}
 			</Link>
 
-			{/* Section description — wired from Nav.{item}Description */}
+			{/* Section description — CMS copy when present, else Nav.{item}Description */}
 			<p
 				className={cn(
 					"mb-6 max-w-md text-small leading-relaxed text-primary-foreground/65",
 					overlayTextShadow,
 				)}
 			>
-				{t(item.descriptionKey)}
+				{item.description}
 			</p>
 
 			{/* Entries without sub-navigation (پەیوەندی، هاوکاری) would otherwise
@@ -264,6 +331,8 @@ function NavSecondaryPanel({
 type NavView = "nav" | "search";
 
 type NavDrawerProps = {
+	/** CMS overlay from `GET /api/v1/nav-menu`; empty falls back to static config. */
+	navMenu?: NavMenuOverride[];
 	open: boolean;
 	onOpenChange: (open: boolean) => void;
 	view: NavView;
@@ -280,6 +349,7 @@ type NavDrawerProps = {
  * focus trap, scroll lock, and keyboard listeners.
  */
 export function NavDrawer({
+	navMenu = [],
 	open,
 	onOpenChange,
 	view,
@@ -330,12 +400,17 @@ export function NavDrawer({
 	const itemTriggerRefs = useRef<Record<string, HTMLButtonElement | null>>({});
 	const wasOpen = useRef(false);
 
-	const activeItem = NAV_ITEMS.find((item) => item.key === activeKey);
-	const primaryNavItems = NAV_ITEMS;
+	const primaryNavItems = useMemo(
+		() => mergeNavItems(NAV_ITEMS, navMenu, t),
+		[navMenu, t],
+	);
+	const activeItem = primaryNavItems.find((item) => item.key === activeKey);
 	const bgKey = hoveredKey ?? activeKey ?? primaryNavItems[0]?.key ?? "default";
 	const bgItem =
-		NAV_ITEMS.find((item) => item.key === bgKey) ?? primaryNavItems[0];
-	const bgSrc = bgItem?.imageSrc ?? NAV_DEFAULT_IMAGE;
+		primaryNavItems.find((item) => item.key === bgKey) ?? primaryNavItems[0];
+	// Truthy check, not `??` — an item may legitimately carry no image, and an
+	// empty string would reach next/image and throw.
+	const bgSrc = bgItem?.imageSrc || null;
 
 	const close = useCallback(() => {
 		onOpenChange(false);
@@ -488,12 +563,14 @@ export function NavDrawer({
 									aria-hidden
 								>
 									<AnimatePresence>
-										<NavBackground
-											key={bgKey}
-											src={bgSrc}
-											reduceMotion={reduceMotion}
-											priority
-										/>
+										{bgSrc && (
+											<NavBackground
+												key={bgKey}
+												src={bgSrc}
+												reduceMotion={reduceMotion}
+												priority
+											/>
+										)}
 									</AnimatePresence>
 									{/* Legibility scrim — stronger where text sits, photos still show through elsewhere. */}
 									<div className="absolute inset-0 bg-foreground/50" />
@@ -639,9 +716,7 @@ export function NavDrawer({
 																											primaryLabelRowClass
 																										}
 																									>
-																										<span>
-																											{t(item.labelKey)}
-																										</span>
+																										<span>{item.label}</span>
 																										{!isActive && (
 																											<DirectionalIcon
 																												icon={ArrowRightIcon}
@@ -758,7 +833,7 @@ export function NavDrawer({
 																							<span
 																								className={primaryLabelRowClass}
 																							>
-																								<span>{t(item.labelKey)}</span>
+																								<span>{item.label}</span>
 																								{!isActive && (
 																									<DirectionalIcon
 																										icon={ArrowRightIcon}

@@ -6,6 +6,7 @@ import { useCallback, useRef, useState } from "react";
 import { LanguageSwitcher } from "@/components/layout/language-switcher";
 import { NAV_DRAWER_ID, NavDrawer } from "@/components/layout/nav-drawer";
 import { DrawnBorder } from "@/components/ui/drawn-border";
+import type { NavMenuOverride } from "@/lib/api/nav-menu";
 import { cn } from "@/lib/utils";
 
 const iconControlClass = cn(
@@ -22,7 +23,7 @@ type NavView = "nav" | "search";
  * bar: the menu hamburger and the search + language tray. Primary nav links are
  * server-rendered in <Header/> — nothing here needs their markup.
  */
-export function HeaderNav() {
+export function HeaderNav({ navMenu = [] }: { navMenu?: NavMenuOverride[] }) {
 	const t = useTranslations("Nav");
 	const menuTriggerRef = useRef<HTMLButtonElement>(null);
 	const [open, setOpen] = useState(false);
@@ -81,6 +82,7 @@ export function HeaderNav() {
 			</div>
 
 			<NavDrawer
+				navMenu={navMenu}
 				open={open}
 				onOpenChange={handleOpenChange}
 				view={view}

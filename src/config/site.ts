@@ -32,14 +32,15 @@ export type NavItem = {
 	href: string;
 	/** Key for the section description (e.g. Nav.writingsDescription). */
 	descriptionKey: string;
-	/** Full-bleed background from /public/menu. */
-	imageSrc: string;
+	/**
+	 * Full-bleed background behind the mega menu. Optional and unset here — the
+	 * real photos come from the CMS (`GET /api/v1/nav-menu`, see
+	 * NAV_MENU_BACKEND.md); the overlay simply renders its dark ground when an
+	 * item has no image.
+	 */
+	imageSrc?: string;
 	children: NavSubLink[];
 };
-
-const MENU_IMAGE = (file: string) => `/menu/${file}`;
-
-export const NAV_DEFAULT_IMAGE = MENU_IMAGE("1.jpg");
 
 /** Primary nav — order mirrors the external API catalogue. */
 export const NAV_ITEMS: NavItem[] = [
@@ -48,7 +49,6 @@ export const NAV_ITEMS: NavItem[] = [
 		labelKey: "menuNews",
 		href: "/news",
 		descriptionKey: "newsDescription",
-		imageSrc: MENU_IMAGE("2.jpg"),
 		children: [
 			{ key: "newsSubCulture", href: "/news?category=culture" },
 			{ key: "newsSubHistory", href: "/news?category=history" },
@@ -62,7 +62,6 @@ export const NAV_ITEMS: NavItem[] = [
 		labelKey: "menuProjects",
 		href: "/projects",
 		descriptionKey: "projectsDescription",
-		imageSrc: MENU_IMAGE("1.jpg"),
 		children: [
 			{
 				key: "projectsSubOralHistory",
@@ -87,7 +86,6 @@ export const NAV_ITEMS: NavItem[] = [
 		labelKey: "menuSound",
 		href: "/audio",
 		descriptionKey: "soundDescription",
-		imageSrc: MENU_IMAGE("3.jpg"),
 		children: [
 			{ key: "soundSubOralHistory", href: "/audio?type=speech" },
 			{ key: "soundSubInterviews", href: "/audio?type=interview" },
@@ -99,7 +97,6 @@ export const NAV_ITEMS: NavItem[] = [
 		labelKey: "menuVideo",
 		href: "/videos",
 		descriptionKey: "videoDescription",
-		imageSrc: MENU_IMAGE("4.jpg"),
 		children: [
 			{ key: "videoSubShortFilms", href: "/videos/shortfilms" },
 			{ key: "videoSubDocumentaries", href: "/videos?topic=2" },
@@ -113,7 +110,6 @@ export const NAV_ITEMS: NavItem[] = [
 		labelKey: "menuGallery",
 		href: "/gallery",
 		descriptionKey: "galleryDescription",
-		imageSrc: MENU_IMAGE("5.jpg"),
 		children: [
 			{ key: "gallerySubPhotography", href: "/gallery/the-mountain-keeps-us" },
 			{ key: "gallerySubDress", href: "/gallery/threads-of-identity" },
@@ -125,7 +121,6 @@ export const NAV_ITEMS: NavItem[] = [
 		labelKey: "menuWritings",
 		href: "/writings",
 		descriptionKey: "writingsDescription",
-		imageSrc: MENU_IMAGE("6.jpg"),
 		children: [
 			{ key: "writingsSubLiterature", href: "/writings/literature" },
 			{ key: "writingsSubHistory", href: "/writings/history" },
@@ -138,7 +133,6 @@ export const NAV_ITEMS: NavItem[] = [
 		labelKey: "menuServices",
 		href: "/services",
 		descriptionKey: "servicesDescription",
-		imageSrc: MENU_IMAGE("7.jpg"),
 		children: [
 			{ key: "servicesSubInstituteHall", href: "/services#institute-hall" },
 			{ key: "servicesSubStudio", href: "/services#studio" },
@@ -154,7 +148,6 @@ export const NAV_ITEMS: NavItem[] = [
 		labelKey: "menuAbout",
 		href: "/about",
 		descriptionKey: "aboutDescription",
-		imageSrc: MENU_IMAGE("7.jpg"),
 		children: [
 			{ key: "aboutSubMission", href: "/about" },
 			{ key: "aboutSubTeam", href: "/about" },
@@ -166,7 +159,6 @@ export const NAV_ITEMS: NavItem[] = [
 		labelKey: "menuContact",
 		href: "/contact",
 		descriptionKey: "contactDescription",
-		imageSrc: MENU_IMAGE("4.jpg"),
 		children: [],
 	},
 	{
@@ -174,7 +166,6 @@ export const NAV_ITEMS: NavItem[] = [
 		labelKey: "menuDonate",
 		href: "/donate",
 		descriptionKey: "donateDescription",
-		imageSrc: MENU_IMAGE("5.jpg"),
 		children: [],
 	},
 ];

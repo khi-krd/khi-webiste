@@ -1,4 +1,4 @@
-import { getTranslations } from "next-intl/server";
+import { getLocale, getTranslations } from "next-intl/server";
 import { HeaderNav } from "@/components/layout/header-nav";
 import { HeaderShell } from "@/components/layout/header-shell";
 import { Logo } from "@/components/layout/logo";
@@ -12,6 +12,7 @@ import { Container } from "@/components/ui/container";
 import { DrawnBorder } from "@/components/ui/drawn-border";
 import { SERVICES_HREF } from "@/config/site";
 import { Link } from "@/i18n/navigation";
+import { getNavMenuOverrides } from "@/lib/api/nav-menu";
 
 /**
  * Site header. Server Component shell — interactive items live in <HeaderNav/>.
@@ -32,6 +33,11 @@ import { Link } from "@/i18n/navigation";
  */
 export async function Header() {
 	const t = await getTranslations("Nav");
+	const locale = await getLocale();
+	// CMS overlay for the mega menu (labels, descriptions, background photos).
+	// Empty when the API is unreachable — the overlay then renders the static
+	// config alone, so the menu never depends on the CMS being up.
+	const navMenu = await getNavMenuOverrides(locale);
 
 	return (
 		<HeaderShell>
@@ -70,7 +76,7 @@ export async function Header() {
 						</button>
 					</div>
 
-					<HeaderNav />
+					<HeaderNav navMenu={navMenu} />
 				</div>
 			</Container>
 		</HeaderShell>
