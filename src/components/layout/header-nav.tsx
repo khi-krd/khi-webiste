@@ -9,7 +9,7 @@ import { DrawnBorder } from "@/components/ui/drawn-border";
 import { cn } from "@/lib/utils";
 
 const iconControlClass = cn(
-	"draw-border-host relative isolate inline-flex shrink-0 items-center justify-center overflow-hidden text-foreground transition-colors fine-hover:bg-sunken",
+	"draw-border-host draw-border-brand relative isolate inline-flex shrink-0 items-center justify-center overflow-hidden text-foreground transition-colors fine-hover:bg-sunken",
 );
 
 const utilityTrayClass =

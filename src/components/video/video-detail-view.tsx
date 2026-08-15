@@ -107,15 +107,18 @@ export async function VideoDetailView({
 					    The player leads on mobile so the film is never below the
 					    fold. */}
 					{/* Same container recipe as the body below (inset outside,
-					    max-w inside) so every zone's text starts on one line. */}
+					    max-w inside) so every zone's text starts on one line.
+					    At 2xl every zone widens to 92rem — the full content width
+					    of the site's 96rem canvas (96rem − 2×2rem inset) — so the
+					    start line also matches the header and other pages. */}
 					<section
 						className={cn(
 							"bg-foreground text-primary-foreground",
 							homeInsetClass,
 						)}
 					>
-						<div className="mx-auto max-w-6xl py-8 sm:py-10">
-							<div className="grid items-center gap-8 lg:grid-cols-[minmax(0,1fr)_minmax(0,39rem)] lg:gap-12">
+						<div className="mx-auto max-w-6xl py-8 sm:py-10 2xl:max-w-[92rem]">
+							<div className="grid items-center gap-8 lg:grid-cols-[minmax(0,1fr)_minmax(0,39rem)] lg:gap-12 2xl:grid-cols-[minmax(0,1fr)_minmax(0,48rem)] 2xl:gap-16">
 								<div className="min-w-0 text-start">
 									<div className="flex flex-wrap items-center gap-2">
 										<NavLink
@@ -142,7 +145,7 @@ export async function VideoDetailView({
 										) : null}
 									</div>
 
-									<h1 className="mt-6 font-heading text-[clamp(1.9rem,3.2vw,2.75rem)] font-bold leading-[1.35] text-balance text-primary-foreground">
+									<h1 className="mt-6 font-heading text-[clamp(1.9rem,3.2vw,2.75rem)] font-bold leading-[1.35] text-balance text-primary-foreground 2xl:text-[3.25rem]">
 										{detail.title}
 									</h1>
 
@@ -201,7 +204,7 @@ export async function VideoDetailView({
 						<section
 							className={cn("border-b border-border bg-sunken", homeInsetClass)}
 						>
-							<dl className="mx-auto flex max-w-6xl flex-wrap items-baseline gap-x-8 gap-y-2.5 py-4 text-start">
+							<dl className="mx-auto flex max-w-6xl flex-wrap items-baseline gap-x-8 gap-y-2.5 py-4 text-start 2xl:max-w-[92rem]">
 								{metaRows.map((row) => (
 									<div key={row.label} className="flex items-baseline gap-2.5">
 										<dt className="label font-medium text-muted">
@@ -221,12 +224,12 @@ export async function VideoDetailView({
 				) : null}
 
 				<div className={cn("pb-8 lg:pb-10", homeInsetClass)}>
-					<div className="mx-auto max-w-6xl">
+					<div className="mx-auto max-w-6xl 2xl:max-w-[92rem]">
 						{detail.description ? (
 							<ScrollRevealItem className="pt-7">
 								<RichText
 									content={detail.description}
-									className="max-w-4xl text-justify text-body leading-loose text-foreground/85"
+									className="max-w-4xl text-justify text-body leading-loose text-foreground/85 2xl:text-[1.125rem]"
 								/>
 							</ScrollRevealItem>
 						) : null}
@@ -256,14 +259,6 @@ export async function VideoDetailView({
 								/>
 							</ScrollRevealItem>
 						) : null}
-
-						<ScrollRevealItem>
-							<footer className="mt-8 flex flex-wrap items-center justify-end gap-4 border-t border-border pt-6">
-								<Link href="/videos" className="label font-medium no-underline">
-									{t("detail.back")}
-								</Link>
-							</footer>
-						</ScrollRevealItem>
 					</div>
 				</div>
 			</ScrollReveal>

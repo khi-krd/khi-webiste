@@ -4,6 +4,7 @@ import {
 	getVideoTopics,
 	VIDEO_GRID_PAGE_SIZE,
 } from "@/lib/api/videos";
+import { cardIdentity } from "@/lib/video/filter";
 import {
 	parseVideoMemories,
 	parseVideoTopicId,
@@ -42,7 +43,12 @@ export async function loadVideoPageData(
 	);
 	const showFeatured = page === 1 && !hasFilters;
 
-	const [listing, topics, featuredLead] = await Promise.all([
+	const topicsPromise = getVideoTopics(locale);
+	const featuredLead = showFeatured ? await getFeaturedVideoLead(locale) : null;
+
+	// The hero lead is dropped from the paginated flow (not just deduped on
+	// page 1) so every non-final page keeps full grid rows.
+	const [listing, topics] = await Promise.all([
 		getVideoListing(locale, {
 			videoType: activeType,
 			topicId: activeTopicId,
@@ -50,9 +56,9 @@ export async function loadVideoPageData(
 			query: activeQuery,
 			page,
 			size: VIDEO_GRID_PAGE_SIZE,
+			excludeCardIdentity: featuredLead ? cardIdentity(featuredLead) : null,
 		}),
-		getVideoTopics(locale),
-		showFeatured ? getFeaturedVideoLead(locale) : Promise.resolve(null),
+		topicsPromise,
 	]);
 
 	return {

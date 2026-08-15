@@ -117,7 +117,7 @@ export function NewsShell({
 										item={item}
 										variant="square"
 										categoryLabel={newsItemCategoryLabel(item, categories)}
-										className="min-h-64 sm:min-h-72"
+										className="min-h-64 sm:min-h-72 2xl:min-h-80"
 									/>
 								</ScrollRevealItem>
 							))}

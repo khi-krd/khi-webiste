@@ -47,7 +47,9 @@ export function VideoPosterCard({
 			variant="nav"
 			aria-label={title}
 			className={cn(
-				"group relative block w-full overflow-hidden no-underline",
+				// `spotlight-item` is inert outside a `.spotlight-grid-dark` scope;
+				// the opacity transition makes the beam glide, not flicker.
+				"group spotlight-item relative block w-full overflow-hidden no-underline transition-opacity duration-[450ms] ease-[cubic-bezier(0.22,1,0.36,1)]",
 				dark
 					? "border border-primary-foreground/20"
 					: "border border-border bg-sunken",

@@ -5,6 +5,7 @@ import {
 	ScrollRevealBlock,
 	ScrollRevealItem,
 } from "@/components/motion/scroll-reveal";
+import { viewAllCtaOnDarkClass } from "@/components/ui/cta-styles";
 import { DirectionalIcon } from "@/components/ui/directional-icon";
 import { Link } from "@/components/ui/link";
 import {
@@ -37,9 +38,6 @@ function toPoster(card: ResolvedVideoCard): VideoPosterCardProps {
 	};
 }
 
-const ctaClass =
-	"group inline-flex h-11 items-center gap-2 border border-primary-foreground bg-primary-foreground px-6 font-heading text-small font-semibold text-foreground no-underline transition-[gap,box-shadow] duration-300 fine-hover:gap-2.5 fine-hover:shadow-[0_12px_32px_-14px_rgba(0,0,0,0.35)]";
-
 export async function VideoShortFilmsPromo() {
 	const locale = await getLocale();
 	const t = await getTranslations("Video");
@@ -66,7 +64,10 @@ export async function VideoShortFilmsPromo() {
 				<ScrollRevealBlock>
 					<div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
 						<div className="max-w-xl">
-							<p className="text-label font-medium text-primary-foreground/60">
+							<p className="label font-medium text-primary-foreground/70">
+								<span aria-hidden="true" className="me-2">
+									{"//"}
+								</span>
 								{t("shortfilms.hero.eyebrow")}
 							</p>
 							<h2
@@ -74,29 +75,45 @@ export async function VideoShortFilmsPromo() {
 								className="mt-1.5 font-heading text-h2 font-bold leading-tight text-balance sm:text-h1"
 							>
 								{t("shortfilms.promo.title")}
+								{/* Two-digit shelf count — the short-film family's own idiom. */}
+								<span
+									dir="ltr"
+									aria-hidden="true"
+									className="ms-3 align-middle text-label font-medium tabular-nums text-primary-foreground/40"
+								>
+									{String(totalCount).padStart(2, "0")}
+								</span>
 							</h2>
-							<p className="mt-2 text-body text-primary-foreground/75">
-								{t("shortfilms.promo.description")}
-							</p>
-							<p className="mt-2 text-label text-primary-foreground/55">
+							<p className="visually-hidden">
 								{t("shortfilms.promo.count", {
 									count: totalCount,
 									formatted: String(totalCount),
 								})}
 							</p>
+							<p className="mt-2 text-body text-primary-foreground/75">
+								{t("shortfilms.promo.description")}
+							</p>
 						</div>
 
-						<Link href="/videos/shortfilms" variant="nav" className={ctaClass}>
-							<span>{t("shortfilms.promo.cta")}</span>
-							<DirectionalIcon icon={ArrowRightIcon} className="size-4" />
+						<Link
+							href="/videos/shortfilms"
+							variant="nav"
+							className={viewAllCtaOnDarkClass}
+						>
+							<span className="relative z-1">{t("shortfilms.promo.cta")}</span>
+							<DirectionalIcon
+								icon={ArrowRightIcon}
+								className="relative z-1 size-4 shrink-0"
+							/>
 						</Link>
 					</div>
 				</ScrollRevealBlock>
 
-				{/* Dense 2–3 row shelf of short-film posters */}
+				{/* Dense 2–3 row shelf of short-film posters. The spotlight scope:
+				    hovering one poster dims its siblings — the projector beam. */}
 				<ScrollReveal
 					className={cn(
-						"mt-5 grid grid-cols-2 gap-2 sm:mt-6 sm:grid-cols-3 sm:gap-3 lg:grid-cols-4 xl:grid-cols-6",
+						"spotlight-grid-dark mt-5 grid grid-cols-2 gap-2 sm:mt-6 sm:grid-cols-3 sm:gap-3 lg:grid-cols-4 xl:grid-cols-6",
 					)}
 				>
 					{posters.map((card) => (

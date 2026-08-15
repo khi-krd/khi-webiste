@@ -55,7 +55,7 @@ export async function WritingsSection() {
 		>
 			{/* Full-bleed gutters (like the video section) instead of the centered
 			    Container — the grid hangs from the page's main start line. */}
-			<div className="px-6 sm:px-8">
+			<div className="px-6 sm:px-8 2xl:px-[calc((100vw-96rem)/2+2rem)]">
 				<ScrollRevealBlock className="mb-8 sm:mb-10">
 					<header>
 						<div className="flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between sm:gap-8">

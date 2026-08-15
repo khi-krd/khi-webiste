@@ -117,7 +117,6 @@ export default async function ShortFilmsPage({
 		<main className="bg-foreground pb-16 text-primary-foreground sm:pb-20">
 			<VideoCinemaHero
 				id={featuredCard.id}
-				eyebrow={t("shortfilms.featuredEyebrow")}
 				title={featuredDetail?.title ?? featuredCard.title}
 				description={featuredDetail?.description ?? featuredCard.excerpt}
 				coverUrl={featuredDetail?.coverUrl ?? featuredCard.coverUrl}
@@ -147,21 +146,21 @@ export default async function ShortFilmsPage({
 					cards={allShort.map(toPoster)}
 					emptyLabel={t("shortfilms.empty")}
 					dark
-					cardWidthClass="w-44 sm:w-48 lg:w-52"
+					cardWidthClass="w-44 sm:w-48 lg:w-52 2xl:w-64"
 				/>
 
 				<VideoPosterRail
 					title={t("shortfilms.continueWatching")}
 					cards={continueWatching}
 					dark
-					cardWidthClass="w-44 sm:w-48 lg:w-52"
+					cardWidthClass="w-44 sm:w-48 lg:w-52 2xl:w-64"
 				/>
 
 				<VideoPosterRail
 					title={t("shortfilms.more")}
 					cards={more.map(toPoster)}
 					dark
-					cardWidthClass="w-44 sm:w-48 lg:w-52"
+					cardWidthClass="w-44 sm:w-48 lg:w-52 2xl:w-64"
 				/>
 			</div>
 		</main>

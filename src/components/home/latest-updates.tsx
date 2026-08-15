@@ -57,7 +57,7 @@ export async function LatestUpdates() {
 			className="cv-auto flex min-h-svh w-full flex-col justify-center bg-background py-12 [--cv-intrinsic:100svh] sm:py-16 lg:py-20"
 			aria-labelledby="latest-updates-heading"
 		>
-			<ScrollRevealBlock className="mb-8 px-6 sm:mb-10 sm:px-8">
+			<ScrollRevealBlock className="mb-8 px-6 sm:mb-10 sm:px-8 2xl:px-[calc((100vw-96rem)/2+2rem)]">
 				<header>
 					<div className="flex flex-col gap-5 sm:flex-row sm:items-start sm:justify-between sm:gap-8">
 						<div className="max-w-2xl text-start">
@@ -80,8 +80,11 @@ export async function LatestUpdates() {
 				</header>
 			</ScrollRevealBlock>
 
-			<div className="px-6 sm:px-8">
-				<ScrollReveal className="grid grid-cols-1 gap-3 sm:grid-cols-2 sm:gap-4 lg:grid-cols-12 lg:grid-rows-[minmax(18rem,1fr)_minmax(18rem,1fr)] lg:gap-4">
+			<div className="px-6 sm:px-8 2xl:px-[calc((100vw-96rem)/2+2rem)]">
+				{/* 2xl rows: clamp() only grows the 18rem floor on viewports tall
+				    enough to spare it (28svh), so short 2xl laptops keep today's
+				    heights and the section still fits one snap step. */}
+				<ScrollReveal className="grid grid-cols-1 gap-3 sm:grid-cols-2 sm:gap-4 lg:grid-cols-12 lg:grid-rows-[minmax(18rem,1fr)_minmax(18rem,1fr)] lg:gap-4 2xl:grid-rows-[minmax(clamp(18rem,28svh,22rem),1fr)_minmax(clamp(18rem,28svh,22rem),1fr)]">
 					{hero ? (
 						<ScrollRevealItem className="sm:col-span-2 lg:col-span-7 lg:row-span-2">
 							<NewsCard

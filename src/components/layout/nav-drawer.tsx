@@ -73,7 +73,7 @@ function useIsLg() {
 
 /** Harvard-style underline — block-end rule on active/hover only, not a full-width box. */
 const primaryItemClass =
-	"group w-full py-1 text-start font-heading text-[clamp(2rem,3vw+0.4rem,3.125rem)] font-bold leading-[1.08] underline decoration-transparent decoration-2 underline-offset-[0.18em] transition-[opacity,text-decoration-color] duration-200 [text-shadow:0_1px_3px_color-mix(in_oklch,var(--color-foreground)_80%,transparent),0_0_2.5rem_color-mix(in_oklch,var(--color-foreground)_50%,transparent)]";
+	"group w-full py-1 text-start font-heading text-[clamp(1.625rem,2.2vw+0.4rem,2.25rem)] font-bold leading-[1.08] underline decoration-transparent decoration-2 underline-offset-[0.18em] transition-[opacity,text-decoration-color] duration-200 [text-shadow:0_1px_3px_color-mix(in_oklch,var(--color-foreground)_80%,transparent),0_0_2.5rem_color-mix(in_oklch,var(--color-foreground)_50%,transparent)]";
 
 /** Sits inline-end of the label — not stretched across the column (DirectionalIcon flips in RTL). */
 const primaryLabelRowClass = "inline-flex max-w-full items-center gap-2.5";
@@ -583,7 +583,7 @@ export function NavDrawer({
 																				aria-label={t("primary")}
 																				className="w-full shrink-0"
 																			>
-																				<ul className="flex flex-col gap-0.5">
+																				<ul className="flex flex-col gap-3">
 																					{primaryNavItems.map((item) => {
 																						const isActive =
 																							activeKey === item.key;
@@ -708,7 +708,7 @@ export function NavDrawer({
 																		aria-label={t("primary")}
 																		className="w-full shrink-0"
 																	>
-																		<ul className="flex flex-col gap-0.5">
+																		<ul className="flex flex-col gap-3">
 																			{primaryNavItems.map((item) => {
 																				const isActive = activeKey === item.key;
 

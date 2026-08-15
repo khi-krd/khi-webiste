@@ -84,13 +84,15 @@ export function ProjectsHero({
 						<ScrollRevealItem className="flex items-start gap-3 lg:items-center">
 							<h1
 								id="projects-hero-heading"
-								className="display-title text-balance"
+								// display-title's clamp ceiling (5rem) saturates by ~1440px;
+								// the 2xl bump keeps the heading anchoring the wider band.
+								className="display-title text-balance 2xl:text-[5.5rem]"
 							>
 								{title}
 							</h1>
 							<DirectionalIcon
 								icon={ArrowUpRightIcon}
-								className="mt-2 size-8 shrink-0 text-foreground lg:mt-0 lg:size-9"
+								className="mt-2 size-8 shrink-0 text-foreground lg:mt-0 lg:size-9 2xl:size-10"
 								aria-hidden
 							/>
 						</ScrollRevealItem>

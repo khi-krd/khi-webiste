@@ -21,15 +21,19 @@ export function FeaturedSlideContent({
 	actionLabel,
 }: FeaturedSlideContentProps) {
 	return (
-		<ScrollReveal className="max-w-4xl text-start text-white">
+		<ScrollReveal className="max-w-4xl text-start text-white 2xl:max-w-5xl">
 			<ScrollRevealItem>
 				<p className="hero-slide-eyebrow">{typeLabel}</p>
 			</ScrollRevealItem>
 			<ScrollRevealItem>
-				<h2 className="hero-slide-title mt-3">{title}</h2>
+				{/* The clamp() ceiling (4.75rem) is reached by 1200px — restore the
+				    title's share of the frame on wide canvases. */}
+				<h2 className="hero-slide-title mt-3 2xl:text-[5.5rem]">{title}</h2>
 			</ScrollRevealItem>
 			<ScrollRevealItem>
-				<p className="hero-slide-description mt-5 max-w-xl">{description}</p>
+				<p className="hero-slide-description mt-5 max-w-xl 2xl:max-w-2xl">
+					{description}
+				</p>
 			</ScrollRevealItem>
 			<ScrollRevealItem>
 				<p className="hero-slide-cta mt-8 inline-flex items-center gap-2.5">

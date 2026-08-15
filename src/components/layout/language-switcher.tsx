@@ -200,6 +200,8 @@ function LanguageDropdown({
 
 	const triggerClass = cn(
 		triggerShell,
+		// Light-surface variants share the header's brand-green hover trace.
+		!overlay && "draw-border-brand",
 		embedded ? "h-10 px-2.5 fine-hover:bg-sunken" : "h-11 px-3.5",
 		overlay
 			? "border border-primary-foreground/20 bg-primary-foreground/8 text-primary-foreground backdrop-blur-sm fine-hover:border-primary-foreground/35 fine-hover:bg-primary-foreground/12"

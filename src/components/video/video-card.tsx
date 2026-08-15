@@ -7,6 +7,7 @@ import {
 } from "@heroicons/react/24/solid";
 import NextImage from "next/image";
 import { Link } from "@/components/ui/link";
+import { VideoHoverPreview } from "@/components/video/video-hover-preview";
 import { VideoStillPreview } from "@/components/video/video-still-preview-lazy";
 import { cn } from "@/lib/utils";
 import { videoDetailHref } from "@/lib/video/resolve";
@@ -61,6 +62,11 @@ function FrameChip({
 	);
 }
 
+/**
+ * Beat 2 (+150ms): the pill pops with a magnetic back-out overshoot. While the
+ * preview screens (`data-previewing` on the host) it politely recedes — the
+ * affordance yields to the content — and returns the instant playback stops.
+ */
 function PlayMark({ large = false }: { large?: boolean }) {
 	return (
 		<span
@@ -69,9 +75,14 @@ function PlayMark({ large = false }: { large?: boolean }) {
 		>
 			<span
 				className={cn(
-					"inline-flex items-center justify-center rounded-pill bg-foreground/65 text-primary-foreground ring-1 ring-primary-foreground/30 backdrop-blur-[2px] transition-[transform,background-color,opacity] duration-300 group-fine:bg-foreground/80 group-fine:opacity-100 motion-reduce:transition-none motion-reduce:group-fine:scale-100",
+					"inline-flex items-center justify-center rounded-pill bg-foreground/65 text-primary-foreground ring-1 ring-primary-foreground/30 backdrop-blur-[2px]",
+					"transition-[transform,background-color,opacity] duration-[350ms] ease-[cubic-bezier(0.34,1.56,0.64,1)]",
+					"opacity-0 scale-[0.85] sm:opacity-80 sm:scale-90",
+					"group-fine:opacity-100 group-fine:scale-100 group-fine:delay-150 group-fine:bg-foreground/80",
+					"group-focus-visible:opacity-100 group-focus-visible:scale-100",
+					"group-data-[previewing]:opacity-70! group-data-[previewing]:scale-90!",
+					"motion-reduce:transition-none motion-reduce:group-fine:scale-100",
 					large ? "size-16" : "size-12",
-					"opacity-0 scale-90 group-fine:scale-100 sm:opacity-80",
 				)}
 			>
 				<PlayIcon
@@ -130,9 +141,11 @@ function CoverLayer({
 				/>
 			) : null}
 			{showHoverCover && hoverCoverUrl ? (
+				// Beat 3 (+200ms): the second still crossfades in. The delay lives
+				// only in the hover state, so hover-out collapses instantly.
 				<div
 					aria-hidden
-					className="absolute inset-0 opacity-0 transition-opacity duration-500 group-fine:opacity-100 motion-reduce:transition-none"
+					className="absolute inset-0 opacity-0 transition-opacity duration-500 group-fine:opacity-100 group-fine:delay-200 group-focus-visible:opacity-100 motion-reduce:transition-none"
 				>
 					<NextImage
 						src={hoverCoverUrl}
@@ -145,6 +158,13 @@ function CoverLayer({
 						)}
 					/>
 				</div>
+			) : null}
+			{/* Beat 4 (~450ms+): real motion, keyed to the video's `playing` event. */}
+			{previewVideoUrl ? (
+				<VideoHoverPreview
+					src={previewVideoUrl}
+					className={memories ? memoriesCoverClass : undefined}
+				/>
 			) : null}
 		</>
 	);
@@ -185,10 +205,18 @@ export function VideoCard({
 				</span>
 			) : null}
 			{durationLabel ? (
+				// Beat 1 (0ms): the chip flips to ink — the card's first "awake"
+				// signal. The REC dot snaps on (a recording light, no fade) only
+				// while real frames move; its space is always reserved so the
+				// chip never changes width.
 				<span
 					dir="ltr"
-					className="label absolute bottom-0 end-0 z-2 border-s border-t border-border bg-surface/95 px-2 py-1 font-medium text-foreground tabular-nums backdrop-blur-[1px]"
+					className="label absolute bottom-0 end-0 z-2 inline-flex items-center border-s border-t border-border bg-surface/95 px-2 py-1 font-medium text-foreground tabular-nums backdrop-blur-[1px] transition-colors duration-300 group-fine:border-foreground group-fine:bg-foreground group-fine:text-primary-foreground group-focus-visible:border-foreground group-focus-visible:bg-foreground group-focus-visible:text-primary-foreground"
 				>
+					<span
+						aria-hidden="true"
+						className="me-1 inline-block size-1.5 rounded-pill bg-accent opacity-0 group-data-[previewing]:opacity-100 group-data-[previewing]:animate-pulse motion-reduce:animate-none"
+					/>
 					{durationLabel}
 				</span>
 			) : null}
@@ -202,6 +230,7 @@ export function VideoCard({
 				href={detailHref}
 				variant="nav"
 				aria-label={title}
+				data-preview-host
 				className={cn(
 					"group relative block w-full overflow-hidden border border-border bg-sunken no-underline transition-shadow duration-300 fine-hover:shadow-[0_8px_24px_-12px_rgba(26,24,19,0.12)]",
 					className,
@@ -216,15 +245,17 @@ export function VideoCard({
 						memories={memories}
 						sizes="100vw"
 					/>
+					{/* Beat 1: the scrim lifts a little — house lights dimming. */}
 					<div
 						aria-hidden
-						className="pointer-events-none absolute inset-0 z-1 bg-linear-to-t from-foreground/85 from-0% via-foreground/35 via-45% to-transparent to-75%"
+						className="pointer-events-none absolute inset-0 z-1 bg-linear-to-t from-foreground/85 from-0% via-foreground/35 via-45% to-transparent to-75% transition-opacity duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] group-fine:opacity-75 motion-reduce:transition-none motion-reduce:group-fine:opacity-100"
 					/>
 					{corners}
 					<PlayMark large />
 
 					<div className="absolute inset-x-0 bottom-0 z-2 p-5 text-primary-foreground sm:p-7 lg:p-9">
-						<div className="max-w-2xl">
+						{/* Beat 2: the meta block drifts up — y-only, RTL-safe. */}
+						<div className="max-w-2xl transition-transform duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] group-fine:-translate-y-1 group-fine:delay-100 motion-reduce:transition-none motion-reduce:group-fine:translate-y-0">
 							<h3 className="font-heading text-h2 font-bold leading-tight text-balance lg:text-display">
 								{title}
 							</h3>
@@ -246,6 +277,7 @@ export function VideoCard({
 			href={detailHref}
 			variant="nav"
 			aria-label={title}
+			data-preview-host
 			className={cn(
 				"group relative flex h-full w-full flex-col items-stretch overflow-hidden border border-border bg-surface no-underline transition-[border-color,box-shadow] duration-300 fine-hover:border-foreground/30 fine-hover:shadow-[0_8px_24px_-12px_rgba(26,24,19,0.12)]",
 				className,
@@ -265,7 +297,17 @@ export function VideoCard({
 			</div>
 
 			<div className="flex w-full flex-1 flex-col gap-1.5 px-4 py-4 text-start sm:px-5">
-				<p className="label text-muted">{footerMeta}</p>
+				{/* Beat 2: the house `//` mark arrives on hover — the card wakes up
+				    into the site's own voice. Space reserved at rest; y-only motion. */}
+				<p className="label text-muted">
+					<span
+						aria-hidden="true"
+						className="me-2 inline-block translate-y-0.5 opacity-0 transition-[opacity,transform] duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] group-fine:translate-y-0 group-fine:opacity-100 group-fine:delay-150 group-focus-visible:opacity-100 motion-reduce:transition-none motion-reduce:group-fine:translate-y-0"
+					>
+						{"//"}
+					</span>
+					{footerMeta}
+				</p>
 				<h3 className="font-heading text-h3 font-bold leading-snug text-foreground">
 					{title}
 				</h3>

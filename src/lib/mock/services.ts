@@ -145,7 +145,9 @@ const BOTTOM_CARDS: PartnerItem[] = [
 		id: "donate",
 		slug: "donate",
 		image: {
-			url: "/about/475203467_1007002848126180_7383496220452921499_n.jpg",
+			// The former /about/475203467_….jpg asset no longer exists (404 —
+			// cards rendered as bare gradients with stray alt text).
+			url: "/menu/5.jpg",
 			alt: "Outdoor heritage photography exhibition",
 		},
 		href: "/donate",
@@ -154,7 +156,7 @@ const BOTTOM_CARDS: PartnerItem[] = [
 		id: "about",
 		slug: "about",
 		image: {
-			url: "/about/475203467_1007002848126180_7383496220452921499_n.jpg",
+			url: "/menu/2.jpg",
 			alt: "Kurdish Heritage Institute",
 		},
 		href: "/about",

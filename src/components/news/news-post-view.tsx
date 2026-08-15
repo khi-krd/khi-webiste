@@ -198,7 +198,7 @@ export function NewsPostView({
 										item={relatedItem}
 										variant="square"
 										categoryLabel={newsItemCategoryLabel(relatedItem)}
-										className="min-h-56 sm:min-h-64"
+										className="min-h-56 sm:min-h-64 2xl:min-h-[17rem]"
 									/>
 								</ScrollRevealItem>
 							))}

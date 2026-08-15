@@ -3,7 +3,10 @@ import { getTranslations, setRequestLocale } from "next-intl/server";
 import { VideoHero, type VideoHeroStill } from "@/components/video/video-hero";
 import { VideoShell } from "@/components/video/video-shell";
 import { VideoShortFilmsPromo } from "@/components/video/video-shortfilms-promo";
+import { homeInsetClass } from "@/lib/layout";
 import { localeAlternates } from "@/lib/seo/metadata";
+import { cn } from "@/lib/utils";
+import { formatDuration } from "@/lib/video/format";
 import { loadVideoPageData } from "@/lib/video/page-data";
 import {
 	isShortFilm,
@@ -62,6 +65,10 @@ export default async function VideosPage({
 			href: isShortFilm(item)
 				? shortFilmDetailHref(item.id)
 				: videoDetailHref(item.id),
+			// Only the lead still moves — hover preview + timecode chip.
+			previewSrc: heroStills.length === 0 ? item.previewVideoUrl : null,
+			durationLabel:
+				heroStills.length === 0 ? formatDuration(item.durationSeconds) : null,
 		});
 		if (heroStills.length >= 5) break;
 	}
@@ -73,9 +80,57 @@ export default async function VideosPage({
 				title={t("page.hero.title")}
 				titleEmphasis={t("page.hero.titleEmphasis")}
 				description={t("page.hero.description")}
+				ctaLabel={t("page.hero.cta")}
 				stills={heroStills}
 				showEmphasisItalic={locale === "ku"}
 			/>
+
+			{/* Spec strip — the video-detail edge-code idiom promoted to the
+			    landing: quiet label, confident value, film-print rhythm. */}
+			<section
+				aria-label={t("page.stats.label")}
+				className="border-b border-border bg-sunken"
+			>
+				<dl
+					className={cn(
+						// 2xl:max-w-none — homeInsetClass's 2xl canvas padding replaces the
+						// cap there; combining both would crush the content box.
+						"mx-auto flex max-w-7xl flex-wrap items-baseline gap-x-8 gap-y-2.5 py-4 text-start 2xl:max-w-none",
+						homeInsetClass,
+					)}
+				>
+					<div className="flex items-baseline gap-2">
+						<dt className="label font-medium text-muted">
+							{t("page.stats.holdings")}
+						</dt>
+						<dd className="text-small font-bold text-foreground">
+							{t("grid.itemCount", {
+								count: pageData.listing.totalElements,
+								formatted: String(pageData.listing.totalElements),
+							})}
+						</dd>
+					</div>
+					<div className="flex items-baseline gap-2">
+						<dt className="label font-medium text-muted">
+							{t("filter.typeLabel")}
+						</dt>
+						<dd className="text-small font-bold text-foreground">
+							{t("typeBadge.FILM")} · {t("typeBadge.VIDEO_CLIP")}
+						</dd>
+					</div>
+					<div className="flex items-baseline gap-2">
+						<dt className="label font-medium text-muted">
+							{t("filter.topicLabel")}
+						</dt>
+						<dd
+							dir="ltr"
+							className="text-small font-bold text-foreground tabular-nums"
+						>
+							{String(pageData.topics.length)}
+						</dd>
+					</div>
+				</dl>
+			</section>
 
 			<VideoShortFilmsPromo />
 

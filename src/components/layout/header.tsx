@@ -35,7 +35,7 @@ export async function Header() {
 
 	return (
 		<HeaderShell>
-			<Container className="dir-row-unmirrored relative flex h-16 max-w-none items-center justify-between gap-4 px-8 sm:h-20 sm:px-10">
+			<Container className="dir-row-unmirrored relative flex h-16 max-w-none items-center justify-between gap-4 px-8 sm:h-20 sm:px-10 2xl:max-w-[96rem]">
 				<div className="dir-row-unmirrored flex min-w-0 items-center gap-2 sm:gap-3">
 					<Logo />
 
@@ -53,7 +53,9 @@ export async function Header() {
 					</nav>
 				</div>
 
-				<div className="dir-row-unmirrored flex min-w-0 items-center gap-2 sm:gap-3">
+				{/* Wider seam here keeps the link group clearly apart from the
+				    search/language tray. */}
+				<div className="dir-row-unmirrored flex min-w-0 items-center gap-2 sm:gap-32">
 					<div className="hidden items-center gap-0.5 sm:flex sm:gap-1">
 						<PublicationsDropdown />
 

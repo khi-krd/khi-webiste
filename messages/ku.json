@@ -669,6 +669,10 @@
 				"titleEmphasis": "Sînematêkek ji bîranîna kurdî, wêne bi wêne.",
 				"description": "Fîlm, belgefîlm û performansên tomarkirî — hatine berhevkirin, parastin û ji bo nifşên pêşerojê di livê de têne hiştin.",
 				"cta": "Li arşîvê bigere"
+			},
+			"stats": {
+				"label": "Agahiyên arşîvê",
+				"holdings": "Tomar"
 			}
 		},
 		"grid": {
@@ -757,7 +761,6 @@
 				"cta": "Kurtefîlman bibîne"
 			},
 			"allTitle": "Bernameya kurtefîlman.",
-			"featuredEyebrow": "Kurtefîlma hilbijartî",
 			"watchNow": "Niha temaşe bike",
 			"details": "Hûrgilî",
 			"trending": "Kurtefîlmên navdar",

@@ -54,7 +54,8 @@ export async function NewsBento({
 			</ScrollRevealBlock>
 
 			<div className={homeInsetClass}>
-				<ScrollReveal className="grid grid-cols-1 gap-3 sm:gap-4 sm:grid-cols-2 lg:grid-cols-12 lg:grid-rows-[minmax(18rem,1fr)_minmax(18rem,1fr)] lg:gap-4">
+				{/* 2xl rows: the 96rem canvas is ~7% wider than the 1440 design, so taller rows keep the featured card at its intended ~1.35:1 crop. */}
+				<ScrollReveal className="grid grid-cols-1 gap-3 sm:gap-4 sm:grid-cols-2 lg:grid-cols-12 lg:grid-rows-[minmax(18rem,1fr)_minmax(18rem,1fr)] lg:gap-4 2xl:grid-rows-[minmax(19.25rem,1fr)_minmax(19.25rem,1fr)]">
 					<ScrollRevealItem className="sm:col-span-2 lg:col-span-7 lg:row-span-2">
 						<NewsCard
 							item={hero}

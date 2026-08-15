@@ -17,12 +17,16 @@ import { cn } from "@/lib/utils";
  * Project titles share the column with stat tiles/tags/content below them —
  * length-adaptive like displayTitleSizeClass, just scaled down a tier so a
  * short title holds one line here instead of the hero-sized 2-line wrap.
+ * Each clamp ceiling is reached by ~1440px, so the 2xl bump lifts it once the
+ * spread widens onto the 96rem canvas.
  */
 function projectTitleSizeClass(title: string): string {
 	const length = title.trim().length;
-	if (length <= 24) return "text-[clamp(1.75rem,3vw+1rem,3rem)]";
-	if (length <= 48) return "text-[clamp(1.5rem,1.8vw+0.9rem,2.25rem)]";
-	return "text-[clamp(1.3rem,1.2vw+0.8rem,1.875rem)]";
+	if (length <= 24)
+		return "text-[clamp(1.75rem,3vw+1rem,3rem)] 2xl:text-[3.5rem]";
+	if (length <= 48)
+		return "text-[clamp(1.5rem,1.8vw+0.9rem,2.25rem)] 2xl:text-[2.625rem]";
+	return "text-[clamp(1.3rem,1.2vw+0.8rem,1.875rem)] 2xl:text-[2.125rem]";
 }
 
 type ProjectDetailViewProps = {
@@ -128,12 +132,20 @@ export function ProjectDetailView({
 					: "min-h-[16rem] w-full sm:min-h-[20rem]",
 			)}
 			naturalRatio={coverKind === "IMAGE"}
-			sizes="(max-width: 1024px) 100vw, 34rem"
+			sizes="(max-width: 1024px) 100vw, (min-width: 1536px) 38rem, 34rem"
 		/>
 	);
 
 	return (
-		<article className={cn(homeInsetClass, "mx-auto max-w-6xl pb-12 sm:pb-16")}>
+		<article
+			// 2xl:max-w-none — homeInsetClass's 2xl padding is computed from 100vw,
+			// so the 6xl island cap must lift there or the padding swallows the box;
+			// the article then sits on the shared 96rem canvas like other sections.
+			className={cn(
+				homeInsetClass,
+				"mx-auto max-w-6xl pb-12 sm:pb-16 2xl:max-w-none",
+			)}
+		>
 			<ScrollRevealBlock className="pt-10 sm:pt-12">
 				<div className="project-detail-spread flex flex-col gap-10 lg:flex-row lg:items-start lg:gap-12 xl:gap-16">
 					{/* Article first in DOM so the title leads on mobile and for screen
@@ -195,7 +207,7 @@ export function ProjectDetailView({
 					</div>
 
 					{/* Independent cover column — just the image, large and clickable. */}
-					<figure className="min-w-0 lg:sticky lg:top-32 lg:w-[28rem] lg:shrink-0 lg:self-start xl:w-[34rem]">
+					<figure className="min-w-0 lg:sticky lg:top-32 lg:w-[28rem] lg:shrink-0 lg:self-start xl:w-[34rem] 2xl:w-[38rem]">
 						{coverKind === "IMAGE" ? (
 							<CoverLightbox
 								src={project.coverUrl}

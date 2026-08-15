@@ -140,8 +140,16 @@ export async function VideoShell({
 				) : null}
 
 				{isEmpty ? (
-					<div className="mt-5 border border-border bg-surface px-6 py-10 text-center sm:mt-6 sm:px-10">
-						<p className="text-body text-muted">{noResultsMessage}</p>
+					// The dead timecode — the projector with no reel.
+					<div className="mt-5 border border-border bg-surface px-6 py-12 text-center sm:mt-6 sm:px-10">
+						<p
+							aria-hidden="true"
+							dir="ltr"
+							className="label font-medium tabular-nums text-muted"
+						>
+							{"// --:--"}
+						</p>
+						<p className="mt-2 text-body text-muted">{noResultsMessage}</p>
 					</div>
 				) : (
 					<>
@@ -150,6 +158,12 @@ export async function VideoShell({
 								key={`featured-${gridKey}`}
 								className="mt-5 sm:mt-6"
 							>
+								<p className="label mb-3 font-medium text-muted">
+									<span aria-hidden="true" className="me-2">
+										{"//"}
+									</span>
+									{t("films.home.featuredLabel")}
+								</p>
 								<VideoCard {...leadCard} variant="featured" />
 							</ScrollRevealBlock>
 						) : null}
@@ -180,21 +194,33 @@ export async function VideoShell({
 				)}
 
 				{!isEmpty && totalPages > 1 ? (
-					<div className="mt-10 flex justify-center sm:mt-12">
-						<VideoPagination
-							currentPage={currentPage}
-							totalPages={totalPages}
-							activeType={activeType}
-							activeTopicId={activeTopicId}
-							activeMemories={activeMemories}
-							activeQuery={activeQuery}
-							basePath={basePath}
-							omitTopic={!showFilters}
-							label={t("pagination.label")}
-							previousLabel={t("pagination.previous")}
-							nextLabel={t("pagination.next")}
-							scrollTargetId={id}
-						/>
+					// Folio line under a hairline — `02 / 07`, decorative; the
+					// shared Pagination announces page state accessibly.
+					<div className="mt-10 border-t border-border pt-6 sm:mt-12">
+						<p
+							aria-hidden="true"
+							dir="ltr"
+							className="label mb-3 text-center font-medium tabular-nums text-muted"
+						>
+							{String(currentPage).padStart(2, "0")} /{" "}
+							{String(totalPages).padStart(2, "0")}
+						</p>
+						<div className="flex justify-center">
+							<VideoPagination
+								currentPage={currentPage}
+								totalPages={totalPages}
+								activeType={activeType}
+								activeTopicId={activeTopicId}
+								activeMemories={activeMemories}
+								activeQuery={activeQuery}
+								basePath={basePath}
+								omitTopic={!showFilters}
+								label={t("pagination.label")}
+								previousLabel={t("pagination.previous")}
+								nextLabel={t("pagination.next")}
+								scrollTargetId={id}
+							/>
+						</div>
 					</div>
 				) : null}
 			</div>

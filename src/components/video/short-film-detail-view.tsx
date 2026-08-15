@@ -217,10 +217,13 @@ export async function ShortFilmDetailView({
 				className={cn(
 					homeInsetClass,
 					// pb matches the shared section seam: pb + hairline + pt below.
-					"mx-auto max-w-7xl pt-8 pb-5 sm:pt-10 sm:pb-6 lg:pt-12",
+					// 2xl: homeInsetClass's canvas padding lives on this same element,
+					// so a max-w here would squeeze the content box — release it and
+					// let the padding define the centered 96rem canvas.
+					"mx-auto max-w-7xl pt-8 pb-5 sm:pt-10 sm:pb-6 lg:pt-12 2xl:max-w-none",
 				)}
 			>
-				<ScrollReveal className="grid items-stretch gap-8 lg:grid-cols-[minmax(0,1.05fr)_minmax(17rem,24rem)] lg:gap-8 xl:grid-cols-[minmax(0,1.1fr)_minmax(19rem,26rem)] xl:gap-10">
+				<ScrollReveal className="grid items-stretch gap-8 lg:grid-cols-[minmax(0,1.05fr)_minmax(17rem,24rem)] lg:gap-8 xl:grid-cols-[minmax(0,1.1fr)_minmax(19rem,26rem)] xl:gap-10 2xl:grid-cols-[minmax(0,1.1fr)_minmax(19rem,30rem)] 2xl:gap-14">
 					<ScrollRevealItem className="min-w-0">
 						<VideoPlayerFrame
 							playerKind={detail.playerKind}
@@ -333,7 +336,8 @@ export async function ShortFilmDetailView({
 			<div
 				className={cn(
 					homeInsetClass,
-					"mx-auto max-w-7xl space-y-5 pb-10 sm:space-y-6 sm:pb-14",
+					// 2xl: release the max-w — see the hero wrapper note above.
+					"mx-auto max-w-7xl space-y-5 pb-10 sm:space-y-6 sm:pb-14 2xl:max-w-none",
 				)}
 			>
 				{detail.description ? (
@@ -342,7 +346,7 @@ export async function ShortFilmDetailView({
 							<section className="border-t border-primary-foreground/20 pt-5 sm:pt-6">
 								<RichText
 									content={detail.description}
-									className="max-w-prose text-body leading-relaxed text-primary-foreground/85"
+									className="max-w-prose text-body leading-relaxed text-primary-foreground/85 2xl:max-w-[70ch] 2xl:text-[1.0625rem]"
 								/>
 							</section>
 						</ScrollRevealItem>

@@ -54,7 +54,7 @@ function CellPill({
 			onClick={onClick}
 			aria-pressed={active}
 			className={cn(
-				"shrink-0 border px-4 py-2 font-heading text-small font-medium transition-colors",
+				"shrink-0 border px-4 py-2 font-heading text-small font-medium transition-[background-color,color,border-color] duration-200",
 				active
 					? "border-foreground bg-primary text-primary-foreground"
 					: "border-border bg-background text-foreground fine-hover:border-foreground/40 fine-hover:bg-sunken",
@@ -172,15 +172,20 @@ export function VideoFilterBar({
 	const activeTopic = topics.find((topic) => topic.id === activeTopicId);
 
 	return (
+		// The bar is one bordered "index card" sitting on the section's wash.
 		<div
-			className={cn("transition-opacity", isPending && "opacity-80", className)}
+			className={cn(
+				"border border-border bg-surface transition-opacity",
+				isPending && "opacity-80",
+				className,
+			)}
 		>
-			<div className="flex flex-wrap items-end justify-between gap-4 border-b border-border pb-4">
+			<div className="flex flex-wrap items-center justify-between gap-4 border-b border-border px-4 py-3 sm:px-5">
 				<button
 					type="button"
 					onClick={() => setExpanded((open) => !open)}
 					aria-expanded={expanded}
-					className="inline-flex items-center gap-2 font-heading text-body font-medium text-foreground underline decoration-foreground underline-offset-4 transition-colors fine-hover:text-foreground/80"
+					className="inline-flex items-center gap-2 font-heading text-small font-semibold text-foreground transition-colors fine-hover:text-foreground/70"
 				>
 					<AdjustmentsHorizontalIcon className="size-4 shrink-0" aria-hidden />
 					{t("filter.label")}
@@ -200,7 +205,7 @@ export function VideoFilterBar({
 					>
 						{t("filter.reset")}
 					</button>
-					<p className="text-small text-muted">
+					<p className="text-small tabular-nums text-muted">
 						{/* `formatted` keeps server/client digits identical for ckb. */}
 						{t("grid.itemCount", {
 							count: itemCount,
@@ -211,7 +216,7 @@ export function VideoFilterBar({
 			</div>
 
 			{/* primary browse axis — a film strip of type cells */}
-			<fieldset className="mt-5">
+			<fieldset className="px-4 py-3 sm:px-5">
 				<legend className="sr-only">{t("filter.typeLabel")}</legend>
 				<div className="flex flex-wrap gap-2">
 					{TYPE_OPTIONS.map((option) => (
@@ -227,7 +232,7 @@ export function VideoFilterBar({
 			</fieldset>
 
 			{expanded ? (
-				<div className="mt-6 space-y-0 border border-border bg-surface">
+				<div className="border-t border-border">
 					<search className="border-b border-border bg-background px-4 py-4 sm:px-5 sm:py-5">
 						<form
 							onSubmit={handleSearchSubmit}
@@ -316,6 +321,9 @@ export function VideoFilterBar({
 
 						{hasActiveFilters ? (
 							<div className="mt-6 flex flex-wrap items-center gap-2 border-t border-border pt-4">
+								<span aria-hidden="true" className="label me-1 text-muted">
+									{"//"}
+								</span>
 								<span className="text-label text-muted">
 									{t("filter.active")}
 								</span>

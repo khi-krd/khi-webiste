@@ -393,6 +393,11 @@ html[data-corners="rounded"]
 .draw-border-host.nav-box .draw-border {
 	color: #fff;
 }
+/* Header utility controls (☰ / search / language): trace in brand green — the
+   same hover accent as the nav links beside them. */
+.draw-border-host.draw-border-brand .draw-border {
+	color: var(--color-brand);
+}
 :where([dir="rtl"]) .draw-border {
 	transform: scaleX(-1); /* origin → top-RIGHT, trace counter-clockwise (ckb) */
 }
@@ -415,6 +420,18 @@ html[data-corners="rounded"]
 .draw-border-host:hover .draw-border__rect,
 .draw-border-host:focus-visible .draw-border__rect {
 	stroke-dashoffset: 0; /* fully enclosed */
+}
+
+/* --- Videos landing: projector-beam spotlight (dark shelf only) ------------
+   Hovering one poster dims its siblings — the beam finds one frame. Opacity
+   only (GPU-cheap); fine pointers with full motion; no :has() support
+   degrades to no dimming. Items own their opacity transition in their own
+   utility list. NEVER put .spotlight-item on a ScrollRevealItem — Motion
+   writes inline opacity there during reveal and would fight the dim. */
+@media (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference) {
+	.spotlight-grid-dark:has(.spotlight-item:hover) .spotlight-item:not(:hover) {
+		opacity: 0.55;
+	}
 }
 
 /* --- Prose: long-form rich-text rhythm -----------------------------------

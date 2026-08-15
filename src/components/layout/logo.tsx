@@ -32,29 +32,32 @@ export async function Logo({ className }: { className?: string } = {}) {
 			<Image
 				src="/logo.png"
 				alt=""
-				width={56}
-				height={56}
-				className="size-11 shrink-0 sm:size-14"
+				width={64}
+				height={64}
+				className="size-13 shrink-0 sm:size-16"
 				priority
 			/>
 
+			{/* items-stretch + text-align-last:justify — the wider line sets the
+			    block width and the other spreads to match, so both titles start
+			    and end on the same two edges. */}
 			<span
 				dir="ltr"
-				className="hidden min-w-0 flex-col items-start justify-center leading-[1.25] sm:flex"
+				className="hidden min-w-0 flex-col items-stretch justify-center gap-2 leading-[1.2] sm:flex"
 			>
 				<span
 					lang="ckb"
 					dir="rtl"
 					// Pinned to Vazirmatn rather than font-heading: on ku that token
 					// resolves to Clash Display, which has no Arabic glyphs.
-					className="whitespace-nowrap font-[family-name:var(--font-vazirmatn)] text-small font-bold lg:text-body"
+					className="whitespace-nowrap font-[family-name:var(--font-vazirmatn)] text-small font-bold [text-align-last:justify] lg:text-body"
 				>
 					{t("brandNameCkb")}
 				</span>
 				<span
 					lang="ku"
 					dir="ltr"
-					className="whitespace-nowrap font-heading text-small font-bold lg:text-body"
+					className="whitespace-nowrap font-heading text-small font-bold [text-align-last:justify] lg:text-body"
 				>
 					{t("brandNameKu")}
 				</span>

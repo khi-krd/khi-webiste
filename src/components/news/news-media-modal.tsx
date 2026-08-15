@@ -27,7 +27,7 @@ type NewsMediaModalProps = {
 };
 
 const navButtonClass =
-	"inline-flex size-9 items-center justify-center border border-border-strong text-foreground transition-colors fine-hover:bg-sunken";
+	"inline-flex size-9 items-center justify-center border border-background/30 bg-foreground/40 text-background backdrop-blur-md transition-colors fine-hover:bg-background/15";
 
 function isRemoteSrc(src: string): boolean {
 	return src.startsWith("http://") || src.startsWith("https://");
@@ -50,7 +50,18 @@ function ModalMedia({
 
 	if (item.kind === "IMAGE") {
 		return (
-			<div className="relative min-h-[min(52svh,36rem)] w-full bg-sunken">
+			<div className="relative min-h-[min(52svh,36rem)] w-full overflow-hidden">
+				{/* Ambient fill behind the letterboxed image. */}
+				<NextImage
+					src={item.url}
+					alt=""
+					aria-hidden
+					fill
+					sizes="96px"
+					unoptimized={isRemoteSrc(item.url)}
+					className="scale-110 object-cover opacity-40 blur-2xl"
+					draggable={false}
+				/>
 				<NextImage
 					src={item.url}
 					alt={label}
@@ -137,11 +148,11 @@ export function NewsMediaModal({
 			onKeyDown={onDialogKeyDown}
 			onClick={onDialogClick}
 			aria-label={item?.caption ?? articleTitle}
-			className="m-auto max-h-[98svh] w-[min(98vw,72rem)] border border-border bg-background p-0 text-foreground backdrop:bg-foreground/85"
+			className="m-auto max-h-[98svh] w-[min(98vw,72rem)] border border-background/15 bg-foreground/60 p-0 text-background backdrop-blur-xl backdrop:bg-foreground/70 backdrop:backdrop-blur-sm"
 		>
 			{item && activeIndex !== null ? (
 				<div className="flex max-h-[inherit] flex-col">
-					<div className="flex items-center justify-end gap-3 border-b border-border px-4 py-3 sm:px-5">
+					<div className="flex items-center justify-end gap-3 border-b border-background/15 px-4 py-3 sm:px-5">
 						<button
 							type="button"
 							onClick={() => dialogRef.current?.close()}
@@ -156,7 +167,7 @@ export function NewsMediaModal({
 						<ModalMedia item={item} articleTitle={articleTitle} />
 
 						{showThumbs ? (
-							<ul className="flex gap-2 overflow-x-auto border-t border-border px-3 py-2.5 scrollbar-none sm:px-4">
+							<ul className="flex gap-2 overflow-x-auto border-t border-background/15 px-3 py-2.5 scrollbar-none sm:px-4">
 								{items.map((thumb, index) => {
 									const src = thumbPreview(thumb);
 									if (!src) return null;
@@ -176,8 +187,8 @@ export function NewsMediaModal({
 												className={cn(
 													"relative block aspect-4/3 w-full overflow-hidden border transition-[border-color,opacity] duration-200",
 													isActive
-														? "border-foreground opacity-100"
-														: "border-border opacity-75 fine-hover:border-border-strong fine-hover:opacity-100",
+														? "border-background opacity-100"
+														: "border-background/25 opacity-70 fine-hover:border-background/60 fine-hover:opacity-100",
 												)}
 											>
 												<NextImage
@@ -207,9 +218,9 @@ export function NewsMediaModal({
 					</div>
 
 					{(item.caption || items.length > 1) && (
-						<div className="flex flex-col gap-4 border-t border-border px-4 py-4 sm:px-5">
+						<div className="flex flex-col gap-4 border-t border-background/15 px-4 py-4 sm:px-5">
 							{item.caption ? (
-								<p className="text-justify text-small leading-relaxed text-muted">
+								<p className="text-justify text-small leading-relaxed text-background/75">
 									{item.caption}
 								</p>
 							) : null}

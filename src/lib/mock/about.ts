@@ -45,7 +45,10 @@ const ABOUT_IMAGES = {
 	hero: "/about/475203467_1007002848126180_7383496220452921499_n.jpg",
 	founder: "/about/artworks-000171267883-evk1m7-t500x500.jpg",
 	services: "/about/services-bg.jpg",
-	donate: "/about/475203467_1007002848126180_7383496220452921499_n.jpg",
+	// The shared /about/475203467_….jpg asset no longer exists (404) — the
+	// donate promo card rendered as a bare gradient. hero/founder above are
+	// also 404 but pages receive those from the CMS at runtime.
+	donate: "/menu/5.jpg",
 } as const;
 
 const SULAYMANIYAH_MEMBER_IDS = [

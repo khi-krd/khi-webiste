@@ -40,12 +40,12 @@ type FooterDonateBandProps = {
  */
 function FooterDonateBand({ title, description, cta }: FooterDonateBandProps) {
 	return (
-		<section className="relative z-10 flex flex-col overflow-hidden bg-foreground sm:h-[15rem] sm:flex-row lg:h-[17rem]">
-			<div className="footer-donate-cut relative flex flex-col justify-center gap-3 bg-brand px-6 py-8 text-start sm:w-[54%] sm:px-10 sm:py-0 lg:px-16 xl:px-20">
-				<h2 className="max-w-lg text-balance font-heading text-[clamp(1.375rem,2.2vw,1.875rem)] font-bold leading-[1.2] text-white">
+		<section className="relative z-10 flex flex-col overflow-hidden bg-foreground sm:h-[15rem] sm:flex-row lg:h-[17rem] 2xl:h-[20rem]">
+			<div className="footer-donate-cut relative flex flex-col justify-center gap-3 bg-brand px-6 py-8 text-start sm:w-[54%] sm:px-10 sm:py-0 lg:px-16 xl:px-20 2xl:w-[46%] 2xl:px-32">
+				<h2 className="max-w-lg text-balance font-heading text-[clamp(1.375rem,2.2vw,1.875rem)] font-bold leading-[1.2] text-white 2xl:max-w-2xl 2xl:text-[2.25rem]">
 					{title}
 				</h2>
-				<p className="max-w-md text-small leading-relaxed text-white/80">
+				<p className="max-w-md text-small leading-relaxed text-white/80 2xl:max-w-lg">
 					{description}
 				</p>
 				<Link
@@ -62,7 +62,7 @@ function FooterDonateBand({ title, description, cta }: FooterDonateBandProps) {
 			</div>
 
 			<div className="relative h-40 sm:h-auto sm:flex-1">
-				<div className="footer-donate-photo absolute -inset-y-8 inset-x-10 overflow-hidden border border-primary-foreground/15 sm:inset-x-16">
+				<div className="footer-donate-photo absolute -inset-y-8 inset-x-10 overflow-hidden border border-primary-foreground/15 sm:inset-x-16 2xl:-inset-y-10 2xl:inset-x-24">
 					<NextImage
 						src={DONATE_IMAGE_SRC}
 						alt=""
@@ -237,7 +237,7 @@ export async function Footer() {
 			/>
 
 			<div className="relative z-10 py-16 sm:py-20 lg:py-24">
-				<Container className="max-w-none">
+				<Container className="max-w-none 2xl:max-w-[96rem]">
 					<FooterReveal>
 						<FooterRevealItem>
 							<section className="text-primary-foreground">

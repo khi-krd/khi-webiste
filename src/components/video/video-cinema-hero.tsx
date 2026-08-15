@@ -12,7 +12,6 @@ import { shortFilmDetailHref } from "@/lib/video/resolve";
 
 type VideoCinemaHeroProps = {
 	id: number;
-	eyebrow: string;
 	title: string;
 	description: string;
 	coverUrl: string | null;
@@ -36,7 +35,6 @@ const detailsClass =
  */
 export function VideoCinemaHero({
 	id,
-	eyebrow,
 	title,
 	description,
 	coverUrl,
@@ -49,7 +47,7 @@ export function VideoCinemaHero({
 	const detailHref = href ?? shortFilmDetailHref(id);
 
 	return (
-		<section className="group relative min-h-[clamp(32rem,65svh,44rem)] w-full overflow-hidden bg-foreground">
+		<section className="group relative min-h-[clamp(32rem,65svh,44rem)] w-full overflow-hidden bg-foreground 2xl:min-h-[clamp(32rem,65svh,56rem)]">
 			<VideoCinemaHeroBackground
 				coverUrl={coverUrl}
 				previewVideoUrl={previewVideoUrl}
@@ -63,19 +61,13 @@ export function VideoCinemaHero({
 				className="absolute inset-0 bg-linear-to-t from-foreground/92 from-0% via-foreground/45 via-40% to-transparent to-70%"
 			/>
 
-			<div className="relative z-10 flex min-h-[inherit] flex-col justify-end p-6 sm:p-10 lg:p-14">
+			{/* 2xl inline padding mirrors homeInsetClass's 96rem canvas (+ the same
+			    24px it already sits deeper than the rails at lg), so the hero copy
+			    tracks the rails' start line on wide screens. */}
+			<div className="relative z-10 flex min-h-[inherit] flex-col justify-end p-6 sm:p-10 lg:p-14 2xl:px-[calc((100vw-96rem)/2+3.5rem)]">
 				<ScrollReveal className="max-w-2xl text-start">
 					<ScrollRevealItem>
-						<p className="text-label font-medium text-primary-foreground/70">
-							<span aria-hidden="true" className="me-2">
-								{"//"}
-							</span>
-							{eyebrow}
-						</p>
-					</ScrollRevealItem>
-
-					<ScrollRevealItem>
-						<h1 className="mt-3 font-heading text-display font-bold leading-[1.05] text-balance text-primary-foreground">
+						<h1 className="font-heading text-display font-bold leading-[1.05] text-balance text-primary-foreground 2xl:text-[3.5rem]">
 							{title}
 						</h1>
 					</ScrollRevealItem>

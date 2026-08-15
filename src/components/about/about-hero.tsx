@@ -87,7 +87,7 @@ export function AboutHero({
 						heightClass,
 					)}
 				>
-					<h2 className="hero-slide-title max-w-4xl text-center text-balance text-white">
+					<h2 className="hero-slide-title max-w-4xl text-center text-balance text-white 2xl:text-[5.5rem]">
 						{title}
 					</h2>
 

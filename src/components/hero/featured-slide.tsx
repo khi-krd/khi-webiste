@@ -73,7 +73,10 @@ export function FeaturedSlide({
 				/>
 			</div>
 
-			<div className="absolute inset-x-0 bottom-0 z-10 px-6 pb-14 sm:px-10 sm:pb-16 lg:px-14 lg:pb-20">
+			{/* 2xl inline padding tracks the homeInsetClass 96rem canvas; max() keeps
+			    the lg 3.5rem inset until the canvas calc overtakes it (~1584px), so
+			    there is no padding dip right at the breakpoint. */}
+			<div className="absolute inset-x-0 bottom-0 z-10 px-6 pb-14 sm:px-10 sm:pb-16 lg:px-14 lg:pb-20 2xl:px-[max(3.5rem,calc((100vw-96rem)/2+2rem))] 2xl:pb-24">
 				<FeaturedSlideContent
 					typeLabel={slide.typeLabel}
 					title={slide.title}
