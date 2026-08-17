@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { parseFeaturedItem } from "@/lib/api/featured";
+import { contentDetailHref } from "@/lib/content/href";
 
 const sampleApiItem = {
 	id: "news-42",
@@ -51,5 +52,41 @@ describe("parseFeaturedItem", () => {
 				image: { url: "   ", alt: "News KMR" },
 			}),
 		).toBeNull();
+	});
+
+	it("falls back to the title when description is null", () => {
+		const item = parseFeaturedItem({ ...sampleApiItem, description: null });
+		expect(item?.description).toBe("News KMR");
+	});
+
+	it.each([
+		["about", "about", "derbare-me", "/about"],
+		["service", "service", "studio", "/services#studio"],
+		["donation", "donation", "donation", "/donate"],
+	])("links the %s slide to its page", (source, type, slug, expectedHref) => {
+		const item = parseFeaturedItem({
+			...sampleApiItem,
+			id: `${source}-5`,
+			source,
+			entityId: 5,
+			type,
+			slug,
+		});
+
+		expect(item?.type).toBe(type);
+		expect(item && contentDetailHref(item)).toBe(expectedHref);
+	});
+
+	it("links a service without a nav anchor to its id section", () => {
+		const item = parseFeaturedItem({
+			...sampleApiItem,
+			id: "service-7",
+			source: "service",
+			entityId: 7,
+			type: "service",
+			slug: "7",
+		});
+
+		expect(item && contentDetailHref(item)).toBe("/services#7");
 	});
 });

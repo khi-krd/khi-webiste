@@ -78,6 +78,12 @@ function normalizeContentType(
 		imagecollection: "gallery",
 		archive: "archive",
 		project: "archive",
+		about: "about",
+		service: "service",
+		services: "service",
+		donation: "donation",
+		donations: "donation",
+		donate: "donation",
 	};
 
 	const mapped = aliases[normalized];
@@ -93,6 +99,9 @@ const SOURCE_TO_TYPE: Record<FeaturedSource, ContentType> = {
 	video: "video",
 	"sound-track": "audio",
 	"image-collection": "gallery",
+	about: "about",
+	service: "service",
+	donation: "donation",
 };
 
 function normalizeSourceType(raw: string | undefined): ContentType | undefined {
@@ -128,7 +137,9 @@ function pickImage(item: UnknownRecord): UnknownRecord | null {
 	return thumbnail;
 }
 
-function resolveDescription(raw: string | undefined): string | undefined {
+function resolveDescription(
+	raw: string | null | undefined,
+): string | undefined {
 	if (!raw) {
 		return undefined;
 	}

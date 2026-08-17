@@ -814,7 +814,10 @@
 			"video": "ڤیدیۆ",
 			"article": "هەواڵ",
 			"gallery": "گەلەری",
-			"archive": "ئەرشیف"
+			"archive": "ئەرشیف",
+			"about": "دەربارە",
+			"service": "خزمەتگوزاری",
+			"donation": "هاوکاری"
 		},
 		"actions": {
 			"book": "خوێندنەوە",
@@ -823,7 +826,10 @@
 			"video": "بینین",
 			"article": "خوێندنەوە",
 			"gallery": "بینین",
-			"archive": "گەڕان"
+			"archive": "گەڕان",
+			"about": "زانیاری زیاتر",
+			"service": "بینین",
+			"donation": "هاوکاری بکە"
 		}
 	},
 	"Ui": {

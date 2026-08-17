@@ -8,6 +8,10 @@ export const ContentTypeSchema = z.enum([
 	"article",
 	"gallery",
 	"archive",
+	// Institutional pages — they can be featured too, but have no detail route.
+	"about",
+	"service",
+	"donation",
 ]);
 
 export type ContentType = z.infer<typeof ContentTypeSchema>;
@@ -20,6 +24,9 @@ export const TYPE_SEGMENTS: Record<ContentType, string> = {
 	article: "news",
 	gallery: "gallery",
 	archive: "donate",
+	about: "about",
+	service: "services",
+	donation: "donate",
 };
 
 export const FeaturedImageSchema = z.object({
@@ -50,6 +57,9 @@ export const FeaturedSourceSchema = z.enum([
 	"video",
 	"sound-track",
 	"image-collection",
+	"about",
+	"service",
+	"donation",
 ]);
 
 export type FeaturedSource = z.infer<typeof FeaturedSourceSchema>;
@@ -62,7 +72,8 @@ export const FeaturedApiItemSchema = z.object({
 	type: ContentTypeSchema,
 	slug: z.string().min(1),
 	title: z.string().min(1),
-	description: z.string().min(1),
+	// Institutional slides often have no copy of their own — falls back to title.
+	description: z.string().nullish(),
 	image: FeaturedImageSchema,
 	locale: z.string().optional(),
 	featured: z.literal(true).optional(),

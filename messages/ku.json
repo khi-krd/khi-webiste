@@ -814,7 +814,10 @@
 			"video": "Vîdyo",
 			"article": "Nûçe",
 			"gallery": "Galerî",
-			"archive": "Arşîv"
+			"archive": "Arşîv",
+			"about": "Derbarê",
+			"service": "Xizmet",
+			"donation": "Hevkari"
 		},
 		"actions": {
 			"book": "Bixwîne",
@@ -823,7 +826,10 @@
 			"video": "Temaşe bike",
 			"article": "Bixwîne",
 			"gallery": "Bibîne",
-			"archive": "Lêgerîn bike"
+			"archive": "Lêgerîn bike",
+			"about": "Zêdetir bizane",
+			"service": "Bibîne",
+			"donation": "Hevkarî bike"
 		}
 	},
 	"Ui": {

@@ -93,6 +93,16 @@ export function contentDetailHref(
 				? projectDetailHref(String(projectId))
 				: projectsIndexHref();
 		}
+		// Institutional slides: the site has one page each, so the slide links to
+		// the page itself. Services are one page of sections, so the backend's
+		// slug (navAnchorId, else the id — both match a section id) scrolls to it.
+		case "about":
+		case "donation":
+			return listing;
+		case "service": {
+			const anchor = item.slug.trim();
+			return anchor ? `${listing}#${anchor}` : listing;
+		}
 		default:
 			return listing;
 	}
