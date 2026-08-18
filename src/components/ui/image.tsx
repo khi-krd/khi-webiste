@@ -70,6 +70,20 @@ export function Image({
 	const frame = framed ? "rounded-md border border-border" : undefined;
 	const unoptimized = unoptimizedProp ?? isRemoteSrc(src);
 
+	// A blank src is a CMS record with no picture, not a bug — next/image throws
+	// on one, so hold the space with a neutral surface instead.
+	if (typeof src === "string" && src.trim().length === 0) {
+		return (
+			<div
+				className={cn("relative overflow-hidden bg-surface", frame, className)}
+				style={
+					aspectRatio ? { aspectRatio: ratioValue(aspectRatio) } : undefined
+				}
+				role="presentation"
+			/>
+		);
+	}
+
 	if (aspectRatio) {
 		return (
 			<div

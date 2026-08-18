@@ -6,7 +6,8 @@ type ServiceLayoutShellProps = {
 	id: string;
 	title: string;
 	body: string;
-	media: ReactNode;
+	/** Omitted when the CMS holds no media — the section is then text only. */
+	media?: ReactNode;
 	mediaClassName?: string;
 };
 
@@ -21,7 +22,9 @@ export function ServiceLayoutShell({
 		<>
 			<ServiceSectionProse id={id} title={title} body={body} />
 
-			<div className={cn("mt-6 sm:mt-8", mediaClassName)}>{media}</div>
+			{media ? (
+				<div className={cn("mt-6 sm:mt-8", mediaClassName)}>{media}</div>
+			) : null}
 		</>
 	);
 }

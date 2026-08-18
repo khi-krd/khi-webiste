@@ -4,25 +4,14 @@ import {
 	apiFetchRaw,
 	BULK_FETCH_SIZE,
 	DEFAULT_REVALIDATE,
+	sliceToCount,
 	unwrapApiPayload,
 } from "@/lib/api/client";
 import { getApiBaseUrl } from "@/lib/api/config";
 import {
-	applyMockPolicy,
-	applyMockPolicyNullable,
-} from "@/lib/api/mock-policy";
-import {
 	normalizeSeriesBookRecord,
 	normalizeWritingRecord,
 } from "@/lib/api/normalize";
-import {
-	getDemoWritingById,
-	getDemoWritingSeries,
-} from "@/lib/mock/writing-detail";
-import {
-	getAllDemoWritingCards,
-	getDemoWritingCards,
-} from "@/lib/mock/writing-page";
 import type { WritingCategorySlug } from "@/lib/writing/categories";
 import {
 	filterWritings,
@@ -74,8 +63,6 @@ export async function getWritingsCarousel(
 	locale: string,
 	size = WRITINGS_CAROUSEL_SIZE,
 ): Promise<ResolvedWritingCard[]> {
-	const getMockItems = () => getDemoWritingCards(locale, 1, size).items;
-
 	let apiItems: ResolvedWritingCard[] = [];
 
 	if (getApiBaseUrl()) {
@@ -94,12 +81,7 @@ export async function getWritingsCarousel(
 		}
 	}
 
-	return applyMockPolicy({
-		context: "home",
-		apiItems,
-		getMockItems,
-		targetCount: size,
-	});
+	return sliceToCount(apiItems, size);
 }
 
 async function fetchAllWritingsFromApi(
@@ -129,11 +111,7 @@ export async function getAllWritings(
 	locale: string,
 ): Promise<ResolvedWritingCard[]> {
 	const apiItems = (await fetchAllWritingsFromApi(locale)) ?? [];
-	return applyMockPolicy({
-		context: "global",
-		apiItems,
-		getMockItems: () => getAllDemoWritingCards(locale),
-	});
+	return apiItems;
 }
 
 function emptyWritingsPage(currentPage: number): WritingsListResult {
@@ -169,18 +147,8 @@ export async function getWritingsPage(
 	size = WRITINGS_PER_PAGE,
 ): Promise<WritingsListResult> {
 	const currentPage = Math.max(1, page);
-	const getMockPage = () => getDemoWritingCards(locale, currentPage, size);
-
 	if (!getApiBaseUrl()) {
-		const mockPage = getMockPage();
-		const items = applyMockPolicy({
-			context: "global",
-			apiItems: [],
-			getMockItems: () => mockPage.items,
-		});
-		return items.length > 0
-			? { ...mockPage, items }
-			: emptyWritingsPage(currentPage);
+		return emptyWritingsPage(currentPage);
 	}
 
 	const data = await apiFetchPage(WRITINGS_ENDPOINT, {
@@ -196,19 +164,10 @@ export async function getWritingsPage(
 				.map((writing) => resolveWritingCard(locale, writing))
 				.filter((item): item is ResolvedWritingCard => item != null)
 		: [];
-	const items = applyMockPolicy({
-		context: "global",
-		apiItems,
-		getMockItems: () => getMockPage().items,
-	});
+	const items = apiItems;
 
 	if (items.length === 0) {
 		return emptyWritingsPage(currentPage);
-	}
-
-	if (apiItems.length === 0) {
-		const mockPage = getMockPage();
-		return { ...mockPage, items };
 	}
 
 	return {
@@ -257,10 +216,7 @@ export async function getWritingById(
 		}
 	}
 
-	return applyMockPolicyNullable({
-		apiValue: apiDetail,
-		getMockValue: () => getDemoWritingById(locale, id, labels),
-	});
+	return apiDetail;
 }
 
 export async function getWritingSeriesBooks(
@@ -296,11 +252,7 @@ export async function getWritingSeriesBooks(
 		}
 	}
 
-	return applyMockPolicy({
-		context: "global",
-		apiItems: apiBooks,
-		getMockItems: () => getDemoWritingSeries(locale, seriesId, currentId),
-	});
+	return apiBooks;
 }
 
 const RELATED_WRITINGS_LIMIT = 4;

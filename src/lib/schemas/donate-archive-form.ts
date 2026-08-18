@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { MATERIAL_TYPE_IDS, type MaterialTypeId } from "@/lib/mock/donate";
+import { MATERIAL_TYPE_IDS, type MaterialTypeId } from "@/lib/donate/content";
 
 const MAX_FILE_SIZE = 10 * 1024 * 1024;
 

@@ -8,13 +8,7 @@ import {
 } from "@/lib/api/client";
 import { getApiBaseUrl } from "@/lib/api/config";
 import {
-	applyMockPolicy,
-	applyMockPolicyNullable,
-} from "@/lib/api/mock-policy";
-import {
 	filterProjects,
-	getProjectById as getMockProjectById,
-	getProjectListItems as getMockProjectListItems,
 	getProjectTags,
 	getProjectYears,
 	PROJECTS_PER_PAGE,
@@ -95,11 +89,7 @@ async function getAllProjectRecords(
 	locale: string,
 ): Promise<ProjectListItem[]> {
 	const apiItems = await fetchProjectListItemsFromApi(locale);
-	return applyMockPolicy({
-		context: "global",
-		apiItems,
-		getMockItems: () => getMockProjectListItems(locale),
-	});
+	return apiItems;
 }
 
 async function searchProjectRecords(
@@ -107,12 +97,7 @@ async function searchProjectRecords(
 	filter: ProjectFilter,
 ): Promise<ProjectListItem[]> {
 	if (!getApiBaseUrl()) {
-		return applyMockPolicy({
-			context: "global",
-			apiItems: [],
-			getMockItems: () =>
-				filterProjects(getMockProjectListItems(locale), filter),
-		});
+		return [];
 	}
 
 	if (filter.tag?.trim()) {
@@ -140,11 +125,7 @@ async function searchProjectRecords(
 
 export async function getProjects(locale: string): Promise<ProjectItem[]> {
 	const apiItems = await fetchProjectListItemsFromApi(locale);
-	const records = applyMockPolicy({
-		context: "home",
-		apiItems,
-		getMockItems: () => getMockProjectListItems(locale),
-	});
+	const records = apiItems;
 
 	return records.map((record) => ({
 		id: record.id,
@@ -214,10 +195,7 @@ export async function getProjectById(
 		}
 	}
 
-	return applyMockPolicyNullable({
-		apiValue: apiDetail,
-		getMockValue: () => getMockProjectById(locale, id),
-	});
+	return apiDetail;
 }
 
 export async function getProjectsHeroCovers(

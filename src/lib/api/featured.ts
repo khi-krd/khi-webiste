@@ -6,8 +6,6 @@ import {
 	unwrapApiPayload,
 } from "@/lib/api/client";
 import { getApiBaseUrl } from "@/lib/api/config";
-import { applyMockPolicy } from "@/lib/api/mock-policy";
-import { getDemoFeaturedItems } from "@/lib/mock/featured";
 import { plainTextFromRichContent } from "@/lib/rich-text";
 import {
 	type ContentType,
@@ -285,6 +283,11 @@ function normalizeItems(payload: unknown): unknown[] {
 		return record.data;
 	}
 
+	// Spring `Page<T>` — the per-source /featured routes return one of these.
+	if (Array.isArray(record.content)) {
+		return record.content;
+	}
+
 	if (Array.isArray(record.items)) {
 		return record.items;
 	}
@@ -296,17 +299,202 @@ function normalizeItems(payload: unknown): unknown[] {
 	return [];
 }
 
+// ---------------------------------------------------------------------------
+// Per-source fallback
+//
+// `/api/v1/featured` pools all sources server-side, which makes it a single
+// point of failure: one broken source query 500s the whole endpoint and the
+// homepage silently drops to mock slides. Every source also publishes its own
+// `/featured` route, and those stay up independently — so when the aggregate
+// gives us nothing, compose the carousel from them instead.
+// ---------------------------------------------------------------------------
+
+type FeaturedSourceEndpoint = {
+	source: FeaturedSource;
+	path: string;
+	type: ContentType;
+	/** Gallery detail resolves by slug; every other route resolves by numeric id. */
+	slugFromRecord?: boolean;
+};
+
+const FEATURED_SOURCE_ENDPOINTS: FeaturedSourceEndpoint[] = [
+	{ source: "news", path: "/api/v1/news/featured", type: "article" },
+	{ source: "project", path: "/api/v1/projects/featured", type: "archive" },
+	{ source: "writing", path: "/api/v1/writings/featured", type: "book" },
+	{ source: "video", path: "/api/v1/videos/featured", type: "video" },
+	{
+		source: "sound-track",
+		path: "/api/v1/sound-tracks/featured",
+		type: "audio",
+	},
+	{
+		source: "image-collection",
+		path: "/api/v1/image-collections/featured",
+		type: "gallery",
+		slugFromRecord: true,
+	},
+];
+
+/** Mirrors the backend's `SiteSettings.maxFeaturedSlides` default. */
+const FEATURED_SLIDE_CAP = 7;
+
+function preferLocalized(
+	locale: string,
+	ckb: string | undefined,
+	kmr: string | undefined,
+): string | undefined {
+	return locale === "ckb" ? (ckb ?? kmr) : (kmr ?? ckb);
+}
+
+function pickLocalizedContent(
+	locale: string,
+	item: UnknownRecord,
+): UnknownRecord | null {
+	const ckb = asRecord(item.ckbContent);
+	const kmr = asRecord(item.kmrContent);
+	return (locale === "ckb" ? (ckb ?? kmr) : (kmr ?? ckb)) ?? null;
+}
+
+/** Same precedence the backend applies: wide hero override, then the cover. */
+function pickSourceImageUrl(
+	locale: string,
+	item: UnknownRecord,
+): string | undefined {
+	return (
+		getString(item.featureImageUrl) ??
+		getString(item.coverUrl) ??
+		preferLocalized(
+			locale,
+			getString(item.ckbCoverUrl),
+			getString(item.kmrCoverUrl),
+		) ??
+		getString(item.hoverCoverUrl)
+	);
+}
+
+/** Build one carousel slide from a source's own DTO. */
+export function featuredItemFromSourceRecord(
+	locale: string,
+	endpoint: FeaturedSourceEndpoint,
+	rawItem: unknown,
+): FeaturedItem | null {
+	const item = asRecord(rawItem);
+	const entityId = item ? getIdentifier(item.id) : undefined;
+	if (!item || !entityId) {
+		return null;
+	}
+
+	const content = pickLocalizedContent(locale, item);
+	const title = getString(content?.title)?.trim();
+	const imageUrl = pickSourceImageUrl(locale, item)?.trim();
+
+	// A slide with no picture never renders — the backend drops these too.
+	if (!title || !imageUrl) {
+		return null;
+	}
+
+	const slug = endpoint.slugFromRecord
+		? (preferLocalized(
+				locale,
+				getString(item.slugCkb),
+				getString(item.slugKmr),
+			) ?? entityId)
+		: entityId;
+
+	const parsed = FeaturedItemSchema.safeParse({
+		id: `${endpoint.source}-${entityId}`,
+		type: endpoint.type,
+		slug,
+		title,
+		description: resolveDescription(getString(content?.description)) ?? title,
+		image: { url: imageUrl, alt: title },
+	});
+
+	return parsed.success ? parsed.data : null;
+}
+
+async function fetchFeaturedSource(
+	locale: string,
+	endpoint: FeaturedSourceEndpoint,
+): Promise<FeaturedItem[]> {
+	const payload = await apiFetchRaw(endpoint.path, {
+		revalidate: FEATURED_REVALIDATE_SECONDS,
+		tags: [FEATURED_TAG, `${FEATURED_TAG}-${endpoint.source}`],
+		searchParams: { locale, page: 0, size: FEATURED_SLIDE_CAP },
+	});
+
+	if (payload == null) {
+		if (isDevelopment) {
+			console.warn(`[api] HTTP error or empty response for ${endpoint.path}`);
+		}
+		return [];
+	}
+
+	const unwrapped = unwrapApiPayload(payload);
+	if (!unwrapped) {
+		return [];
+	}
+
+	return normalizeItems(unwrapped)
+		.map((rawItem) => featuredItemFromSourceRecord(locale, endpoint, rawItem))
+		.filter((item): item is FeaturedItem => item != null);
+}
+
+/**
+ * Round-robin across sources, capped like the backend.
+ *
+ * These routes expose no `featuredOrder`, so there is no global sequence to
+ * honour — taking one slide per source in turn at least keeps the carousel from
+ * opening with a run of the same type.
+ */
+export function interleaveFeaturedSources(
+	groups: FeaturedItem[][],
+	limit: number = FEATURED_SLIDE_CAP,
+): FeaturedItem[] {
+	const merged: FeaturedItem[] = [];
+	const deepest = Math.max(0, ...groups.map((group) => group.length));
+
+	for (let index = 0; index < deepest && merged.length < limit; index++) {
+		for (const group of groups) {
+			const item = group[index];
+			if (item) {
+				merged.push(item);
+				if (merged.length >= limit) {
+					break;
+				}
+			}
+		}
+	}
+
+	return merged;
+}
+
+/** Compose the carousel from the six per-source `/featured` routes. */
+export async function getFeaturedItemsFromSources(
+	locale: string,
+): Promise<FeaturedItem[]> {
+	const groups = await Promise.all(
+		FEATURED_SOURCE_ENDPOINTS.map((endpoint) =>
+			fetchFeaturedSource(locale, endpoint),
+		),
+	);
+
+	return interleaveFeaturedSources(groups);
+}
+
+/**
+ * The homepage carousel — CMS records only.
+ *
+ * An empty or unreachable API yields an empty carousel, which the hero renders
+ * as nothing at all. Demo slides would otherwise put invented headlines under
+ * the institute's name on its own front page, and they read as real. The
+ * There is no mock catalogue to fall back on any more.
+ */
 export async function getFeaturedItems(
 	locale: string,
 ): Promise<FeaturedItem[]> {
-	const getMockItems = () => getDemoFeaturedItems(locale);
-
 	if (!getApiBaseUrl()) {
-		return applyMockPolicy({
-			context: "home",
-			apiItems: [],
-			getMockItems,
-		});
+		return [];
 	}
 
 	let apiItems: FeaturedItem[] = [];
@@ -331,12 +519,14 @@ export async function getFeaturedItems(
 			}
 		}
 	} catch {
-		// fall through to mock policy
+		// fall through to the per-source routes
 	}
 
-	return applyMockPolicy({
-		context: "home",
-		apiItems,
-		getMockItems,
-	});
+	// The aggregate endpoint is down or has nothing — ask each source directly
+	// before giving up on the carousel.
+	if (apiItems.length === 0) {
+		apiItems = await getFeaturedItemsFromSources(locale);
+	}
+
+	return apiItems;
 }

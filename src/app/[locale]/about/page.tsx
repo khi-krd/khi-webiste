@@ -54,7 +54,7 @@ export default async function AboutPage({
 		? resolveAboutContent(locale, aboutPage)
 		: null;
 	const [heroMedia, founder, offices, partners] = await Promise.all([
-		getAboutHeroMedia(),
+		getAboutHeroMedia(locale),
 		getAboutFounder(locale),
 		getAboutOffices(locale),
 		getAboutPartners(locale),
@@ -101,48 +101,56 @@ export default async function AboutPage({
 				}
 			/>
 
-			<AboutFounder
-				person={{
-					...founder,
-					image: {
-						...founder.image,
-						alt: apiFounder?.name ?? t("founder.imageAlt"),
-					},
-				}}
-				name={apiFounder?.name ?? t("founder.name")}
-				role1={t("founder.role1")}
-				role2={apiFounder?.bio ?? t("founder.role2")}
-			/>
+			{/* Each block below renders only while the CMS has something to put in
+			    it — an empty team or partner list drops the section entirely. */}
+			{founder && apiFounder ? (
+				<AboutFounder
+					person={{
+						...founder,
+						image: {
+							...founder.image,
+							alt: apiFounder.name ?? t("founder.imageAlt"),
+						},
+					}}
+					name={apiFounder.name ?? t("founder.name")}
+					role1={t("founder.role1")}
+					role2={apiFounder.bio ?? t("founder.role2")}
+				/>
+			) : null}
 
-			<AboutTeamShowcase
-				offices={officesWithCopy}
-				officeLabels={officeLabels}
-			/>
+			{officesWithCopy.length > 0 ? (
+				<AboutTeamShowcase
+					offices={officesWithCopy}
+					officeLabels={officeLabels}
+				/>
+			) : null}
 
-			<AboutPartners
-				partners={partners}
-				sectionTitle={t("partners.title")}
-				getPartnerCopy={(id) => {
-					const partner = partners.find((item) => item.id === id);
-					if (partner?.title) {
+			{partners.length > 0 ? (
+				<AboutPartners
+					partners={partners}
+					sectionTitle={t("partners.title")}
+					getPartnerCopy={(id) => {
+						const partner = partners.find((item) => item.id === id);
+						if (partner?.title) {
+							return {
+								eyebrow: t("partners.title"),
+								title: partner.title,
+								description: partner.description ?? "",
+								cta: t(`partners.items.${id}.cta`, {
+									defaultValue: t("partners.items.services.cta"),
+								}),
+							};
+						}
+
 						return {
-							eyebrow: t("partners.title"),
-							title: partner.title,
-							description: partner.description ?? "",
-							cta: t(`partners.items.${id}.cta`, {
-								defaultValue: t("partners.items.services.cta"),
-							}),
+							eyebrow: t(`partners.items.${id}.eyebrow`),
+							title: t(`partners.items.${id}.title`),
+							description: t(`partners.items.${id}.description`),
+							cta: t(`partners.items.${id}.cta`),
 						};
-					}
-
-					return {
-						eyebrow: t(`partners.items.${id}.eyebrow`),
-						title: t(`partners.items.${id}.title`),
-						description: t(`partners.items.${id}.description`),
-						cta: t(`partners.items.${id}.cta`),
-					};
-				}}
-			/>
+					}}
+				/>
+			) : null}
 		</main>
 	);
 }

@@ -16,19 +16,18 @@ import {
 	FOOTER_SOCIAL_LINKS,
 	type FooterLink,
 } from "@/config/site";
+import { getDonateBandImageUrl } from "@/lib/api/site-settings";
 import { cn } from "@/lib/utils";
 
 const footerCtaClass =
 	"group/footer-cta relative inline-flex h-11 w-fit shrink-0 items-center gap-2.5 overflow-hidden border border-primary-foreground/70 bg-primary-foreground/10 px-5 font-heading text-small font-semibold text-primary-foreground no-underline backdrop-blur-[2px] transition-[color,gap,box-shadow,background-color,border-color] duration-300 ease-out before:absolute before:inset-0 before:z-0 before:origin-bottom before:scale-y-0 before:bg-primary-foreground before:transition-transform before:duration-300 before:ease-[cubic-bezier(0.22,1,0.36,1)] fine-hover:gap-3.5 fine-hover:border-primary-foreground fine-hover:text-foreground fine-hover:shadow-[0_8px_24px_-12px_color-mix(in_oklch,var(--color-foreground)_55%,transparent)] fine-hover:before:scale-y-100 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-foreground motion-reduce:before:transition-none motion-reduce:fine-hover:before:scale-y-100 motion-reduce:fine-hover:gap-2.5";
 
-/** Placeholder archive photo — swap for a real institute/archive image. */
-const DONATE_IMAGE_SRC =
-	"https://images.unsplash.com/photo-1584967918940-a7d51b064268?w=1600&q=80";
-
 type FooterDonateBandProps = {
 	title: string;
 	description: string;
 	cta: string;
+	/** CMS photograph; null renders the band on its plain dark ground. */
+	imageUrl: string | null;
 };
 
 /**
@@ -38,7 +37,12 @@ type FooterDonateBandProps = {
  * alone already flips the panel/photo sides correctly since `flex-row`
  * follows the inline-start direction.
  */
-function FooterDonateBand({ title, description, cta }: FooterDonateBandProps) {
+function FooterDonateBand({
+	title,
+	description,
+	cta,
+	imageUrl,
+}: FooterDonateBandProps) {
 	return (
 		<section className="relative z-10 flex flex-col overflow-hidden bg-foreground sm:h-[15rem] sm:flex-row lg:h-[17rem] 2xl:h-[20rem]">
 			<div className="footer-donate-cut relative flex flex-col justify-center gap-3 bg-brand px-6 py-8 text-start sm:w-[54%] sm:px-10 sm:py-0 lg:px-16 xl:px-20 2xl:w-[46%] 2xl:px-32">
@@ -61,18 +65,22 @@ function FooterDonateBand({ title, description, cta }: FooterDonateBandProps) {
 				</Link>
 			</div>
 
-			<div className="relative h-40 sm:h-auto sm:flex-1">
-				<div className="footer-donate-photo absolute -inset-y-8 inset-x-10 overflow-hidden border border-primary-foreground/15 sm:inset-x-16 2xl:-inset-y-10 2xl:inset-x-24">
-					<NextImage
-						src={DONATE_IMAGE_SRC}
-						alt=""
-						fill
-						sizes="(min-width: 640px) 46vw, 100vw"
-						quality={75}
-						className="object-cover"
-					/>
+			{/* No CMS photograph — the slanted panel is dropped entirely rather
+			    than framing an empty rectangle. */}
+			{imageUrl ? (
+				<div className="relative h-40 sm:h-auto sm:flex-1">
+					<div className="footer-donate-photo absolute -inset-y-8 inset-x-10 overflow-hidden border border-primary-foreground/15 sm:inset-x-16 2xl:-inset-y-10 2xl:inset-x-24">
+						<NextImage
+							src={imageUrl}
+							alt=""
+							fill
+							sizes="(min-width: 640px) 46vw, 100vw"
+							quality={75}
+							className="object-cover"
+						/>
+					</div>
 				</div>
-			</div>
+			) : null}
 		</section>
 	);
 }
@@ -178,6 +186,7 @@ function FooterNavPanel({
 
 export async function Footer() {
 	const t = await getTranslations("Footer");
+	const donateImageUrl = await getDonateBandImageUrl();
 
 	const resolveLabel = (link: FooterLink) => t(link.labelKey ?? "");
 
@@ -205,6 +214,7 @@ export async function Footer() {
 	return (
 		<footer className="relative overflow-hidden">
 			<FooterDonateBand
+				imageUrl={donateImageUrl}
 				title={t("donateTitle")}
 				description={t("donateDescription")}
 				cta={t("donateCta")}

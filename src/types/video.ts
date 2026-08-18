@@ -210,3 +210,18 @@ export type ResolvedVideoDetail = {
 	createdAt: string;
 	updatedAt: string;
 };
+
+/** Single global film-section background video (`GET /api/v1/videos/film-reklam-video`). */
+export const FilmReklamVideoSchema = z.object({
+	// Only the URL is required. Everything else is nullish so a stray null in an
+	// unused metadata field cannot make the parse fail — which the section could
+	// not tell apart from the documented "nothing uploaded" 404.
+	id: z.number().optional(),
+	videoUrl: z.string(),
+	sizeBytes: z.number().nullish(),
+	mimeType: z.string().nullish(),
+	createdAt: z.string().nullish(),
+	updatedAt: z.string().nullish(),
+});
+
+export type FilmReklamVideo = z.infer<typeof FilmReklamVideoSchema>;

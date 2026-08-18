@@ -1,15 +1,11 @@
 import "server-only";
 import { apiFetch, apiPost, DEFAULT_REVALIDATE } from "@/lib/api/client";
 import { getApiBaseUrl } from "@/lib/api/config";
-import { applyMockPolicy } from "@/lib/api/mock-policy";
 import {
 	type ResolvedContactOffice,
 	resolveContactOffices,
 } from "@/lib/contact/resolve";
-import {
-	type ContactOffice,
-	getContactOffices as getMockContactOffices,
-} from "@/lib/mock/contact";
+import type { ContactOffice } from "@/lib/mock/contact";
 import {
 	ContactActivePageSchema,
 	type ContactMessageResponse,
@@ -42,11 +38,7 @@ export async function getContactOffices(
 	const pages = await getActiveContactPages();
 	const apiItems = pages.length > 0 ? resolveContactOffices(locale, pages) : [];
 
-	return applyMockPolicy({
-		context: "global",
-		apiItems,
-		getMockItems: () => getMockContactOffices(),
-	});
+	return apiItems;
 }
 
 export type { ContactOffice, ResolvedContactOffice };

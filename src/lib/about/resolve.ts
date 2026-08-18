@@ -55,7 +55,7 @@ export function resolveFounderFromAbout(
 	locale: string,
 	page: About | null,
 ): ResolvedFounder | null {
-	if (!page?.founderImageUrl) {
+	if (!page) {
 		return null;
 	}
 
@@ -68,9 +68,15 @@ export function resolveFounderFromAbout(
 			? firstNonBlank(page.founderBioCkb, page.founderBioKmr)
 			: firstNonBlank(page.founderBioKmr, page.founderBioCkb);
 
+	// The portrait is optional: a page that carries the founder's name and story
+	// but no picture is still real content, and dropping it lost both.
+	if (!name && !bio && !page.founderImageUrl) {
+		return null;
+	}
+
 	return {
 		image: {
-			url: page.founderImageUrl,
+			url: page.founderImageUrl ?? "",
 			alt: name ?? undefined,
 		},
 		name,

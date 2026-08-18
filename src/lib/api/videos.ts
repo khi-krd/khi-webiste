@@ -7,20 +7,11 @@ import {
 	BULK_FETCH_SIZE,
 	DEFAULT_REVALIDATE,
 	type ParsedApiPage,
+	sliceToCount,
 	unwrapApiPayload,
 } from "@/lib/api/client";
 import { getApiBaseUrl } from "@/lib/api/config";
-import {
-	applyMockPolicy,
-	applyMockPolicyNullable,
-	type MockPolicyContext,
-} from "@/lib/api/mock-policy";
 import { normalizeVideoRecord } from "@/lib/api/normalize";
-import {
-	DEMO_VIDEO_TOPICS,
-	getAllDemoVideos,
-	getDemoVideoById,
-} from "@/lib/mock/videos";
 import {
 	cardIdentity,
 	filterVideos,
@@ -30,15 +21,21 @@ import {
 } from "@/lib/video/filter";
 import { resolveVideoCards, resolveVideoDetail } from "@/lib/video/resolve";
 import type {
+	FilmReklamVideo,
 	ResolvedVideoCard,
 	ResolvedVideoDetail,
 	Video,
 	VideoType,
 } from "@/types/video";
-import { VideoSchema, VideoTopicSchema } from "@/types/video";
+import {
+	FilmReklamVideoSchema,
+	VideoSchema,
+	VideoTopicSchema,
+} from "@/types/video";
 
 const VIDEOS_ENDPOINT = "/api/v1/videos";
 const VIDEOS_TAG = "videos";
+const FILM_REKLAM_VIDEO_ENDPOINT = `${VIDEOS_ENDPOINT}/film-reklam-video`;
 
 export const VIDEO_GRID_PAGE_SIZE = 12;
 
@@ -58,7 +55,12 @@ export type VideoListingOptions = {
 	query?: string | null;
 	page?: number;
 	size?: number;
-	mockContext?: MockPolicyContext;
+	/**
+	 * Presentation shape. "home" returns one capped page for the homepage rails;
+	 * "listing" paginates. Named `mockContext` while it lived on the mock policy —
+	 * it was never a mock switch.
+	 */
+	variant?: "home" | "listing";
 	/** Card identity to drop from the flow (e.g. the page-1 hero lead). */
 	excludeCardIdentity?: string | null;
 };
@@ -147,11 +149,7 @@ async function fetchAllVideosFromApi(
 
 async function getAllVideos(): Promise<Video[]> {
 	const apiVideos = await fetchAllVideosFromApi();
-	return applyMockPolicy({
-		context: "global",
-		apiItems: apiVideos ?? [],
-		getMockItems: () => getAllDemoVideos(),
-	});
+	return apiVideos ?? [];
 }
 
 function resolvePageToCards(
@@ -161,16 +159,6 @@ function resolvePageToCards(
 	return sortVideos(
 		videos.flatMap((video) => resolveVideoCards(locale, video)),
 	);
-}
-
-function getMockVideoListingItems(
-	locale: string,
-	filters: VideoListingFilters,
-): ResolvedVideoCard[] {
-	const allItems = getAllDemoVideos().flatMap((video) =>
-		resolveVideoCards(locale, video),
-	);
-	return sortVideos(filterVideos(allItems, filters));
 }
 
 function applyClientOnlyFilters(
@@ -243,7 +231,10 @@ export async function getFeaturedVideoLead(
 		}
 	}
 
-	return pickFeaturedCard(getMockVideoListingItems(locale, {}));
+	// No CMS video carries `featured`, so there is no lead to pick. Returning
+	// null lets VideoShell open on the newest real video (`cards[0]`) instead of
+	// on a demo one.
+	return null;
 }
 
 export async function getVideoListing(
@@ -256,7 +247,7 @@ export async function getVideoListing(
 		query,
 		page = 1,
 		size = VIDEO_GRID_PAGE_SIZE,
-		mockContext = "global",
+		variant = "listing",
 		excludeCardIdentity,
 	}: VideoListingOptions = {},
 ): Promise<VideoListResult> {
@@ -278,18 +269,13 @@ export async function getVideoListing(
 			(await resolveVideoListingItemsFromApi(locale, filters)))
 		: await resolveVideoListingItemsFromApi(locale, filters);
 
-	let items = applyMockPolicy({
-		context: mockContext,
-		apiItems,
-		getMockItems: () => getMockVideoListingItems(locale, filters),
-		targetCount: mockContext === "home" ? size : undefined,
-	});
+	let items = sliceToCount(apiItems, variant === "home" ? size : undefined);
 
 	if (excludeCardIdentity != null) {
 		items = items.filter((card) => cardIdentity(card) !== excludeCardIdentity);
 	}
 
-	if (mockContext === "home") {
+	if (variant === "home") {
 		return {
 			items: items.slice(0, size),
 			totalPages: 1,
@@ -327,28 +313,13 @@ export async function getVideoById(
 		}
 	}
 
-	const demoVideo = getDemoVideoById(id);
-	return applyMockPolicyNullable({
-		apiValue: apiDetail,
-		getMockValue: () =>
-			demoVideo ? resolveVideoDetail(locale, demoVideo, clipNumber) : null,
-	});
+	return apiDetail;
 }
 
 export type VideoTopicOption = {
 	id: number;
 	name: string;
 };
-
-function getMockVideoTopics(locale: string): VideoTopicOption[] {
-	return DEMO_VIDEO_TOPICS.map((topic) => ({
-		id: topic.id,
-		name:
-			locale === "ckb"
-				? (topic.nameCkb ?? topic.nameKmr ?? "")
-				: (topic.nameKmr ?? topic.nameCkb ?? ""),
-	})).filter((topic) => topic.name.length > 0);
-}
 
 /** Topic options for the filter UI (`GET /api/v1/videos/topics`). */
 export async function getVideoTopics(
@@ -376,11 +347,7 @@ export async function getVideoTopics(
 		}
 	}
 
-	return applyMockPolicy({
-		context: "global",
-		apiItems,
-		getMockItems: () => getMockVideoTopics(locale),
-	});
+	return apiItems;
 }
 
 /** Resolve a single topic's localized name (used by the short-films header). */
@@ -390,4 +357,22 @@ export async function getVideoTopicName(
 ): Promise<string | null> {
 	const topics = await getVideoTopics(locale);
 	return topics.find((topic) => topic.id === topicId)?.name ?? null;
+}
+
+/**
+ * Homepage film-section background video (`GET /api/v1/videos/film-reklam-video`).
+ *
+ * `404` is the documented empty state — nothing uploaded — and `apiFetch` turns
+ * any non-2xx into `null`, so the section simply renders without a background.
+ */
+export async function getFilmReklamVideo(): Promise<FilmReklamVideo | null> {
+	if (!getApiBaseUrl()) {
+		return null;
+	}
+
+	return apiFetch(FILM_REKLAM_VIDEO_ENDPOINT, {
+		schema: FilmReklamVideoSchema,
+		tags: [VIDEOS_TAG, "film-reklam-video"],
+		revalidate: DEFAULT_REVALIDATE,
+	});
 }

@@ -1,6 +1,6 @@
 import NextImage from "next/image";
 import { DonateHeroContent } from "@/components/donate/donate-hero-content";
-import type { DonateHeroMedia } from "@/lib/mock/donate";
+import type { DonateHeroMedia } from "@/lib/donate/content";
 import { cn } from "@/lib/utils";
 
 type DonateHeroProps = {
@@ -35,16 +35,22 @@ export function DonateHero({
 			)}
 		>
 			<div className="absolute inset-0 isolate">
-				<div className="absolute inset-0 [&_img]:h-full [&_img]:w-full [&_img]:object-cover [&_img]:brightness-[0.72] [&_img]:contrast-[1.12] [&_img]:saturate-[0.58]">
-					<NextImage
-						src={heroMedia.url}
-						alt={heroMedia.alt ?? ""}
-						fill
-						sizes="100vw"
-						priority
-						className="object-cover"
-					/>
-				</div>
+				{/* No picture in the CMS — the gradients carry the hero on a solid
+				    ground, rather than an <img> with an empty src. */}
+				{heroMedia.url ? (
+					<div className="absolute inset-0 [&_img]:h-full [&_img]:w-full [&_img]:object-cover [&_img]:brightness-[0.72] [&_img]:contrast-[1.12] [&_img]:saturate-[0.58]">
+						<NextImage
+							src={heroMedia.url}
+							alt={heroMedia.alt ?? ""}
+							fill
+							sizes="100vw"
+							priority
+							className="object-cover"
+						/>
+					</div>
+				) : (
+					<div className="absolute inset-0 bg-foreground" aria-hidden />
+				)}
 
 				<div
 					className="pointer-events-none absolute inset-0 z-1 bg-foreground/45"

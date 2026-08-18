@@ -132,6 +132,19 @@
 
 	/* Hairline border width — borders carry the design, so default to 1px. */
 	--border-hairline: 1px;
+
+	/* Space the sticky header takes in flow: the bar is h-16 / sm:h-20
+	   (header.tsx) plus header-shell.tsx's 1px bottom border. A full-viewport
+	   hero on an inner page starts BELOW it, so it must subtract this or its
+	   CTA lands under the fold. The homepage escapes it only because snap
+	   scrolling parks the header out of view. */
+	--header-h: calc(4rem + 1px);
+}
+
+@media (min-width: 40rem) {
+	:root {
+		--header-h: calc(5rem + 1px);
+	}
 }
 
 /* --- Border-radius env toggle (NEXT_PUBLIC_ENABLE_BORDER_RADIUS) ------------

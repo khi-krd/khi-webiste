@@ -1,9 +1,9 @@
 import { describe, expect, it } from "vitest";
+import { getDonateTypeItems } from "@/lib/donate/content";
 import {
 	filterDonateTypeItems,
 	resolveDonateVisibility,
 } from "@/lib/donate/resolve";
-import { getDonateTypeItems } from "@/lib/mock/donate";
 import type { DonationSettings, DonationType } from "@/types/donation";
 
 describe("resolveDonateVisibility", () => {

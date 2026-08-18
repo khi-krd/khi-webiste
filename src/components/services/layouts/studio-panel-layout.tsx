@@ -16,12 +16,14 @@ export function StudioPanelLayout({
 			title={title}
 			body={body}
 			media={
-				<ServiceMediaGallery
-					slides={gallery.slides}
-					defaultIndex={gallery.defaultIndex}
-					title={title}
-					mainAspectRatio="16/9"
-				/>
+				gallery.slides.length > 0 ? (
+					<ServiceMediaGallery
+						slides={gallery.slides}
+						defaultIndex={gallery.defaultIndex}
+						title={title}
+						mainAspectRatio="16/9"
+					/>
+				) : undefined
 			}
 		/>
 	);

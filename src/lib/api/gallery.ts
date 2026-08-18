@@ -7,10 +7,6 @@ import {
 	unwrapApiPayload,
 } from "@/lib/api/client";
 import { getApiBaseUrl } from "@/lib/api/config";
-import {
-	applyMockPolicy,
-	applyMockPolicyNullable,
-} from "@/lib/api/mock-policy";
 import { normalizeImageCollectionRecord } from "@/lib/api/normalize";
 import {
 	resolveGalleryHeroColumns,
@@ -23,9 +19,6 @@ import {
 	type GalleryHeroColumns,
 	type GalleryPost,
 	type GalleryPostDetail,
-	getGalleryHeroColumns as getMockGalleryHeroColumns,
-	getGalleryPostBySlug as getMockGalleryPostBySlug,
-	getGalleryPosts as getMockGalleryPosts,
 	paginateGalleryPosts,
 } from "@/lib/mock/gallery";
 import { ImageCollectionSchema } from "@/types/gallery";
@@ -58,11 +51,7 @@ export async function getGalleryPosts(locale: string): Promise<GalleryPost[]> {
 	const raw = getApiBaseUrl() ? await fetchAllCollections() : null;
 	const apiItems = raw ? resolveGalleryPosts(locale, raw) : [];
 
-	return applyMockPolicy({
-		context: "global",
-		apiItems,
-		getMockItems: () => getMockGalleryPosts(locale),
-	});
+	return apiItems;
 }
 
 export async function getGalleryHeroColumns(
@@ -75,12 +64,7 @@ export async function getGalleryHeroColumns(
 		: emptyColumns;
 	const hasApiColumns = apiColumns.up.length > 0 || apiColumns.down.length > 0;
 
-	return (
-		applyMockPolicyNullable({
-			apiValue: hasApiColumns ? apiColumns : null,
-			getMockValue: () => getMockGalleryHeroColumns(locale),
-		}) ?? emptyColumns
-	);
+	return hasApiColumns ? apiColumns : emptyColumns;
 }
 
 export async function getGalleryPostBySlug(
@@ -150,8 +134,5 @@ export async function getGalleryPostBySlug(
 		}
 	}
 
-	return applyMockPolicyNullable({
-		apiValue: null,
-		getMockValue: () => getMockGalleryPostBySlug(locale, slug),
-	});
+	return null;
 }

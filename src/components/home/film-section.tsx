@@ -5,6 +5,7 @@ import {
 	FilmCinemaHero,
 	FilmGridCard,
 } from "@/components/home/film-section-card";
+import { FilmSectionVideo } from "@/components/home/film-section-video";
 import {
 	ScrollReveal,
 	ScrollRevealBlock,
@@ -13,7 +14,7 @@ import {
 import { viewAllCtaOnDarkClass } from "@/components/ui/cta-styles";
 import { DirectionalIcon } from "@/components/ui/directional-icon";
 import { Link } from "@/components/ui/link";
-import { getVideoListing } from "@/lib/api/videos";
+import { getFilmReklamVideo, getVideoListing } from "@/lib/api/videos";
 import { formatDuration } from "@/lib/video/format";
 import {
 	SHORT_FILM_LISTING_FILTERS,
@@ -44,11 +45,14 @@ export async function FilmSection() {
 	const locale = await getLocale();
 	const t = await getTranslations("Video");
 
-	const listing = await getVideoListing(locale, {
-		...SHORT_FILM_LISTING_FILTERS,
-		size: FILM_COUNT,
-		mockContext: "home",
-	});
+	const [listing, reklam] = await Promise.all([
+		getVideoListing(locale, {
+			...SHORT_FILM_LISTING_FILTERS,
+			size: FILM_COUNT,
+			variant: "home",
+		}),
+		getFilmReklamVideo(),
+	]);
 
 	if (listing.items.length === 0) {
 		return null;
@@ -70,6 +74,16 @@ export async function FilmSection() {
 			className="cv-auto relative flex min-h-svh w-full flex-col justify-center overflow-hidden border-t border-primary-foreground/15 bg-foreground text-primary-foreground [--cv-intrinsic:100svh]"
 			aria-labelledby="film-heading"
 		>
+			<FilmSectionVideo src={reklam?.videoUrl ?? null} />
+
+			{/* Legibility scrim over the background video — the cards and the
+			    heading sit directly on it. Skipped visually when there is no
+			    video, since the section ground is already this colour. */}
+			<div
+				aria-hidden
+				className="pointer-events-none absolute inset-0 bg-foreground/72"
+			/>
+
 			<div
 				aria-hidden
 				className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_100%_60%_at_50%_0%,var(--color-primary-foreground)_0%,transparent_50%)] opacity-[0.035]"

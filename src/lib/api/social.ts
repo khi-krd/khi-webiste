@@ -1,12 +1,7 @@
 import "server-only";
 import { apiFetch, DEFAULT_REVALIDATE } from "@/lib/api/client";
 import { getApiBaseUrl } from "@/lib/api/config";
-import { applyMockPolicy } from "@/lib/api/mock-policy";
-import {
-	getSocialPlatforms,
-	type SocialPlatform,
-	type SocialPlatformId,
-} from "@/lib/mock/contact";
+import type { SocialPlatform, SocialPlatformId } from "@/lib/mock/contact";
 import { type SocialLink, SocialLinkListSchema } from "@/types/social";
 
 const SOCIAL_ENDPOINT = "/api/v1/settings/social";
@@ -56,9 +51,5 @@ export async function getSocialPlatformsFromApi(): Promise<SocialPlatform[]> {
 					.filter((item): item is SocialPlatform => item != null)
 			: [];
 
-	return applyMockPolicy({
-		context: "global",
-		apiItems,
-		getMockItems: () => getSocialPlatforms(),
-	});
+	return apiItems;
 }

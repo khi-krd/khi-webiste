@@ -116,12 +116,17 @@ export type SoundTopic = z.infer<typeof SoundTopicSchema>;
 
 /** Single global sound-section background video (`GET .../sound-reklam-video`). */
 export const SoundReklamVideoSchema = z.object({
-	id: z.number(),
-	videoUrl: z.string().url(),
-	sizeBytes: z.number().optional(),
-	mimeType: z.string().optional(),
-	createdAt: z.string().optional(),
-	updatedAt: z.string().optional(),
+	// Everything but the URL is nullish: a schema miss makes `apiFetch` return
+	// null, which the section cannot tell apart from the documented "no video
+	// uploaded" 404 — so a stray null in an unused metadata field would silently
+	// blank the background. `id` is optional because the published contract does
+	// not promise it, even though the server sends one today.
+	id: z.number().optional(),
+	videoUrl: z.string(),
+	sizeBytes: z.number().nullish(),
+	mimeType: z.string().nullish(),
+	createdAt: z.string().nullish(),
+	updatedAt: z.string().nullish(),
 });
 
 export type SoundReklamVideo = z.infer<typeof SoundReklamVideoSchema>;

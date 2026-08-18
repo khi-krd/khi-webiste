@@ -9,7 +9,7 @@ import {
 	ScrollRevealBlock,
 	ScrollRevealItem,
 } from "@/components/motion/scroll-reveal";
-import type { DonateTypeItem } from "@/lib/mock/donate";
+import type { DonateTypeItem } from "@/lib/donate/content";
 import { cn } from "@/lib/utils";
 
 type DonateTypesGridProps = {

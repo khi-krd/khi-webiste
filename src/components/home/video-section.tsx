@@ -30,7 +30,7 @@ export async function VideoSection() {
 		// stage drops the repeats below. Without the slack a duplicate would cost
 		// the queue a line.
 		size: HOME_VIDEO_COUNT + 3,
-		mockContext: "home",
+		variant: "home",
 	});
 
 	if (listing.items.length === 0) {

@@ -1,3 +1,15 @@
+/**
+ * Donation page content that lives in the frontend.
+ *
+ * These are NOT mock records standing in for the CMS — the CMS has no field for
+ * any of them. The donation-types API returns two coarse codes (FINANCIAL /
+ * ARCHIVE) with no imagery or ordering, and donation settings carry no amount
+ * presets and no supporters image. Every visible string here comes from
+ * `messages/*.json`; what this file owns is the card set, its order, the preset
+ * amounts and the artwork.
+ *
+ * If the backend ever grows these fields, this file is what they replace.
+ */
 export type DonateTypeId =
 	| "visualArchive"
 	| "documents"

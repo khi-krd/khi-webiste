@@ -1,21 +1,14 @@
 import "server-only";
-import { getTranslations } from "next-intl/server";
 import {
 	apiFetch,
 	BULK_FETCH_SIZE,
 	DEFAULT_REVALIDATE,
+	sliceToCount,
 } from "@/lib/api/client";
-import { getApiBaseUrl, getMockDataMode } from "@/lib/api/config";
-import {
-	applyMockPolicy,
-	applyMockPolicyNullable,
-} from "@/lib/api/mock-policy";
+import { getApiBaseUrl } from "@/lib/api/config";
 import type { LatestUpdateItem } from "@/lib/mock/latest-updates";
-import { getLatestUpdates as getMockLatestUpdates } from "@/lib/mock/latest-updates";
 import {
 	filterNews as filterNewsItems,
-	getNews as getMockNews,
-	getNewsBySlug as getMockNewsBySlug,
 	isKnownCategory,
 	isValidCategory,
 	NEWS_CATEGORIES,
@@ -133,11 +126,7 @@ async function getAllNewsRecords(
 		}
 	}
 
-	return applyMockPolicy({
-		context: "global",
-		apiItems,
-		getMockItems: () => getMockNews(locale),
-	});
+	return apiItems;
 }
 
 export async function getNews(
@@ -188,10 +177,7 @@ export async function getNewsBySlug(
 		}
 	}
 
-	return applyMockPolicyNullable({
-		apiValue: null,
-		getMockValue: () => getMockNewsBySlug(locale, slug),
-	});
+	return null;
 }
 
 const RELATED_NEWS_LIMIT = 3;
@@ -322,26 +308,14 @@ async function fetchUniqueLatestNewsItems(
 export async function getLatestUpdates(
 	locale: string,
 ): Promise<LatestUpdateItem[]> {
-	const getMockItems = () => getMockLatestUpdates(locale);
-
 	if (!getApiBaseUrl()) {
-		return applyMockPolicy({
-			context: "home",
-			apiItems: [],
-			getMockItems,
-			targetCount: LATEST_UPDATES_COUNT,
-		});
+		return sliceToCount([], LATEST_UPDATES_COUNT);
 	}
 
 	const items = await fetchUniqueLatestNewsItems(locale, LATEST_UPDATES_COUNT);
 	const apiItems = items ? items.map(toLatestUpdateItem) : [];
 
-	return applyMockPolicy({
-		context: "home",
-		apiItems,
-		getMockItems,
-		targetCount: LATEST_UPDATES_COUNT,
-	});
+	return sliceToCount(apiItems, LATEST_UPDATES_COUNT);
 }
 
 function collectCategoryOptions(
@@ -375,16 +349,6 @@ function collectCategoryOptions(
 	);
 }
 
-async function getMockNewsCategories(
-	locale: string,
-): Promise<NewsCategoryOption[]> {
-	const t = await getTranslations({ locale, namespace: "News" });
-	return NEWS_CATEGORIES.map((key) => ({
-		key,
-		label: t(`categories.${key}`),
-	}));
-}
-
 /**
  * Category chips for the news filter UI.
  * Derived from backend `category.ckbName` / `category.kmrName` on news records
@@ -393,10 +357,8 @@ async function getMockNewsCategories(
 export async function getNewsCategories(
 	locale: string,
 ): Promise<NewsCategoryOption[]> {
-	const mode = getMockDataMode();
-
-	if (mode === "full" || !getApiBaseUrl()) {
-		return getMockNewsCategories(locale);
+	if (!getApiBaseUrl()) {
+		return [];
 	}
 
 	const records = await fetchNewsPageResult({

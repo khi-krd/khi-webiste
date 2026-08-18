@@ -1,12 +1,14 @@
 import Image from "next/image";
 import { getTranslations } from "next-intl/server";
 import { Link } from "@/i18n/navigation";
+import { getSiteLogoUrl } from "@/lib/api/site-settings";
 import { cn } from "@/lib/utils";
 
 /**
  * Brand mark — links to the locale home. Server Component.
  *
- * Bilingual lockup: logo.png, then the institute name in Sorani with the
+ * Bilingual lockup: the CMS logo (falling back to the bundled `/logo.png`),
+ * then the institute name in Sorani with the
  * Kurmanji name stacked directly under it. BOTH lines show in BOTH locales —
  * it is one bilingual wordmark, not a translated string, so it must not switch
  * with the active language.
@@ -19,6 +21,9 @@ import { cn } from "@/lib/utils";
  */
 export async function Logo({ className }: { className?: string } = {}) {
 	const t = await getTranslations("Nav");
+	// Editors choose the mark in the CMS; the bundled file is the fallback, so
+	// the header never renders without a logo.
+	const logoUrl = await getSiteLogoUrl();
 
 	return (
 		<Link
@@ -30,11 +35,11 @@ export async function Logo({ className }: { className?: string } = {}) {
 			)}
 		>
 			<Image
-				src="/logo.png"
+				src={logoUrl ?? "/logo.png"}
 				alt=""
 				width={64}
 				height={64}
-				className="size-13 shrink-0 sm:size-16"
+				className="size-13 shrink-0 object-contain sm:size-16"
 				priority
 			/>
 

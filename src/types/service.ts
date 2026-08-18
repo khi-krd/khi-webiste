@@ -6,6 +6,8 @@ export const ServiceContentSchema = z.object({
 	languageCode: z.string(),
 	title: z.string().nullish(),
 	description: z.string().nullish(),
+	/** Short plain-text line for the services-page highlight card. */
+	featureDescription: z.string().nullish(),
 });
 
 export const ServiceLayoutTypeSchema = z.enum([
@@ -38,6 +40,11 @@ export const ServiceSchema = z.object({
 	active: z.boolean(),
 	sortOrder: z.number().nullish(),
 	publishedAt: z.string().nullish(),
+	// Highlight on /services — not the homepage hero. The API omits the last two
+	// keys entirely when they are null, so both must tolerate `undefined`.
+	featured: z.boolean().optional(),
+	featuredOrder: z.number().nullish(),
+	featureImageUrl: z.string().nullish(),
 	contents: z.array(ServiceContentSchema),
 	createdAt: z.string().nullish(),
 	updatedAt: z.string().nullish(),

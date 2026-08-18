@@ -4,7 +4,7 @@ import {
 	submitArchiveDonation,
 	submitFinancialDonation,
 } from "@/lib/api/donations";
-import type { MaterialTypeId, PaymentMethodId } from "@/lib/mock/donate";
+import type { MaterialTypeId, PaymentMethodId } from "@/lib/donate/content";
 import type { DonateArchiveFormValues } from "@/lib/schemas/donate-archive-form";
 import type { DonateFinancialFormValues } from "@/lib/schemas/donate-financial-form";
 import type { ArchiveMaterialType } from "@/types/donation";

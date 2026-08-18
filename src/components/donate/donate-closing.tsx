@@ -19,7 +19,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { DirectionalIcon } from "@/components/ui/directional-icon";
 import { Link } from "@/components/ui/link";
-import type { DonatePaymentDetails } from "@/lib/mock/donate";
+import type { DonatePaymentDetails } from "@/lib/donate/content";
 
 const supportersCtaClass =
 	"group/supporters relative mt-6 inline-flex h-10 w-fit shrink-0 items-center gap-2.5 overflow-hidden border border-primary-foreground/35 bg-primary-foreground/10 px-5 font-heading text-small font-semibold text-primary-foreground no-underline transition-[color,gap,background-color,border-color] duration-300 fine-hover:gap-3.5 fine-hover:border-primary-foreground fine-hover:bg-primary-foreground fine-hover:text-foreground focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-foreground motion-reduce:fine-hover:gap-2.5";

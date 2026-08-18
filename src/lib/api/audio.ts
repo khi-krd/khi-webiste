@@ -6,13 +6,10 @@ import {
 	apiFetchRaw,
 	BULK_FETCH_SIZE,
 	DEFAULT_REVALIDATE,
+	sliceToCount,
 	unwrapApiPayload,
 } from "@/lib/api/client";
 import { getApiBaseUrl } from "@/lib/api/config";
-import {
-	applyMockPolicy,
-	applyMockPolicyNullable,
-} from "@/lib/api/mock-policy";
 import { normalizeSoundTrackRecord } from "@/lib/api/normalize";
 import {
 	filterAudioTracks,
@@ -24,11 +21,6 @@ import {
 	resolveAudioDetail,
 	resolveAudioTopicName,
 } from "@/lib/audio/resolve";
-import {
-	DEMO_SOUND_TOPICS,
-	getAllDemoSoundTracks,
-	getDemoSoundTrackById,
-} from "@/lib/mock/audio";
 import type {
 	ResolvedAudioCard,
 	ResolvedAudioDetail,
@@ -117,17 +109,6 @@ async function getAllSoundTracks(): Promise<SoundTrack[]> {
 	return apiTracks ?? [];
 }
 
-function getMockAudioCarouselItems(
-	locale: string,
-	size: number,
-): ResolvedAudioCard[] {
-	return sortAudioTracks(
-		getAllDemoSoundTracks()
-			.map((track) => resolveAudioCard(locale, track))
-			.filter((item): item is ResolvedAudioCard => item != null),
-	).slice(0, size);
-}
-
 /** Full resolved card set for in-memory filter/sort/paginate. */
 export async function getAllAudioCards(
 	locale: string,
@@ -143,8 +124,6 @@ export async function getAudioCarousel(
 	locale: string,
 	size = SOUND_SECTION_CARD_COUNT,
 ): Promise<ResolvedAudioCard[]> {
-	const getMockItems = () => getMockAudioCarouselItems(locale, size);
-
 	let apiItems: ResolvedAudioCard[] = [];
 
 	if (getApiBaseUrl()) {
@@ -158,37 +137,7 @@ export async function getAudioCarousel(
 		}
 	}
 
-	return applyMockPolicy({
-		context: "home",
-		apiItems,
-		getMockItems,
-		targetCount: size,
-	});
-}
-
-function getMockAudioListingItems(
-	locale: string,
-	filters: Pick<
-		AudioListingOptions,
-		"soundType" | "state" | "topicId" | "query"
-	>,
-): ResolvedAudioCard[] {
-	const allItems = getAllDemoSoundTracks()
-		.map((track) => resolveAudioCard(locale, track))
-		.filter((item): item is ResolvedAudioCard => item != null);
-	return sortAudioTracks(filterAudioTracks(allItems, filters));
-}
-
-function getMockAlbumOfMemoriesItems(
-	locale: string,
-	size: number,
-): ResolvedAudioCard[] {
-	return sortAudioTracks(
-		getAllDemoSoundTracks()
-			.map((track) => resolveAudioCard(locale, track))
-			.filter((item): item is ResolvedAudioCard => item != null)
-			.filter((item) => item.albumOfMemories),
-	).slice(0, size);
+	return sliceToCount(apiItems, size);
 }
 
 export async function getAudioListing(
@@ -202,8 +151,6 @@ export async function getAudioListing(
 		size = AUDIO_GRID_PAGE_SIZE,
 	}: AudioListingOptions = {},
 ): Promise<AudioListResult> {
-	const filters = { soundType, state, topicId, query };
-
 	if (getApiBaseUrl()) {
 		let apiTracks: SoundTrack[] | null = null;
 
@@ -230,14 +177,8 @@ export async function getAudioListing(
 		}
 	}
 
-	const items = applyMockPolicy({
-		context: "global",
-		apiItems: [],
-		getMockItems: () => getMockAudioListingItems(locale, filters),
-	});
-	const filtered = filterAudioTracks(items, filters);
-	const sorted = sortAudioTracks(filtered);
-	return paginateAudioTracks(sorted, page, size);
+	// API unavailable or empty — an empty page, not demo tracks.
+	return paginateAudioTracks([], page, size);
 }
 
 /** Album-of-memories strip (`GET /api/v1/sound-tracks/album-of-memories`). */
@@ -268,11 +209,7 @@ export async function getAlbumOfMemories(
 		}
 	}
 
-	return applyMockPolicy({
-		context: "global",
-		apiItems,
-		getMockItems: () => getMockAlbumOfMemoriesItems(locale, size),
-	});
+	return apiItems;
 }
 
 export async function getAudioTrackById(
@@ -299,12 +236,7 @@ export async function getAudioTrackById(
 		}
 	}
 
-	const demoTrack = getDemoSoundTrackById(id);
-	return applyMockPolicyNullable({
-		apiValue: apiDetail,
-		getMockValue: () =>
-			demoTrack ? resolveAudioDetail(locale, demoTrack) : null,
-	});
+	return apiDetail;
 }
 
 const RELATED_AUDIO_LIMIT = 4;
@@ -407,16 +339,6 @@ export type AudioTopicOption = {
 	name: string;
 };
 
-function getMockAudioTopics(locale: string): AudioTopicOption[] {
-	return DEMO_SOUND_TOPICS.map((topic) => ({
-		id: topic.id,
-		name:
-			locale === "ckb"
-				? (topic.nameCkb ?? topic.nameKmr ?? "")
-				: (topic.nameKmr ?? topic.nameCkb ?? ""),
-	})).filter((topic) => topic.name.length > 0);
-}
-
 /** Topic options for the filter UI (`GET /api/v1/sound-tracks/topics`). */
 export async function getAudioTopics(
 	locale: string,
@@ -443,11 +365,7 @@ export async function getAudioTopics(
 		}
 	}
 
-	return applyMockPolicy({
-		context: "global",
-		apiItems,
-		getMockItems: () => getMockAudioTopics(locale),
-	});
+	return apiItems;
 }
 
 /** Distinct soundType values present in the catalogue — drives the type chips. */

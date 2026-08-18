@@ -4,11 +4,13 @@ import { Link } from "@/i18n/navigation";
 import { cn } from "@/lib/utils";
 import type { HeroSlide } from "@/types/content";
 
-export type FeaturedSlideHeight = "viewport" | "playground";
+export type FeaturedSlideHeight = "viewport" | "playground" | "page";
 
 export const featuredSlideHeightClass: Record<FeaturedSlideHeight, string> = {
 	viewport: "h-svh",
 	playground: "h-112 sm:h-144",
+	/** Inner-page hero: the viewport minus the sticky header above it. */
+	page: "h-[calc(100svh-var(--header-h,5rem))]",
 };
 
 type FeaturedSlideProps = {

@@ -7,11 +7,18 @@ import { isDirectMediaFileUrl } from "@/lib/video/source";
 const mediaFilterClass =
 	"h-full w-full object-cover brightness-[0.72] contrast-[1.15] saturate-[0.55]";
 
-type SoundSectionVideoProps = {
+type FilmSectionVideoProps = {
 	src: string | null;
 };
 
-export function SoundSectionVideo({ src }: SoundSectionVideoProps) {
+/**
+ * The film section's background video — the counterpart of `SoundSectionVideo`.
+ *
+ * Deliberately identical to it: same filters, same reduced-motion handling, same
+ * dark ground. The two homepage sections sit next to each other, so any drift
+ * between them reads as a mistake.
+ */
+export function FilmSectionVideo({ src }: FilmSectionVideoProps) {
 	const [prefersReducedMotion, setPrefersReducedMotion] = useState(false);
 	const [failed, setFailed] = useState(false);
 
@@ -23,24 +30,23 @@ export function SoundSectionVideo({ src }: SoundSectionVideoProps) {
 		return () => mediaQuery.removeEventListener("change", updatePreference);
 	}, []);
 
-	// A URL that parses but is not a media file — a YouTube watch page, an HTML
-	// page — renders as a black rectangle with no error. The detail-page video
-	// previews guard the same way.
+	// A URL that parses but is not a media file renders as a black rectangle with
+	// no error, so guard it the way the video previews do.
 	const showVideo =
 		isDirectMediaFileUrl(src) && !failed && !prefersReducedMotion;
 
 	return (
-		// The dark ground lives on the wrapper, not only on the no-video branch:
-		// the scrims above are translucent, so until the first frame decodes (or
-		// if the file 404s) the section would flash the cream page background.
+		// The dark ground lives on the wrapper: the scrims above are translucent,
+		// so until the first frame decodes (or if the file 404s) the section would
+		// otherwise flash the cream page background through them.
 		<div className="absolute inset-0 isolate bg-foreground" aria-hidden>
 			{showVideo ? (
 				<video
 					autoPlay
 					// `prefersReducedMotion` only resolves after hydration, so the
 					// server sends the <video> to everyone. This keeps it invisible
-					// for reduce users from the very first paint; the effect above
-					// then unmounts it, which is what actually stops the download.
+					// for reduce users from the first paint; the effect then unmounts
+					// it, which is what actually stops the download.
 					className={cn(
 						"absolute inset-0 motion-reduce:hidden",
 						mediaFilterClass,

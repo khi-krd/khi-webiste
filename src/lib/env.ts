@@ -1,7 +1,5 @@
 import "server-only";
 
-import { getMockDataMode } from "@/lib/api/config";
-
 /**
  * Startup validation for deploy-time configuration.
  *
@@ -23,11 +21,10 @@ type EnvProblem = { variable: string; message: string };
 
 function validate(): EnvProblem[] {
 	const problems: EnvProblem[] = [];
-	const mockMode = getMockDataMode();
 
-	// Mock mode is a local-development convenience; it intentionally runs
-	// without a backend, so only require the API URL when it is off.
-	if (mockMode !== "full" && !process.env.API_BASE_URL?.trim()) {
+	// There is no mock catalogue to fall back on any more: without the backend
+	// URL every CMS fetch returns null and the site renders empty states.
+	if (!process.env.API_BASE_URL?.trim()) {
 		problems.push({
 			variable: "API_BASE_URL",
 			message:

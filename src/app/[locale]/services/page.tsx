@@ -1,11 +1,13 @@
 import type { Metadata } from "next";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { ServicesBottomCards } from "@/components/services/services-bottom-cards";
+import { ServicesFeaturedHero } from "@/components/services/services-featured-hero";
 import { ServicesHero } from "@/components/services/services-hero";
 import { ServicesShell } from "@/components/services/services-shell";
 import { VisuallyHidden } from "@/components/ui/visually-hidden";
 import {
 	getMergedServiceSections,
+	getServiceHighlights,
 	getServicePartnerCards,
 	getServiceRecords,
 	getServicesHeroMediaFromApi,
@@ -17,6 +19,7 @@ import {
 	serviceRecordToPageSettings,
 } from "@/lib/api/services-page";
 import { localeAlternates } from "@/lib/seo/metadata";
+import { buildServiceHeroSlides } from "@/lib/services/hero-slides";
 
 export async function generateMetadata({
 	params,
@@ -42,13 +45,20 @@ export default async function ServicesPage({
 	setRequestLocale(locale);
 
 	const t = await getTranslations("Services");
-	const [mergedSections, heroMediaFallback, partnerCards, serviceRecords] =
-		await Promise.all([
-			getMergedServiceSections(locale),
-			getServicesHeroMediaFromApi(locale),
-			getServicePartnerCards(locale),
-			getServiceRecords(),
-		]);
+	const tHero = await getTranslations("Hero");
+	const [
+		mergedSections,
+		heroMediaFallback,
+		partnerCards,
+		serviceRecords,
+		highlights,
+	] = await Promise.all([
+		getMergedServiceSections(locale),
+		getServicesHeroMediaFromApi(locale),
+		getServicePartnerCards(locale),
+		getServiceRecords(),
+		getServiceHighlights(locale),
+	]);
 
 	const pageSettings = (() => {
 		const hero = findServicesPageHeroRecord(serviceRecords);
@@ -66,20 +76,31 @@ export default async function ServicesPage({
 		heroMediaFallback.alt ?? heroCopy.title,
 	);
 
+	const featuredSlides = buildServiceHeroSlides(highlights, {
+		typeLabel: t("featured.eyebrow"),
+		// The per-slide action, not the standing hero's "see our services" —
+		// the slide opens one service, and this is the key the homepage already
+		// uses for its own service slides.
+		actionLabel: tHero("actions.service"),
+		slideLabel: (current, total) => tHero("slideLabel", { current, total }),
+	});
+
+	// Titles and bodies come from the CMS; the translation keys only cover the
+	// CMS catalogue, so they stay as a last resort for an untitled record.
 	const navItems = mergedSections.map((section) => ({
 		id: section.service.id,
 		title:
 			section.title ??
-			t(`items.${section.mockId}.title`, { defaultValue: section.mockId }),
+			t(`items.${section.anchorId}.title`, { defaultValue: section.anchorId }),
 	}));
 
 	const sections = mergedSections.map((section) => ({
 		service: section.service,
 		title:
 			section.title ??
-			t(`items.${section.mockId}.title`, { defaultValue: section.mockId }),
+			t(`items.${section.anchorId}.title`, { defaultValue: section.anchorId }),
 		body:
-			section.body ?? t(`items.${section.mockId}.body`, { defaultValue: "" }),
+			section.body ?? t(`items.${section.anchorId}.body`, { defaultValue: "" }),
 	}));
 
 	const bottomCardItems = partnerCards.map((card) => ({
@@ -103,14 +124,26 @@ export default async function ServicesPage({
 		<main>
 			<VisuallyHidden as="h1">{t("pageTitle")}</VisuallyHidden>
 
-			<ServicesHero
-				heroMedia={heroMedia}
-				firstServiceId={mergedSections[0]?.service.id ?? "services"}
-				eyebrow={heroCopy.eyebrow}
-				title={heroCopy.title}
-				intro={heroCopy.intro}
-				cta={t("hero.cta")}
-			/>
+			{/* Featuring a service makes it the hero. Only when nothing is
+			    featured (or nothing featured has a picture) does the page fall
+			    back to its own standing hero. */}
+			{featuredSlides.length > 0 ? (
+				<ServicesFeaturedHero
+					slides={featuredSlides}
+					direction={locale === "ckb" ? "rtl" : "ltr"}
+					regionLabel={t("featured.title")}
+					paginationLabel={tHero("pagination")}
+				/>
+			) : (
+				<ServicesHero
+					heroMedia={heroMedia}
+					firstServiceId={mergedSections[0]?.service.id ?? "services"}
+					eyebrow={heroCopy.eyebrow}
+					title={heroCopy.title}
+					intro={heroCopy.intro}
+					cta={t("hero.cta")}
+				/>
+			)}
 
 			<ServicesShell
 				sections={sections}
@@ -118,7 +151,9 @@ export default async function ServicesPage({
 				navLabel={t("nav.label")}
 			/>
 
-			<ServicesBottomCards items={bottomCardItems} />
+			{bottomCardItems.length > 0 ? (
+				<ServicesBottomCards items={bottomCardItems} />
+			) : null}
 		</main>
 	);
 }

@@ -5,7 +5,7 @@ import {
 	BULK_FETCH_SIZE,
 	DEFAULT_REVALIDATE,
 } from "@/lib/api/client";
-import { getApiBaseUrl, shouldUseMockData } from "@/lib/api/config";
+import { getApiBaseUrl } from "@/lib/api/config";
 import { normalizeServiceRecord } from "@/lib/api/normalize";
 import {
 	filterContentServiceRecords,
@@ -13,16 +13,13 @@ import {
 	serviceRecordToPageSettings,
 } from "@/lib/api/services-page";
 import type { PartnerItem } from "@/lib/mock/about";
-import {
-	getServices as getMockServices,
-	getServicesBottomCards,
-	getServicesHeroMedia,
-	type ServiceItem,
-} from "@/lib/mock/services";
+import type { ServiceItem } from "@/lib/mock/services";
 import {
 	buildApiOnlyServiceSections,
+	buildServiceHighlights,
 	type MergedServiceSection,
 	resolveServicesHeroMedia,
+	type ServiceHighlight,
 } from "@/lib/services/resolve";
 import { type Service, ServiceSchema } from "@/types/service";
 
@@ -64,37 +61,33 @@ export async function getServiceRecords(): Promise<Service[]> {
 		});
 }
 
-function mockOnlyServiceSections(locale: string): MergedServiceSection[] {
-	return getMockServices(locale).map((service) => ({
-		mockId: service.id,
-		service,
-		title: null,
-		body: null,
-		partnerIds: [],
-	}));
-}
-
+/**
+ * Service sections straight from the CMS.
+ *
+ * An empty or unavailable API renders no sections rather than demo ones, so the
+ * page always reflects what the CMS actually holds.
+ */
 export async function getMergedServiceSections(
 	locale: string,
 ): Promise<MergedServiceSection[]> {
-	if (shouldUseMockData()) {
-		return mockOnlyServiceSections(locale);
-	}
-
 	const records = await getServiceRecords();
-	const contentRecords = filterContentServiceRecords(records);
+	return buildApiOnlyServiceSections(
+		locale,
+		filterContentServiceRecords(records),
+	);
+}
 
-	if (contentRecords.length > 0) {
-		const apiSections = buildApiOnlyServiceSections(locale, contentRecords, {
-			useMockMediaFallback: true,
-		});
-		if (apiSections.length > 0) {
-			return apiSections;
-		}
-	}
-
-	// API empty or unavailable — local dev fallback only
-	return mockOnlyServiceSections(locale);
+/**
+ * Featured services for the highlight band at the top of `/services`.
+ *
+ * `featured` on a service means "highlight it on its own page" — the backend no
+ * longer feeds these into the homepage hero, so this is the only consumer.
+ */
+export async function getServiceHighlights(
+	locale: string,
+): Promise<ServiceHighlight[]> {
+	const records = await getServiceRecords();
+	return buildServiceHighlights(locale, filterContentServiceRecords(records));
 }
 
 export async function getServicesHeroMediaFromApi(locale: string) {
@@ -126,7 +119,9 @@ export async function getServicesHeroMediaFromApi(locale: string) {
 		}
 	}
 
-	return getServicesHeroMedia();
+	// No CMS artwork — the hero renders its copy on a plain ground.
+	// No CMS artwork — the hero renders its copy on a plain ground.
+	return { url: "", alt: "" };
 }
 
 export async function getServicePartnerCards(
@@ -134,20 +129,10 @@ export async function getServicePartnerCards(
 ): Promise<PartnerItem[]> {
 	const partners = await getAboutPartners(locale);
 	const records = filterContentServiceRecords(await getServiceRecords());
-	const sections =
-		records.length > 0
-			? buildApiOnlyServiceSections(locale, records, {
-					useMockMediaFallback: true,
-				})
-			: shouldUseMockData()
-				? mockOnlyServiceSections(locale)
-				: [];
+	const sections = buildApiOnlyServiceSections(locale, records);
 	const partnerIds = new Set(sections.flatMap((section) => section.partnerIds));
 
-	if (partnerIds.size === 0) {
-		return getServicesBottomCards(locale);
-	}
-
+	// No service links a partner yet — show no cards rather than demo ones.
 	return partners.filter((partner) => partnerIds.has(Number(partner.id)));
 }
 
@@ -172,4 +157,3 @@ export async function getServiceSections(
 }
 
 export type { ServiceItem };
-export { getMockServices as getServicesLayout };

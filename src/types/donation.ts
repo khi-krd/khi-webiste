@@ -16,6 +16,12 @@ export const DonationSettingsSchema = z.object({
 	paymentInstructionsKmr: z.string().nullish(),
 	financialDonationsEnabled: z.boolean().optional(),
 	archiveDonationsEnabled: z.boolean().optional(),
+	// Featuring the donation page is how an editor chooses its hero picture:
+	// `featureImageUrl` outranks `heroImageUrl` on /donate, exactly as it does
+	// on /about. The API omits null keys entirely, so both must tolerate absent.
+	featured: z.boolean().optional(),
+	featuredOrder: z.number().nullish(),
+	featureImageUrl: z.string().nullish(),
 });
 
 export const DonationTypeCodeSchema = z.enum(["FINANCIAL", "ARCHIVE"]);

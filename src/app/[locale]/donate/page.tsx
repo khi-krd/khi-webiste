@@ -11,7 +11,7 @@ import {
 	getAmountPresets,
 	getSupportersImage,
 	MATERIAL_TYPE_IDS,
-} from "@/lib/mock/donate";
+} from "@/lib/donate/content";
 import { localeAlternates } from "@/lib/seo/metadata";
 
 export async function generateMetadata({
@@ -38,8 +38,8 @@ export default async function DonatePage({
 	setRequestLocale(locale);
 
 	const t = await getTranslations("Donate");
-	const { heroMedia, typeItems, payment, visibility } =
-		await getDonatePageDataFromApi();
+	const { heroMedia, heroCopy, typeItems, payment, visibility } =
+		await getDonatePageDataFromApi(locale);
 	const supportersCtaHref = visibility.archive
 		? "#archive-form"
 		: visibility.financial
@@ -55,8 +55,8 @@ export default async function DonatePage({
 			<DonateHero
 				heroMedia={heroMedia}
 				eyebrow={t("hero.eyebrow")}
-				title={t("hero.title")}
-				intro={t("hero.intro")}
+				title={heroCopy.title ?? t("hero.title")}
+				intro={heroCopy.intro ?? t("hero.intro")}
 				ctaArchive={t("hero.ctaArchive")}
 				ctaFinancial={t("hero.ctaFinancial")}
 				showArchiveCta={visibility.archive}

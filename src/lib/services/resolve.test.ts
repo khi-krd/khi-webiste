@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import { normalizeServiceRecord } from "@/lib/api/normalize";
 import {
 	buildApiOnlyServiceSections,
+	buildServiceHighlights,
 	resolveServiceContent,
 	resolveServiceContents,
 	resolveServicesHeroMedia,
@@ -132,25 +133,44 @@ describe("resolveServiceContents", () => {
 		expect(sections[0]?.title).toBe("ستۆدیۆ");
 	});
 
-	it("falls back to mock gallery media when API gallery fields are empty", () => {
-		const sections = buildApiOnlyServiceSections(
-			"ckb",
-			[
-				baseService({
-					id: 6,
-					serviceType: "services",
-					layoutType: "MEDIA_HERO",
-					galleryMedia: [],
-					featureImageUrls: [],
-					thumbnailUrls: [],
-				}),
-			],
-			{ useMockMediaFallback: true },
-		);
+	it("leaves media empty when the CMS has none — never borrows mock art", () => {
+		const sections = buildApiOnlyServiceSections("ckb", [
+			baseService({
+				id: 6,
+				serviceType: "services",
+				layoutType: "MEDIA_HERO",
+				galleryMedia: [],
+				featureImageUrls: [],
+				thumbnailUrls: [],
+			}),
+		]);
 
 		expect(sections).toHaveLength(1);
-		expect(sections[0]?.service.galleryMedia?.length).toBeGreaterThan(0);
 		expect(sections[0]?.title).toBe("ستۆدیۆ");
+		expect(sections[0]?.service.galleryMedia).toBeUndefined();
+		expect(sections[0]?.service.featureImage.url).toBe("");
+		expect(sections[0]?.service.video.src).toBe("");
+		expect(
+			sections[0]?.service.thumbnails.every((thumb) => thumb.url === ""),
+		).toBe(true);
+	});
+
+	it("keeps the CMS gallery when one exists", () => {
+		const sections = buildApiOnlyServiceSections("ckb", [
+			baseService({
+				id: 7,
+				galleryMedia: [
+					{ type: "IMAGE", url: "https://cdn.example.com/a.jpg", alt: null },
+				],
+			}),
+		]);
+
+		expect(sections[0]?.service.galleryMedia).toEqual([
+			{
+				kind: "image",
+				media: { url: "https://cdn.example.com/a.jpg", alt: "ستۆدیۆ" },
+			},
+		]);
 	});
 });
 
@@ -203,5 +223,103 @@ describe("resolveServiceContent", () => {
 				}),
 			),
 		).toBeNull();
+	});
+});
+
+describe("buildServiceHighlights", () => {
+	it("returns only featured services, ordered by featuredOrder then newest id", () => {
+		const highlights = buildServiceHighlights("ckb", [
+			baseService({ id: 10, navAnchorId: "alpha", featured: true }),
+			baseService({ id: 11, navAnchorId: "beta" }),
+			baseService({
+				id: 12,
+				navAnchorId: "gamma",
+				featured: true,
+				featuredOrder: 1,
+			}),
+			baseService({ id: 13, navAnchorId: "delta", featured: true }),
+		]);
+
+		// order 1 first; the two null orders fall to the end, newest id first.
+		expect(highlights.map((item) => item.anchorId)).toEqual([
+			"gamma",
+			"delta",
+			"alpha",
+		]);
+	});
+
+	it("prefers featureImageUrl, then a gallery image, then a video poster", () => {
+		const [withOverride, withGallery, withPoster, withNothing] =
+			buildServiceHighlights("ckb", [
+				baseService({
+					id: 20,
+					navAnchorId: "a",
+					featured: true,
+					featuredOrder: 1,
+					featureImageUrl: "https://cdn.example.com/hero.jpg",
+					galleryMedia: [
+						{ type: "IMAGE", url: "https://cdn.example.com/gallery.jpg" },
+					],
+				}),
+				baseService({
+					id: 21,
+					navAnchorId: "b",
+					featured: true,
+					featuredOrder: 2,
+					galleryMedia: [
+						{ type: "IMAGE", url: "https://cdn.example.com/gallery.jpg" },
+					],
+				}),
+				baseService({
+					id: 22,
+					navAnchorId: "c",
+					featured: true,
+					featuredOrder: 3,
+					galleryMedia: [
+						{
+							type: "VIDEO",
+							url: "https://cdn.example.com/clip.mp4",
+							posterUrl: "https://cdn.example.com/poster.jpg",
+						},
+					],
+				}),
+				baseService({
+					id: 23,
+					navAnchorId: "d",
+					featured: true,
+					featuredOrder: 4,
+				}),
+			]);
+
+		expect(withOverride?.image?.url).toBe("https://cdn.example.com/hero.jpg");
+		expect(withGallery?.image?.url).toBe("https://cdn.example.com/gallery.jpg");
+		expect(withPoster?.image?.url).toBe("https://cdn.example.com/poster.jpg");
+		// No CMS picture — the card renders as copy only rather than a broken frame.
+		expect(withNothing?.image).toBeNull();
+	});
+
+	it("carries featureDescription as the card copy and falls back to the id anchor", () => {
+		const [highlight] = buildServiceHighlights("ckb", [
+			baseService({
+				id: 30,
+				featured: true,
+				contents: [
+					{
+						id: 9,
+						languageCode: "CKB",
+						title: "ستۆدیۆ",
+						description: "<p>دەقی درێژ</p>",
+						featureDescription: "دێڕێکی کورت.",
+					},
+				],
+			}),
+		]);
+
+		expect(highlight?.description).toBe("دێڕێکی کورت.");
+		expect(highlight?.anchorId).toBe("30");
+	});
+
+	it("is empty when nothing is featured", () => {
+		expect(buildServiceHighlights("ckb", [baseService()])).toEqual([]);
 	});
 });

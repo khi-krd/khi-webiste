@@ -1,4 +1,4 @@
-import type { DonateTypeId, DonateTypeItem } from "@/lib/mock/donate";
+import type { DonateTypeId, DonateTypeItem } from "@/lib/donate/content";
 import type { DonationSettings, DonationType } from "@/types/donation";
 
 export type DonateVisibility = {

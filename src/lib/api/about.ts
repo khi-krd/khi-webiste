@@ -12,19 +12,11 @@ import {
 	DEFAULT_REVALIDATE,
 } from "@/lib/api/client";
 import { getApiBaseUrl } from "@/lib/api/config";
-import {
-	applyMockPolicy,
-	applyMockPolicyNullable,
-} from "@/lib/api/mock-policy";
-import {
-	type AboutHeroMedia,
-	type FounderPerson,
-	getAboutFounder as getMockAboutFounder,
-	getAboutHeroMedia as getMockAboutHeroMedia,
-	getAboutOffices as getMockAboutOffices,
-	getAboutPartners as getMockAboutPartners,
-	type OfficeTeam,
-	type PartnerItem,
+import type {
+	AboutHeroMedia,
+	FounderPerson,
+	OfficeTeam,
+	PartnerItem,
 } from "@/lib/mock/about";
 import { type About, AboutPageSchema, AboutSchema } from "@/types/about";
 import { PartnerListSchema } from "@/types/partner";
@@ -62,71 +54,89 @@ export async function getAboutPageBySlug(slug: string): Promise<About | null> {
 	});
 }
 
-/** Primary about page for the active locale (first active match). */
-export async function getPrimaryAboutPage(
+/**
+ * Order featured About records the way the CMS does: `featuredOrder` ascending
+ * with nulls last, ties broken by newest id first.
+ */
+export function sortFeaturedAboutPages(pages: About[]): About[] {
+	return pages
+		.filter((page) => page.featured === true)
+		.sort((a, b) => {
+			const ao = a.featuredOrder ?? Number.POSITIVE_INFINITY;
+			const bo = b.featuredOrder ?? Number.POSITIVE_INFINITY;
+			return ao !== bo ? ao - bo : b.id - a.id;
+		});
+}
+
+/**
+ * The record that leads `/about`.
+ *
+ * A featured record wins — that is what `featured` means on an About page now,
+ * and it is the only way an editor can choose which of the several records the
+ * page opens with. Without one, fall back to the old "first with a slug" rule
+ * so the page never goes blank.
+ */
+export function selectLeadAboutPage(
 	locale: string,
-): Promise<About | null> {
-	const pages = await getAboutPages();
-	if (pages.length === 0) {
-		return null;
+	pages: About[],
+): About | null {
+	const [featured] = sortFeaturedAboutPages(pages);
+	if (featured) {
+		return featured;
 	}
 
 	const slugMatch = pages.find((page) => resolveAboutSlug(locale, page));
 	return slugMatch ?? pages[0] ?? null;
 }
 
-export async function getAboutHeroMedia(): Promise<AboutHeroMedia> {
-	const page = await getPrimaryAboutPage("ckb");
-	const apiValue =
-		page?.heroVideoUrl || page?.heroPosterUrl
-			? {
-					poster: page.heroPosterUrl ?? "",
-					videoSrc: page.heroVideoUrl ?? "",
-				}
-			: null;
-
-	return (
-		applyMockPolicyNullable({
-			apiValue,
-			getMockValue: () => getMockAboutHeroMedia(),
-		}) ?? { poster: "", videoSrc: "" }
-	);
+/** Primary about page for the active locale. */
+export async function getPrimaryAboutPage(
+	locale: string,
+): Promise<About | null> {
+	return selectLeadAboutPage(locale, await getAboutPages());
 }
 
-export async function getAboutFounder(locale: string): Promise<FounderPerson> {
-	const page = await getPrimaryAboutPage(locale);
-	const resolved = page ? resolveFounderFromAbout(locale, page) : null;
+// Every reader below returns CMS data only. Where the CMS holds nothing the
+// result is empty and the About page drops that section, rather than dressing
+// the page with demo people, logos or artwork. There is no mock catalogue to
+// fall back on any more.
 
-	return (
-		applyMockPolicyNullable({
-			apiValue: resolved,
-			getMockValue: () => getMockAboutFounder(locale),
-		}) ?? { image: { url: "", alt: "" } }
-	);
+export async function getAboutHeroMedia(
+	locale = "ckb",
+): Promise<AboutHeroMedia> {
+	const page = await getPrimaryAboutPage(locale);
+
+	// Featuring an About record IS the act of choosing the hero picture, so
+	// `featureImageUrl` outranks the record's own poster — but only WHILE it is
+	// featured. The backend keeps the picture on unfeature, so an ungated check
+	// would make one editor's choice permanent and strand `heroPosterUrl`.
+	const featureImage = page?.featured
+		? page.featureImageUrl?.trim()
+		: undefined;
+
+	return {
+		// Without either source the hero has no image at all and renders on a
+		// plain ground.
+		poster: featureImage || page?.heroPosterUrl?.trim() || "",
+		videoSrc: page?.heroVideoUrl ?? "",
+	};
+}
+
+export async function getAboutFounder(
+	locale: string,
+): Promise<FounderPerson | null> {
+	const page = await getPrimaryAboutPage(locale);
+	return page ? resolveFounderFromAbout(locale, page) : null;
 }
 
 export async function getAboutOffices(locale: string): Promise<OfficeTeam[]> {
 	const members = await getTeamMembers();
-	const apiItems =
-		members.length > 0 ? resolveTeamOffices(locale, members) : [];
-
-	return applyMockPolicy({
-		context: "global",
-		apiItems,
-		getMockItems: () => getMockAboutOffices(locale),
-	});
+	return members.length > 0 ? resolveTeamOffices(locale, members) : [];
 }
 
 export async function getAboutPartners(locale: string): Promise<PartnerItem[]> {
 	const partners = await getPartners();
-	const apiItems =
-		partners.length > 0 ? resolvePartnerItems(locale, partners) : [];
-
-	return applyMockPolicy({
-		context: "global",
-		apiItems,
-		getMockItems: () => getMockAboutPartners(locale),
-	});
+	return partners.length > 0 ? resolvePartnerItems(locale, partners) : [];
 }
 
 export async function getTeamMembers() {

@@ -13,7 +13,7 @@ import type {
 	AmountPreset,
 	CurrencyId,
 	PaymentMethodId,
-} from "@/lib/mock/donate";
+} from "@/lib/donate/content";
 import {
 	createDonateFinancialFormSchema,
 	type DonateFinancialFormValues,

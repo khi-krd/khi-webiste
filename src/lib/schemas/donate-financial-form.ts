@@ -4,7 +4,7 @@ import {
 	type CurrencyId,
 	PAYMENT_METHOD_IDS,
 	type PaymentMethodId,
-} from "@/lib/mock/donate";
+} from "@/lib/donate/content";
 
 export type DonateFinancialFormMessages = {
 	amountRequired: string;

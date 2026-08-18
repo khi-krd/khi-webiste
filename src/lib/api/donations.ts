@@ -1,20 +1,17 @@
 import "server-only";
 import { apiFetch, apiPost, DEFAULT_REVALIDATE } from "@/lib/api/client";
 import { getApiBaseUrl } from "@/lib/api/config";
-import { applyMockPolicyNullable } from "@/lib/api/mock-policy";
+import {
+	type DonateHeroMedia,
+	type DonatePaymentDetails,
+	type DonateTypeItem,
+	getDonateTypeItems,
+} from "@/lib/donate/content";
 import {
 	type DonateVisibility,
 	filterDonateTypeItems,
 	resolveDonateVisibility,
 } from "@/lib/donate/resolve";
-import {
-	type DonateHeroMedia,
-	type DonatePaymentDetails,
-	type DonateTypeItem,
-	getDonateHeroMedia,
-	getDonatePaymentDetails,
-	getDonateTypeItems,
-} from "@/lib/mock/donate";
 import {
 	ArchiveDonationResponseSchema,
 	type ArchiveDonationSubmission,
@@ -32,6 +29,7 @@ const DONATIONS_TAG = "donations";
 
 export type DonatePageData = {
 	heroMedia: DonateHeroMedia;
+	heroCopy: DonateHeroCopy;
 	typeItems: DonateTypeItem[];
 	payment: DonatePaymentDetails;
 	visibility: DonateVisibility;
@@ -90,19 +88,50 @@ export async function submitArchiveDonation(body: ArchiveDonationSubmission) {
 function resolveHeroMedia(
 	settings: Awaited<ReturnType<typeof getDonationSettings>>,
 ): DonateHeroMedia {
-	const apiValue = settings?.heroImageUrl
-		? {
-				url: settings.heroImageUrl,
-				alt: "",
-			}
-		: null;
+	// Featuring the donation page IS the act of choosing its hero picture, so
+	// `featureImageUrl` outranks the standing `heroImageUrl` — the same rule the
+	// About page follows. Only WHILE featured, though: the backend deliberately
+	// keeps the picture on unfeature, so an ungated check would make the choice
+	// permanent and leave no way back to `heroImageUrl`.
+	const featureImage = settings?.featured
+		? settings.featureImageUrl?.trim()
+		: undefined;
+	const url = featureImage || settings?.heroImageUrl?.trim() || "";
+	const apiValue = url ? { url, alt: "" } : null;
 
-	return (
-		applyMockPolicyNullable({
-			apiValue,
-			getMockValue: () => getDonateHeroMedia(),
-		}) ?? { url: "", alt: "" }
-	);
+	return apiValue ?? { url: "", alt: "" };
+}
+
+export type DonateHeroCopy = {
+	title: string | null;
+	intro: string | null;
+};
+
+/**
+ * The donation page's own words, when the CMS holds them.
+ *
+ * `titleCkb` / `descriptionCkb` have been parsed for a long time and read by
+ * nobody — the hero was entirely translation-driven, so an editor could rewrite
+ * the donation page in the dashboard and see nothing change on the site.
+ */
+export function resolveDonateHeroCopy(
+	locale: string,
+	settings: Awaited<ReturnType<typeof getDonationSettings>>,
+): DonateHeroCopy {
+	const isCkb = locale === "ckb";
+	// Prefer the active language, then the other one — a record written in only
+	// one language is still the editor's words, and showing them beats falling
+	// back to the generic translated copy.
+	const preferred = (
+		ckb: string | null | undefined,
+		kmr: string | null | undefined,
+	) =>
+		(isCkb ? ckb?.trim() || kmr?.trim() : kmr?.trim() || ckb?.trim()) || null;
+
+	return {
+		title: preferred(settings?.titleCkb, settings?.titleKmr),
+		intro: preferred(settings?.descriptionCkb, settings?.descriptionKmr),
+	};
 }
 
 function resolvePaymentDetails(
@@ -115,12 +144,7 @@ function resolvePaymentDetails(
 			}
 		: null;
 
-	return (
-		applyMockPolicyNullable({
-			apiValue,
-			getMockValue: () => getDonatePaymentDetails(),
-		}) ?? { fibAccount: "", fastpayNumber: "" }
-	);
+	return apiValue ?? { fibAccount: "", fastpayNumber: "" };
 }
 
 function resolveTypeItems(
@@ -129,18 +153,15 @@ function resolveTypeItems(
 	visibility: DonateVisibility,
 ): DonateTypeItem[] {
 	if (!settings && types.length === 0) {
-		return (
-			applyMockPolicyNullable({
-				apiValue: null,
-				getMockValue: () => getDonateTypeItems(),
-			}) ?? []
-		);
+		return [];
 	}
 
 	return filterDonateTypeItems(getDonateTypeItems(), visibility);
 }
 
-export async function getDonatePageDataFromApi(): Promise<DonatePageData> {
+export async function getDonatePageDataFromApi(
+	locale: string,
+): Promise<DonatePageData> {
 	const [settings, types] = await Promise.all([
 		getDonationSettings(),
 		getDonationTypes(),
@@ -149,6 +170,7 @@ export async function getDonatePageDataFromApi(): Promise<DonatePageData> {
 
 	return {
 		heroMedia: resolveHeroMedia(settings),
+		heroCopy: resolveDonateHeroCopy(locale, settings),
 		typeItems: resolveTypeItems(settings, types, visibility),
 		payment: resolvePaymentDetails(settings),
 		visibility,

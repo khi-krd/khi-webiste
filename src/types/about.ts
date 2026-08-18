@@ -27,6 +27,11 @@ export const AboutSchema = z.object({
 	heroVideoUrl: z.string().nullish(),
 	heroPosterUrl: z.string().nullish(),
 	active: z.boolean().optional(),
+	// Leads /about — not the homepage hero. `featureImageUrl` becomes the About
+	// hero image, the only picture that section has ever had a source for.
+	featured: z.boolean().optional(),
+	featuredOrder: z.number().nullish(),
+	featureImageUrl: z.string().nullish(),
 	stats: z.array(AboutStatSchema).optional(),
 	createdAt: z.string().nullish(),
 	updatedAt: z.string().nullish(),

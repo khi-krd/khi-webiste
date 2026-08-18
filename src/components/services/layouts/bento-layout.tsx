@@ -12,12 +12,14 @@ export function BentoLayout({ service, title, body }: ServiceLayoutProps) {
 			title={title}
 			body={body}
 			media={
-				<ServiceMediaGallery
-					slides={gallery.slides}
-					defaultIndex={gallery.defaultIndex}
-					title={title}
-					mainAspectRatio="4/3"
-				/>
+				gallery.slides.length > 0 ? (
+					<ServiceMediaGallery
+						slides={gallery.slides}
+						defaultIndex={gallery.defaultIndex}
+						title={title}
+						mainAspectRatio="4/3"
+					/>
+				) : undefined
 			}
 		/>
 	);

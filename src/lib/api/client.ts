@@ -411,3 +411,14 @@ export async function apiFetchRaw(
 		return null;
 	}
 }
+
+/**
+ * Cap a list at a fixed length.
+ *
+ * The homepage rails and the image bento render a fixed number of tiles. That
+ * cap used to ride inside `applyMockPolicy`'s `targetCount`, so removing the
+ * mock policy would have silently uncapped them.
+ */
+export function sliceToCount<T>(items: T[], count: number | undefined): T[] {
+	return count == null ? items : items.slice(0, count);
+}

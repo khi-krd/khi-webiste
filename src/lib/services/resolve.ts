@@ -6,14 +6,13 @@ import type {
 	ServiceMedia,
 	ServiceVideo,
 } from "@/lib/mock/services";
-import { getServices as getMockServices } from "@/lib/mock/services";
 import type {
 	Service,
 	ServiceContent,
 	ServiceLayoutType,
 } from "@/types/service";
 
-function isLikelyMediaUrl(url: string | undefined | null): boolean {
+export function isLikelyMediaUrl(url: string | undefined | null): boolean {
 	const trimmed = url?.trim();
 	if (!trimmed) return false;
 	return (
@@ -77,8 +76,13 @@ export type ResolvedServiceContent = {
 	id: number;
 	title: string;
 	body: string;
+	/** Short plain-text line written for the highlight card. */
+	featureDescription: string | null;
 	location: string | null;
 	serviceType: string | null;
+	featured: boolean;
+	featuredOrder: number | null;
+	featureImageUrl: string | null;
 	layout: ResolvedServiceLayout;
 };
 
@@ -96,8 +100,12 @@ export function resolveServiceContent(
 		id: service.id,
 		title,
 		body: content?.description?.trim() ?? "",
+		featureDescription: content?.featureDescription?.trim() || null,
 		location: service.location?.trim() || null,
 		serviceType: service.serviceType?.trim() || null,
+		featured: service.featured === true,
+		featuredOrder: service.featuredOrder ?? null,
+		featureImageUrl: service.featureImageUrl?.trim() || null,
 		layout: resolveServiceLayout(service),
 	};
 }
@@ -134,93 +142,14 @@ function mapApiLayoutType(
 	}
 }
 
-function findApiServiceForMock(
-	mockId: string,
-	apiServices: ResolvedServiceContent[],
-	index: number,
-): ResolvedServiceContent | null {
-	return (
-		apiServices.find((service) => service.layout.navAnchorId === mockId) ??
-		apiServices.find((service) => service.serviceType === mockId) ??
-		apiServices[index] ??
-		null
-	);
-}
-
-export function mergeServiceItem(
-	mock: ServiceItem,
-	api: ResolvedServiceContent | null,
-): ServiceItem {
-	if (!api) {
-		return mock;
-	}
-
-	const layout = mapApiLayoutType(api.layout.layoutType) ?? mock.layout;
-	const featureUrl = api.layout.featureImageUrls[0] ?? mock.featureImage.url;
-	const thumbnailUrls = api.layout.thumbnailUrls;
-	const thumbnails = mock.thumbnails.map((thumbnail, index) => ({
-		url: thumbnailUrls[index] ?? thumbnail.url,
-		alt: thumbnail.alt,
-	})) as ServiceItem["thumbnails"];
-
-	const video: ServiceVideo = {
-		src: api.layout.heroVideoUrl ?? mock.video.src,
-		poster: api.layout.heroPosterUrl ?? mock.video.poster,
-		posterAlt: mock.video.posterAlt,
-		variant: mock.video.variant,
-	};
-
-	const sectionId = api.layout.navAnchorId ?? mock.id;
-	const galleryMedia =
-		api.layout.galleryMedia && api.layout.galleryMedia.length > 0
-			? mapApiGalleryMedia(
-					api.layout.galleryMedia,
-					mock.featureImage.alt ?? mock.id,
-					mock.video.variant,
-				)
-			: mock.galleryMedia;
-
-	return {
-		...mock,
-		id: sectionId,
-		slug: sectionId,
-		layout,
-		featureImage: {
-			url: featureUrl,
-			alt: mock.featureImage.alt,
-		},
-		video,
-		thumbnails,
-		galleryMedia,
-	};
-}
-
 export type MergedServiceSection = {
-	mockId: string;
+	/** `navAnchorId` when the CMS set one, else the record id — the `#anchor`. */
+	anchorId: string;
 	service: ServiceItem;
 	title: string | null;
 	body: string | null;
 	partnerIds: number[];
 };
-
-export function mergeServiceSections(
-	locale: string,
-	mockServices: ServiceItem[],
-	apiRecords: Service[],
-): MergedServiceSection[] {
-	const apiServices = resolveServiceContents(locale, apiRecords);
-
-	return mockServices.map((mock, index) => {
-		const apiItem = findApiServiceForMock(mock.id, apiServices, index);
-		return {
-			mockId: mock.id,
-			service: mergeServiceItem(mock, apiItem),
-			title: apiItem?.title ?? null,
-			body: apiItem?.body ?? null,
-			partnerIds: apiItem?.layout.partnerIds ?? [],
-		};
-	});
-}
 
 function synthesizeGalleryFromLegacy(
 	api: ResolvedServiceContent,
@@ -278,31 +207,9 @@ function synthesizeGalleryFromLegacy(
 	return out;
 }
 
-function findMockServiceFallback(
-	mockServices: ServiceItem[],
-	record: Service,
-	index: number,
-): ServiceItem | null {
-	const anchor = record.navAnchorId?.trim();
-	const type = record.serviceType?.trim();
-
-	return (
-		(anchor ? mockServices.find((mock) => mock.id === anchor) : null) ??
-		(type ? mockServices.find((mock) => mock.id === type) : null) ??
-		mockServices[index] ??
-		null
-	);
-}
-
-function serviceItemFromApi(
-	api: ResolvedServiceContent,
-	mockFallback?: ServiceItem | null,
-): ServiceItem {
+function serviceItemFromApi(api: ResolvedServiceContent): ServiceItem {
 	const sectionId = api.layout.navAnchorId ?? String(api.id);
-	const layout =
-		mapApiLayoutType(api.layout.layoutType) ??
-		mockFallback?.layout ??
-		"editorial";
+	const layout = mapApiLayoutType(api.layout.layoutType) ?? "editorial";
 	const thumbUrls = api.layout.thumbnailUrls;
 	let galleryMedia =
 		api.layout.galleryMedia && api.layout.galleryMedia.length > 0
@@ -314,33 +221,21 @@ function serviceItemFromApi(
 		galleryMedia = legacy.length > 0 ? legacy : undefined;
 	}
 
-	if (!galleryMedia?.length && mockFallback?.galleryMedia?.length) {
-		galleryMedia = mockFallback.galleryMedia;
-	}
-
+	// Media the CMS has not supplied stays blank — the section then renders as
+	// text only. Nothing is borrowed from the mock catalogue.
 	const featureImage: ServiceMedia = {
-		url: pickMediaUrl(
-			api.layout.featureImageUrls[0],
-			mockFallback?.featureImage.url,
-		),
+		url: pickMediaUrl(api.layout.featureImageUrls[0]),
 		alt: api.title,
 	};
 
 	const video: ServiceVideo = {
-		src: pickMediaUrl(
-			api.layout.heroVideoUrl ?? undefined,
-			mockFallback?.video.src,
-		),
-		poster: pickMediaUrl(
-			api.layout.heroPosterUrl ?? undefined,
-			mockFallback?.video.poster,
-		),
+		src: pickMediaUrl(api.layout.heroVideoUrl ?? undefined),
+		poster: pickMediaUrl(api.layout.heroPosterUrl ?? undefined),
 		posterAlt: api.title,
-		variant: mockFallback?.video.variant,
 	};
 
 	const thumbnails = [0, 1, 2, 3].map((index) => ({
-		url: pickMediaUrl(thumbUrls[index], mockFallback?.thumbnails[index]?.url),
+		url: pickMediaUrl(thumbUrls[index]),
 		alt: api.title,
 	})) as ServiceItem["thumbnails"];
 
@@ -355,36 +250,97 @@ function serviceItemFromApi(
 	};
 }
 
-/** Build service sections from API records without mock layout shells. */
+/** Build service sections straight from the CMS records. */
 export function buildApiOnlyServiceSections(
 	locale: string,
 	apiRecords: Service[],
-	options?: { useMockMediaFallback?: boolean },
 ): MergedServiceSection[] {
-	const mockServices = options?.useMockMediaFallback
-		? getMockServices(locale)
-		: [];
-
 	return apiRecords
-		.map((record, index): MergedServiceSection | null => {
+		.map((record): MergedServiceSection | null => {
 			const api = resolveServiceContent(locale, record);
 			if (!api) {
 				return null;
 			}
 
-			const mockFallback = options?.useMockMediaFallback
-				? findMockServiceFallback(mockServices, record, index)
-				: null;
-
 			return {
-				mockId: api.layout.navAnchorId ?? String(api.id),
-				service: serviceItemFromApi(api, mockFallback),
+				anchorId: api.layout.navAnchorId ?? String(api.id),
+				service: serviceItemFromApi(api),
 				title: api.title,
 				body: api.body,
 				partnerIds: api.layout.partnerIds,
 			};
 		})
 		.filter((item): item is MergedServiceSection => item != null);
+}
+
+/** One card in the services-page highlight band. */
+export type ServiceHighlight = {
+	/** The `#anchor` of this service's own section further down the page. */
+	anchorId: string;
+	title: string;
+	description: string | null;
+	image: ServiceMedia | null;
+};
+
+function firstGalleryImageUrl(
+	galleryMedia: Service["galleryMedia"],
+): string | null {
+	if (!galleryMedia?.length) {
+		return null;
+	}
+
+	for (const item of galleryMedia) {
+		const url = item.type === "IMAGE" ? item.url?.trim() : null;
+		if (url) {
+			return url;
+		}
+	}
+
+	for (const item of galleryMedia) {
+		const poster = item.type === "VIDEO" ? item.posterUrl?.trim() : null;
+		if (poster) {
+			return poster;
+		}
+	}
+
+	return null;
+}
+
+/**
+ * Featured services, ordered the way the CMS orders them: `featuredOrder`
+ * ascending with nulls last, ties broken by newest id first.
+ *
+ * These are a highlight on the services page itself — they are deliberately not
+ * homepage hero slides, so nothing here is capped by `maxFeaturedSlides`.
+ */
+export function buildServiceHighlights(
+	locale: string,
+	apiRecords: Service[],
+): ServiceHighlight[] {
+	return apiRecords
+		.filter((record) => record.featured === true)
+		.sort((a, b) => {
+			const ao = a.featuredOrder ?? Number.POSITIVE_INFINITY;
+			const bo = b.featuredOrder ?? Number.POSITIVE_INFINITY;
+			return ao !== bo ? ao - bo : b.id - a.id;
+		})
+		.map((record): ServiceHighlight | null => {
+			const resolved = resolveServiceContent(locale, record);
+			if (!resolved) {
+				return null;
+			}
+
+			const imageUrl =
+				resolved.featureImageUrl ?? firstGalleryImageUrl(record.galleryMedia);
+
+			return {
+				anchorId: resolved.layout.navAnchorId ?? String(resolved.id),
+				title: resolved.title,
+				description: resolved.featureDescription,
+				image: imageUrl ? { url: imageUrl, alt: resolved.title } : null,
+			};
+		})
+		.filter((item): item is ServiceHighlight => item != null);
 }
 
 function firstGalleryVideoPoster(
