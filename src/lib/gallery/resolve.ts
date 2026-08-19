@@ -68,6 +68,14 @@ function resolveTopicName(
 	return name ?? undefined;
 }
 
+/** The CMS may fill `topicName` while leaving `topicId` null — unfilterable. */
+function resolveTopicId(collection: ImageCollection): number | undefined {
+	const id = collection.topicId;
+	return typeof id === "number" && Number.isInteger(id) && id > 0
+		? id
+		: undefined;
+}
+
 function mapCollectionType(
 	apiType: ImageCollection["collectionType"],
 ): GalleryCollectionType {
@@ -217,6 +225,7 @@ export function resolveGalleryPost(
 		description,
 		location: content?.location?.trim() || undefined,
 		collectedBy: content?.collectedBy?.trim() || undefined,
+		topicId: resolveTopicId(collection),
 		topicName: resolveTopicName(locale, collection),
 		publishmentDate:
 			collection.publishmentDate ?? new Date().toISOString().slice(0, 10),

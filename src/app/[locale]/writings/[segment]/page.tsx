@@ -23,6 +23,9 @@ type WritingsSegmentPageProps = {
 	searchParams: Promise<{
 		genre?: string;
 		q?: string;
+		writer?: string;
+		tag?: string;
+		keyword?: string;
 		page?: string;
 		sort?: string;
 	}>;
@@ -103,8 +106,12 @@ export default async function WritingsSegmentPage({
 					totalElements={pageData.listing.totalElements}
 					activeGenre={pageData.activeGenre}
 					activeQuery={pageData.activeQuery}
+					activeWriter={pageData.activeWriter}
+					activeTag={pageData.activeTag}
+					activeKeyword={pageData.activeKeyword}
 					activeSort={pageData.activeSort}
 					genreLabels={pageData.genreLabels}
+					writers={pageData.writers}
 					noResultsMessage={pageData.noResultsMessage}
 					paginationLabel={t("pagination.label")}
 					previousLabel={t("pagination.previous")}
@@ -151,6 +158,7 @@ export default async function WritingsSegmentPage({
 					t("post.seriesVolume", { order, total: total ?? order })
 				}
 				topicLabel={t("post.topic")}
+				keywordsLabel={t("post.keywords")}
 				formatLabel={t("post.format")}
 				languagesLabel={t("post.languagesLabel")}
 				previewTitle={t("post.preview.title")}

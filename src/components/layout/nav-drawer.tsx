@@ -1,7 +1,6 @@
 "use client";
 
 import {
-	ArrowLeftIcon,
 	ArrowRightIcon,
 	Bars3Icon,
 	MagnifyingGlassIcon,
@@ -9,7 +8,7 @@ import {
 } from "@heroicons/react/24/outline";
 import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 import Image from "next/image";
-import { useLocale, useTranslations } from "next-intl";
+import { useTranslations } from "next-intl";
 import {
 	type KeyboardEvent as ReactKeyboardEvent,
 	type RefObject,
@@ -27,15 +26,7 @@ import { DirectionalIcon } from "@/components/ui/directional-icon";
 import { DrawnBorder } from "@/components/ui/drawn-border";
 import { Link } from "@/components/ui/link";
 import { NAV_ITEMS, type NavItem } from "@/config/site";
-import type { NavMenuOverride, NavMenuOverrideLink } from "@/lib/api/nav-menu";
-import {
-	fetchTaxonomyCatalog,
-	type SearchTaxonomyItem,
-} from "@/lib/search/client";
-import {
-	getNavMenuTaxonomyItems,
-	limitNavMenuLinks,
-} from "@/lib/search/taxonomy-types";
+import type { NavMenuOverride } from "@/lib/api/nav-menu";
 import { useScrollLock } from "@/lib/use-scroll-lock";
 import { cn } from "@/lib/utils";
 
@@ -52,8 +43,6 @@ const FOCUSABLE =
 const OVERLAY_DURATION = 0.4;
 const BG_DURATION = 0.35;
 const CONTENT_DURATION = 0.2;
-const PANEL_ENTER_DURATION = 0.2;
-const PANEL_EXIT_DURATION = 0.15;
 function getFocusable(container: HTMLElement | null): HTMLElement[] {
 	if (!container) return [];
 	return Array.from(container.querySelectorAll<HTMLElement>(FOCUSABLE));
@@ -82,10 +71,6 @@ const primaryLabelRowClass = "inline-flex max-w-full items-center gap-2.5";
 
 const primaryItemArrowClass =
 	"size-5 shrink-0 opacity-0 transition-opacity group-focus-visible:opacity-100 lg:group-hover:opacity-100";
-
-/** Keeps overlay copy readable when background photos run bright. */
-const overlayTextShadow =
-	"[text-shadow:0_1px_2px_color-mix(in_oklch,var(--color-foreground)_75%,transparent),0_0_1.75rem_color-mix(in_oklch,var(--color-foreground)_40%,transparent)]";
 
 const navDismissSpacerClass =
 	"block min-h-0 w-full flex-1 cursor-default border-0 bg-transparent p-0";
@@ -145,12 +130,6 @@ function NavBackground({
 	);
 }
 
-type SecondaryLink = {
-	id: string;
-	href: string;
-	label: string;
-};
-
 /**
  * A menu section after the CMS overlay is applied: static config supplies the
  * section list and its i18n labels, the CMS wins per field where it has data.
@@ -159,12 +138,7 @@ type ResolvedNavItem = {
 	key: string;
 	href: string;
 	label: string;
-	description: string;
 	imageSrc?: string;
-	/** Static i18n-keyed fallback links from `@/config/site`. */
-	children: NavItem["children"];
-	/** Editor-authored links from the CMS. */
-	cmsLinks: NavMenuOverrideLink[];
 };
 
 function mergeNavItems(
@@ -180,9 +154,6 @@ function mergeNavItems(
 			key: item.key,
 			href: cms?.href ?? item.href,
 			label: cms?.label ?? t(item.labelKey),
-			description: cms?.description ?? t(item.descriptionKey),
-			children: item.children,
-			cmsLinks: cms?.links ?? [],
 		};
 		const imageSrc = cms?.imageSrc ?? item.imageSrc;
 		if (imageSrc) resolved.imageSrc = imageSrc;
@@ -199,133 +170,12 @@ function mergeNavItems(
 			key: cms.itemKey,
 			href: cms.href,
 			label: cms.label,
-			description: cms.description ?? "",
-			children: [],
-			cmsLinks: cms.links,
 		};
 		if (cms.imageSrc) extra.imageSrc = cms.imageSrc;
 		merged.push(extra);
 	}
 
 	return merged;
-}
-
-function resolveSecondaryLinks(
-	item: ResolvedNavItem,
-	taxonomyCatalog: SearchTaxonomyItem[] | null,
-	t: ReturnType<typeof useTranslations<"Nav">>,
-): SecondaryLink[] {
-	const taxonomyItems = getNavMenuTaxonomyItems(
-		item.key,
-		taxonomyCatalog ?? [],
-	);
-
-	if (taxonomyItems.length > 0) {
-		const links = taxonomyItems.map((entry) => ({
-			id: entry.id,
-			href: entry.href,
-			label: entry.label,
-		}));
-
-		if (item.key === "video") {
-			return limitNavMenuLinks([
-				{
-					id: "video-shortfilms",
-					href: "/videos/shortfilms",
-					label: t("videoSubShortFilms"),
-				},
-				...links,
-			]);
-		}
-
-		return limitNavMenuLinks(links);
-	}
-
-	// No taxonomy for this section: editor-authored CMS links come next, and the
-	// static i18n children are the last resort (documented in §6.7).
-	if (item.cmsLinks.length > 0) {
-		return limitNavMenuLinks(item.cmsLinks);
-	}
-
-	return limitNavMenuLinks(
-		item.children.map((child) => ({
-			id: child.key,
-			href: child.href,
-			label: t(child.key),
-		})),
-	);
-}
-
-type NavSecondaryPanelProps = {
-	item: ResolvedNavItem;
-	onNavigate: () => void;
-	taxonomyCatalog: SearchTaxonomyItem[] | null;
-};
-
-function NavSecondaryPanel({
-	item,
-	onNavigate,
-	taxonomyCatalog,
-}: NavSecondaryPanelProps) {
-	const t = useTranslations("Nav");
-	const links = resolveSecondaryLinks(item, taxonomyCatalog, t);
-
-	return (
-		<div className="text-start">
-			<Link
-				href={item.href}
-				variant="nav"
-				onClick={onNavigate}
-				className={cn(
-					"mb-4 inline-flex items-center gap-2 font-heading text-h3 font-bold text-primary-foreground hover:text-primary-foreground",
-					overlayTextShadow,
-				)}
-			>
-				{item.label}
-			</Link>
-
-			{/* Section description — CMS copy when present, else Nav.{item}Description */}
-			<p
-				className={cn(
-					"mb-6 max-w-md text-small leading-relaxed text-primary-foreground/65",
-					overlayTextShadow,
-				)}
-			>
-				{item.description}
-			</p>
-
-			{/* Entries without sub-navigation (پەیوەندی، هاوکاری) would otherwise
-			    render a bare "لێکۆڵین" heading over an empty list. */}
-			{links.length > 0 && (
-				<div className="border-t border-primary-foreground/30 pt-5">
-					<h3 className="mb-2.5 text-label font-medium uppercase tracking-[0.08em] text-primary-foreground/80">
-						{t("secondaryLinkPrefix")}
-					</h3>
-
-					<ul className="flex flex-col">
-						{links.map((link) => (
-							<li
-								key={link.id}
-								className="border-b border-primary-foreground/15 last:border-b-0"
-							>
-								<Link
-									href={link.href}
-									variant="nav"
-									onClick={onNavigate}
-									className={cn(
-										"block py-2.5 text-small text-primary-foreground/80 hover:text-primary-foreground",
-										overlayTextShadow,
-									)}
-								>
-									{link.label}
-								</Link>
-							</li>
-						))}
-					</ul>
-				</div>
-			)}
-		</div>
-	);
 }
 
 type NavView = "nav" | "search";
@@ -358,17 +208,11 @@ export function NavDrawer({
 	triggerRef: externalTriggerRef,
 }: NavDrawerProps) {
 	const t = useTranslations("Nav");
-	const locale = useLocale();
-	const dir = locale === "ckb" ? "rtl" : "ltr";
 	const reduceMotion = useReducedMotion();
 	const isLg = useIsLg();
 	const [hoveredKey, setHoveredKey] = useState<string | null>(null);
-	const [activeKey, setActiveKey] = useState<string | null>(null);
 
 	const [overlayMounted, setOverlayMounted] = useState(false);
-	const [taxonomyCatalog, setTaxonomyCatalog] = useState<
-		SearchTaxonomyItem[] | null
-	>(null);
 	const internalTriggerRef = useRef<HTMLButtonElement>(null);
 	const triggerRef = externalTriggerRef ?? internalTriggerRef;
 	const closeRef = useRef<HTMLButtonElement>(null);
@@ -378,34 +222,13 @@ export function NavDrawer({
 		setOverlayMounted(true);
 	}, []);
 
-	useEffect(() => {
-		if (!open) {
-			return;
-		}
-
-		let cancelled = false;
-
-		void fetchTaxonomyCatalog(locale).then(({ items }) => {
-			if (cancelled) {
-				return;
-			}
-			setTaxonomyCatalog(items);
-		});
-
-		return () => {
-			cancelled = true;
-		};
-	}, [open, locale]);
-
-	const itemTriggerRefs = useRef<Record<string, HTMLButtonElement | null>>({});
 	const wasOpen = useRef(false);
 
 	const primaryNavItems = useMemo(
 		() => mergeNavItems(NAV_ITEMS, navMenu, t),
 		[navMenu, t],
 	);
-	const activeItem = primaryNavItems.find((item) => item.key === activeKey);
-	const bgKey = hoveredKey ?? activeKey ?? primaryNavItems[0]?.key ?? "default";
+	const bgKey = hoveredKey ?? primaryNavItems[0]?.key ?? "default";
 	const bgItem =
 		primaryNavItems.find((item) => item.key === bgKey) ?? primaryNavItems[0];
 	// Truthy check, not `??` — an item may legitimately carry no image, and an
@@ -415,7 +238,6 @@ export function NavDrawer({
 	const close = useCallback(() => {
 		onOpenChange(false);
 		onViewChange("nav");
-		setActiveKey(null);
 		setHoveredKey(null);
 	}, [onOpenChange, onViewChange]);
 
@@ -427,7 +249,6 @@ export function NavDrawer({
 			requestAnimationFrame(() => closeRef.current?.focus());
 		} else if (wasOpen.current) {
 			onViewChange("nav");
-			setActiveKey(null);
 			setHoveredKey(null);
 			triggerRef.current?.focus();
 		}
@@ -457,47 +278,6 @@ export function NavDrawer({
 			first.focus();
 		}
 	}
-
-	function activateItem(key: string) {
-		setActiveKey(key);
-	}
-
-	function goBackMobile() {
-		if (!activeKey) return;
-		const key = activeKey;
-		setActiveKey(null);
-		requestAnimationFrame(() => itemTriggerRefs.current[key]?.focus());
-	}
-
-	const showMobilePanel = !isLg && activeKey !== null;
-	const showDesktopPanel = isLg && activeKey !== null;
-	const panelEnterX = dir === "rtl" ? -24 : 24;
-	const mobilePrimaryEnterX = dir === "rtl" ? 24 : -24;
-
-	const panelSlideInitial = reduceMotion
-		? { opacity: 0 }
-		: { opacity: 0, x: panelEnterX };
-	const panelSlideExit = reduceMotion
-		? { opacity: 0 }
-		: {
-				opacity: 0,
-				x: panelEnterX,
-				transition: { duration: PANEL_EXIT_DURATION },
-			};
-	const panelSlideTransition = {
-		duration: reduceMotion ? 0 : PANEL_ENTER_DURATION,
-	};
-
-	const mobilePrimaryExit = reduceMotion
-		? { opacity: 0 }
-		: {
-				opacity: 0,
-				x: mobilePrimaryEnterX,
-				transition: { duration: PANEL_EXIT_DURATION },
-			};
-	const mobilePrimaryEnter = reduceMotion
-		? { opacity: 0 }
-		: { opacity: 0, x: mobilePrimaryEnterX };
 
 	const overlayMotion = reduceMotion
 		? {
@@ -575,9 +355,6 @@ export function NavDrawer({
 									{/* Legibility scrim — stronger where text sits, photos still show through elsewhere. */}
 									<div className="absolute inset-0 bg-foreground/50" />
 									<div className="absolute inset-0 bg-linear-to-r from-foreground/80 from-0% via-foreground/45 via-50% to-transparent to-100% rtl:bg-linear-to-l" />
-									{showMobilePanel && (
-										<div className="absolute inset-0 bg-foreground/30 lg:hidden" />
-									)}
 									<div className="absolute inset-x-0 bottom-0 h-16 bg-linear-to-t from-foreground from-35% via-foreground/80 via-60% to-transparent sm:h-20" />
 								</div>
 
@@ -632,246 +409,63 @@ export function NavDrawer({
 													}}
 												>
 													<Container className="max-w-none flex min-h-0 flex-1 pb-8 pt-4 sm:pt-6">
-														<div
-															className={cn(
-																"w-full",
-																isLg && "flex flex-1 gap-10 xl:gap-14",
-																isLg && showDesktopPanel && "items-start",
-																!isLg &&
-																	"relative flex min-h-0 flex-1 flex-col",
-															)}
-														>
-															{!isLg ? (
-																<AnimatePresence initial={false}>
-																	{!showMobilePanel ? (
-																		<motion.div
-																			key="mobile-primary"
-																			className="absolute inset-0 flex flex-col"
-																			initial={mobilePrimaryEnter}
-																			animate={{ opacity: 1, x: 0 }}
-																			exit={mobilePrimaryExit}
-																			transition={panelSlideTransition}
-																		>
-																			<NavDismissSpacer
-																				label={t("menuClose")}
-																				onDismiss={close}
-																			/>
-																			<nav
-																				aria-label={t("primary")}
-																				className="w-full shrink-0"
+														<div className="flex min-h-0 w-full flex-1 flex-col lg:max-w-[min(100%,22rem)]">
+															<NavDismissSpacer
+																label={t("menuClose")}
+																onDismiss={close}
+															/>
+															<nav
+																aria-label={t("primary")}
+																className="w-full shrink-0"
+															>
+																<ul className="flex flex-col gap-3">
+																	{primaryNavItems.map((item) => (
+																		<li key={item.key} className="group">
+																			<Link
+																				href={item.href}
+																				variant="nav"
+																				onClick={close}
+																				onMouseEnter={() => {
+																					if (isLg) {
+																						setHoveredKey(item.key);
+																					}
+																				}}
+																				onMouseLeave={() => {
+																					if (!isLg) return;
+																					setHoveredKey((current) =>
+																						current === item.key
+																							? null
+																							: current,
+																					);
+																				}}
+																				onFocus={() => setHoveredKey(item.key)}
+																				onBlur={() =>
+																					setHoveredKey((current) =>
+																						current === item.key
+																							? null
+																							: current,
+																					)
+																				}
+																				className={cn(
+																					primaryItemClass,
+																					// Full strength on touch — the dim-until-hover treatment
+																					// only reads as intentional where a pointer exists.
+																					"text-primary-foreground hover:text-primary-foreground focus-visible:decoration-current focus-visible:opacity-100 lg:opacity-45 lg:hover:decoration-current lg:hover:opacity-100",
+																				)}
 																			>
-																				<ul className="flex flex-col gap-3">
-																					{primaryNavItems.map((item) => {
-																						const isActive =
-																							activeKey === item.key;
-
-																						return (
-																							<li
-																								key={item.key}
-																								className="group"
-																							>
-																								<button
-																									ref={(el) => {
-																										itemTriggerRefs.current[
-																											item.key
-																										] = el;
-																									}}
-																									type="button"
-																									aria-expanded={isActive}
-																									onClick={() =>
-																										activateItem(item.key)
-																									}
-																									onMouseEnter={() => {
-																										if (isLg) {
-																											setHoveredKey(item.key);
-																										}
-																									}}
-																									onMouseLeave={() => {
-																										if (!isLg) return;
-																										setHoveredKey((current) =>
-																											current === item.key
-																												? null
-																												: current,
-																										);
-																									}}
-																									onFocus={() =>
-																										setHoveredKey(item.key)
-																									}
-																									onBlur={() =>
-																										setHoveredKey((current) =>
-																											current === item.key
-																												? null
-																												: current,
-																										)
-																									}
-																									className={cn(
-																										primaryItemClass,
-																										isActive
-																											? "decoration-current opacity-100"
-																											: "opacity-45 focus-visible:decoration-current focus-visible:opacity-100 lg:hover:decoration-current lg:hover:opacity-100",
-																									)}
-																								>
-																									<span
-																										className={
-																											primaryLabelRowClass
-																										}
-																									>
-																										<span>{item.label}</span>
-																										{!isActive && (
-																											<DirectionalIcon
-																												icon={ArrowRightIcon}
-																												className={
-																													primaryItemArrowClass
-																												}
-																											/>
-																										)}
-																									</span>
-																								</button>
-																							</li>
-																						);
-																					})}
-																				</ul>
-																			</nav>
-																			<div
-																				className="min-h-0 flex-1"
-																				aria-hidden
-																			/>
-																		</motion.div>
-																	) : (
-																		activeItem && (
-																			<motion.div
-																				key={`mobile-panel-${activeItem.key}`}
-																				data-wheel-scrollable=""
-																				className="absolute inset-0 flex flex-col overflow-y-auto"
-																				initial={panelSlideInitial}
-																				animate={{ opacity: 1, x: 0 }}
-																				exit={panelSlideExit}
-																				transition={panelSlideTransition}
-																			>
-																				<button
-																					type="button"
-																					onClick={goBackMobile}
-																					className="mb-6 inline-flex items-center gap-2 text-small text-primary-foreground/60 transition-colors hover:text-primary-foreground"
-																				>
+																				<span className={primaryLabelRowClass}>
+																					<span>{item.label}</span>
 																					<DirectionalIcon
-																						icon={ArrowLeftIcon}
-																						className="size-4 shrink-0"
+																						icon={ArrowRightIcon}
+																						className={primaryItemArrowClass}
 																					/>
-																					{t("searchBack")}
-																				</button>
-																				<NavSecondaryPanel
-																					item={activeItem}
-																					onNavigate={close}
-																					taxonomyCatalog={taxonomyCatalog}
-																				/>
-																			</motion.div>
-																		)
-																	)}
-																</AnimatePresence>
-															) : (
-																<div
-																	className={cn(
-																		"shrink-0 lg:max-w-[min(100%,22rem)]",
-																		"flex flex-1 flex-col self-stretch",
-																	)}
-																>
-																	<NavDismissSpacer
-																		label={t("menuClose")}
-																		onDismiss={close}
-																	/>
-																	<nav
-																		aria-label={t("primary")}
-																		className="w-full shrink-0"
-																	>
-																		<ul className="flex flex-col gap-3">
-																			{primaryNavItems.map((item) => {
-																				const isActive = activeKey === item.key;
-
-																				return (
-																					<li key={item.key} className="group">
-																						<button
-																							ref={(el) => {
-																								itemTriggerRefs.current[
-																									item.key
-																								] = el;
-																							}}
-																							type="button"
-																							aria-expanded={isActive}
-																							onClick={() =>
-																								activateItem(item.key)
-																							}
-																							onMouseEnter={() => {
-																								if (isLg) {
-																									setHoveredKey(item.key);
-																								}
-																							}}
-																							onMouseLeave={() => {
-																								if (!isLg) return;
-																								setHoveredKey((current) =>
-																									current === item.key
-																										? null
-																										: current,
-																								);
-																							}}
-																							onFocus={() =>
-																								setHoveredKey(item.key)
-																							}
-																							onBlur={() =>
-																								setHoveredKey((current) =>
-																									current === item.key
-																										? null
-																										: current,
-																								)
-																							}
-																							className={cn(
-																								primaryItemClass,
-																								isActive
-																									? "decoration-current opacity-100"
-																									: "opacity-45 focus-visible:decoration-current focus-visible:opacity-100 lg:hover:decoration-current lg:hover:opacity-100",
-																							)}
-																						>
-																							<span
-																								className={primaryLabelRowClass}
-																							>
-																								<span>{item.label}</span>
-																								{!isActive && (
-																									<DirectionalIcon
-																										icon={ArrowRightIcon}
-																										className={
-																											primaryItemArrowClass
-																										}
-																									/>
-																								)}
-																							</span>
-																						</button>
-																					</li>
-																				);
-																			})}
-																		</ul>
-																	</nav>
-																	<div className="min-h-0 flex-1" aria-hidden />
-																</div>
-															)}
-
-															{showDesktopPanel && activeItem && (
-																<div className="hidden min-w-0 flex-1 self-start lg:block lg:max-w-md xl:max-w-lg">
-																	<AnimatePresence mode="wait">
-																		<motion.div
-																			key={activeItem.key}
-																			initial={panelSlideInitial}
-																			animate={{ opacity: 1, x: 0 }}
-																			exit={panelSlideExit}
-																			transition={panelSlideTransition}
-																		>
-																			<NavSecondaryPanel
-																				item={activeItem}
-																				onNavigate={close}
-																				taxonomyCatalog={taxonomyCatalog}
-																			/>
-																		</motion.div>
-																	</AnimatePresence>
-																</div>
-															)}
+																				</span>
+																			</Link>
+																		</li>
+																	))}
+																</ul>
+															</nav>
+															<div className="min-h-0 flex-1" aria-hidden />
 														</div>
 													</Container>
 												</motion.div>

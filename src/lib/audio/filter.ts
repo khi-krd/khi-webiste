@@ -4,12 +4,13 @@ export type AudioFilterOptions = {
 	soundType?: string | null;
 	state?: TrackState | null;
 	topicId?: number | null;
+	tag?: string | null;
 	query?: string | null;
 };
 
 export function filterAudioTracks(
 	items: ResolvedAudioCard[],
-	{ soundType, state, topicId, query }: AudioFilterOptions,
+	{ soundType, state, topicId, tag, query }: AudioFilterOptions,
 ): ResolvedAudioCard[] {
 	let result = items;
 
@@ -23,6 +24,15 @@ export function filterAudioTracks(
 
 	if (topicId != null) {
 		result = result.filter((item) => item.topicId === topicId);
+	}
+
+	// Whole-entry match, mirroring the server's tag-collection lookup rather
+	// than the substring behaviour of the free-text search below.
+	const trimmedTag = tag?.trim().toLowerCase();
+	if (trimmedTag) {
+		result = result.filter((item) =>
+			item.tags.some((entry) => entry.trim().toLowerCase() === trimmedTag),
+		);
 	}
 
 	const trimmedQuery = query?.trim().toLowerCase();

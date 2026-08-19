@@ -46,6 +46,18 @@ export function resolveCategoryKey(news: News): string | null {
 	return firstNonBlank(news.category?.ckbName, news.category?.kmrName);
 }
 
+function resolveSubCategoryName(locale: string, news: News): string | null {
+	if (locale === "ckb") {
+		return firstNonBlank(news.subCategory?.ckbName, news.subCategory?.kmrName);
+	}
+	return firstNonBlank(news.subCategory?.kmrName, news.subCategory?.ckbName);
+}
+
+/** Stable filter key for `?subcategory=` and `GET /search/subcategory?name=`. */
+export function resolveSubCategoryKey(news: News): string | null {
+	return firstNonBlank(news.subCategory?.ckbName, news.subCategory?.kmrName);
+}
+
 const CATEGORY_ALIASES: Record<string, NewsCategory> = {
 	culture: "culture",
 	çand: "culture",
@@ -90,6 +102,25 @@ export function mapToLatestUpdateCategory(
 		: "culture";
 }
 
+/**
+ * Localized view of a bilingual string set.
+ * Falls back on an EMPTY list, not just a missing one — a record tagged only in
+ * the other language must still expose those terms, or its `?tag=` / `?keyword=`
+ * chip would filter it out of its own result set.
+ */
+export function resolveLocalizedTerms(
+	locale: string,
+	set: { ckb: string[]; kmr: string[] } | undefined,
+): string[] {
+	if (!set) {
+		return [];
+	}
+
+	const preferred = locale === "ckb" ? set.ckb : set.kmr;
+	const fallback = locale === "ckb" ? set.kmr : set.ckb;
+	return preferred.length > 0 ? preferred : fallback;
+}
+
 export function resolveNewsItem(locale: string, news: News): NewsItem | null {
 	const content = resolveNewsContent(locale, news);
 	const title = content?.title?.trim();
@@ -110,13 +141,13 @@ export function resolveNewsItem(locale: string, news: News): NewsItem | null {
 			? firstNonBlank(news.coverUrl, news.coverThumbnailUrl)
 			: firstNonBlank(news.coverUrl, news.coverThumbnailUrl);
 
-	const tags =
-		locale === "ckb"
-			? (news.tags?.ckb ?? news.tags?.kmr ?? [])
-			: (news.tags?.kmr ?? news.tags?.ckb ?? []);
+	const tags = resolveLocalizedTerms(locale, news.tags);
+	const keywords = resolveLocalizedTerms(locale, news.keywords);
 
 	const categoryKey = resolveCategoryKey(news);
 	const categoryLabel = resolveCategoryName(locale, news);
+	const subCategoryKey = resolveSubCategoryKey(news);
+	const subCategoryLabel = resolveSubCategoryName(locale, news);
 
 	return {
 		id: String(news.id),
@@ -126,6 +157,8 @@ export function resolveNewsItem(locale: string, news: News): NewsItem | null {
 		description,
 		category: categoryKey ?? "culture",
 		categoryLabel: categoryLabel ?? undefined,
+		subCategory: subCategoryKey ?? undefined,
+		subCategoryLabel: subCategoryLabel ?? undefined,
 		publishedAt:
 			news.datePublished ?? news.createdAt ?? new Date().toISOString(),
 		coverMediaType: parseMediaKind(news.coverMediaType, coverUrl),
@@ -133,6 +166,7 @@ export function resolveNewsItem(locale: string, news: News): NewsItem | null {
 		coverThumbnailUrl: news.coverThumbnailUrl ?? null,
 		mediaGallery: parseMediaGallery(news.mediaGallery, locale),
 		tags,
+		keywords,
 		image: {
 			url: coverUrl ?? "/menu/1.jpg",
 			alt: title,

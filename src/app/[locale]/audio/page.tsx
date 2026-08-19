@@ -30,6 +30,7 @@ type AudioPageProps = {
 		type?: string;
 		state?: string;
 		topic?: string;
+		tag?: string;
 		q?: string;
 		page?: string;
 	}>;
@@ -99,6 +100,7 @@ export default async function AudioPage({
 					activeType={pageData.activeType}
 					activeState={pageData.activeState}
 					activeTopicId={pageData.activeTopicId}
+					activeTag={pageData.activeTag}
 					activeQuery={pageData.activeQuery}
 					noResultsMessage={pageData.noResultsMessage}
 				/>

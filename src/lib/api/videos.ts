@@ -36,6 +36,18 @@ import {
 const VIDEOS_ENDPOINT = "/api/v1/videos";
 const VIDEOS_TAG = "videos";
 const FILM_REKLAM_VIDEO_ENDPOINT = `${VIDEOS_ENDPOINT}/film-reklam-video`;
+const FEATURED_VIDEOS_ENDPOINT = `${VIDEOS_ENDPOINT}/featured`;
+
+/**
+ * Videos are the only module whose backend clamps `size` (to 100), so a lone
+ * `BULK_FETCH_SIZE` request returns half of what the caller assumes and cuts
+ * the catalogue off at record 100. Page at the real ceiling to the same budget.
+ */
+const VIDEO_MAX_PAGE_SIZE = 100;
+const VIDEO_BULK_PAGE_COUNT = Math.ceil(BULK_FETCH_SIZE / VIDEO_MAX_PAGE_SIZE);
+
+/** A few rows of headroom so one unparseable record cannot void the lead. */
+const FEATURED_LEAD_FETCH_SIZE = 5;
 
 export const VIDEO_GRID_PAGE_SIZE = 12;
 
@@ -91,8 +103,11 @@ function buildVideoSearchParams(
 	if (topicId != null) {
 		searchParams.topicId = topicId;
 	}
-	if (memories != null) {
-		searchParams.memories = String(memories);
+	// `memories=false` sends the server down its clips-by-album branch and hides
+	// every memory clip; only `true` narrows the way we want. Either value is
+	// re-applied by `filterVideos`, so dropping `false` costs nothing.
+	if (memories === true) {
+		searchParams.memories = "true";
 	}
 
 	return searchParams;
@@ -138,13 +153,47 @@ async function fetchVideosByKeyword(
 	});
 }
 
+async function fetchFeaturedVideosPage(
+	page: number,
+	size: number,
+): Promise<ParsedApiPage<Video> | null> {
+	return apiFetchPage(FEATURED_VIDEOS_ENDPOINT, {
+		itemSchema: VideoSchema,
+		tags: [VIDEOS_TAG],
+		revalidate: DEFAULT_REVALIDATE,
+		searchParams: { page, size },
+		normalizeItem: normalizeVideoRecord,
+	});
+}
+
 async function fetchAllVideosFromApi(
 	options: VideoPageFetchOptions = {},
 ): Promise<Video[] | null> {
-	const page = await fetchVideosPageResult(
-		buildVideoSearchParams(0, BULK_FETCH_SIZE, options),
+	// Upstream resolves these as a priority chain — `topicId` wins, then
+	// clips-by-album, then `videoType` — so it answers one dimension and drops
+	// the rest. `applyClientOnlyFilters` re-applies all of them in memory, which
+	// makes the dropped params over-fetch rather than wrong rows.
+	const first = await fetchVideosPageResult(
+		buildVideoSearchParams(0, VIDEO_MAX_PAGE_SIZE, options),
 	);
-	return page?.content.length ? page.content : null;
+	if (!first) {
+		return null;
+	}
+
+	const videos = [...first.content];
+	const lastPage = Math.min(first.totalPages, VIDEO_BULK_PAGE_COUNT);
+	for (let page = 1; page < lastPage; page += 1) {
+		const next = await fetchVideosPageResult(
+			buildVideoSearchParams(page, VIDEO_MAX_PAGE_SIZE, options),
+		);
+		// A mid-walk failure degrades to a shorter catalogue, never to none.
+		if (!next) {
+			break;
+		}
+		videos.push(...next.content);
+	}
+
+	return videos.length ? videos : null;
 }
 
 async function getAllVideos(): Promise<Video[]> {
@@ -175,16 +224,39 @@ async function searchVideosFromApi(
 	filters: VideoListingFilters,
 ): Promise<ResolvedVideoCard[] | null> {
 	const trimmedQuery = query.trim();
-
-	let result = await fetchVideosByTag(trimmedQuery, 0, BULK_FETCH_SIZE);
-	if (!result?.content.length) {
-		result = await fetchVideosByKeyword(trimmedQuery, 0, BULK_FETCH_SIZE);
-	}
-	if (!result) {
+	// A blank `value` is a 400, which would surface as an empty grid instead of
+	// falling through to the unfiltered listing.
+	if (!trimmedQuery) {
 		return null;
 	}
 
-	return applyClientOnlyFilters(resolvePageToCards(locale, result.content), {
+	// `search/keyword` spans titles, descriptions, directors and keyword
+	// collections while `search/tag` only spans tags. Asking for tags first and
+	// stopping on a hit let one tagged video shadow every title/director match,
+	// so take the union. `null` stays reserved for "both calls failed" — an
+	// empty union must not re-trigger the unfiltered fallback.
+	const [keywordPage, tagPage] = await Promise.all([
+		fetchVideosByKeyword(trimmedQuery, 0, VIDEO_MAX_PAGE_SIZE),
+		fetchVideosByTag(trimmedQuery, 0, VIDEO_MAX_PAGE_SIZE),
+	]);
+	if (!keywordPage && !tagPage) {
+		return null;
+	}
+
+	const seen = new Set<number>();
+	const merged: Video[] = [];
+	for (const video of [
+		...(keywordPage?.content ?? []),
+		...(tagPage?.content ?? []),
+	]) {
+		if (seen.has(video.id)) {
+			continue;
+		}
+		seen.add(video.id);
+		merged.push(video);
+	}
+
+	return applyClientOnlyFilters(resolvePageToCards(locale, merged), {
 		...filters,
 		query: null,
 	});
@@ -219,10 +291,10 @@ export async function getFeaturedVideoLead(
 	locale: string,
 ): Promise<ResolvedVideoCard | null> {
 	if (getApiBaseUrl()) {
-		const result = await fetchVideosPageResult({
-			page: 0,
-			size: BULK_FETCH_SIZE,
-		});
+		// The dedicated route is ordered by `featuredOrder`, so the lead is right
+		// even when the featured video is not among the newest records — scanning
+		// a bulk page of the plain listing missed those.
+		const result = await fetchFeaturedVideosPage(0, FEATURED_LEAD_FETCH_SIZE);
 		if (result?.content.length) {
 			const lead = pickFeaturedCard(resolvePageToCards(locale, result.content));
 			if (lead) {
@@ -231,7 +303,7 @@ export async function getFeaturedVideoLead(
 		}
 	}
 
-	// No CMS video carries `featured`, so there is no lead to pick. Returning
+	// Nothing upstream carries `featured`, so there is no lead to pick. Returning
 	// null lets VideoShell open on the newest real video (`cards[0]`) instead of
 	// on a demo one.
 	return null;

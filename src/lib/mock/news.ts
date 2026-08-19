@@ -23,6 +23,9 @@ export type NewsItem = {
 	category: string;
 	/** Localized label for display (from API bilingual names when available). */
 	categoryLabel?: string;
+	/** Stable filter key for `?subcategory=` (`subCategory.ckbName` from API). */
+	subCategory?: string;
+	subCategoryLabel?: string;
 	publishedAt: string;
 	featured?: boolean;
 	author?: string;
@@ -36,6 +39,7 @@ export type NewsItem = {
 	coverThumbnailUrl?: string | null;
 	mediaGallery?: MediaItem[];
 	tags?: string[];
+	keywords?: string[];
 };
 
 /** Filter chip option derived from backend (or mock) taxonomy. */
@@ -447,6 +451,9 @@ export function getBentoNews(locale: string): {
 
 export type NewsFilter = {
 	category?: string | null;
+	subcategory?: string | null;
+	tag?: string | null;
+	keyword?: string | null;
 	query?: string | null;
 };
 
@@ -476,9 +483,15 @@ export function newsItemCategoryLabel(
 	return match?.label ?? item.category;
 }
 
+/** Case-insensitive membership test for the localized tag/keyword collections. */
+function hasTerm(terms: string[] | undefined, term: string): boolean {
+	const needle = term.toLowerCase();
+	return (terms ?? []).some((entry) => entry.trim().toLowerCase() === needle);
+}
+
 export function filterNews(
 	items: NewsItem[],
-	{ category, query }: NewsFilter,
+	{ category, subcategory, tag, keyword, query }: NewsFilter,
 ): NewsItem[] {
 	let result = items;
 
@@ -487,6 +500,24 @@ export function filterNews(
 		result = result.filter(
 			(item) => item.category === key || item.categoryLabel?.trim() === key,
 		);
+	}
+
+	if (subcategory?.trim()) {
+		const key = subcategory.trim();
+		result = result.filter(
+			(item) =>
+				item.subCategory === key || item.subCategoryLabel?.trim() === key,
+		);
+	}
+
+	if (tag?.trim()) {
+		const key = tag.trim();
+		result = result.filter((item) => hasTerm(item.tags, key));
+	}
+
+	if (keyword?.trim()) {
+		const key = keyword.trim();
+		result = result.filter((item) => hasTerm(item.keywords, key));
 	}
 
 	if (query?.trim()) {

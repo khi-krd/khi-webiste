@@ -10,6 +10,9 @@ export type WritingsUrlParams = {
 	category?: WritingCategorySlug | string | null;
 	genre?: BookGenre | string | null;
 	q?: string | null;
+	writer?: string | null;
+	tag?: string | null;
+	keyword?: string | null;
 	page?: number;
 	sort?: WritingsSort | string | null;
 };
@@ -25,6 +28,9 @@ export function buildWritingsHref({
 	category,
 	genre,
 	q,
+	writer,
+	tag,
+	keyword,
 	page,
 	sort,
 }: WritingsUrlParams): string {
@@ -36,6 +42,16 @@ export function buildWritingsHref({
 	}
 	if (q?.trim()) {
 		params.set("q", q.trim());
+	}
+	// Blank search terms are a 400 upstream, so they never reach the URL.
+	if (writer?.trim()) {
+		params.set("writer", writer.trim());
+	}
+	if (tag?.trim()) {
+		params.set("tag", tag.trim());
+	}
+	if (keyword?.trim()) {
+		params.set("keyword", keyword.trim());
 	}
 	if (page && page > 1) {
 		params.set("page", String(page));

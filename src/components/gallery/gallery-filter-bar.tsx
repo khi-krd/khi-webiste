@@ -10,8 +10,13 @@ import { useTranslations } from "next-intl";
 import { useCallback, useEffect, useRef, useState, useTransition } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { Select } from "@/components/ui/select";
 import { useRouter } from "@/i18n/navigation";
-import { buildGalleryHref, isGalleryCollectionType } from "@/lib/gallery-url";
+import {
+	buildGalleryHref,
+	isGalleryCollectionType,
+	parseGalleryTopicId,
+} from "@/lib/gallery-url";
 import type { GalleryCollectionType } from "@/lib/mock/gallery";
 import { useScrollToSection } from "@/lib/use-scroll-to-section";
 import { cn } from "@/lib/utils";
@@ -22,14 +27,23 @@ const GALLERY_TYPE_OPTIONS: GalleryCollectionType[] = [
 	"SINGLE",
 ];
 
+type TopicOption = {
+	id: number;
+	name: string;
+};
+
 type GalleryFilterBarProps = {
+	topics: TopicOption[];
 	activeType?: string | null;
+	activeTopicId?: number | null;
 	activeQuery?: string | null;
 	className?: string;
 };
 
 export function GalleryFilterBar({
+	topics,
 	activeType,
+	activeTopicId,
 	activeQuery,
 	className,
 }: GalleryFilterBarProps) {
@@ -44,18 +58,24 @@ export function GalleryFilterBar({
 	const hasActiveType = isGalleryCollectionType(activeType);
 	const activeTypeLabel = hasActiveType ? t(`posts.types.${activeType}`) : null;
 	const hasActiveQuery = Boolean(activeQuery?.trim());
-	const hasActiveFilters = hasActiveType || hasActiveQuery;
+	const hasActiveTopic = activeTopicId != null;
+	const activeTopicName =
+		topics.find((topic) => topic.id === activeTopicId)?.name ?? null;
+	const hasActiveFilters = hasActiveType || hasActiveQuery || hasActiveTopic;
+	const currentType = hasActiveType ? (activeType ?? null) : null;
+	const currentTopic = activeTopicId ?? null;
 
 	useEffect(() => {
 		setQuery(activeQuery ?? "");
 	}, [activeQuery]);
 
 	const pushFilters = useCallback(
-		(type: string | null, q: string) => {
+		(type: string | null, q: string, topic: number | null) => {
 			startTransition(() => {
 				router.replace(
 					buildGalleryHref({
 						type,
+						topic,
 						q,
 						page: 1,
 					}),
@@ -71,28 +91,34 @@ export function GalleryFilterBar({
 		[router, searchParams, scrollToSection],
 	);
 
+	// The two dimensions are a backend priority chain, so the controls clear each
+	// other rather than letting a topic be silently dropped upstream.
 	const handleType = (type: string | null) => {
-		pushFilters(type, query);
+		pushFilters(type, query, type ? null : currentTopic);
+	};
+
+	const handleTopic = (topic: number | null) => {
+		pushFilters(topic != null ? null : currentType, query, topic);
 	};
 
 	const handleSearchSubmit = (event: React.FormEvent) => {
 		event.preventDefault();
 		if (debounceRef.current) clearTimeout(debounceRef.current);
-		pushFilters(hasActiveType ? (activeType ?? null) : null, query);
+		pushFilters(currentType, query, currentTopic);
 	};
 
 	const handleQueryChange = (value: string) => {
 		setQuery(value);
 		if (debounceRef.current) clearTimeout(debounceRef.current);
 		debounceRef.current = setTimeout(() => {
-			pushFilters(hasActiveType ? (activeType ?? null) : null, value);
+			pushFilters(currentType, value, currentTopic);
 		}, 350);
 	};
 
 	const handleClearSearch = () => {
 		if (debounceRef.current) clearTimeout(debounceRef.current);
 		setQuery("");
-		pushFilters(hasActiveType ? (activeType ?? null) : null, "");
+		pushFilters(currentType, "", currentTopic);
 	};
 
 	const handleClearAll = () => {
@@ -175,7 +201,7 @@ export function GalleryFilterBar({
 							aria-hidden
 						/>
 						<p className="font-heading text-label font-semibold uppercase tracking-[0.14em]">
-							{t("filter.label")}
+							{t("filter.heading")}
 						</p>
 					</div>
 
@@ -190,24 +216,56 @@ export function GalleryFilterBar({
 					) : null}
 				</div>
 
-				<div
-					className="mt-4 flex flex-wrap gap-2"
-					role="group"
-					aria-label={t("filter.label")}
-				>
-					<TypePill active={!hasActiveType} onClick={() => handleType(null)}>
-						{t("filter.all")}
-					</TypePill>
-					{GALLERY_TYPE_OPTIONS.map((type) => (
-						<TypePill
-							key={type}
-							active={activeType === type}
-							onClick={() => handleType(type)}
-						>
-							{t(`posts.types.${type}`)}
+				<div className="mt-4">
+					<p className="label font-semibold text-muted">
+						{t("filter.typeLabel")}
+					</p>
+					<div
+						className="mt-3 flex flex-wrap gap-2"
+						role="group"
+						aria-label={t("filter.label")}
+					>
+						<TypePill active={!hasActiveType} onClick={() => handleType(null)}>
+							{t("filter.all")}
 						</TypePill>
-					))}
+						{GALLERY_TYPE_OPTIONS.map((type) => (
+							<TypePill
+								key={type}
+								active={activeType === type}
+								onClick={() => handleType(type)}
+							>
+								{t(`posts.types.${type}`)}
+							</TypePill>
+						))}
+					</div>
 				</div>
+
+				{topics.length > 0 ? (
+					<div className="mt-6 border-t border-border pt-4">
+						<label
+							htmlFor="gallery-topic-select"
+							className="label font-semibold text-muted"
+						>
+							{t("filter.topicLabel")}
+						</label>
+						<div className="mt-3 max-w-xs">
+							<Select
+								id="gallery-topic-select"
+								value={activeTopicId != null ? String(activeTopicId) : ""}
+								onChange={(event) =>
+									handleTopic(parseGalleryTopicId(event.target.value))
+								}
+							>
+								<option value="">{t("filter.topicAll")}</option>
+								{topics.map((topic) => (
+									<option key={topic.id} value={topic.id}>
+										{topic.name}
+									</option>
+								))}
+							</Select>
+						</div>
+					</div>
+				) : null}
 
 				{hasActiveFilters ? (
 					<div className="mt-4 flex flex-wrap items-center gap-2 border-t border-border pt-4">
@@ -215,6 +273,11 @@ export function GalleryFilterBar({
 						{activeTypeLabel ? (
 							<Badge variant="outline" size="sm">
 								{activeTypeLabel}
+							</Badge>
+						) : null}
+						{activeTopicName ? (
+							<Badge variant="outline" size="sm">
+								{activeTopicName}
 							</Badge>
 						) : null}
 						{hasActiveQuery && activeQuery ? (

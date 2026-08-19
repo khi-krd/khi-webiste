@@ -136,6 +136,8 @@ export function resolveWritingCard(
 		hoverCoverUrl: writing.hoverCoverUrl ?? null,
 		genres: writing.bookGenres,
 		freeTextGenre: content.genre,
+		tags: unionBilingualStrings(writing.tags.ckb, writing.tags.kmr),
+		keywords: unionBilingualStrings(writing.keywords.ckb, writing.keywords.kmr),
 		topicName: resolveWritingTopicName(locale, writing),
 		seriesName: seriesInfo.seriesName?.trim() || null,
 		publishedByInstitute: writing.publishedByInstitute,
@@ -172,6 +174,11 @@ function resolveBilingualStrings(
 		return ckb.length > 0 ? ckb : kmr;
 	}
 	return kmr.length > 0 ? kmr : ckb;
+}
+
+/** Dialect-agnostic term set — mirrors the OR the tag/keyword endpoints run. */
+function unionBilingualStrings(ckb: string[], kmr: string[]): string[] {
+	return [...new Set([...ckb, ...kmr].map((v) => v.trim()).filter(Boolean))];
 }
 
 function isPartOfSeries(writing: Writing): boolean {

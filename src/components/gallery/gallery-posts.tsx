@@ -21,6 +21,11 @@ type GalleryPostWithMeta = GalleryPost & {
 	typeLabel: string;
 };
 
+type TopicOption = {
+	id: number;
+	name: string;
+};
+
 type GalleryPostsProps = {
 	eyebrow: string;
 	title: string;
@@ -28,8 +33,10 @@ type GalleryPostsProps = {
 	posts: GalleryPostWithMeta[];
 	currentPage: number;
 	totalPages: number;
+	topics: TopicOption[];
 	activeQuery?: string | null;
 	activeType?: string | null;
+	activeTopicId?: number | null;
 	noResultsMessage: string;
 	paginationLabel: string;
 	previousLabel: string;
@@ -115,8 +122,10 @@ export function GalleryPosts({
 	posts,
 	currentPage,
 	totalPages,
+	topics,
 	activeQuery,
 	activeType,
+	activeTopicId,
 	noResultsMessage,
 	paginationLabel,
 	previousLabel,
@@ -152,7 +161,12 @@ export function GalleryPosts({
 
 			<div className={cn("pb-16 lg:pb-24", homeInsetClass)}>
 				<div className="pt-8 lg:pt-10">
-					<GalleryFilterBar activeQuery={activeQuery} activeType={activeType} />
+					<GalleryFilterBar
+						topics={topics}
+						activeQuery={activeQuery}
+						activeType={activeType}
+						activeTopicId={activeTopicId}
+					/>
 				</div>
 
 				{posts.length === 0 ? (
@@ -174,6 +188,7 @@ export function GalleryPosts({
 							totalPages={totalPages}
 							activeQuery={activeQuery}
 							activeType={activeType}
+							activeTopicId={activeTopicId}
 							label={paginationLabel}
 							previousLabel={previousLabel}
 							nextLabel={nextLabel}

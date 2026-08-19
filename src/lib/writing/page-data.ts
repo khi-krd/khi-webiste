@@ -1,4 +1,8 @@
-import { getWritingsListing, parseWritingsGenre } from "@/lib/api/writings";
+import {
+	getWritingsListing,
+	getWritingWriters,
+	parseWritingsGenre,
+} from "@/lib/api/writings";
 import {
 	buildCategoryCarouselItems,
 	buildWritingGridCards,
@@ -21,6 +25,9 @@ type TranslateFn = (
 export type WritingsPageSearchParams = {
 	genre?: string;
 	q?: string;
+	writer?: string;
+	tag?: string;
+	keyword?: string;
 	page?: string;
 	sort?: string;
 };
@@ -39,6 +46,10 @@ export async function loadWritingsPageData(
 ) {
 	const activeGenre = parseWritingsGenre(searchParams.genre);
 	const activeQuery = searchParams.q?.trim() || null;
+	// Blank terms would be a 400 upstream, so they never become active filters.
+	const activeWriter = searchParams.writer?.trim() || null;
+	const activeTag = searchParams.tag?.trim() || null;
+	const activeKeyword = searchParams.keyword?.trim() || null;
 	const activeSort = parseWritingsSort(searchParams.sort);
 	const page = Math.max(1, Number.parseInt(searchParams.page ?? "1", 10) || 1);
 
@@ -53,13 +64,19 @@ export async function loadWritingsPageData(
 		]),
 	) as Record<WritingCategorySlug, string>;
 
-	const listing = await getWritingsListing(locale, {
-		categorySlug,
-		genre: activeGenre,
-		query: activeQuery,
-		page,
-		sort: activeSort,
-	});
+	const [listing, writers] = await Promise.all([
+		getWritingsListing(locale, {
+			categorySlug,
+			genre: activeGenre,
+			query: activeQuery,
+			writer: activeWriter,
+			tag: activeTag,
+			keyword: activeKeyword,
+			page,
+			sort: activeSort,
+		}),
+		getWritingWriters(locale),
+	]);
 
 	const gridCards = buildWritingGridCards(listing.items);
 
@@ -70,13 +87,22 @@ export async function loadWritingsPageData(
 		: t("grid.allTitle");
 
 	const hasFilters = Boolean(
-		activeGenre || activeQuery || activeSort !== "newest",
+		activeGenre ||
+			activeQuery ||
+			activeWriter ||
+			activeTag ||
+			activeKeyword ||
+			activeSort !== "newest",
 	);
 
 	return {
 		activeGenre,
 		activeQuery,
+		activeWriter,
+		activeTag,
+		activeKeyword,
 		activeSort,
+		writers,
 		gridCards,
 		categoryCarouselItems,
 		gridTitle,

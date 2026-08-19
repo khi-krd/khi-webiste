@@ -14,7 +14,7 @@ export function newsCategoryHref(category: string): string {
 }
 
 export function newsTagHref(tag: string): string {
-	return buildNewsHref({ q: tag });
+	return buildNewsHref({ tag });
 }
 
 export function projectTagHref(tag: string): string {
@@ -42,7 +42,7 @@ export function videoMemoriesHref(basePath = "/videos"): string {
 }
 
 export function audioTagHref(tag: string): string {
-	return buildAudioHref({ q: tag });
+	return buildAudioHref({ tag });
 }
 
 export function audioTopicHref(topicId: number): string {
@@ -54,7 +54,11 @@ export function audioSoundTypeHref(soundType: string): string {
 }
 
 export function writingTagHref(tag: string): string {
-	return buildWritingsHref({ q: tag });
+	return buildWritingsHref({ tag });
+}
+
+export function writingKeywordHref(keyword: string): string {
+	return buildWritingsHref({ keyword });
 }
 
 export function writingGenreHref(genre: string): string {

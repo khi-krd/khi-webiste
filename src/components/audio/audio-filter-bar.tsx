@@ -28,6 +28,7 @@ type AudioFilterBarProps = {
 	activeType?: string | null;
 	activeState?: TrackState | null;
 	activeTopicId?: number | null;
+	activeTag?: string | null;
 	activeQuery?: string | null;
 	itemCount: number;
 	scrollTargetId?: string;
@@ -66,6 +67,7 @@ export function AudioFilterBar({
 	activeType,
 	activeState,
 	activeTopicId,
+	activeTag,
 	activeQuery,
 	itemCount,
 	scrollTargetId = "audio-grid",
@@ -75,13 +77,19 @@ export function AudioFilterBar({
 	const router = useRouter();
 	const searchParams = useSearchParams();
 	const [isPending, startTransition] = useTransition();
-	const [expanded, setExpanded] = useState(false);
+	// A tag only ever arrives from a detail-page chip, so open the panel on
+	// arrival — otherwise its removal control would land out of sight.
+	const [expanded, setExpanded] = useState(Boolean(activeTag?.trim()));
 	const [query, setQuery] = useState(activeQuery ?? "");
 	const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 	const scrollToSection = useScrollToSection();
 
 	const hasActiveFilters = Boolean(
-		activeType || activeState || activeTopicId != null || activeQuery?.trim(),
+		activeType ||
+			activeState ||
+			activeTopicId != null ||
+			activeTag?.trim() ||
+			activeQuery?.trim(),
 	);
 
 	useEffect(() => {
@@ -93,6 +101,7 @@ export function AudioFilterBar({
 			type?: string | null;
 			state?: TrackState | null;
 			topic?: number | null;
+			tag?: string | null;
 			q?: string;
 		}) => {
 			startTransition(() => {
@@ -101,6 +110,7 @@ export function AudioFilterBar({
 						type: "type" in opts ? opts.type : activeType,
 						state: "state" in opts ? opts.state : activeState,
 						topic: "topic" in opts ? opts.topic : activeTopicId,
+						tag: "tag" in opts ? opts.tag : activeTag,
 						q: opts.q ?? query,
 						page: 1,
 					}),
@@ -119,6 +129,7 @@ export function AudioFilterBar({
 			activeType,
 			activeState,
 			activeTopicId,
+			activeTag,
 			query,
 			scrollTargetId,
 			scrollToSection,
@@ -344,6 +355,18 @@ export function AudioFilterBar({
 									<Badge variant="outline" size="sm">
 										{activeTopic.name}
 									</Badge>
+								) : null}
+								{activeTag?.trim() ? (
+									<button
+										type="button"
+										onClick={() => pushFilters({ tag: null })}
+										aria-label={t("filter.tagRemove")}
+										className="transition-opacity fine-hover:opacity-70"
+									>
+										<Badge variant="outline" size="sm">
+											#{activeTag}
+										</Badge>
+									</button>
 								) : null}
 								{activeQuery?.trim() ? (
 									<Badge variant="outline" size="sm">

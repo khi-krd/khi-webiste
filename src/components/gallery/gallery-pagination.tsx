@@ -12,6 +12,7 @@ type GalleryPaginationProps = {
 	totalPages: number;
 	activeQuery?: string | null;
 	activeType?: string | null;
+	activeTopicId?: number | null;
 	label: string;
 	previousLabel: string;
 	nextLabel: string;
@@ -28,6 +29,7 @@ export function GalleryPagination({
 	totalPages,
 	activeQuery,
 	activeType,
+	activeTopicId,
 	label,
 	previousLabel,
 	nextLabel,
@@ -41,6 +43,7 @@ export function GalleryPagination({
 		buildGalleryHref({
 			q: activeQuery,
 			type: activeType,
+			topic: activeTopicId,
 			page,
 		});
 

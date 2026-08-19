@@ -32,6 +32,9 @@ type WritingsPageProps = {
 	searchParams: Promise<{
 		genre?: string;
 		q?: string;
+		writer?: string;
+		tag?: string;
+		keyword?: string;
 		page?: string;
 		sort?: string;
 	}>;
@@ -109,8 +112,12 @@ export default async function WritingsPage({
 				totalElements={pageData.listing.totalElements}
 				activeGenre={pageData.activeGenre}
 				activeQuery={pageData.activeQuery}
+				activeWriter={pageData.activeWriter}
+				activeTag={pageData.activeTag}
+				activeKeyword={pageData.activeKeyword}
 				activeSort={pageData.activeSort}
 				genreLabels={pageData.genreLabels}
+				writers={pageData.writers}
 				noResultsMessage={pageData.noResultsMessage}
 				paginationLabel={t("pagination.label")}
 				previousLabel={t("pagination.previous")}

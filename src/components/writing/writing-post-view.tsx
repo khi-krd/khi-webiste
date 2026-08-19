@@ -12,7 +12,11 @@ import { WritingGridCard } from "@/components/writing/writing-grid-card";
 import { WritingPdfPreview } from "@/components/writing/writing-pdf-preview";
 import { Link as NavLink } from "@/i18n/navigation";
 import { homeInsetClass } from "@/lib/layout";
-import { writingGenreHref, writingTagHref } from "@/lib/search/taxonomy-href";
+import {
+	writingGenreHref,
+	writingKeywordHref,
+	writingTagHref,
+} from "@/lib/search/taxonomy-href";
 import { displayTitleSizeClass } from "@/lib/title-scale";
 import { cn } from "@/lib/utils";
 import { buildWritingGridCards } from "@/lib/writing/catalog";
@@ -34,6 +38,7 @@ type WritingPostViewProps = {
 	seriesLabel: string;
 	seriesVolumeLabel: (order: number, total: number | null) => string;
 	topicLabel: string;
+	keywordsLabel: string;
 	formatLabel: string;
 	languagesLabel: string;
 	previewTitle: string;
@@ -60,6 +65,7 @@ export function WritingPostView({
 	seriesLabel,
 	seriesVolumeLabel,
 	topicLabel,
+	keywordsLabel,
 	formatLabel,
 	languagesLabel,
 	previewTitle,
@@ -81,7 +87,7 @@ export function WritingPostView({
 			? [
 					{
 						key: "free-genre",
-						href: writingTagHref(detail.freeTextGenre),
+						href: writingGenreHref(detail.freeTextGenre),
 						label: detail.freeTextGenre,
 					},
 				]
@@ -180,6 +186,23 @@ export function WritingPostView({
 										className="text-body font-bold text-brand no-underline transition-opacity fine-hover:opacity-75"
 									>
 										#{tag}
+									</NavLink>
+								))}
+							</div>
+						) : null}
+
+						{detail.keywords.length > 0 ? (
+							<div className="mt-4 flex flex-wrap items-baseline gap-x-3 gap-y-2">
+								<span className="text-label font-semibold uppercase tracking-[0.14em] text-muted">
+									{keywordsLabel}
+								</span>
+								{detail.keywords.map((keyword) => (
+									<NavLink
+										key={keyword}
+										href={writingKeywordHref(keyword)}
+										className="text-small text-foreground/80 underline decoration-border underline-offset-4 transition-colors fine-hover:text-foreground"
+									>
+										{keyword}
 									</NavLink>
 								))}
 							</div>

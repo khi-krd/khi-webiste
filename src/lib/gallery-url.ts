@@ -3,6 +3,7 @@ import type { GalleryCollectionType } from "@/lib/mock/gallery";
 export type GalleryUrlParams = {
 	q?: string | null;
 	type?: GalleryCollectionType | string | null;
+	topic?: number | string | null;
 	page?: number;
 };
 
@@ -14,9 +15,20 @@ export function isGalleryCollectionType(
 	return Boolean(value && GALLERY_TYPES.has(value));
 }
 
+export function parseGalleryTopicId(
+	value?: string | number | null,
+): number | null {
+	if (value == null || value === "") {
+		return null;
+	}
+	const parsed = typeof value === "number" ? value : Number.parseInt(value, 10);
+	return Number.isInteger(parsed) && parsed > 0 ? parsed : null;
+}
+
 export function buildGalleryHref({
 	q,
 	type,
+	topic,
 	page,
 }: GalleryUrlParams = {}): "/gallery" | `/gallery?${string}` {
 	const params = new URLSearchParams();
@@ -26,6 +38,10 @@ export function buildGalleryHref({
 	}
 	if (type && isGalleryCollectionType(type)) {
 		params.set("type", type);
+	}
+	const topicId = parseGalleryTopicId(topic);
+	if (topicId != null) {
+		params.set("topic", String(topicId));
 	}
 	if (page && page > 1) {
 		params.set("page", String(page));

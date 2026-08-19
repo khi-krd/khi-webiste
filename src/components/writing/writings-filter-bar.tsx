@@ -9,6 +9,7 @@ import { useSearchParams } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { useCallback, useEffect, useRef, useState, useTransition } from "react";
 import { Badge } from "@/components/ui/badge";
+import { Select } from "@/components/ui/select";
 import { useRouter } from "@/i18n/navigation";
 import { useScrollToSection } from "@/lib/use-scroll-to-section";
 import { cn } from "@/lib/utils";
@@ -23,8 +24,12 @@ type WritingsFilterBarProps = {
 	categorySlug?: WritingCategorySlug | null;
 	activeGenre?: BookGenre | null;
 	activeQuery?: string | null;
+	activeWriter?: string | null;
+	activeTag?: string | null;
+	activeKeyword?: string | null;
 	activeSort?: WritingsSort;
 	genreLabels: Record<BookGenre, string>;
+	writers?: string[];
 	itemCount: number;
 	scrollTargetId?: string;
 	className?: string;
@@ -60,8 +65,12 @@ export function WritingsFilterBar({
 	categorySlug,
 	activeGenre,
 	activeQuery,
+	activeWriter,
+	activeTag,
+	activeKeyword,
 	activeSort = "newest",
 	genreLabels,
+	writers = [],
 	itemCount,
 	scrollTargetId = "writings-grid",
 	className,
@@ -80,20 +89,34 @@ export function WritingsFilterBar({
 	const hasActiveGenre = Boolean(activeGenre);
 	const hasActiveQuery = Boolean(activeQuery?.trim());
 	const hasActiveSort = activeSort !== "newest";
-	const hasActiveFilters = hasActiveGenre || hasActiveQuery || hasActiveSort;
+	const hasActiveFilters =
+		hasActiveGenre ||
+		hasActiveQuery ||
+		hasActiveSort ||
+		Boolean(activeWriter) ||
+		Boolean(activeTag) ||
+		Boolean(activeKeyword);
 
 	useEffect(() => {
 		setQuery(activeQuery ?? "");
 	}, [activeQuery]);
 
 	const pushFilters = useCallback(
-		(opts: { genre?: BookGenre | null; q?: string; sort?: WritingsSort }) => {
+		(opts: {
+			genre?: BookGenre | null;
+			q?: string;
+			writer?: string | null;
+			sort?: WritingsSort;
+		}) => {
 			startTransition(() => {
 				router.replace(
 					buildWritingsHref({
 						category: categorySlug,
-						genre: opts.genre ?? activeGenre,
+						genre: "genre" in opts ? opts.genre : activeGenre,
 						q: opts.q ?? query,
+						writer: "writer" in opts ? opts.writer : activeWriter,
+						tag: activeTag,
+						keyword: activeKeyword,
 						sort: opts.sort ?? activeSort,
 						page: 1,
 					}),
@@ -111,6 +134,9 @@ export function WritingsFilterBar({
 			searchParams,
 			categorySlug,
 			activeGenre,
+			activeWriter,
+			activeTag,
+			activeKeyword,
 			query,
 			activeSort,
 			scrollTargetId,
@@ -124,6 +150,10 @@ export function WritingsFilterBar({
 
 	const handleSort = (sort: WritingsSort) => {
 		pushFilters({ sort });
+	};
+
+	const handleWriter = (writer: string) => {
+		pushFilters({ writer: writer || null });
 	};
 
 	const handleSearchSubmit = (event: React.FormEvent) => {
@@ -297,6 +327,31 @@ export function WritingsFilterBar({
 							</div>
 						</div>
 
+						{writers.length > 0 ? (
+							<div className="mt-6 border-t border-border pt-4">
+								<label
+									htmlFor="writings-writer-select"
+									className="font-heading text-label font-semibold uppercase tracking-[0.14em] text-muted"
+								>
+									{t("filter.writerLabel")}
+								</label>
+								<div className="mt-4 max-w-xs">
+									<Select
+										id="writings-writer-select"
+										value={activeWriter ?? ""}
+										onChange={(event) => handleWriter(event.target.value)}
+									>
+										<option value="">{t("filter.writerAll")}</option>
+										{writers.map((writer) => (
+											<option key={writer} value={writer}>
+												{writer}
+											</option>
+										))}
+									</Select>
+								</div>
+							</div>
+						) : null}
+
 						{hasActiveFilters ? (
 							<div className="mt-4 flex flex-wrap items-center gap-2 border-t border-border pt-4">
 								<span className="text-label text-muted">
@@ -310,6 +365,21 @@ export function WritingsFilterBar({
 								{hasActiveQuery && activeQuery ? (
 									<Badge variant="outline" size="sm">
 										&ldquo;{activeQuery}&rdquo;
+									</Badge>
+								) : null}
+								{activeWriter ? (
+									<Badge variant="outline" size="sm">
+										{activeWriter}
+									</Badge>
+								) : null}
+								{activeTag ? (
+									<Badge variant="outline" size="sm">
+										{t("filter.tagLabel")}: #{activeTag}
+									</Badge>
+								) : null}
+								{activeKeyword ? (
+									<Badge variant="outline" size="sm">
+										{t("filter.keywordLabel")}: {activeKeyword}
 									</Badge>
 								) : null}
 								{hasActiveSort ? (

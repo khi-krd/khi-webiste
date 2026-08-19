@@ -7,26 +7,58 @@ import {
 } from "@heroicons/react/24/outline";
 import { useSearchParams } from "next/navigation";
 import { useTranslations } from "next-intl";
-import { useCallback, useEffect, useRef, useState, useTransition } from "react";
+import {
+	useCallback,
+	useEffect,
+	useMemo,
+	useRef,
+	useState,
+	useTransition,
+} from "react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { useRouter } from "@/i18n/navigation";
 import type { NewsCategoryOption } from "@/lib/mock/news";
 import { isKnownCategory } from "@/lib/mock/news";
-import { buildNewsHref } from "@/lib/news-url";
+import { buildNewsHref, type NewsUrlParams } from "@/lib/news-url";
 import { useScrollToSection } from "@/lib/use-scroll-to-section";
 import { cn } from "@/lib/utils";
 
 type NewsFilterBarProps = {
 	categories: NewsCategoryOption[];
+	subCategories?: NewsCategoryOption[];
+	tags?: string[];
+	keywords?: string[];
 	activeCategory?: string | null;
+	activeSubCategory?: string | null;
+	activeTag?: string | null;
+	activeKeyword?: string | null;
 	activeQuery?: string | null;
 	className?: string;
 };
 
+/** Keep an active term clickable even when it falls outside the derived chip cap. */
+function withActiveTerm(terms: string[], active?: string | null): string[] {
+	const value = active?.trim();
+	if (!value) {
+		return terms;
+	}
+
+	const needle = value.toLocaleLowerCase();
+	return terms.some((term) => term.toLocaleLowerCase() === needle)
+		? terms
+		: [value, ...terms];
+}
+
 export function NewsFilterBar({
 	categories,
+	subCategories,
+	tags,
+	keywords,
 	activeCategory,
+	activeSubCategory,
+	activeTag,
+	activeKeyword,
 	activeQuery,
 	className,
 }: NewsFilterBarProps) {
@@ -38,26 +70,62 @@ export function NewsFilterBar({
 	const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 	const scrollToSection = useScrollToSection();
 
+	const subCategoryOptions = subCategories ?? [];
+	const tagOptions = useMemo(
+		() => withActiveTerm(tags ?? [], activeTag),
+		[tags, activeTag],
+	);
+	const keywordOptions = useMemo(
+		() => withActiveTerm(keywords ?? [], activeKeyword),
+		[keywords, activeKeyword],
+	);
+
 	const hasActiveCategory =
 		Boolean(activeCategory) &&
 		isKnownCategory(activeCategory ?? "", categories);
 	const activeCategoryLabel = hasActiveCategory
 		? categories.find((entry) => entry.key === activeCategory)?.label
 		: null;
+	const hasActiveSubCategory =
+		Boolean(activeSubCategory) &&
+		isKnownCategory(activeSubCategory ?? "", subCategoryOptions);
+	const activeSubCategoryLabel = hasActiveSubCategory
+		? subCategoryOptions.find((entry) => entry.key === activeSubCategory)?.label
+		: null;
+	const hasActiveTag = Boolean(activeTag?.trim());
+	const hasActiveKeyword = Boolean(activeKeyword?.trim());
 	const hasActiveQuery = Boolean(activeQuery?.trim());
-	const hasActiveFilters = hasActiveCategory || hasActiveQuery;
+	const hasActiveFilters =
+		hasActiveCategory ||
+		hasActiveSubCategory ||
+		hasActiveTag ||
+		hasActiveKeyword ||
+		hasActiveQuery;
 
 	useEffect(() => {
 		setQuery(activeQuery ?? "");
 	}, [activeQuery]);
 
+	const activeFilters = useMemo<NewsUrlParams>(
+		() => ({
+			category: activeCategory ?? null,
+			subcategory: activeSubCategory ?? null,
+			tag: activeTag ?? null,
+			keyword: activeKeyword ?? null,
+			q: activeQuery ?? null,
+		}),
+		[activeCategory, activeSubCategory, activeTag, activeKeyword, activeQuery],
+	);
+
+	// Every dimension is carried forward, so changing one filter never silently
+	// drops the others from the URL.
 	const pushFilters = useCallback(
-		(category: string | null, q: string) => {
+		(next: NewsUrlParams) => {
 			startTransition(() => {
 				router.replace(
 					buildNewsHref({
-						category,
-						q,
+						...activeFilters,
+						...next,
 						page: 1,
 					}),
 					{ scroll: false },
@@ -69,31 +137,43 @@ export function NewsFilterBar({
 				}
 			});
 		},
-		[router, searchParams, scrollToSection],
+		[activeFilters, router, searchParams, scrollToSection],
 	);
 
 	const handleCategory = (category: string | null) => {
-		pushFilters(category, query);
+		pushFilters({ category, q: query });
+	};
+
+	const handleSubCategory = (subcategory: string | null) => {
+		pushFilters({ subcategory, q: query });
+	};
+
+	const handleTag = (tag: string | null) => {
+		pushFilters({ tag, q: query });
+	};
+
+	const handleKeyword = (keyword: string | null) => {
+		pushFilters({ keyword, q: query });
 	};
 
 	const handleSearchSubmit = (event: React.FormEvent) => {
 		event.preventDefault();
 		if (debounceRef.current) clearTimeout(debounceRef.current);
-		pushFilters(activeCategory ?? null, query);
+		pushFilters({ q: query });
 	};
 
 	const handleQueryChange = (value: string) => {
 		setQuery(value);
 		if (debounceRef.current) clearTimeout(debounceRef.current);
 		debounceRef.current = setTimeout(() => {
-			pushFilters(activeCategory ?? null, value);
+			pushFilters({ q: value });
 		}, 350);
 	};
 
 	const handleClearSearch = () => {
 		if (debounceRef.current) clearTimeout(debounceRef.current);
 		setQuery("");
-		pushFilters(activeCategory ?? null, "");
+		pushFilters({ q: "" });
 	};
 
 	const handleClearAll = () => {
@@ -213,12 +293,80 @@ export function NewsFilterBar({
 					))}
 				</div>
 
+				{subCategoryOptions.length > 0 ? (
+					<FilterRow label={t("filter.subcategories")}>
+						{subCategoryOptions.map((subCategory) => {
+							const active = activeSubCategory === subCategory.key;
+							return (
+								<CategoryPill
+									key={subCategory.key}
+									active={active}
+									onClick={() =>
+										handleSubCategory(active ? null : subCategory.key)
+									}
+								>
+									{subCategory.label}
+								</CategoryPill>
+							);
+						})}
+					</FilterRow>
+				) : null}
+
+				{tagOptions.length > 0 ? (
+					<FilterRow label={t("filter.tags")}>
+						{tagOptions.map((tag) => {
+							const active = activeTag === tag;
+							return (
+								<CategoryPill
+									key={tag}
+									active={active}
+									onClick={() => handleTag(active ? null : tag)}
+								>
+									#{tag}
+								</CategoryPill>
+							);
+						})}
+					</FilterRow>
+				) : null}
+
+				{keywordOptions.length > 0 ? (
+					<FilterRow label={t("filter.keywords")}>
+						{keywordOptions.map((keyword) => {
+							const active = activeKeyword === keyword;
+							return (
+								<CategoryPill
+									key={keyword}
+									active={active}
+									onClick={() => handleKeyword(active ? null : keyword)}
+								>
+									{keyword}
+								</CategoryPill>
+							);
+						})}
+					</FilterRow>
+				) : null}
+
 				{hasActiveFilters ? (
 					<div className="mt-4 flex flex-wrap items-center gap-2 border-t border-border pt-4">
 						<span className="text-label text-muted">{t("filter.active")}</span>
 						{activeCategoryLabel ? (
 							<Badge variant="outline" size="sm">
 								{activeCategoryLabel}
+							</Badge>
+						) : null}
+						{activeSubCategoryLabel ? (
+							<Badge variant="outline" size="sm">
+								{activeSubCategoryLabel}
+							</Badge>
+						) : null}
+						{hasActiveTag && activeTag ? (
+							<Badge variant="outline" size="sm">
+								#{activeTag}
+							</Badge>
+						) : null}
+						{hasActiveKeyword && activeKeyword ? (
+							<Badge variant="outline" size="sm">
+								{activeKeyword}
 							</Badge>
 						) : null}
 						{hasActiveQuery && activeQuery ? (
@@ -228,6 +376,28 @@ export function NewsFilterBar({
 						) : null}
 					</div>
 				) : null}
+			</div>
+		</div>
+	);
+}
+
+type FilterRowProps = {
+	label: string;
+	children: React.ReactNode;
+};
+
+function FilterRow({ label, children }: FilterRowProps) {
+	return (
+		<div className="mt-4 border-t border-border pt-4">
+			<p className="font-heading text-label font-semibold uppercase tracking-[0.14em] text-muted">
+				{label}
+			</p>
+			<div
+				className="mt-3 flex flex-wrap gap-2"
+				role="group"
+				aria-label={label}
+			>
+				{children}
 			</div>
 		</div>
 	);

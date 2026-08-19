@@ -4,6 +4,7 @@ export type AudioUrlParams = {
 	type?: string | null;
 	state?: TrackState | string | null;
 	topic?: number | string | null;
+	tag?: string | null;
 	q?: string | null;
 	page?: number;
 };
@@ -18,6 +19,10 @@ export function parseAudioState(value?: string | null): TrackState | null {
 	return null;
 }
 
+export function parseAudioTag(value?: string | null): string | null {
+	return value?.trim() || null;
+}
+
 export function parseAudioTopicId(value?: string | null): number | null {
 	if (!value) {
 		return null;
@@ -30,6 +35,7 @@ export function buildAudioHref({
 	type,
 	state,
 	topic,
+	tag,
 	q,
 	page,
 }: AudioUrlParams): string {
@@ -45,6 +51,9 @@ export function buildAudioHref({
 	}
 	if (topic != null && topic !== "") {
 		params.set("topic", String(topic));
+	}
+	if (tag?.trim()) {
+		params.set("tag", tag.trim());
 	}
 	if (q?.trim()) {
 		params.set("q", q.trim());

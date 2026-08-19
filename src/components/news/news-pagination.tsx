@@ -11,6 +11,9 @@ type NewsPaginationProps = {
 	currentPage: number;
 	totalPages: number;
 	activeCategory?: string | null;
+	activeSubCategory?: string | null;
+	activeTag?: string | null;
+	activeKeyword?: string | null;
 	activeQuery?: string | null;
 	label: string;
 	previousLabel: string;
@@ -22,6 +25,9 @@ export function NewsPagination({
 	currentPage,
 	totalPages,
 	activeCategory,
+	activeSubCategory,
+	activeTag,
+	activeKeyword,
 	activeQuery,
 	label,
 	previousLabel,
@@ -32,16 +38,20 @@ export function NewsPagination({
 	const [isPending, startTransition] = useTransition();
 	const scrollToSection = useScrollToSection();
 
+	// Rebuilt from scratch, so every active dimension has to be forwarded here.
+	const hrefForPage = (page: number) =>
+		buildNewsHref({
+			category: activeCategory,
+			subcategory: activeSubCategory,
+			tag: activeTag,
+			keyword: activeKeyword,
+			q: activeQuery,
+			page,
+		});
+
 	const handlePageChange = (page: number) => {
 		startTransition(() => {
-			router.replace(
-				buildNewsHref({
-					category: activeCategory,
-					q: activeQuery,
-					page,
-				}),
-				{ scroll: false },
-			);
+			router.replace(hrefForPage(page), { scroll: false });
 
 			scrollToSection("news-grid");
 		});
@@ -51,13 +61,7 @@ export function NewsPagination({
 		<Pagination
 			currentPage={currentPage}
 			totalPages={totalPages}
-			createHref={(page) =>
-				buildNewsHref({
-					category: activeCategory,
-					q: activeQuery,
-					page,
-				})
-			}
+			createHref={hrefForPage}
 			onPageChange={handlePageChange}
 			label={label}
 			previousLabel={previousLabel}

@@ -1,25 +1,24 @@
 import type { Metadata } from "next";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { ServicesBottomCards } from "@/components/services/services-bottom-cards";
+import { ServicesClearFilters } from "@/components/services/services-clear-filters";
 import { ServicesFeaturedHero } from "@/components/services/services-featured-hero";
+import { ServicesFilterBar } from "@/components/services/services-filter-bar";
 import { ServicesHero } from "@/components/services/services-hero";
 import { ServicesShell } from "@/components/services/services-shell";
+import { EmptyState } from "@/components/ui/empty-state";
 import { VisuallyHidden } from "@/components/ui/visually-hidden";
-import {
-	getMergedServiceSections,
-	getServiceHighlights,
-	getServicePartnerCards,
-	getServiceRecords,
-	getServicesHeroMediaFromApi,
-} from "@/lib/api/services";
 import {
 	findServicesPageHeroRecord,
 	resolveServicesHeroCopy,
 	resolveServicesHeroImage,
 	serviceRecordToPageSettings,
 } from "@/lib/api/services-page";
+import { homeInsetClass } from "@/lib/layout";
 import { localeAlternates } from "@/lib/seo/metadata";
 import { buildServiceHeroSlides } from "@/lib/services/hero-slides";
+import { loadServicesPageData } from "@/lib/services/page-data";
+import { cn } from "@/lib/utils";
 
 export async function generateMetadata({
 	params,
@@ -36,29 +35,31 @@ export async function generateMetadata({
 	};
 }
 
+type ServicesPageProps = {
+	params: Promise<{ locale: string }>;
+	searchParams: Promise<{ type?: string; q?: string }>;
+};
+
 export default async function ServicesPage({
 	params,
-}: {
-	params: Promise<{ locale: string }>;
-}) {
+	searchParams,
+}: ServicesPageProps) {
 	const { locale } = await params;
+	const { type, q } = await searchParams;
 	setRequestLocale(locale);
 
 	const t = await getTranslations("Services");
 	const tHero = await getTranslations("Hero");
-	const [
+	const {
 		mergedSections,
 		heroMediaFallback,
 		partnerCards,
 		serviceRecords,
 		highlights,
-	] = await Promise.all([
-		getMergedServiceSections(locale),
-		getServicesHeroMediaFromApi(locale),
-		getServicePartnerCards(locale),
-		getServiceRecords(),
-		getServiceHighlights(locale),
-	]);
+		types,
+		activeType,
+		activeQuery,
+	} = await loadServicesPageData(locale, { type, q });
 
 	const pageSettings = (() => {
 		const hero = findServicesPageHeroRecord(serviceRecords);
@@ -145,11 +146,37 @@ export default async function ServicesPage({
 				/>
 			)}
 
-			<ServicesShell
-				sections={sections}
-				navItems={navItems}
-				navLabel={t("nav.label")}
-			/>
+			{/* Nothing to filter and nothing filtered — no dead chrome. The search
+			    box rides on the records, not on `types`, so a failing
+			    `/services/types` narrows the bar instead of deleting it. */}
+			{serviceRecords.length > 0 || activeType || activeQuery ? (
+				<div className={cn("bg-background py-8 sm:py-10", homeInsetClass)}>
+					<ServicesFilterBar
+						types={types}
+						activeType={activeType}
+						activeQuery={activeQuery}
+					/>
+				</div>
+			) : null}
+
+			{sections.length === 0 && (activeType || activeQuery) ? (
+				// The hero CTA scrolls to `#services`, which normally lives on the
+				// shell — the empty state has to carry it or the target vanishes.
+				<div id="services" className="bg-background">
+					<EmptyState
+						title={t("results.emptyTitle")}
+						description={t("results.emptyDescription")}
+					>
+						<ServicesClearFilters />
+					</EmptyState>
+				</div>
+			) : (
+				<ServicesShell
+					sections={sections}
+					navItems={navItems}
+					navLabel={t("nav.label")}
+				/>
+			)}
 
 			{bottomCardItems.length > 0 ? (
 				<ServicesBottomCards items={bottomCardItems} />

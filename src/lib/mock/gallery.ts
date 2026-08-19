@@ -384,6 +384,8 @@ export type GalleryPost = {
 	description: string;
 	location?: string;
 	collectedBy?: string;
+	/** Numeric IMAGE topic id — the key the `topicId` filter matches on. */
+	topicId?: number;
 	/** Localized topic name (topicNameCkb / topicNameKmr). */
 	topicName?: string;
 	/** ISO-8601 date (YYYY-MM-DD). */
@@ -798,12 +800,18 @@ export function filterGalleryPosts(
 	items: GalleryPost[],
 	query?: string | null,
 	type?: string | null,
+	topicId?: number | null,
 ): GalleryPost[] {
 	const trimmedQuery = query?.trim().toLowerCase();
 	const trimmedType = type?.trim().toUpperCase();
 
 	return items.filter((item) => {
 		if (trimmedType && item.collectionType !== trimmedType) {
+			return false;
+		}
+
+		// A record the CMS left without a topic id can never match a picked topic.
+		if (topicId != null && item.topicId !== topicId) {
 			return false;
 		}
 

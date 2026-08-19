@@ -31,8 +31,12 @@ type WritingsShellProps = {
 	totalElements: number;
 	activeGenre?: BookGenre | null;
 	activeQuery?: string | null;
+	activeWriter?: string | null;
+	activeTag?: string | null;
+	activeKeyword?: string | null;
 	activeSort?: WritingsSort;
 	genreLabels: Record<BookGenre, string>;
+	writers?: string[];
 	noResultsMessage: string;
 	paginationLabel: string;
 	previousLabel: string;
@@ -52,8 +56,12 @@ export function WritingsShell({
 	totalElements,
 	activeGenre,
 	activeQuery,
+	activeWriter,
+	activeTag,
+	activeKeyword,
 	activeSort,
 	genreLabels,
+	writers = [],
 	noResultsMessage,
 	paginationLabel,
 	previousLabel,
@@ -92,8 +100,12 @@ export function WritingsShell({
 					categorySlug={categorySlug}
 					activeGenre={activeGenre}
 					activeQuery={activeQuery}
+					activeWriter={activeWriter}
+					activeTag={activeTag}
+					activeKeyword={activeKeyword}
 					activeSort={activeSort}
 					genreLabels={genreLabels}
+					writers={writers}
 					itemCount={totalElements}
 					scrollTargetId={id}
 					className="mt-8 sm:mt-10"
@@ -121,6 +133,9 @@ export function WritingsShell({
 							categorySlug={categorySlug}
 							activeGenre={activeGenre}
 							activeQuery={activeQuery}
+							activeWriter={activeWriter}
+							activeTag={activeTag}
+							activeKeyword={activeKeyword}
 							activeSort={activeSort}
 							label={paginationLabel}
 							previousLabel={previousLabel}

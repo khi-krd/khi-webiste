@@ -14,6 +14,7 @@ type AudioPaginationProps = {
 	activeType?: string | null;
 	activeState?: TrackState | null;
 	activeTopicId?: number | null;
+	activeTag?: string | null;
 	activeQuery?: string | null;
 	label: string;
 	previousLabel: string;
@@ -28,6 +29,7 @@ export function AudioPagination({
 	activeType,
 	activeState,
 	activeTopicId,
+	activeTag,
 	activeQuery,
 	label,
 	previousLabel,
@@ -44,6 +46,7 @@ export function AudioPagination({
 			type: activeType,
 			state: activeState,
 			topic: activeTopicId,
+			tag: activeTag,
 			q: activeQuery,
 			page,
 		});

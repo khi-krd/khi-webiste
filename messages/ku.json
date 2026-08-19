@@ -164,13 +164,18 @@
 			"all": "Hemû",
 			"clear": "Filtreyan paqij bike",
 			"label": "Li gorî mijarê filtir bike",
-			"active": "Tê xuyang kirin"
+			"active": "Tê xuyang kirin",
+			"keywords": "Peyvên sereke",
+			"subcategories": "Bin-mijar",
+			"tags": "Etîket"
 		},
 		"sections": {
 			"spotlight": "Nûçeyên taybet",
 			"allNews": "Hemû nûçe",
 			"filtered": "Nûçeyên {category}",
-			"browseDescription": "Arşîva tevahî bigere — li gorî mijarê filtir bike an bi peyvekê bigere."
+			"browseDescription": "Arşîva tevahî bigere — li gorî mijarê filtir bike an bi peyvekê bigere.",
+			"filteredByKeyword": "Nûçeyên bi peyva sereke ya «{keyword}»",
+			"filteredByTag": "Nûçeyên bi etîketa «{tag}»"
 		},
 		"sidebar": {
 			"featured": "Taybet",
@@ -293,7 +298,11 @@
 			"all": "Hemû",
 			"clear": "Fîltreyan paqij bike",
 			"label": "Li gorî cureyê filtir bike",
-			"active": "Tê xuyang kirin"
+			"active": "Tê xuyang kirin",
+			"heading": "Fîltre",
+			"topicAll": "Hemû mijar",
+			"topicLabel": "Mijar",
+			"typeLabel": "Cureyê berhevokê"
 		},
 		"posts": {
 			"eyebrow": "Pêrista arşîvê",
@@ -376,7 +385,8 @@
 			"topicAll": "Hemû mijar",
 			"searchPlaceholder": "Li gorî sernav, hunermend an etîketê bigere…",
 			"searchLabel": "Di tomaran de bigere",
-			"searchClear": "Lêgerînê paqij bike"
+			"searchClear": "Lêgerînê paqij bike",
+			"tagRemove": "Etîketê rake"
 		},
 		"state": {
 			"all": "Hemû format",
@@ -543,7 +553,11 @@
 			"genreLabel": "Janr",
 			"searchPlaceholder": "Li gorî sernav, nivîskar an rêzê bigere…",
 			"searchLabel": "Di nivîsan de bigere",
-			"searchClear": "Lêgerînê paqij bike"
+			"searchClear": "Lêgerînê paqij bike",
+			"keywordLabel": "Peyva sereke",
+			"tagLabel": "Etîket",
+			"writerAll": "Hemû nivîskar",
+			"writerLabel": "Nivîskar"
 		},
 		"sort": {
 			"label": "Rêz bike li gorî",
@@ -1032,6 +1046,22 @@
 				"description": "Enstîtuya Kevneşopiya Kurdî — parastin, lêkolîn û parvekirina kevneşopiya çandî ya kurdî.",
 				"cta": "Zêdetir bizane"
 			}
+		},
+		"filter": {
+			"active": "Parzûnên çalak",
+			"clear": "Parzûnan paqij bike",
+			"label": "Cureyê xizmetê",
+			"typeAll": "Hemû cure"
+		},
+		"results": {
+			"emptyDescription": "Bi van parzûnan re tu xizmet li hev nayê. Cureyekî din hilbijêre an peyvên lêgerînê biguherîne.",
+			"emptyTitle": "Tu xizmet nehat dîtin"
+		},
+		"search": {
+			"clear": "Nivîsa lêgerînê paqij bike",
+			"label": "Di nav xizmetan de bigere",
+			"placeholder": "Di nav xizmetan de bigere…",
+			"submit": "Bigere"
 		}
 	},
 	"Contact": {

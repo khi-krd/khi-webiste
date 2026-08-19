@@ -28,6 +28,7 @@ type AudioShellProps = {
 	activeType?: string | null;
 	activeState?: TrackState | null;
 	activeTopicId?: number | null;
+	activeTag?: string | null;
 	activeQuery?: string | null;
 	noResultsMessage: string;
 	className?: string;
@@ -44,6 +45,7 @@ export async function AudioShell({
 	activeType,
 	activeState,
 	activeTopicId,
+	activeTag,
 	activeQuery,
 	noResultsMessage,
 	className,
@@ -91,6 +93,7 @@ export async function AudioShell({
 					activeType={activeType}
 					activeState={activeState}
 					activeTopicId={activeTopicId}
+					activeTag={activeTag}
 					activeQuery={activeQuery}
 					itemCount={totalElements}
 					scrollTargetId={id}
@@ -118,6 +121,7 @@ export async function AudioShell({
 							activeType={activeType}
 							activeState={activeState}
 							activeTopicId={activeTopicId}
+							activeTag={activeTag}
 							activeQuery={activeQuery}
 							label={t("pagination.label")}
 							previousLabel={t("pagination.previous")}

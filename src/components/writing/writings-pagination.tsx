@@ -16,6 +16,9 @@ type WritingsPaginationProps = {
 	categorySlug?: WritingCategorySlug | null;
 	activeGenre?: BookGenre | null;
 	activeQuery?: string | null;
+	activeWriter?: string | null;
+	activeTag?: string | null;
+	activeKeyword?: string | null;
 	activeSort?: WritingsSort;
 	label: string;
 	previousLabel: string;
@@ -30,6 +33,9 @@ export function WritingsPagination({
 	categorySlug,
 	activeGenre,
 	activeQuery,
+	activeWriter,
+	activeTag,
+	activeKeyword,
 	activeSort,
 	label,
 	previousLabel,
@@ -48,6 +54,9 @@ export function WritingsPagination({
 					category: categorySlug,
 					genre: activeGenre,
 					q: activeQuery,
+					writer: activeWriter,
+					tag: activeTag,
+					keyword: activeKeyword,
 					sort: activeSort,
 					page,
 				}),
@@ -67,6 +76,9 @@ export function WritingsPagination({
 					category: categorySlug,
 					genre: activeGenre,
 					q: activeQuery,
+					writer: activeWriter,
+					tag: activeTag,
+					keyword: activeKeyword,
 					sort: activeSort,
 					page,
 				})

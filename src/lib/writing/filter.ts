@@ -11,11 +11,19 @@ export type WritingsFilterOptions = {
 	categorySlug?: WritingCategorySlug | null;
 	genre?: BookGenre | null;
 	query?: string | null;
+	writer?: string | null;
+	tag?: string | null;
+	keyword?: string | null;
 };
+
+/** Case-insensitive exact match, the way the tag/keyword endpoints compare. */
+function hasTerm(terms: string[], value: string): boolean {
+	return terms.some((term) => term.toLowerCase() === value);
+}
 
 export function filterWritings(
 	items: ResolvedWritingCard[],
-	{ categorySlug, genre, query }: WritingsFilterOptions,
+	{ categorySlug, genre, query, writer, tag, keyword }: WritingsFilterOptions,
 ): ResolvedWritingCard[] {
 	let result = items;
 
@@ -28,6 +36,23 @@ export function filterWritings(
 
 	if (genre && isBookGenre(genre)) {
 		result = result.filter((item) => item.genres.includes(genre));
+	}
+
+	const trimmedWriter = writer?.trim().toLowerCase();
+	if (trimmedWriter) {
+		result = result.filter((item) =>
+			item.writer.toLowerCase().includes(trimmedWriter),
+		);
+	}
+
+	const trimmedTag = tag?.trim().toLowerCase();
+	if (trimmedTag) {
+		result = result.filter((item) => hasTerm(item.tags, trimmedTag));
+	}
+
+	const trimmedKeyword = keyword?.trim().toLowerCase();
+	if (trimmedKeyword) {
+		result = result.filter((item) => hasTerm(item.keywords, trimmedKeyword));
 	}
 
 	const trimmedQuery = query?.trim().toLowerCase();

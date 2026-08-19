@@ -236,6 +236,8 @@ function buildDemoCard(
 		hoverCoverUrl: DEMO_COVERS[(coverIndex + 1) % DEMO_COVERS.length] ?? null,
 		genres: DEMO_GENRES[globalIndex % DEMO_GENRES.length] ?? ["OTHER"],
 		freeTextGenre: demo.genre,
+		tags: [],
+		keywords: [],
 		topicName: null,
 		seriesName: DEMO_SERIES[globalIndex % DEMO_SERIES.length] ?? null,
 		publishedByInstitute: order % 2 === 0,

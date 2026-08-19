@@ -16,6 +16,7 @@ import {
 import {
 	filterGalleryPosts,
 	GALLERY_POSTS_PER_PAGE,
+	type GalleryCollectionType,
 	type GalleryHeroColumns,
 	type GalleryPost,
 	type GalleryPostDetail,
@@ -35,23 +36,117 @@ export {
 	paginateGalleryPosts,
 };
 
-async function fetchAllCollections() {
-	const page = await apiFetchPage(GALLERY_ENDPOINT, {
+export type GalleryListingOptions = {
+	/** Canonical enum only — an unknown value answers HTTP 500 upstream. */
+	type?: GalleryCollectionType | null;
+	topicId?: number | null;
+};
+
+export type GalleryTopicOption = {
+	id: number;
+	name: string;
+};
+
+function buildCollectionParams({
+	type,
+	topicId,
+}: GalleryListingOptions): Record<string, string | number | undefined> {
+	const searchParams: Record<string, string | number | undefined> = {
+		page: 0,
+		size: BULK_FETCH_SIZE,
+	};
+
+	// Priority chain, not a combination: given both, the backend answers `type`
+	// and silently drops `topicId`. Only the winner travels; the loser is narrowed
+	// in memory by filterGalleryPosts.
+	if (type != null) {
+		searchParams.type = type;
+	} else if (topicId != null) {
+		searchParams.topicId = topicId;
+	}
+
+	return searchParams;
+}
+
+async function fetchCollectionsPage(
+	searchParams: Record<string, string | number | undefined>,
+) {
+	return apiFetchPage(GALLERY_ENDPOINT, {
 		itemSchema: ImageCollectionSchema,
 		tags: [GALLERY_TAG],
 		revalidate: DEFAULT_REVALIDATE,
-		searchParams: { page: 0, size: BULK_FETCH_SIZE },
+		searchParams,
 		normalizeItem: normalizeImageCollectionRecord,
 	});
+}
+
+async function fetchAllCollections(options: GalleryListingOptions = {}) {
+	const searchParams = buildCollectionParams(options);
+	const isFiltered = searchParams.type != null || searchParams.topicId != null;
+	let page = await fetchCollectionsPage(searchParams);
+
+	// A rejected filter must not blank the grid — an empty 200 is a real "no
+	// matches" and stays empty, but a failed request falls back to the full set
+	// for the in-memory pass to narrow.
+	if (!page && isFiltered) {
+		page = await fetchCollectionsPage(buildCollectionParams({}));
+	}
 
 	return page?.content.length ? page.content : null;
 }
 
-export async function getGalleryPosts(locale: string): Promise<GalleryPost[]> {
-	const raw = getApiBaseUrl() ? await fetchAllCollections() : null;
+/**
+ * Second argument is optional on purpose: global-search taxonomy and the
+ * detail page's prev/next neighbours both need the unfiltered set.
+ */
+export async function getGalleryPosts(
+	locale: string,
+	options: GalleryListingOptions = {},
+): Promise<GalleryPost[]> {
+	const raw = getApiBaseUrl() ? await fetchAllCollections(options) : null;
 	const apiItems = raw ? resolveGalleryPosts(locale, raw) : [];
 
 	return apiItems;
+}
+
+function collectTopicOptions(
+	locale: string,
+	posts: GalleryPost[],
+): GalleryTopicOption[] {
+	const map = new Map<number, GalleryTopicOption>();
+
+	for (const post of posts) {
+		if (post.topicId == null || !post.topicName) {
+			continue;
+		}
+
+		if (!map.has(post.topicId)) {
+			map.set(post.topicId, { id: post.topicId, name: post.topicName });
+		}
+	}
+
+	return [...map.values()].sort((a, b) =>
+		a.name.localeCompare(b.name, locale === "ckb" ? "ckb" : "ku"),
+	);
+}
+
+/**
+ * Topic options for the gallery filter UI, derived from the collections
+ * themselves (image collections have no topics list endpoint). Always fetched
+ * unfiltered, otherwise picking a topic would collapse the select to that one
+ * option and strand the reader.
+ */
+export async function getGalleryTopics(
+	locale: string,
+): Promise<GalleryTopicOption[]> {
+	if (!getApiBaseUrl()) {
+		return [];
+	}
+
+	const raw = await fetchAllCollections();
+	const posts = raw ? resolveGalleryPosts(locale, raw) : [];
+
+	return collectTopicOptions(locale, posts);
 }
 
 export async function getGalleryHeroColumns(

@@ -1,9 +1,11 @@
 import "server-only";
+import { cache } from "react";
 import {
 	apiFetchPage,
 	apiFetchRaw,
 	BULK_FETCH_SIZE,
 	DEFAULT_REVALIDATE,
+	type ParsedApiPage,
 	sliceToCount,
 	unwrapApiPayload,
 } from "@/lib/api/client";
@@ -25,7 +27,7 @@ import {
 	resolveWritingCard,
 	resolveWritingDetail,
 } from "@/lib/writing/resolve";
-import type { BookGenre } from "@/types/writing";
+import type { BookGenre, Writing } from "@/types/writing";
 import {
 	type ResolvedSeriesBook,
 	type ResolvedWritingCard,
@@ -36,6 +38,9 @@ import {
 
 const WRITINGS_ENDPOINT = "/api/v1/writings";
 const WRITINGS_TAG = "writings";
+
+/** The search endpoints cap `size` at 100, unlike the plain list. */
+const WRITINGS_SEARCH_SIZE = 100;
 
 export const WRITINGS_PER_PAGE = 4;
 export const WRITINGS_CAROUSEL_SIZE = 12;
@@ -53,6 +58,9 @@ export type WritingsListingOptions = {
 	categorySlug?: WritingCategorySlug | null;
 	genre?: BookGenre | null;
 	query?: string | null;
+	writer?: string | null;
+	tag?: string | null;
+	keyword?: string | null;
 	page?: number;
 	sort?: WritingsSort;
 	size?: number;
@@ -106,12 +114,135 @@ async function fetchAllWritingsFromApi(
 	return items.length > 0 ? items : null;
 }
 
-/** Returns the full writings set for client-side filter/sort/paginate. */
-export async function getAllWritings(
+/**
+ * `language: "both"` keeps records whose match sits in the other language
+ * column — resolveWritingCard renders those through its own fallback.
+ */
+function fetchWritingsSearchPage(
+	path: string,
+	searchParams: Record<string, string>,
+): Promise<ParsedApiPage<Writing> | null> {
+	return apiFetchPage(path, {
+		itemSchema: WritingSchema,
+		tags: [WRITINGS_TAG],
+		revalidate: DEFAULT_REVALIDATE,
+		searchParams: {
+			...searchParams,
+			language: "both",
+			page: 0,
+			size: WRITINGS_SEARCH_SIZE,
+		},
+		normalizeItem: normalizeWritingRecord,
+	});
+}
+
+function fetchWritingsByWriter(
+	name: string,
+): Promise<ParsedApiPage<Writing> | null> {
+	return fetchWritingsSearchPage(`${WRITINGS_ENDPOINT}/search/writer`, {
+		name,
+	});
+}
+
+function fetchWritingsByTag(
+	tag: string,
+): Promise<ParsedApiPage<Writing> | null> {
+	return fetchWritingsSearchPage(`${WRITINGS_ENDPOINT}/search/tag`, { tag });
+}
+
+function fetchWritingsByKeyword(
+	keyword: string,
+): Promise<ParsedApiPage<Writing> | null> {
+	return fetchWritingsSearchPage(`${WRITINGS_ENDPOINT}/search/keyword`, {
+		keyword,
+	});
+}
+
+/**
+ * Returns the full writings set for client-side filter/sort/paginate. Memoized
+ * per request so the listing and its writer options share one round-trip.
+ */
+export const getAllWritings = cache(
+	async (locale: string): Promise<ResolvedWritingCard[]> => {
+		const apiItems = (await fetchAllWritingsFromApi(locale)) ?? [];
+		return apiItems;
+	},
+);
+
+/** Writer names offered by the listing filter, deduped across the catalogue. */
+export async function getWritingWriters(locale: string): Promise<string[]> {
+	const names = new Set<string>();
+	for (const item of await getAllWritings(locale)) {
+		const name = item.writer.trim();
+		if (name) {
+			names.add(name);
+		}
+	}
+	return [...names].sort((a, b) => a.localeCompare(b));
+}
+
+/**
+ * Server-side pass for the dimensions the backend owns. Every active dimension
+ * is fetched and the id sets intersected: a priority chain would silently drop
+ * the loser, because ResolvedWritingCard carries neither tags nor keywords to
+ * re-apply in memory. Returns null when a call fails so the caller can fall
+ * back — an empty page is an authoritative "nothing matched", not a failure.
+ */
+async function searchWritingRecords(
 	locale: string,
-): Promise<ResolvedWritingCard[]> {
-	const apiItems = (await fetchAllWritingsFromApi(locale)) ?? [];
-	return apiItems;
+	{ categorySlug, genre, query, writer, tag, keyword }: WritingsListingOptions,
+): Promise<ResolvedWritingCard[] | null> {
+	if (!getApiBaseUrl()) {
+		return null;
+	}
+
+	// A blank term is a 400 upstream, so a dimension only ships once it has text.
+	const searches: Promise<ParsedApiPage<Writing> | null>[] = [];
+	if (writer?.trim()) {
+		searches.push(fetchWritingsByWriter(writer.trim()));
+	}
+	if (tag?.trim()) {
+		searches.push(fetchWritingsByTag(tag.trim()));
+	}
+	if (keyword?.trim()) {
+		searches.push(fetchWritingsByKeyword(keyword.trim()));
+	}
+	if (searches.length === 0) {
+		return null;
+	}
+
+	let matched: Map<number, ResolvedWritingCard> | null = null;
+	for (const page of await Promise.all(searches)) {
+		if (!page) {
+			return null;
+		}
+
+		const cards = new Map<number, ResolvedWritingCard>();
+		for (const writing of page.content) {
+			const card = resolveWritingCard(locale, writing);
+			if (card) {
+				cards.set(card.id, card);
+			}
+		}
+
+		if (matched == null) {
+			matched = cards;
+			continue;
+		}
+
+		// Intersect in place — each extra dimension narrows the same set.
+		for (const id of [...matched.keys()]) {
+			if (!cards.has(id)) {
+				matched.delete(id);
+			}
+		}
+	}
+
+	return filterWritings(matched ? [...matched.values()] : [], {
+		categorySlug,
+		genre,
+		query,
+	});
 }
 
 function emptyWritingsPage(currentPage: number): WritingsListResult {
@@ -130,13 +261,38 @@ export async function getWritingsListing(
 		categorySlug,
 		genre,
 		query,
+		writer,
+		tag,
+		keyword,
 		page = 1,
 		sort = "newest",
 		size = WRITINGS_GRID_PAGE_SIZE,
 	}: WritingsListingOptions = {},
 ): Promise<WritingsListResult> {
-	const allItems = await getAllWritings(locale);
-	const filtered = filterWritings(allItems, { categorySlug, genre, query });
+	const searched =
+		writer?.trim() || tag?.trim() || keyword?.trim()
+			? await searchWritingRecords(locale, {
+					categorySlug,
+					genre,
+					query,
+					writer,
+					tag,
+					keyword,
+				})
+			: null;
+
+	// Cards carry both dialects' tags/keywords, so an upstream failure still
+	// narrows by every active dimension rather than dumping the whole catalogue.
+	const filtered =
+		searched ??
+		filterWritings(await getAllWritings(locale), {
+			categorySlug,
+			genre,
+			query,
+			writer,
+			tag,
+			keyword,
+		});
 	const sorted = sortWritings(filtered, sort);
 	return paginateWritings(sorted, page, size);
 }

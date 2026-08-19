@@ -63,6 +63,17 @@ export const ServicesPageSchema = z.object({
 	empty: z.boolean().optional(),
 });
 
+// `GET /api/v1/services/types` ships a bare string list today, but the same
+// route on the admin side hands back rows. Tolerating both keeps the type
+// filter alive instead of silently dropping it if the shape ever changes.
+export const ServiceTypeOptionSchema = z.union([
+	z.string(),
+	z.object({ name: z.string() }),
+	z.object({ serviceType: z.string() }),
+]);
+
+export const ServiceTypesSchema = z.array(ServiceTypeOptionSchema);
+
 export type ServiceLayoutType = z.infer<typeof ServiceLayoutTypeSchema>;
 export type ServiceGalleryMediaType = z.infer<
 	typeof ServiceGalleryMediaTypeSchema
@@ -71,3 +82,4 @@ export type ServiceGalleryMedia = z.infer<typeof ServiceGalleryMediaSchema>;
 export type Service = z.infer<typeof ServiceSchema>;
 export type ServiceContent = z.infer<typeof ServiceContentSchema>;
 export type ServicesPage = z.infer<typeof ServicesPageSchema>;
+export type ServiceTypeOption = z.infer<typeof ServiceTypeOptionSchema>;

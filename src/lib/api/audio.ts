@@ -32,6 +32,7 @@ import {
 	SoundReklamVideoSchema,
 	SoundTopicSchema,
 	SoundTrackSchema,
+	TrackStateSchema,
 } from "@/types/audio";
 
 const SOUND_TRACKS_ENDPOINT = "/api/v1/sound-tracks";
@@ -55,10 +56,20 @@ export type AudioListingOptions = {
 	soundType?: string | null;
 	state?: TrackState | null;
 	topicId?: number | null;
+	tag?: string | null;
 	query?: string | null;
 	page?: number;
 	size?: number;
 };
+
+/** Which filter dimension the upstream call already resolved for us. */
+type ServedAudioDimension =
+	| "query"
+	| "tag"
+	| "soundType"
+	| "topicId"
+	| "state"
+	| null;
 
 async function fetchTracksPage(
 	searchParams: Record<string, string | number | undefined>,
@@ -95,6 +106,77 @@ async function fetchTracksByKeyword(
 		tags: [SOUND_TRACKS_TAG],
 		revalidate: DEFAULT_REVALIDATE,
 		searchParams: { keyword, page: 0, size: BULK_FETCH_SIZE },
+		normalizeItem: normalizeSoundTrackRecord,
+	});
+	return page?.content.length ? page.content : null;
+}
+
+/** Widest text net — also spans description, album name and topic names. */
+async function fetchTracksBySearch(q: string): Promise<SoundTrack[] | null> {
+	const term = q.trim();
+	// A blank term answers 400, so it never leaves the client.
+	if (!term) {
+		return null;
+	}
+
+	const page = await apiFetchPage(`${SOUND_TRACKS_ENDPOINT}/search`, {
+		itemSchema: SoundTrackSchema,
+		tags: [SOUND_TRACKS_TAG],
+		revalidate: DEFAULT_REVALIDATE,
+		searchParams: { q: term, page: 0, size: BULK_FETCH_SIZE },
+		normalizeItem: normalizeSoundTrackRecord,
+	});
+	return page?.content.length ? page.content : null;
+}
+
+async function fetchTracksByTag(tag: string): Promise<SoundTrack[] | null> {
+	const term = tag.trim();
+	if (!term) {
+		return null;
+	}
+
+	const page = await apiFetchPage(`${SOUND_TRACKS_ENDPOINT}/search/tag`, {
+		itemSchema: SoundTrackSchema,
+		tags: [SOUND_TRACKS_TAG],
+		revalidate: DEFAULT_REVALIDATE,
+		searchParams: { tag: term, page: 0, size: BULK_FETCH_SIZE },
+		normalizeItem: normalizeSoundTrackRecord,
+	});
+	return page?.content.length ? page.content : null;
+}
+
+async function fetchTracksByTopic(
+	topicId: number,
+): Promise<SoundTrack[] | null> {
+	// A missing or non-positive id answers 400.
+	if (!Number.isInteger(topicId) || topicId <= 0) {
+		return null;
+	}
+
+	const page = await apiFetchPage(`${SOUND_TRACKS_ENDPOINT}/by-topic`, {
+		itemSchema: SoundTrackSchema,
+		tags: [SOUND_TRACKS_TAG],
+		revalidate: DEFAULT_REVALIDATE,
+		searchParams: { topicId, page: 0, size: BULK_FETCH_SIZE },
+		normalizeItem: normalizeSoundTrackRecord,
+	});
+	return page?.content.length ? page.content : null;
+}
+
+async function fetchTracksByState(
+	state: TrackState,
+): Promise<SoundTrack[] | null> {
+	// An unrecognised enum value answers 500 rather than 400, and the option is
+	// only compile-time typed, so re-check it before building the URL.
+	if (!TrackStateSchema.safeParse(state).success) {
+		return null;
+	}
+
+	const page = await apiFetchPage(`${SOUND_TRACKS_ENDPOINT}/by-state`, {
+		itemSchema: SoundTrackSchema,
+		tags: [SOUND_TRACKS_TAG],
+		revalidate: DEFAULT_REVALIDATE,
+		searchParams: { state, page: 0, size: BULK_FETCH_SIZE },
 		normalizeItem: normalizeSoundTrackRecord,
 	});
 	return page?.content.length ? page.content : null;
@@ -146,31 +228,67 @@ export async function getAudioListing(
 		soundType,
 		state,
 		topicId,
+		tag,
 		query,
 		page = 1,
 		size = AUDIO_GRID_PAGE_SIZE,
 	}: AudioListingOptions = {},
 ): Promise<AudioListResult> {
 	if (getApiBaseUrl()) {
+		const trimmedQuery = query?.trim() ?? "";
+		const trimmedTag = tag?.trim() ?? "";
+		const trimmedSoundType = soundType?.trim() ?? "";
+
+		let served: ServedAudioDimension = null;
 		let apiTracks: SoundTrack[] | null = null;
 
-		if (soundType?.trim()) {
-			apiTracks = await fetchTracksBySoundType(soundType.trim());
-		} else if (query?.trim()) {
-			apiTracks = await fetchTracksByKeyword(query.trim());
+		// Text dimensions go first because refining them in memory is lossy —
+		// the local haystack has no album name, no terms and only the truncated
+		// excerpt, and card tags are resolved to a single dialect. The remaining
+		// dimensions are exact comparisons, so they refine losslessly.
+		if (trimmedQuery) {
+			apiTracks =
+				(await fetchTracksBySearch(trimmedQuery)) ??
+				(await fetchTracksByTag(trimmedQuery)) ??
+				(await fetchTracksByKeyword(trimmedQuery));
+			served = "query";
+		} else if (trimmedTag) {
+			apiTracks = await fetchTracksByTag(trimmedTag);
+			served = "tag";
+		} else if (trimmedSoundType) {
+			apiTracks = await fetchTracksBySoundType(trimmedSoundType);
+			served = "soundType";
+		} else if (topicId != null) {
+			apiTracks = await fetchTracksByTopic(topicId);
+			served = "topicId";
+		} else if (state) {
+			apiTracks = await fetchTracksByState(state);
+			served = "state";
 		} else {
 			apiTracks = await fetchAllTracksFromApi();
+		}
+
+		// A dedicated endpoint collapses "no matches" and "request failed" into
+		// the same null. Retrying against the bulk set and letting the in-memory
+		// pass apply every dimension keeps a failing endpoint from emptying a
+		// grid that filtered fine before these endpoints were wired up.
+		if (apiTracks == null && served != null) {
+			apiTracks = await fetchAllTracksFromApi();
+			served = null;
 		}
 
 		if (apiTracks) {
 			const allItems = apiTracks
 				.map((track) => resolveAudioCard(locale, track))
 				.filter((item): item is ResolvedAudioCard => item != null);
+			// Only the dimension the endpoint already applied is dropped; every
+			// other one still has to narrow the fetched set.
 			const filtered = filterAudioTracks(allItems, {
-				soundType,
-				state,
-				topicId,
-				query: soundType?.trim() || query?.trim() ? null : query,
+				soundType: served === "soundType" ? null : soundType,
+				state: served === "state" ? null : state,
+				topicId: served === "topicId" ? null : topicId,
+				tag: served === "tag" ? null : tag,
+				query: served === "query" ? null : query,
 			});
 			const sorted = sortAudioTracks(filtered);
 			return paginateAudioTracks(sorted, page, size);

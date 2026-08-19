@@ -25,9 +25,15 @@ type NewsShellProps = {
 	sectionTitle: string;
 	sectionDescription?: string;
 	categories: NewsCategoryOption[];
+	subCategories?: NewsCategoryOption[];
+	tags?: string[];
+	keywords?: string[];
 	currentPage: number;
 	totalPages: number;
 	activeCategory?: string | null;
+	activeSubCategory?: string | null;
+	activeTag?: string | null;
+	activeKeyword?: string | null;
 	activeQuery?: string | null;
 	noResultsMessage: string;
 	paginationLabel: string;
@@ -46,9 +52,15 @@ export function NewsShell({
 	sectionTitle,
 	sectionDescription,
 	categories,
+	subCategories,
+	tags,
+	keywords,
 	currentPage,
 	totalPages,
 	activeCategory,
+	activeSubCategory,
+	activeTag,
+	activeKeyword,
 	activeQuery,
 	noResultsMessage,
 	paginationLabel,
@@ -58,7 +70,13 @@ export function NewsShell({
 	latestLabel,
 	className,
 }: NewsShellProps) {
-	const hasFilters = Boolean(activeCategory || activeQuery?.trim());
+	const hasFilters = Boolean(
+		activeCategory ||
+			activeSubCategory ||
+			activeTag?.trim() ||
+			activeKeyword?.trim() ||
+			activeQuery?.trim(),
+	);
 	const isEmpty = items.length === 0;
 
 	return (
@@ -95,7 +113,13 @@ export function NewsShell({
 				<div className="min-w-0">
 					<NewsFilterBar
 						categories={categories}
+						subCategories={subCategories}
+						tags={tags}
+						keywords={keywords}
 						activeCategory={activeCategory}
+						activeSubCategory={activeSubCategory}
+						activeTag={activeTag}
+						activeKeyword={activeKeyword}
 						activeQuery={activeQuery}
 						className="mb-8 sm:mb-10"
 					/>
@@ -129,6 +153,9 @@ export function NewsShell({
 							currentPage={currentPage}
 							totalPages={totalPages}
 							activeCategory={activeCategory}
+							activeSubCategory={activeSubCategory}
+							activeTag={activeTag}
+							activeKeyword={activeKeyword}
 							activeQuery={activeQuery}
 							label={paginationLabel}
 							previousLabel={previousLabel}
