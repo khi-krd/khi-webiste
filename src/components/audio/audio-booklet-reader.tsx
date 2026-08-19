@@ -14,6 +14,7 @@ import NextImage from "next/image";
 import { useLocale, useTranslations } from "next-intl";
 import { useCallback, useEffect, useState } from "react";
 import { DirectionalIcon } from "@/components/ui/directional-icon";
+import { ImageWatermark } from "@/components/ui/image-watermark";
 import { useScrollLock } from "@/lib/use-scroll-lock";
 import { cn } from "@/lib/utils";
 import type { ResolvedBrochureItem } from "@/types/audio";
@@ -222,6 +223,7 @@ export function AudioBookletReader({
 													priority={index === 0}
 													draggable={false}
 												/>
+												<ImageWatermark contain={item.imageUrl} />
 											</div>
 										</div>
 										<span className="pointer-events-none absolute inset-x-0 bottom-3 text-center text-label text-muted/60">

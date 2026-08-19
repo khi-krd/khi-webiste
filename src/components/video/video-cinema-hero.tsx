@@ -76,7 +76,7 @@ export function VideoCinemaHero({
 						<ScrollRevealItem>
 							<RichText
 								content={description}
-								className="mt-4 line-clamp-3 max-w-xl text-body leading-relaxed text-primary-foreground/85"
+								className="prose-ragged mt-4 line-clamp-3 max-w-xl text-body leading-relaxed text-primary-foreground/85"
 							/>
 						</ScrollRevealItem>
 					) : null}

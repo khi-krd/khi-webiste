@@ -4,6 +4,7 @@ import {
 } from "@/components/motion/scroll-reveal";
 import { ProjectCoverMedia } from "@/components/projects/project-cover-media";
 import { ProjectMediaGallery } from "@/components/projects/project-media-gallery";
+import { BackToIndexLink } from "@/components/ui/back-to-index";
 import { CoverLightbox } from "@/components/ui/cover-lightbox";
 import { RichText } from "@/components/ui/rich-text";
 import { Link } from "@/i18n/navigation";
@@ -31,6 +32,12 @@ function projectTitleSizeClass(title: string): string {
 
 type ProjectDetailViewProps = {
 	detail: ProjectDetail;
+	/** Locale-relative index path this item belongs to. */
+	backHref: string;
+	/** Visible back-button label — the index page's own title. */
+	backLabel: string;
+	backAriaLabel?: string;
+
 	locale: string;
 	typeLabel: string;
 	statusLabel: string;
@@ -98,6 +105,9 @@ export function SectionEyebrow({
  */
 export function ProjectDetailView({
 	detail,
+	backHref,
+	backLabel,
+	backAriaLabel,
 	locale,
 	typeLabel,
 	statusLabel,
@@ -147,6 +157,13 @@ export function ProjectDetailView({
 			)}
 		>
 			<ScrollRevealBlock className="pt-10 sm:pt-12">
+				<BackToIndexLink
+					href={backHref}
+					label={backLabel}
+					ariaLabel={backAriaLabel}
+					className="mb-6"
+				/>
+
 				<div className="project-detail-spread flex flex-col gap-10 lg:flex-row lg:items-start lg:gap-12 xl:gap-16">
 					{/* Article first in DOM so the title leads on mobile and for screen
 					    readers; flex-direction (not column position) puts the cover
@@ -215,14 +232,10 @@ export function ProjectDetailView({
 								closeLabel={lightboxCloseLabel}
 								caption={project.title}
 							>
-								<div className="overflow-hidden border border-border bg-sunken">
-									{cover}
-								</div>
+								<div className="overflow-hidden bg-sunken">{cover}</div>
 							</CoverLightbox>
 						) : (
-							<div className="overflow-hidden border border-border bg-sunken">
-								{cover}
-							</div>
+							<div className="overflow-hidden bg-sunken">{cover}</div>
 						)}
 					</figure>
 				</div>

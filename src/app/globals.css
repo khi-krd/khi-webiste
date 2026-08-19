@@ -581,7 +581,9 @@ html[data-corners="rounded"]
 
 	/* Project detail — full blog article body beside the cover. */
 	.project-article-body .prose {
-		max-inline-size: none;
+		/* Wider than .prose's default 68ch, but still capped: justified text
+		   with no measure at all opens huge word gaps on large displays. */
+		max-inline-size: 78ch;
 		font-size: var(--text-lead);
 		line-height: 1.75;
 	}
@@ -611,17 +613,42 @@ html[data-corners="rounded"]
 		line-height: var(--leading-heading-arabic);
 	}
 
-	.news-article-body .prose,
-	.news-article-body .prose :is(p, li) {
+	/* --- Long-form justification --------------------------------------------
+	   ONE rule for every rich-text body on the site (news, audio, projects,
+	   about, services, gallery, writings, film) — it used to be two page-scoped
+	   copies plus a scatter of hand-written `text-justify` utilities, which is
+	   why some pages read justified and others ragged.
+
+	   Scoped to `p, li` rather than to `.prose` itself ON PURPOSE: several call
+	   sites put `text-start` (a utility, and utilities outrank the components
+	   layer) on the very same element that carries `.prose`. Matching the
+	   paragraph directly beats an alignment the paragraph merely INHERITS from
+	   that wrapper, so this lands everywhere without touching those call sites.
+
+	   `text-justify: inter-word` is deliberately NOT set: only Firefox
+	   implements the property, and inter-word is the wrong model for Arabic
+	   script anyway. Gap quality is controlled by the measure cap instead. */
+	.prose :is(p, li) {
 		text-align: justify;
-		text-justify: inter-word;
+		hyphens: auto;
+		-webkit-hyphens: auto;
+		/* One long URL must not blow a justified line past the measure. */
+		overflow-wrap: break-word;
 	}
 
-	/* Audio detail — justified body copy aligned to reading direction. */
-	.audio-article-body .prose,
-	.audio-article-body .prose :is(p, li) {
-		text-align: justify;
-		text-justify: inter-word;
+	/* Preformatted, tabular, caption and pull-quote content never justifies —
+	   including the paragraphs the editor nests inside a cell or a caption, and
+	   the display quotes, which are set as typography rather than as copy. */
+	.prose :is(pre, figcaption, th, td, blockquote),
+	.prose :is(figcaption, th, td, blockquote) :is(p, li) {
+		text-align: start;
+	}
+
+	/* Opt-out for short display copy — hero blurbs and line-clamped previews,
+	   where a justified 2–3 line block reads as rivers rather than a column. */
+	.prose-ragged,
+	.prose-ragged :is(p, li) {
+		text-align: start;
 	}
 
 }
@@ -849,40 +876,25 @@ html[data-corners="rounded"]
 }
 
 /* --- Footer donate band: mirrored diagonal seam ----------------------------
-   The green panel's clip-path and the photo's counter-skew are percentage /
-   angle values with no logical equivalent, so the seam has to be authored
-   twice — once per physical direction. Same reasoning as .directional-flip
-   above: Tailwind's `rtl:` compiles to a language list containing :lang(ku),
-   which is Latin/LTR here, so `dir` is the only reliable signal.
+   The green panel's clip-path is a percentage/angle value with no logical
+   equivalent, so the seam has to be authored twice — once per physical
+   direction. Same reasoning as .directional-flip above: Tailwind's `rtl:`
+   compiles to a language list containing :lang(ku), which is Latin/LTR here,
+   so `dir` is the only reliable signal.
 
    Default (unprefixed) rules are the ltr shape: the green panel sits on the
    physical left, so its trailing (right) edge is the one cut inward. [dir=rtl]
-   mirrors both the cut and the skew for the panel sitting on the right.
+   mirrors the cut for the panel sitting on the right.
 
-   The photo is skewed on its wrapper and counter-skewed on the <img> itself
-   (opposite equal angles on the same axis cancel exactly) — the wrapper's
-   overflow-hidden box becomes the visible parallelogram while the photo
-   content inside renders unskewed. The extra scale keeps the oversized image
-   covering the corners the parallelogram exposes beyond the wrapper's
-   un-transformed rectangle. */
+   The photograph beside it is deliberately UNTRANSFORMED: it is delivered
+   already treated, so the band shows the rectangle as-is rather than skewing
+   it into a parallelogram. */
 @media (min-width: 640px) {
 	.footer-donate-cut {
 		clip-path: polygon(0 0, 92% 0, 100% 100%, 0 100%);
 	}
-	.footer-donate-photo {
-		transform: skewX(6deg);
-	}
-	.footer-donate-photo > img {
-		transform: skewX(-6deg) scale(1.2);
-	}
 	[dir="rtl"] .footer-donate-cut {
 		clip-path: polygon(8% 0, 100% 0, 100% 100%, 0 100%);
-	}
-	[dir="rtl"] .footer-donate-photo {
-		transform: skewX(-6deg);
-	}
-	[dir="rtl"] .footer-donate-photo > img {
-		transform: skewX(6deg) scale(1.2);
 	}
 }
 

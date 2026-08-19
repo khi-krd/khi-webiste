@@ -78,7 +78,7 @@ export function DonateParticipation({
 				) : null}
 
 				<ScrollRevealBlock className="mt-8 border border-border bg-background p-6 sm:mt-10 sm:p-8">
-					<p className="max-w-3xl text-body leading-relaxed text-foreground">
+					<p className="max-w-3xl text-justify text-body leading-relaxed text-foreground">
 						{body}
 					</p>
 					<p className="mt-4 max-w-3xl border-inline-start-2 border-border-strong ps-4 font-heading text-h3 font-semibold leading-snug text-foreground">

@@ -147,6 +147,9 @@ export default async function WritingsSegmentPage({
 		<main className="bg-background">
 			<WritingPostView
 				detail={detail}
+				backHref="/writings"
+				backLabel={t("pageTitle")}
+				backAriaLabel={t("post.back")}
 				seriesBooks={seriesBooks}
 				related={related}
 				genreLabels={genreLabels}

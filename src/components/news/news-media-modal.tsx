@@ -10,6 +10,7 @@ import NextImage from "next/image";
 import { useCallback } from "react";
 import { ProjectCoverMedia } from "@/components/projects/project-cover-media";
 import { DirectionalIcon } from "@/components/ui/directional-icon";
+import { ImageWatermark } from "@/components/ui/image-watermark";
 import { VideoPlayer } from "@/components/ui/video-player";
 import { useScrollLock } from "@/lib/use-scroll-lock";
 import { cn } from "@/lib/utils";
@@ -71,6 +72,7 @@ function ModalMedia({
 					className="object-contain"
 					priority
 				/>
+				<ImageWatermark contain={item.url} />
 			</div>
 		);
 	}

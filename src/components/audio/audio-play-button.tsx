@@ -26,7 +26,7 @@ const sizeClasses: Record<Size, string> = {
 	hero: "h-11 gap-2.5 bg-primary px-6 text-small font-medium text-primary-foreground transition-opacity fine-hover:opacity-90 [&_svg]:size-4",
 	// Fills a cover thumbnail: a dark wash over the art with the glyph centered.
 	cover:
-		"absolute inset-0 rounded-none bg-foreground/30 text-white transition-colors fine-hover:bg-foreground/50 [&_svg]:size-5 [&_svg]:drop-shadow-[0_1px_4px_rgba(0,0,0,0.45)]",
+		"absolute inset-0 rounded-none bg-foreground/30 text-white transition-colors fine-hover:bg-foreground/50 [&_svg]:size-8 [&_svg]:drop-shadow-[0_1px_4px_rgba(0,0,0,0.45)]",
 };
 
 /**

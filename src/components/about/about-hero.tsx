@@ -50,7 +50,7 @@ export function AboutHero({
 				<div className="absolute inset-0 isolate">
 					{/* No CMS poster — the gradients below carry the hero on their own. */}
 					{poster ? (
-						<div className="absolute inset-0 [&_img]:h-full [&_img]:w-full [&_img]:object-cover [&_img]:brightness-[0.72] [&_img]:contrast-[1.15] [&_img]:saturate-[0.55]">
+						<div className="absolute inset-0 [&_img]:h-full [&_img]:w-full [&_img]:object-cover [&_img]:brightness-[0.86] [&_img]:contrast-[1.06] [&_img]:saturate-[0.8]">
 							<NextImage
 								src={poster}
 								alt=""
@@ -65,23 +65,30 @@ export function AboutHero({
 					)}
 
 					<div
-						className="pointer-events-none absolute inset-0 z-1 bg-foreground/45"
+						className="pointer-events-none absolute inset-0 z-1 bg-foreground/30"
 						aria-hidden
 					/>
 					<div
-						className="pointer-events-none absolute inset-0 z-1 bg-linear-to-t from-foreground from-0% via-foreground/80 via-32% to-transparent to-72%"
+						className="pointer-events-none absolute inset-0 z-1 bg-linear-to-t from-foreground/72 from-0% via-foreground/30 via-26% to-transparent to-62%"
 						aria-hidden
 					/>
 					<div
-						className="pointer-events-none absolute inset-x-0 top-0 z-1 h-44 bg-linear-to-b from-foreground/85 via-foreground/35 to-transparent sm:h-52"
+						className="pointer-events-none absolute inset-x-0 top-0 z-1 h-36 bg-linear-to-b from-foreground/48 via-foreground/16 to-transparent sm:h-44"
 						aria-hidden
 					/>
 					<div
-						className="pointer-events-none absolute inset-0 z-1 bg-linear-to-r from-foreground/75 from-0% via-foreground/40 via-42% to-transparent to-80% rtl:bg-linear-to-l"
+						className="pointer-events-none absolute inset-0 z-1 bg-linear-to-r from-foreground/38 from-0% via-foreground/15 via-40% to-transparent to-76% rtl:bg-linear-to-l"
 						aria-hidden
 					/>
 					<div
-						className="pointer-events-none absolute inset-0 z-1 bg-[radial-gradient(ellipse_130%_90%_at_50%_115%,var(--color-foreground)_0%,transparent_62%)] opacity-70"
+						className="pointer-events-none absolute inset-0 z-1 bg-[radial-gradient(ellipse_130%_90%_at_50%_115%,var(--color-foreground)_0%,transparent_62%)] opacity-30"
+						aria-hidden
+					/>
+					{/* One local scrim behind the headline instead of dimming the
+					    whole photograph: keeps the white title clear of a blown-out
+					    sky without turning the frame into a slab. */}
+					<div
+						className="pointer-events-none absolute inset-0 z-1 bg-[radial-gradient(ellipse_95%_55%_at_50%_48%,color-mix(in_oklch,var(--color-foreground)_40%,transparent)_0%,transparent_72%)]"
 						aria-hidden
 					/>
 				</div>

@@ -78,7 +78,7 @@ export function ServiceMediaGallery({
 		<div className={cn("flex w-full min-w-0 flex-col", className)}>
 			<div
 				className={cn(
-					"relative w-full overflow-hidden border border-border bg-surface",
+					"relative w-full overflow-hidden bg-surface",
 					mainClassName,
 				)}
 				role="tabpanel"
@@ -117,7 +117,7 @@ export function ServiceMediaGallery({
 								alt={active.media.alt ?? title}
 								aspectRatio={mainAspectRatio}
 								sizes="100vw"
-								className="w-full border-0"
+								className="w-full"
 							/>
 						</motion.div>
 					) : null}

@@ -52,6 +52,9 @@ export default async function GalleryPostPage({
 		<main>
 			<GalleryPostView
 				detail={detail}
+				backHref="/gallery"
+				backLabel={t("pageTitle")}
+				backAriaLabel={t("post.back")}
 				photosLabel={t("posts.photosCount", {
 					count: detail.post.album.length,
 				})}

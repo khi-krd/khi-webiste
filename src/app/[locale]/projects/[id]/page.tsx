@@ -40,6 +40,9 @@ export default async function ProjectDetailPage({
 			<ProjectDetailView
 				detail={detail}
 				locale={locale}
+				backHref="/projects"
+				backLabel={t("pageTitle")}
+				backAriaLabel={t("detail.back")}
 				typeLabel={t("detail.type")}
 				statusLabel={t("detail.status")}
 				dateLabel={t("detail.date")}

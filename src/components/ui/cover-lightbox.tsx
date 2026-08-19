@@ -3,6 +3,7 @@
 import { XMarkIcon } from "@heroicons/react/24/outline";
 import NextImage from "next/image";
 import { useCallback, useEffect, useRef, useState } from "react";
+import { ImageWatermark } from "@/components/ui/image-watermark";
 import { useScrollLock } from "@/lib/use-scroll-lock";
 import { cn } from "@/lib/utils";
 
@@ -107,25 +108,32 @@ export function CoverLightbox({
 				onClose={() => setOpen(false)}
 				onClick={onDialogClick}
 				aria-label={alt}
-				className="m-auto max-h-[92svh] max-w-[min(94vw,80rem)] border border-border bg-background p-0 text-foreground backdrop:bg-foreground/85"
+				className="m-auto max-h-[92svh] max-w-[min(94vw,80rem)] bg-background p-0 text-foreground backdrop:bg-foreground/85"
 			>
 				{open ? (
 					<div className="relative flex max-h-[inherit] flex-col">
-						<NextImage
-							src={currentSrc}
-							alt={alt}
-							width={intrinsicWidth}
-							height={intrinsicHeight}
-							sizes="94vw"
-							unoptimized={isRemoteSrc(currentSrc)}
-							className="h-auto max-h-[82svh] w-auto max-w-full object-contain"
-							onError={() => {
-								if (currentSrc !== FALLBACK) {
-									setCurrentSrc(FALLBACK);
-								}
-							}}
-							priority
-						/>
+						{/* `w-fit` shrink-wraps the picture rather than letting the flex
+						    column stretch it to the dialog width (a long caption widens
+						    the card); `mx-auto` then keeps it centred in both
+						    directions. */}
+						<div className="relative mx-auto w-fit">
+							<NextImage
+								src={currentSrc}
+								alt={alt}
+								width={intrinsicWidth}
+								height={intrinsicHeight}
+								sizes="94vw"
+								unoptimized={isRemoteSrc(currentSrc)}
+								className="h-auto max-h-[82svh] w-auto max-w-full object-contain"
+								onError={() => {
+									if (currentSrc !== FALLBACK) {
+										setCurrentSrc(FALLBACK);
+									}
+								}}
+								priority
+							/>
+							<ImageWatermark />
+						</div>
 
 						<button
 							type="button"

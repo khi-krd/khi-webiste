@@ -139,7 +139,7 @@ export function VideoHero({
 						<ScrollRevealItem>
 							<RichText
 								content={description}
-								className="mt-3 max-w-lg text-body leading-relaxed text-foreground/80"
+								className="prose-ragged mt-3 max-w-lg text-body leading-relaxed text-foreground/80"
 							/>
 						</ScrollRevealItem>
 					) : null}

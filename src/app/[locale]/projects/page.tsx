@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import { getTranslations, setRequestLocale } from "next-intl/server";
-import { ProjectsHero } from "@/components/projects/projects-hero";
 import { ProjectsShell } from "@/components/projects/projects-shell";
 import { VisuallyHidden } from "@/components/ui/visually-hidden";
 import { loadProjectsPageData } from "@/lib/project/page-data";
@@ -52,18 +51,6 @@ export default async function ProjectsPage({
 	return (
 		<main className="bg-background">
 			<VisuallyHidden as="h1">{t("pageTitle")}</VisuallyHidden>
-
-			<ProjectsHero
-				title={t("hero.title")}
-				titleEmphasis={t("hero.titleEmphasis")}
-				countLabel={t("hero.count", { count: pageData.allItems.length })}
-				years={pageData.years}
-				activeYear={pageData.activeYear}
-				activeTag={pageData.activeTag}
-				activeQuery={pageData.activeQuery}
-				allYearsLabel={t("filters.allYears")}
-				showEmphasisItalic={locale === "ku"}
-			/>
 
 			<ProjectsShell
 				items={pageData.items}

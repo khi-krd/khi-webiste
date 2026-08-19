@@ -2,6 +2,7 @@ import { ArrowLeftIcon, ArrowRightIcon } from "@heroicons/react/24/outline";
 import { GalleryAlbum } from "@/components/gallery/gallery-album";
 import type { GalleryAlbumMetadataLabels } from "@/components/gallery/gallery-album-item";
 import { ScrollRevealBlock } from "@/components/motion/scroll-reveal";
+import { BackToIndexLink } from "@/components/ui/back-to-index";
 import { Badge } from "@/components/ui/badge";
 import { CoverLightbox } from "@/components/ui/cover-lightbox";
 import { DirectionalIcon } from "@/components/ui/directional-icon";
@@ -16,6 +17,12 @@ import { cn } from "@/lib/utils";
 
 type GalleryPostViewProps = {
 	detail: GalleryPostDetail;
+	/** Locale-relative index path this item belongs to. */
+	backHref: string;
+	/** Visible back-button label — the index page's own title. */
+	backLabel: string;
+	backAriaLabel?: string;
+
 	/** Pre-translated "{count} photographs" for THIS post. */
 	photosLabel: string;
 	/** Localized collection-type label (SINGLE / GALLERY / PHOTO_STORY). */
@@ -94,6 +101,9 @@ function AdjacentLink({
  */
 export function GalleryPostView({
 	detail,
+	backHref,
+	backLabel,
+	backAriaLabel,
 	photosLabel,
 	typeLabel,
 	dateLabel,
@@ -116,6 +126,13 @@ export function GalleryPostView({
 			<ScrollRevealBlock
 				className={cn("pt-8 pb-5 sm:pt-10 lg:pb-6", homeInsetClass)}
 			>
+				<BackToIndexLink
+					href={backHref}
+					label={backLabel}
+					ariaLabel={backAriaLabel}
+					className="mb-6"
+				/>
+
 				{/* Catalog spread: typographic header start, offset cover plate end. */}
 				<div className="grid gap-8 lg:grid-cols-[minmax(0,7fr)_minmax(0,5fr)] lg:gap-16">
 					<div>
@@ -177,7 +194,7 @@ export function GalleryPostView({
 									alt=""
 									aspectRatio="4/3"
 									sizes="(max-width: 1023px) 100vw, 40vw"
-									className="border border-border bg-surface"
+									className="bg-surface"
 								/>
 							</CoverLightbox>
 							{/* Museum label under the plate — photo count only; the title

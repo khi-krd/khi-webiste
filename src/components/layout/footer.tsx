@@ -32,10 +32,11 @@ type FooterDonateBandProps = {
 
 /**
  * Full-bleed donate banner at the top of the footer: a slanted brand-green
- * panel over a skewed archive photo. The seam mirrors by `dir` (see
- * `.footer-donate-cut` / `.footer-donate-photo` in globals.css) — DOM order
+ * panel beside a plain, untransformed archive photograph. The panel's seam
+ * mirrors by `dir` (see `.footer-donate-cut` in globals.css) — DOM order
  * alone already flips the panel/photo sides correctly since `flex-row`
- * follows the inline-start direction.
+ * follows the inline-start direction. The photo carries NO transform: any
+ * treatment is baked into the artwork by the designer.
  */
 function FooterDonateBand({
 	title,
@@ -45,7 +46,7 @@ function FooterDonateBand({
 }: FooterDonateBandProps) {
 	return (
 		<section className="relative z-10 flex flex-col overflow-hidden bg-foreground sm:h-[15rem] sm:flex-row lg:h-[17rem] 2xl:h-[20rem]">
-			<div className="footer-donate-cut relative flex flex-col justify-center gap-3 bg-brand px-6 py-8 text-start sm:w-[54%] sm:px-10 sm:py-0 lg:px-16 xl:px-20 2xl:w-[46%] 2xl:px-32">
+			<div className="footer-donate-cut relative z-10 flex flex-col justify-center gap-3 bg-brand px-6 py-8 text-start sm:w-[54%] sm:px-10 sm:py-0 lg:px-16 xl:px-20 2xl:w-[46%] 2xl:px-32">
 				<h2 className="max-w-lg text-balance font-heading text-[clamp(1.375rem,2.2vw,1.875rem)] font-bold leading-[1.2] text-white 2xl:max-w-2xl 2xl:text-[2.25rem]">
 					{title}
 				</h2>
@@ -65,20 +66,26 @@ function FooterDonateBand({
 				</Link>
 			</div>
 
-			{/* No CMS photograph — the slanted panel is dropped entirely rather
-			    than framing an empty rectangle. */}
+			{/* No CMS photograph — the panel is dropped entirely rather than
+			    framing an empty rectangle. The photograph is shown as the plain
+			    rectangle it is: any treatment belongs to the artwork itself, so
+			    the frame adds no skew, no overhang and no border. */}
 			{imageUrl ? (
-				<div className="relative h-40 sm:h-auto sm:flex-1">
-					<div className="footer-donate-photo absolute -inset-y-8 inset-x-10 overflow-hidden border border-primary-foreground/15 sm:inset-x-16 2xl:-inset-y-10 2xl:inset-x-24">
-						<NextImage
-							src={imageUrl}
-							alt=""
-							fill
-							sizes="(min-width: 640px) 46vw, 100vw"
-							quality={75}
-							className="object-cover"
-						/>
-					</div>
+				<div
+					// Slid under the panel by exactly the width of the wedge its
+					// clip-path removes (8% of a 54% / 46% panel), so the diagonal
+					// seam reveals the photograph rather than the section's black
+					// ground. The panel's z-10 keeps the green painted on top.
+					className="relative h-44 sm:-ms-[4.32%] sm:h-auto sm:flex-1 2xl:-ms-[3.68%]"
+				>
+					<NextImage
+						src={imageUrl}
+						alt=""
+						fill
+						sizes="(min-width: 1536px) 54vw, (min-width: 640px) 46vw, 100vw"
+						quality={75}
+						className="object-cover"
+					/>
 				</div>
 			) : null}
 		</section>
@@ -246,7 +253,9 @@ export async function Footer() {
 				className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,transparent_20%,color-mix(in_oklch,var(--color-foreground)_55%,transparent)_100%)]"
 			/>
 
-			<div className="relative z-10 py-16 sm:py-20 lg:py-24">
+			{/* Tight under the donate band (the two read as one block), roomy
+			    below so the copyright line still has air above the page edge. */}
+			<div className="relative z-10 pt-6 pb-16 sm:pt-7 sm:pb-20 lg:pt-8 lg:pb-24">
 				<Container className="max-w-none 2xl:max-w-[96rem]">
 					<FooterReveal>
 						<FooterRevealItem>

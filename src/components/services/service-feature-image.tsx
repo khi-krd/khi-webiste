@@ -20,7 +20,6 @@ export function ServiceFeatureImage({
 			src={src}
 			alt={alt}
 			aspectRatio={aspectRatio}
-			framed
 			sizes={sizes}
 			className={className}
 			imageClassName="brightness-[0.85] contrast-[1.1] saturate-[0.72]"

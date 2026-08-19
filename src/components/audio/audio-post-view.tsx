@@ -15,6 +15,7 @@ import {
 	ScrollRevealItem,
 } from "@/components/motion/scroll-reveal";
 import { ProjectCoverImage } from "@/components/projects/project-cover-image";
+import { BackToIndexLink } from "@/components/ui/back-to-index";
 import { Badge } from "@/components/ui/badge";
 import { CoverLightbox } from "@/components/ui/cover-lightbox";
 import { Link } from "@/components/ui/link";
@@ -182,6 +183,13 @@ export async function AudioPostView({
 	return (
 		<article>
 			<div className={cn("pt-10 pb-12 sm:pt-12 sm:pb-16", homeInsetClass)}>
+				<BackToIndexLink
+					href="/audio"
+					label={t("pageTitle")}
+					ariaLabel={t("post.back")}
+					className="mb-6 sm:mb-8"
+				/>
+
 				<ScrollReveal>
 					<ScrollRevealItem>
 						{/* Open hero — liner text (badges, title, album subtitle, fact
@@ -241,7 +249,7 @@ export async function AudioPostView({
 										caption={detail.title}
 										closeLabel={t("brochures.close")}
 									>
-										<div className="overflow-hidden rounded-md border border-border">
+										<div className="overflow-hidden">
 											<ProjectCoverImage
 												src={detail.coverUrl}
 												alt={detail.title}
@@ -259,7 +267,7 @@ export async function AudioPostView({
 								) : (
 									<div
 										aria-hidden
-										className="flex aspect-[4/3] w-full items-center justify-center rounded-md border border-border bg-sunken"
+										className="flex aspect-[4/3] w-full items-center justify-center bg-sunken"
 									>
 										<span className="font-heading text-display font-bold text-foreground/10">
 											{detail.title.charAt(0)}
@@ -278,7 +286,7 @@ export async function AudioPostView({
 							<div className="mt-10 grid items-start gap-8 text-start sm:mt-12 lg:grid-cols-[minmax(0,1fr)_minmax(0,23rem)] lg:gap-10 xl:gap-12">
 								{detail.description ? (
 									<div className="min-w-0">
-										<div className="audio-article-body max-w-prose">
+										<div className="max-w-prose">
 											<RichText
 												content={detail.description}
 												className="text-body leading-relaxed text-foreground/90"

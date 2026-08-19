@@ -7,6 +7,7 @@ import {
 import { NewsCoverMedia } from "@/components/news/news-cover-media";
 import { NewsMediaGallery } from "@/components/news/news-media-gallery";
 import { NewsPostLightboxProvider } from "@/components/news/news-post-lightbox";
+import { BackToIndexLink } from "@/components/ui/back-to-index";
 import { RichText } from "@/components/ui/rich-text";
 import { Link } from "@/i18n/navigation";
 import { homeInsetClass } from "@/lib/layout";
@@ -28,6 +29,12 @@ function newsTitleSizeClass(title: string): string {
 
 type NewsPostViewProps = {
 	item: NewsItem;
+	/** Locale-relative index path this item belongs to. */
+	backHref: string;
+	/** Visible back-button label — the index page's own title. */
+	backLabel: string;
+	backAriaLabel?: string;
+
 	authorLabel?: string;
 	galleryLabel: string;
 	closeLabel: string;
@@ -44,6 +51,9 @@ type NewsPostViewProps = {
  */
 export function NewsPostView({
 	item,
+	backHref,
+	backLabel,
+	backAriaLabel,
 	authorLabel,
 	galleryLabel,
 	closeLabel,
@@ -80,6 +90,13 @@ export function NewsPostView({
 		>
 			<article className={cn(homeInsetClass, "pb-10 sm:pb-12")}>
 				<ScrollRevealBlock className="pt-10 sm:pt-12">
+					<BackToIndexLink
+						href={backHref}
+						label={backLabel}
+						ariaLabel={backAriaLabel}
+						className="mb-6"
+					/>
+
 					<header className="pb-6 sm:pb-7">
 						<h1
 							className={cn("news-post-title", newsTitleSizeClass(item.title))}
@@ -107,7 +124,7 @@ export function NewsPostView({
 									: "lg:max-w-xl",
 							)}
 						>
-							<div className="overflow-hidden border border-border bg-sunken">
+							<div className="overflow-hidden bg-sunken">
 								<NewsCoverMedia
 									url={coverUrl}
 									alt={item.image.alt ?? item.title}
@@ -126,7 +143,7 @@ export function NewsPostView({
 						</div>
 
 						{bodyContent ? (
-							<div className="project-article-body news-article-body min-w-0 flex-1">
+							<div className="project-article-body min-w-0 flex-1">
 								{item.description ? (
 									<RichText content={item.description} />
 								) : (

@@ -15,6 +15,9 @@ const missionTextClass = cn(
 	"text-body text-foreground",
 	"[&>p:first-child]:text-lead",
 	"[&>p+p]:mt-6 sm:[&>p+p]:mt-7",
+	// The i18n-fallback branch renders bare <p>s outside `.prose`, so the
+	// global justification rule cannot reach them.
+	"[&>p]:text-justify",
 );
 
 type AboutMissionProps = {
@@ -40,7 +43,9 @@ export function AboutMission({
 								content={body}
 								className={cn(
 									missionTextClass,
-									"max-w-none [max-inline-size:none]",
+									// Capped rather than unbounded: justified Arabic with no
+									// measure opens huge word gaps on wide displays.
+									"max-w-none [max-inline-size:78ch]",
 								)}
 							/>
 						) : (

@@ -14,6 +14,7 @@ import {
 	type GalleryLightboxItem,
 } from "@/components/gallery/gallery-album-item";
 import { DirectionalIcon } from "@/components/ui/directional-icon";
+import { ImageWatermark } from "@/components/ui/image-watermark";
 import { useScrollLock } from "@/lib/use-scroll-lock";
 import { cn } from "@/lib/utils";
 
@@ -192,6 +193,12 @@ export function GalleryLightbox({
 										fill
 										sizes="(max-width: 1023px) 98vw, 90vw"
 										className="object-contain"
+									/>
+									{/* Lifted clear of the caption strip when that strip is
+									    the one rendered over the media. */}
+									<ImageWatermark
+										contain={item.imageUrl}
+										clearance={showPanel ? 0 : 40}
 									/>
 								</>
 							) : item.embedUrl ? (

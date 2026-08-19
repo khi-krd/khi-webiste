@@ -110,7 +110,7 @@ export function AudioHero({
 						<ScrollRevealItem>
 							<RichText
 								content={description}
-								className="mt-5 max-w-lg text-body leading-relaxed text-foreground/80"
+								className="prose-ragged mt-5 max-w-lg text-body leading-relaxed text-foreground/80"
 							/>
 						</ScrollRevealItem>
 					) : null}

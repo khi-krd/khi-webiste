@@ -41,6 +41,9 @@ export default async function NewsPostPage({ params }: NewsPostPageProps) {
 		<main className="bg-background">
 			<NewsPostView
 				item={detail.item}
+				backHref="/news"
+				backLabel={t("pageTitle")}
+				backAriaLabel={t("post.back")}
 				authorLabel={
 					detail.item.author
 						? t("post.byAuthor", { author: detail.item.author })

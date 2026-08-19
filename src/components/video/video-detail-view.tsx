@@ -4,6 +4,7 @@ import {
 	ScrollReveal,
 	ScrollRevealItem,
 } from "@/components/motion/scroll-reveal";
+import { BackToIndexLink } from "@/components/ui/back-to-index";
 import { CoverLightbox } from "@/components/ui/cover-lightbox";
 import { Link } from "@/components/ui/link";
 import { RichText } from "@/components/ui/rich-text";
@@ -118,6 +119,14 @@ export async function VideoDetailView({
 						)}
 					>
 						<div className="mx-auto max-w-6xl py-8 sm:py-10 2xl:max-w-[92rem]">
+							<BackToIndexLink
+								href="/videos"
+								label={t("pageTitle")}
+								ariaLabel={t("detail.back")}
+								tone="dark"
+								className="mb-6"
+							/>
+
 							<div className="grid items-center gap-8 lg:grid-cols-[minmax(0,1fr)_minmax(0,39rem)] lg:gap-12 2xl:grid-cols-[minmax(0,1fr)_minmax(0,48rem)] 2xl:gap-16">
 								<div className="min-w-0 text-start">
 									<div className="flex flex-wrap items-center gap-2">

@@ -57,7 +57,7 @@ export function AboutFounder({
 					</h2>
 					<div className="mt-5 h-px w-12 bg-border" aria-hidden />
 					<p className="mt-5 text-body font-medium leading-relaxed">{role1}</p>
-					<p className="mt-3 max-w-xl text-body leading-relaxed text-muted">
+					<p className="mt-3 max-w-xl text-justify text-body leading-relaxed text-muted">
 						{role2}
 					</p>
 				</ScrollRevealBlock>

@@ -53,9 +53,7 @@ function PlayerSurface({
 		<div
 			className={cn(
 				"relative aspect-video w-full overflow-hidden bg-foreground",
-				cinema
-					? "rounded-none border-0"
-					: "rounded-md border border-border-strong",
+				cinema ? "rounded-none" : "rounded-md",
 			)}
 		>
 			{children}

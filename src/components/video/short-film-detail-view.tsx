@@ -1,15 +1,12 @@
-import {
-	ArrowLeftIcon,
-	ArrowsPointingOutIcon,
-} from "@heroicons/react/24/outline";
+import { ArrowsPointingOutIcon } from "@heroicons/react/24/outline";
 import NextImage from "next/image";
 import { getTranslations } from "next-intl/server";
 import {
 	ScrollReveal,
 	ScrollRevealItem,
 } from "@/components/motion/scroll-reveal";
+import { BackToIndexLink } from "@/components/ui/back-to-index";
 import { CoverLightbox } from "@/components/ui/cover-lightbox";
-import { DirectionalIcon } from "@/components/ui/directional-icon";
 import { Link } from "@/components/ui/link";
 import { RichText } from "@/components/ui/rich-text";
 import { VideoPlayerFrame } from "@/components/video/video-player-frame";
@@ -195,19 +192,18 @@ export async function ShortFilmDetailView({
 					homeInsetClass,
 				)}
 			>
-				<div className="relative flex h-14 items-center justify-between sm:h-16">
-					<Link
+				<div className="relative flex h-14 items-center justify-between gap-4 sm:h-16">
+					<BackToIndexLink
 						href="/videos/shortfilms"
-						className="group inline-flex items-center gap-2 no-underline"
-						aria-label={t("shortfilms.detail.back")}
-					>
-						<DirectionalIcon
-							icon={ArrowLeftIcon}
-							className="size-5 text-primary-foreground/70 transition-colors group-fine:text-primary-foreground"
-						/>
-					</Link>
+						label={t("shortfilms.pageTitle")}
+						ariaLabel={t("shortfilms.detail.back")}
+						tone="dark"
+					/>
 
-					<h1 className="pointer-events-none absolute inset-x-0 truncate px-14 text-center font-heading text-small font-semibold sm:text-body">
+					{/* Centred over the bar from sm up, where the button leaves room
+					    on both sides; on phones it simply takes the space the button
+					    does not and truncates. */}
+					<h1 className="min-w-0 truncate text-end font-heading text-small font-semibold sm:pointer-events-none sm:absolute sm:inset-x-0 sm:px-44 sm:text-center sm:text-body">
 						{detail.title}
 					</h1>
 				</div>
@@ -232,7 +228,6 @@ export async function ShortFilmDetailView({
 							poster={detail.coverUrl}
 							noSourceLabel={t("detail.noSource")}
 							variant="cinema"
-							className="ring-1 ring-primary-foreground/15"
 							surfaceOverlay={
 								detail.coverUrl ? (
 									<CoverLightbox

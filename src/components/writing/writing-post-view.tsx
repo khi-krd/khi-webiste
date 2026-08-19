@@ -4,6 +4,7 @@ import {
 	ScrollRevealBlock,
 	ScrollRevealItem,
 } from "@/components/motion/scroll-reveal";
+import { BackToIndexLink } from "@/components/ui/back-to-index";
 import { Badge } from "@/components/ui/badge";
 import { CoverLightbox } from "@/components/ui/cover-lightbox";
 import { Link } from "@/components/ui/link";
@@ -29,6 +30,12 @@ import type {
 
 type WritingPostViewProps = {
 	detail: ResolvedWritingDetail;
+	/** Locale-relative index path this item belongs to. */
+	backHref: string;
+	/** Visible back-button label — the index page's own title. */
+	backLabel: string;
+	backAriaLabel?: string;
+
 	seriesBooks: ResolvedSeriesBook[];
 	related: ResolvedWritingCard[];
 	genreLabels: Record<BookGenre, string>;
@@ -57,6 +64,9 @@ const chipLineClass = cn(
 
 export function WritingPostView({
 	detail,
+	backHref,
+	backLabel,
+	backAriaLabel,
 	seriesBooks,
 	related,
 	genreLabels,
@@ -132,6 +142,13 @@ export function WritingPostView({
 			<ScrollRevealBlock
 				className={cn("pt-8 pb-8 sm:pt-10 sm:pb-10", homeInsetClass)}
 			>
+				<BackToIndexLink
+					href={backHref}
+					label={backLabel}
+					ariaLabel={backAriaLabel}
+					className="mb-6"
+				/>
+
 				<div className="grid gap-8 lg:grid-cols-[minmax(0,1fr)_minmax(0,25rem)] lg:items-center lg:gap-12">
 					<div className="min-w-0 text-start">
 						<div className="flex flex-wrap items-center gap-2">
@@ -220,7 +237,7 @@ export function WritingPostView({
 								intrinsicWidth={1200}
 								intrinsicHeight={1600}
 							>
-								<span className="relative block aspect-[3/4] w-full overflow-hidden rounded-md border border-border bg-sunken shadow-[0_12px_32px_rgba(23,21,18,0.14)]">
+								<span className="relative block aspect-[3/4] w-full overflow-hidden bg-sunken shadow-[0_12px_32px_rgba(23,21,18,0.14)]">
 									<NextImage
 										src={detail.coverUrl}
 										alt=""
@@ -234,7 +251,7 @@ export function WritingPostView({
 						) : (
 							<div
 								aria-hidden
-								className="flex aspect-[3/4] w-full items-center justify-center rounded-md border border-border bg-sunken"
+								className="flex aspect-[3/4] w-full items-center justify-center bg-sunken"
 							>
 								<span className="font-heading text-display font-bold text-foreground/10">
 									{detail.title.charAt(0)}
