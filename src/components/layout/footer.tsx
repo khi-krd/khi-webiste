@@ -281,7 +281,14 @@ export async function Footer() {
 											</Link>
 										</div>
 
-										<div className="grid sm:grid-cols-2 lg:grid-cols-3">
+										<div
+											className={cn(
+												"grid",
+												navPanels.length >= 3
+													? "sm:grid-cols-2 lg:grid-cols-3"
+													: "sm:grid-cols-2",
+											)}
+										>
 											{navPanels.map((panel, index) => (
 												<FooterNavPanel
 													key={panel.key}

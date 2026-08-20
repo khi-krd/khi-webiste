@@ -21,15 +21,15 @@ import { getNavMenuOverrides } from "@/lib/api/nav-menu";
  *
  * Layout is PHYSICAL, not logical — the same geometry in ckb (RTL) and ku (LTR):
  *
- *   [logo · brand · ئێمە · خزمەتگوزارییەکان] … [کتێبخانە · ئەرشیڤ · بڵاوکراوە · search|lang · ☰]
+ *   [logo · brand · خزمەتگوزاری · ئێمە] … [کتێبخانە · ئەرشیف · بڵاوکراوە · search|lang · ☰]
  *
  * `dir-row-unmirrored` un-mirrors the three structural rows (the bar and its two
  * clusters) so those blocks never swap sides between locales. Everything nested
  * inside them keeps normal flow, so ckb still READS right-to-left: ☰,
- * search/lang, بڵاوکراوە, ئەرشیڤ, کتێبخانە … ئێمە, خزمەتگوزارییەکان, brand.
+ * search/lang, بڵاوکراوە, ئەرشیف, کتێبخانە … خزمەتگوزاری, ئێمە, brand.
  *
- * Only ئەرشیڤ/کتێبخانە carry the drawn rectangle; بڵاوکراوە deliberately
- * shares the plain underline hover of ئێمە/خزمەتگوزارییەکان.
+ * Only ئەرشیف/کتێبخانە carry the drawn rectangle; بڵاوکراوە deliberately
+ * shares the plain underline hover of خزمەتگوزاری/ئێمە.
  */
 export async function Header() {
 	const t = await getTranslations("Nav");
@@ -42,19 +42,19 @@ export async function Header() {
 	return (
 		<HeaderShell>
 			<Container className="dir-row-unmirrored relative flex h-16 max-w-none items-center justify-between gap-4 px-8 sm:h-20 sm:px-10 2xl:max-w-[96rem]">
-				<div className="dir-row-unmirrored flex min-w-0 items-center gap-2 sm:gap-3">
+				<div className="dir-row-unmirrored flex min-w-0 items-center gap-4 sm:gap-6">
 					<Logo />
 
 					<nav
 						aria-label={t("primary")}
 						className="hidden items-center gap-0.5 sm:flex sm:gap-1"
 					>
-						<Link href="/about" className={navLinkClass}>
-							{t("us")}
-						</Link>
-
 						<Link href={SERVICES_HREF} className={navLinkClass}>
 							{t("services")}
+						</Link>
+
+						<Link href="/about" className={navLinkClass}>
+							{t("us")}
 						</Link>
 					</nav>
 				</div>

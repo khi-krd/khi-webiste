@@ -174,8 +174,8 @@ export function ImageWatermark({
 				alt=""
 				width={128}
 				height={128}
-				sizes="64px"
-				className="size-10 object-contain opacity-90 drop-shadow-[0_2px_6px_rgba(0,0,0,0.45)] sm:size-12"
+				sizes="96px"
+				className="size-14 object-contain opacity-90 drop-shadow-[0_2px_6px_rgba(0,0,0,0.45)] sm:size-20"
 			/>
 		</span>
 	);

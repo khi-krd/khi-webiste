@@ -29,7 +29,7 @@ export const DEMO_SOUND_TOPICS: SoundTopic[] = [
 	{ id: 2, nameCkb: "مێژووی زارەکی", nameKmr: "Dîroka devkî" },
 	{ id: 3, nameCkb: "کەلەپووری ئایینی", nameKmr: "Mîrateya olî" },
 	{ id: 4, nameCkb: "خوێندنەوەی شیعر", nameKmr: "Xwendina helbestê" },
-	{ id: 5, nameCkb: "ئەرشیڤی ڕادیۆ", nameKmr: "Arşîva radyoyê" },
+	{ id: 5, nameCkb: "ئەرشیفی ڕادیۆ", nameKmr: "Arşîva radyoyê" },
 ];
 
 type RawTrack = Omit<SoundTrack, "totalDurationSeconds" | "totalSizeBytes">;
@@ -207,7 +207,7 @@ const RAW_TRACKS: RawTrack[] = [
 		ckbContent: {
 			title: "وتارێکی مێژوویی — مەهاباد ١٩٤٧",
 			description:
-				"تۆمارێکی دەگمەنی وتارێکی مێژوویی لە مەهاباد، لە ئەرشیڤی کەسییەوە دەستکەوتووە و بۆ پاراستن ڕیماسترکراوەتەوە.",
+				"تۆمارێکی دەگمەنی وتارێکی مێژوویی لە مەهاباد، لە ئەرشیفی کەسییەوە دەستکەوتووە و بۆ پاراستن ڕیماسترکراوەتەوە.",
 		},
 		kmrContent: {
 			title: "Axaftineke dîrokî — Mehabad 1947",
@@ -224,7 +224,7 @@ const RAW_TRACKS: RawTrack[] = [
 			kmr: ["dîrok", "axaftin"],
 		},
 		keywords: {
-			ckb: ["مەهاباد", "ئەرشیڤ", "١٩٤٧"],
+			ckb: ["مەهاباد", "ئەرشیف", "١٩٤٧"],
 			kmr: ["Mehabad", "arşîv", "1947"],
 		},
 		files: [
@@ -406,13 +406,13 @@ const RAW_TRACKS: RawTrack[] = [
 		trackState: "MULTI",
 		albumOfMemories: false,
 		topicId: 5,
-		topicNameCkb: "ئەرشیڤی ڕادیۆ",
+		topicNameCkb: "ئەرشیفی ڕادیۆ",
 		topicNameKmr: "Arşîva radyoyê",
 		contentLanguages: ["CKB", "KMR"],
 		ckbContent: {
 			title: "ئەلبووم: گوتارەکانی مێژوو",
 			description:
-				"کۆمەڵێک گوتاری ڕادیۆیی لە دەیەی ١٩٧٠، لە ئەرشیڤی ڕادیۆی هەولێرەوە کۆکراونەتەوە و بە ڕیزبەندی بەشەکان پاراستراون.",
+				"کۆمەڵێک گوتاری ڕادیۆیی لە دەیەی ١٩٧٠، لە ئەرشیفی ڕادیۆی هەولێرەوە کۆکراونەتەوە و بە ڕیزبەندی بەشەکان پاراستراون.",
 		},
 		kmrContent: {
 			title: "Albûm: Gotarên dîrokê",
@@ -1100,7 +1100,7 @@ const RAW_TRACKS: RawTrack[] = [
 		trackState: "MULTI",
 		albumOfMemories: true,
 		topicId: 5,
-		topicNameCkb: "ئەرشیڤی ڕادیۆ",
+		topicNameCkb: "ئەرشیفی ڕادیۆ",
 		topicNameKmr: "Arşîva radyoyê",
 		contentLanguages: ["CKB", "KMR"],
 		ckbContent: {
@@ -1309,7 +1309,7 @@ const RAW_TRACKS: RawTrack[] = [
 			kmr: ["semîner", "parastin"],
 		},
 		keywords: {
-			ckb: ["ئەرشیڤسازی"],
+			ckb: ["ئەرشیفسازی"],
 			kmr: ["arşîvsazî"],
 		},
 		files: [

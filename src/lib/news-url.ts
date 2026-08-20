@@ -2,7 +2,6 @@ export type NewsUrlParams = {
 	category?: string | null;
 	subcategory?: string | null;
 	tag?: string | null;
-	keyword?: string | null;
 	q?: string | null;
 	page?: number;
 };
@@ -11,7 +10,6 @@ export function buildNewsHref({
 	category,
 	subcategory,
 	tag,
-	keyword,
 	q,
 	page,
 }: NewsUrlParams): "/news" | `/news?${string}` {
@@ -25,9 +23,6 @@ export function buildNewsHref({
 	}
 	if (tag?.trim()) {
 		params.set("tag", tag.trim());
-	}
-	if (keyword?.trim()) {
-		params.set("keyword", keyword.trim());
 	}
 	if (q?.trim()) {
 		params.set("q", q.trim());

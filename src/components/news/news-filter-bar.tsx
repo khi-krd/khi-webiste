@@ -28,11 +28,9 @@ type NewsFilterBarProps = {
 	categories: NewsCategoryOption[];
 	subCategories?: NewsCategoryOption[];
 	tags?: string[];
-	keywords?: string[];
 	activeCategory?: string | null;
 	activeSubCategory?: string | null;
 	activeTag?: string | null;
-	activeKeyword?: string | null;
 	activeQuery?: string | null;
 	className?: string;
 };
@@ -54,11 +52,9 @@ export function NewsFilterBar({
 	categories,
 	subCategories,
 	tags,
-	keywords,
 	activeCategory,
 	activeSubCategory,
 	activeTag,
-	activeKeyword,
 	activeQuery,
 	className,
 }: NewsFilterBarProps) {
@@ -75,10 +71,6 @@ export function NewsFilterBar({
 		() => withActiveTerm(tags ?? [], activeTag),
 		[tags, activeTag],
 	);
-	const keywordOptions = useMemo(
-		() => withActiveTerm(keywords ?? [], activeKeyword),
-		[keywords, activeKeyword],
-	);
 
 	const hasActiveCategory =
 		Boolean(activeCategory) &&
@@ -93,14 +85,9 @@ export function NewsFilterBar({
 		? subCategoryOptions.find((entry) => entry.key === activeSubCategory)?.label
 		: null;
 	const hasActiveTag = Boolean(activeTag?.trim());
-	const hasActiveKeyword = Boolean(activeKeyword?.trim());
 	const hasActiveQuery = Boolean(activeQuery?.trim());
 	const hasActiveFilters =
-		hasActiveCategory ||
-		hasActiveSubCategory ||
-		hasActiveTag ||
-		hasActiveKeyword ||
-		hasActiveQuery;
+		hasActiveCategory || hasActiveSubCategory || hasActiveTag || hasActiveQuery;
 
 	useEffect(() => {
 		setQuery(activeQuery ?? "");
@@ -111,10 +98,9 @@ export function NewsFilterBar({
 			category: activeCategory ?? null,
 			subcategory: activeSubCategory ?? null,
 			tag: activeTag ?? null,
-			keyword: activeKeyword ?? null,
 			q: activeQuery ?? null,
 		}),
-		[activeCategory, activeSubCategory, activeTag, activeKeyword, activeQuery],
+		[activeCategory, activeSubCategory, activeTag, activeQuery],
 	);
 
 	// Every dimension is carried forward, so changing one filter never silently
@@ -150,10 +136,6 @@ export function NewsFilterBar({
 
 	const handleTag = (tag: string | null) => {
 		pushFilters({ tag, q: query });
-	};
-
-	const handleKeyword = (keyword: string | null) => {
-		pushFilters({ keyword, q: query });
 	};
 
 	const handleSearchSubmit = (event: React.FormEvent) => {
@@ -329,23 +311,6 @@ export function NewsFilterBar({
 					</FilterRow>
 				) : null}
 
-				{keywordOptions.length > 0 ? (
-					<FilterRow label={t("filter.keywords")}>
-						{keywordOptions.map((keyword) => {
-							const active = activeKeyword === keyword;
-							return (
-								<CategoryPill
-									key={keyword}
-									active={active}
-									onClick={() => handleKeyword(active ? null : keyword)}
-								>
-									{keyword}
-								</CategoryPill>
-							);
-						})}
-					</FilterRow>
-				) : null}
-
 				{hasActiveFilters ? (
 					<div className="mt-4 flex flex-wrap items-center gap-2 border-t border-border pt-4">
 						<span className="text-label text-muted">{t("filter.active")}</span>
@@ -362,11 +327,6 @@ export function NewsFilterBar({
 						{hasActiveTag && activeTag ? (
 							<Badge variant="outline" size="sm">
 								#{activeTag}
-							</Badge>
-						) : null}
-						{hasActiveKeyword && activeKeyword ? (
-							<Badge variant="outline" size="sm">
-								{activeKeyword}
 							</Badge>
 						) : null}
 						{hasActiveQuery && activeQuery ? (

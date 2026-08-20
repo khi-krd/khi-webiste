@@ -37,7 +37,7 @@ export const navUnderlineLabelClass = cn(
 );
 
 /**
- * ئەرشیڤ / کتێبخانە — the only header items that get the drawn rectangle.
+ * ئەرشیف / کتێبخانە — the only header items that get the drawn rectangle.
  * On hover the box fills brand green, the label flips to white and the traced
  * stroke turns white with it (see `.nav-box` in globals.css).
  */

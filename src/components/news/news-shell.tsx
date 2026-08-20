@@ -27,13 +27,11 @@ type NewsShellProps = {
 	categories: NewsCategoryOption[];
 	subCategories?: NewsCategoryOption[];
 	tags?: string[];
-	keywords?: string[];
 	currentPage: number;
 	totalPages: number;
 	activeCategory?: string | null;
 	activeSubCategory?: string | null;
 	activeTag?: string | null;
-	activeKeyword?: string | null;
 	activeQuery?: string | null;
 	noResultsMessage: string;
 	paginationLabel: string;
@@ -54,13 +52,11 @@ export function NewsShell({
 	categories,
 	subCategories,
 	tags,
-	keywords,
 	currentPage,
 	totalPages,
 	activeCategory,
 	activeSubCategory,
 	activeTag,
-	activeKeyword,
 	activeQuery,
 	noResultsMessage,
 	paginationLabel,
@@ -71,11 +67,7 @@ export function NewsShell({
 	className,
 }: NewsShellProps) {
 	const hasFilters = Boolean(
-		activeCategory ||
-			activeSubCategory ||
-			activeTag?.trim() ||
-			activeKeyword?.trim() ||
-			activeQuery?.trim(),
+		activeCategory || activeSubCategory || activeTag?.trim() || activeQuery?.trim(),
 	);
 	const isEmpty = items.length === 0;
 
@@ -115,11 +107,9 @@ export function NewsShell({
 						categories={categories}
 						subCategories={subCategories}
 						tags={tags}
-						keywords={keywords}
 						activeCategory={activeCategory}
 						activeSubCategory={activeSubCategory}
 						activeTag={activeTag}
-						activeKeyword={activeKeyword}
 						activeQuery={activeQuery}
 						className="mb-8 sm:mb-10"
 					/>
@@ -155,7 +145,6 @@ export function NewsShell({
 							activeCategory={activeCategory}
 							activeSubCategory={activeSubCategory}
 							activeTag={activeTag}
-							activeKeyword={activeKeyword}
 							activeQuery={activeQuery}
 							label={paginationLabel}
 							previousLabel={previousLabel}

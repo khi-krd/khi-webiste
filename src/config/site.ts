@@ -225,6 +225,15 @@ export type FooterColumn = {
 /** Footer columns — only routes that exist under `[locale]` today. */
 export const FOOTER_COLUMNS: FooterColumn[] = [
 	{
+		titleKey: "institute",
+		links: [
+			{ labelKey: "about", href: "/about" },
+			{ labelKey: "contact", href: "/contact" },
+			{ labelKey: "services", href: "/services" },
+			{ labelKey: "donate", href: DONATE_HREF },
+		],
+	},
+	{
 		titleKey: "collections",
 		links: [
 			{ labelKey: "news", href: "/news" },
@@ -234,15 +243,6 @@ export const FOOTER_COLUMNS: FooterColumn[] = [
 			{ labelKey: "shortFilms", href: "/videos/shortfilms" },
 			{ labelKey: "gallery", href: "/gallery" },
 			{ labelKey: "writings", href: "/writings" },
-		],
-	},
-	{
-		titleKey: "institute",
-		links: [
-			{ labelKey: "services", href: "/services" },
-			{ labelKey: "about", href: "/about" },
-			{ labelKey: "donate", href: DONATE_HREF },
-			{ labelKey: "contact", href: "/contact" },
 		],
 	},
 ];

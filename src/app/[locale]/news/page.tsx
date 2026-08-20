@@ -35,7 +35,6 @@ type NewsPageProps = {
 		category?: string;
 		subcategory?: string;
 		tag?: string;
-		keyword?: string;
 		q?: string;
 		page?: string;
 	}>;
@@ -46,29 +45,20 @@ export default async function NewsPage({
 	searchParams,
 }: NewsPageProps) {
 	const { locale } = await params;
-	const {
-		category,
-		subcategory,
-		tag,
-		keyword,
-		q,
-		page: pageParam,
-	} = await searchParams;
+	const { category, subcategory, tag, q, page: pageParam } = await searchParams;
 	setRequestLocale(locale);
 
 	const t = await getTranslations("News");
-	const { categories, subCategories, tags, keywords } =
-		await getNewsFilterOptions(locale);
+	const { categories, subCategories, tags } = await getNewsFilterOptions(locale);
 	const activeCategory =
 		category && isKnownCategory(category, categories) ? category : null;
 	const activeSubCategory =
 		subcategory && isKnownCategory(subcategory, subCategories)
 			? subcategory
 			: null;
-	// Tag and keyword are free text upstream (no enum, no 500 risk) — a trimmed,
-	// non-empty term is the only precondition the endpoints have.
+	// Tag is free text upstream (no enum, no 500 risk) — a trimmed, non-empty
+	// term is the only precondition the endpoint has.
 	const activeTag = tag?.trim() || null;
-	const activeKeyword = keyword?.trim() || null;
 	const activeQuery = q?.trim() || null;
 	const page = Math.max(1, Number.parseInt(pageParam ?? "1", 10) || 1);
 
@@ -85,7 +75,6 @@ export default async function NewsPage({
 		category: activeCategory,
 		subcategory: activeSubCategory,
 		tag: activeTag,
-		keyword: activeKeyword,
 		query: activeQuery,
 	};
 
@@ -96,16 +85,14 @@ export default async function NewsPage({
 	const featuredItems = await getFeaturedNews(locale);
 	const latestItems = await getLatestNews(locale);
 
-	// Category and sub-category share the taxonomy wording; a free-text tag or
-	// keyword names the term it matched instead.
+	// Category and sub-category share the taxonomy wording; a free-text tag
+	// names the term it matched instead.
 	const taxonomyLabel = activeSubCategoryLabel ?? activeCategoryLabel;
 	let sectionTitle = t("sections.allNews");
 	if (taxonomyLabel) {
 		sectionTitle = t("sections.filtered", { category: taxonomyLabel });
 	} else if (activeTag) {
 		sectionTitle = t("sections.filteredByTag", { tag: activeTag });
-	} else if (activeKeyword) {
-		sectionTitle = t("sections.filteredByKeyword", { keyword: activeKeyword });
 	}
 
 	return (
@@ -132,13 +119,11 @@ export default async function NewsPage({
 				categories={categories}
 				subCategories={subCategories}
 				tags={tags}
-				keywords={keywords}
 				currentPage={currentPage}
 				totalPages={totalPages}
 				activeCategory={activeCategory}
 				activeSubCategory={activeSubCategory}
 				activeTag={activeTag}
-				activeKeyword={activeKeyword}
 				activeQuery={activeQuery}
 				noResultsMessage={t("search.noResults")}
 				paginationLabel={t("pagination.label")}

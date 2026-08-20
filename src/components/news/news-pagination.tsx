@@ -13,7 +13,6 @@ type NewsPaginationProps = {
 	activeCategory?: string | null;
 	activeSubCategory?: string | null;
 	activeTag?: string | null;
-	activeKeyword?: string | null;
 	activeQuery?: string | null;
 	label: string;
 	previousLabel: string;
@@ -27,7 +26,6 @@ export function NewsPagination({
 	activeCategory,
 	activeSubCategory,
 	activeTag,
-	activeKeyword,
 	activeQuery,
 	label,
 	previousLabel,
@@ -44,7 +42,6 @@ export function NewsPagination({
 			category: activeCategory,
 			subcategory: activeSubCategory,
 			tag: activeTag,
-			keyword: activeKeyword,
 			q: activeQuery,
 			page,
 		});
