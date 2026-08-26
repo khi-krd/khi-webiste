@@ -13,11 +13,8 @@ import { DirectionalIcon } from "@/components/ui/directional-icon";
 import { Link } from "@/components/ui/link";
 import { DONATE_HREF, FOOTER_COLUMNS, type FooterLink } from "@/config/site";
 import { getDonateBandImageUrl, getSiteLogoUrl } from "@/lib/api/site-settings";
-import {
-	getContactOffices,
-	getSocialPlatforms,
-	type SocialPlatformId,
-} from "@/lib/mock/contact";
+import { getSocialPlatformsFromApi } from "@/lib/api/social";
+import { getContactOffices, type SocialPlatformId } from "@/lib/mock/contact";
 import { cn } from "@/lib/utils";
 
 function YoutubeIcon(props: ComponentProps<"svg">) {
@@ -57,6 +54,14 @@ function InstagramIcon(props: ComponentProps<"svg">) {
 			<rect x="3" y="3" width="18" height="18" rx="5" />
 			<circle cx="12" cy="12" r="4" />
 			<circle cx="17.3" cy="6.7" r="1.1" fill="currentColor" stroke="none" />
+		</svg>
+	);
+}
+
+function WhatsappIcon(props: ComponentProps<"svg">) {
+	return (
+		<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" {...props}>
+			<path d="M12 3a9 9 0 0 0-7.7 13.6L3 21l4.5-1.2A9 9 0 1 0 12 3zm0 1.8a7.2 7.2 0 1 1-3.7 13.4l-.3-.2-2.6.7.7-2.6-.2-.3A7.2 7.2 0 0 1 12 4.8zm-3.3 3.6c-.2 0-.4 0-.6.3-.2.2-.8.7-.8 1.8s.8 2.1.9 2.2c.1.2 1.5 2.5 3.8 3.4 1.8.7 2.2.6 2.6.5.4 0 1.3-.5 1.5-1.1.2-.6.2-1 .1-1.1 0-.1-.2-.2-.4-.3l-1.5-.7c-.2 0-.4-.1-.5.1l-.7.9c-.1.2-.3.2-.5.1-.2-.1-1-.4-1.9-1.2-.7-.6-1.2-1.4-1.3-1.6-.1-.2 0-.3.1-.4l.4-.5.2-.4c0-.2 0-.3 0-.4l-.7-1.6c-.2-.4-.3-.4-.5-.4h-.2z" />
 		</svg>
 	);
 }
@@ -146,6 +151,17 @@ function FooterDonateBand({
 		</section>
 	);
 }
+
+/** Glyph per platform the CMS can hand back; order comes from the CMS. */
+const SOCIAL_ICONS: Record<
+	SocialPlatformId,
+	ComponentType<ComponentProps<"svg">>
+> = {
+	youtube: YoutubeIcon,
+	facebook: FacebookIcon,
+	instagram: InstagramIcon,
+	whatsapp: WhatsappIcon,
+};
 
 type FooterSocialLink = {
 	key: string;
@@ -269,49 +285,31 @@ export async function Footer() {
 		links: column.links,
 	}));
 
-	// Real profile URLs already used on the contact page — no placeholder
-	// "#" links (a bare, unconfigured icon row reads as broken to visitors).
-	const socialPlatforms = getSocialPlatforms();
-	const findSocialHref = (id: SocialPlatformId) =>
-		socialPlatforms.find((platform) => platform.id === id)?.href;
+	// Edited in the dashboard, stored in the CMS — the same source the contact
+	// page reads, so a URL changed there moves both at once. The row is drawn
+	// in the CMS's own order, and a platform with no glyph is skipped rather
+	// than rendered as a placeholder "#" (a bare icon reads as broken).
+	const socialPlatforms = await getSocialPlatformsFromApi();
 	const hqEmail = getContactOffices().find(
 		(office) => office.badge === "hq",
 	)?.email;
 
 	const socialLinks: FooterSocialLink[] = [
-		...(findSocialHref("youtube")
-			? [
-					{
-						key: "youtube",
-						href: findSocialHref("youtube") as string,
-						label: t("youtube"),
-						icon: YoutubeIcon,
-						external: true,
-					},
-				]
-			: []),
-		...(findSocialHref("facebook")
-			? [
-					{
-						key: "facebook",
-						href: findSocialHref("facebook") as string,
-						label: t("facebook"),
-						icon: FacebookIcon,
-						external: true,
-					},
-				]
-			: []),
-		...(findSocialHref("instagram")
-			? [
-					{
-						key: "instagram",
-						href: findSocialHref("instagram") as string,
-						label: t("instagram"),
-						icon: InstagramIcon,
-						external: true,
-					},
-				]
-			: []),
+		...socialPlatforms.flatMap((platform) => {
+			const icon = SOCIAL_ICONS[platform.id];
+			if (!icon || !platform.href) {
+				return [];
+			}
+			return [
+				{
+					key: platform.id,
+					href: platform.href,
+					label: t(platform.id),
+					icon,
+					external: true,
+				},
+			];
+		}),
 		...(hqEmail
 			? [
 					{

@@ -121,6 +121,7 @@
 		"facebook": "Facebook",
 		"linkedin": "LinkedIn",
 		"youtube": "YouTube",
+		"whatsapp": "WhatsApp",
 		"email": "Email",
 		"copyright": "© 2026 Enstîtuya Mîrateya Kurdî. Maf hemû parastî ne."
 	},
@@ -274,6 +275,9 @@
 	"Gallery": {
 		"pageTitle": "Galerî",
 		"metaDescription": "Arşîveke dîmenî ya jiyana Kurdî — wêne, cilên kevneşopî û kariya destan ji seranserê Kurdistanê.",
+		"hero": {
+			"title": "Wêne"
+		},
 		"search": {
 			"submit": "Bigere",
 			"label": "Di berhevokan de bigere",
@@ -727,12 +731,12 @@
 			"allTitle": "Bernameya kurtefîlman.",
 			"watchNow": "Niha temaşe bike",
 			"details": "Hûrgilî",
-			"trending": "Kurtefîlmên navdar",
-			"continueWatching": "Berdewam bibe",
 			"more": "Bêtir kurtefîlm",
+			"genreLabel": "Cure",
+			"allGenres": "Hemû cure",
 			"seeMore": "Bêtir bibîne",
-			"allPopular": "Hemû navdar",
 			"empty": "Niha tu kurtefîlm tune ye.",
+			"noResults": "Tu kurtefîlm li gorî vê parzûnê nayê.",
 			"promo": {
 				"title": "Kurtefîlm",
 				"cta": "Kurtefîlman bibîne"

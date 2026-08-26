@@ -1,7 +1,11 @@
 import "server-only";
 import { apiFetch, DEFAULT_REVALIDATE } from "@/lib/api/client";
 import { getApiBaseUrl } from "@/lib/api/config";
-import type { SocialPlatform, SocialPlatformId } from "@/lib/mock/contact";
+import {
+	getSocialPlatforms,
+	type SocialPlatform,
+	type SocialPlatformId,
+} from "@/lib/mock/contact";
 import { type SocialLink, SocialLinkListSchema } from "@/types/social";
 
 const SOCIAL_ENDPOINT = "/api/v1/settings/social";
@@ -16,7 +20,11 @@ const PLATFORM_ALIASES: Record<string, SocialPlatformId> = {
 
 function mapSocialLink(link: SocialLink): SocialPlatform | null {
 	const id = PLATFORM_ALIASES[link.platform];
-	if (!id || !link.active) {
+	// A platform the site has no icon for (TIKTOK, TELEGRAM…) is stored and
+	// returned by the API, but there is nothing to draw for it yet. `active`
+	// is only ever false when it is explicitly sent as such — the public
+	// endpoint already filters inactive rows out.
+	if (!id || link.active === false) {
 		return null;
 	}
 
@@ -40,16 +48,21 @@ export async function getSocialLinks(): Promise<SocialLink[]> {
 	return links ?? [];
 }
 
-/** Map API social links to the mock `SocialPlatform` shape used by contact UI. */
+/**
+ * The site's social profiles, in the order the CMS lists them — read by the
+ * contact page and the footer, and edited in the dashboard (`social_links`).
+ *
+ * The built-in defaults stand in ONLY while the CMS table is empty, which is
+ * how a fresh environment avoids rendering a social section with nothing in
+ * it. The first row saved in the dashboard replaces the fallback entirely, so
+ * a URL changed there is the URL the site shows.
+ */
 export async function getSocialPlatformsFromApi(): Promise<SocialPlatform[]> {
 	const links = await getSocialLinks();
-	const apiItems =
-		links.length > 0
-			? links
-					.sort((a, b) => (a.displayOrder ?? 0) - (b.displayOrder ?? 0))
-					.map((link) => mapSocialLink(link))
-					.filter((item): item is SocialPlatform => item != null)
-			: [];
+	const apiItems = [...links]
+		.sort((a, b) => (a.displayOrder ?? 0) - (b.displayOrder ?? 0))
+		.map((link) => mapSocialLink(link))
+		.filter((item): item is SocialPlatform => item != null);
 
-	return apiItems;
+	return apiItems.length > 0 ? apiItems : getSocialPlatforms();
 }

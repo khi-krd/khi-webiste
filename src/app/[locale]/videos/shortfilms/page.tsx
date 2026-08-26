@@ -1,10 +1,17 @@
 import type { Metadata } from "next";
 import { getTranslations, setRequestLocale } from "next-intl/server";
+import {
+	ScrollReveal,
+	ScrollRevealBlock,
+	ScrollRevealItem,
+} from "@/components/motion/scroll-reveal";
 import { Link } from "@/components/ui/link";
 import { VideoCinemaHero } from "@/components/video/video-cinema-hero";
 import { VideoGenrePills } from "@/components/video/video-genre-pills";
-import type { VideoPosterCardProps } from "@/components/video/video-poster-card";
-import { VideoPosterRail } from "@/components/video/video-poster-rail";
+import {
+	VideoPosterCard,
+	type VideoPosterCardProps,
+} from "@/components/video/video-poster-card";
 import {
 	getVideoById,
 	getVideoListing,
@@ -13,7 +20,11 @@ import {
 import { homeInsetClass } from "@/lib/layout";
 import { localeAlternates } from "@/lib/seo/metadata";
 import { cn } from "@/lib/utils";
-import { pickFeaturedCard } from "@/lib/video/filter";
+import {
+	cardIdentity,
+	filterVideos,
+	pickFeaturedCard,
+} from "@/lib/video/filter";
 import { formatDuration } from "@/lib/video/format";
 import {
 	SHORT_FILM_LISTING_FILTERS,
@@ -23,8 +34,8 @@ import { parseVideoTopicId } from "@/lib/video-url";
 import type { ResolvedVideoCard } from "@/types/video";
 
 const SHORT_FILMS_PATH = "/videos/shortfilms";
+const PROGRAMME_ID = "shortfilms-programme";
 const GENRE_PILL_LIMIT = 8;
-const CONTINUE_WATCHING_COUNT = 6;
 
 export async function generateMetadata({
 	params,
@@ -55,18 +66,13 @@ function toPoster(card: ResolvedVideoCard): VideoPosterCardProps {
 	return {
 		id: card.id,
 		title: card.title,
-		subtitle: card.subtitle,
 		coverUrl: card.coverUrl,
 		previewVideoUrl: card.previewVideoUrl,
 		durationLabel: formatDuration(card.durationSeconds),
 		href: shortFilmDetailHref(card.id),
 		dark: true,
+		variant: "caption",
 	};
-}
-
-/** Deterministic mock watch-progress so server and client agree. */
-function mockProgress(id: number): number {
-	return (((id * 27) % 80) + 12) / 100;
 }
 
 /** Most-used tags become the genre pills. */
@@ -83,6 +89,12 @@ function collectGenres(cards: ResolvedVideoCard[]): string[] {
 		.map(([tag]) => tag);
 }
 
+/** Folio marker: `03` on its own, `02 / 03` while a filter is narrowing it. */
+function folio(shown: number, total: number): string {
+	const pad = (value: number) => String(value).padStart(2, "0");
+	return shown === total ? pad(total) : `${pad(shown)} / ${pad(total)}`;
+}
+
 export default async function ShortFilmsPage({
 	params,
 	searchParams,
@@ -96,53 +108,50 @@ export default async function ShortFilmsPage({
 	// can render so an incoming tag link shows up as a selected pill.
 	const activeGenre = genre?.trim() || q?.trim() || null;
 	const activeTopicId = parseVideoTopicId(topic);
-
-	const [listing, activeTopicName] = await Promise.all([
-		getVideoListing(locale, {
-			...SHORT_FILM_LISTING_FILTERS,
-			topicId: activeTopicId,
-			query: activeGenre,
-			size: 100,
-		}),
-		activeTopicId != null ? getVideoTopicName(locale, activeTopicId) : null,
-	]);
-	const allShort = listing.items;
 	const hasFilters = activeGenre != null || activeTopicId != null;
+
+	// The whole programme, unfiltered: the pills, the marquee and the folio all
+	// describe the catalogue, so narrowing happens below this line — in memory —
+	// and never shrinks the pill row down to the tags of its own selection.
+	const listing = await getVideoListing(locale, {
+		...SHORT_FILM_LISTING_FILTERS,
+		size: 100,
+	});
+	const allShort = listing.items;
 
 	if (allShort.length === 0) {
 		return (
-			<main className="bg-background">
-				<div className={homeInsetClass}>
-					<div className="border border-border bg-surface px-6 py-16 text-center">
-						<p className="text-body text-muted">{t("shortfilms.empty")}</p>
-						{hasFilters ? (
-							<Link
-								href={SHORT_FILMS_PATH}
-								className="mt-4 inline-block font-heading text-small font-medium text-foreground underline decoration-border underline-offset-4 transition-colors fine-hover:text-muted"
-							>
-								{t("filter.reset")}
-							</Link>
-						) : null}
-					</div>
+			<main className="bg-foreground py-24 text-primary-foreground sm:py-32">
+				<div className={cn(homeInsetClass, "text-center")}>
+					<h1 className="font-heading text-h1 font-bold">
+						{t("shortfilms.pageTitle")}
+					</h1>
+					<p className="mt-3 text-body text-primary-foreground/70">
+						{t("shortfilms.empty")}
+					</p>
 				</div>
 			</main>
 		);
 	}
 
 	const genres = collectGenres(allShort);
+	const visible = filterVideos(allShort, {
+		topicId: activeTopicId,
+		query: activeGenre,
+	});
+
 	const featuredCard = pickFeaturedCard(allShort) ?? allShort[0];
-	const featuredDetail = await getVideoById(locale, featuredCard.id);
-	const continueWatching: VideoPosterCardProps[] = allShort
-		.slice(0, CONTINUE_WATCHING_COUNT)
-		.map((card) => ({
-			...toPoster(card),
-			progress: mockProgress(card.id),
-			showPlay: true,
-		}));
-	const more = [...allShort].reverse();
+	const [featuredDetail, activeTopicName] = await Promise.all([
+		getVideoById(locale, featuredCard.id),
+		activeTopicId != null ? getVideoTopicName(locale, activeTopicId) : null,
+	]);
+
+	// `once: true` reveals stay hidden if the DOM they animate is swapped under
+	// them, so the grid remounts whenever the filter changes.
+	const gridKey = `${activeGenre ?? "all"}:${activeTopicId ?? "any"}`;
 
 	return (
-		<main className="bg-foreground pb-16 text-primary-foreground sm:pb-20">
+		<main className="bg-foreground pb-16 text-primary-foreground sm:pb-24">
 			<VideoCinemaHero
 				id={featuredCard.id}
 				title={featuredDetail?.title ?? featuredCard.title}
@@ -159,62 +168,102 @@ export default async function ShortFilmsPage({
 				href={shortFilmDetailHref(featuredCard.id)}
 			/>
 
-			<div className="space-y-12 pt-12 sm:space-y-16 sm:pt-16">
-				{activeTopicId != null ? (
-					<div
-						className={cn(
-							homeInsetClass,
-							"flex flex-wrap items-baseline gap-x-4 gap-y-1",
-						)}
-					>
-						<span className="label text-primary-foreground/50">
-							{t("filter.topicLabel")}
-						</span>
-						{activeTopicName ? (
-							<span className="font-heading text-small font-semibold text-primary-foreground">
-								{activeTopicName}
-							</span>
-						) : null}
-						<Link
-							href={SHORT_FILMS_PATH}
-							className="text-small text-primary-foreground/55 underline decoration-primary-foreground/25 underline-offset-4 transition-colors fine-hover:text-primary-foreground/85"
+			{/* One programme, one grid. The page used to run three rails over the
+			    same handful of films, so every title was on screen three times. */}
+			<section
+				id={PROGRAMME_ID}
+				aria-labelledby="shortfilms-programme-heading"
+				className="scroll-mt-26 pt-12 sm:scroll-mt-30 sm:pt-16"
+			>
+				<div className={homeInsetClass}>
+					<ScrollRevealBlock className="flex flex-wrap items-baseline justify-between gap-x-6 gap-y-2 border-b border-primary-foreground/20 pb-4 sm:pb-5">
+						<h2
+							id="shortfilms-programme-heading"
+							className="font-heading text-h2 font-bold leading-tight text-balance sm:text-h1"
 						>
-							{t("filter.reset")}
-						</Link>
-					</div>
-				) : null}
+							{t("shortfilms.more")}
+						</h2>
+						<span
+							aria-hidden="true"
+							dir="ltr"
+							className="label shrink-0 font-medium tabular-nums text-primary-foreground/40"
+						>
+							{folio(visible.length, allShort.length)}
+						</span>
+					</ScrollRevealBlock>
 
-				<VideoGenrePills
-					genres={genres}
-					activeGenre={activeGenre}
-					allLabel={t("shortfilms.allPopular")}
-					scrollTargetId="shortfilms-trending"
-					dark
-				/>
+					<ScrollRevealBlock
+						delay={0.06}
+						className="mt-5 flex flex-col gap-3 sm:mt-6"
+					>
+						<VideoGenrePills
+							genres={genres}
+							activeGenre={activeGenre}
+							allLabel={t("shortfilms.allGenres")}
+							label={t("shortfilms.genreLabel")}
+							scrollTargetId={PROGRAMME_ID}
+							dark
+						/>
 
-				<VideoPosterRail
-					id="shortfilms-trending"
-					title={t("shortfilms.trending")}
-					cards={allShort.map(toPoster)}
-					emptyLabel={t("shortfilms.empty")}
-					dark
-					cardWidthClass="w-44 sm:w-48 lg:w-52 2xl:w-64"
-				/>
+						{hasFilters ? (
+							<div className="flex flex-wrap items-baseline gap-x-4 gap-y-1">
+								{activeTopicName ? (
+									<span className="text-small text-primary-foreground/55">
+										{t("filter.topicLabel")}
+										{": "}
+										<span className="font-semibold text-primary-foreground">
+											{activeTopicName}
+										</span>
+									</span>
+								) : null}
+								<Link
+									href={SHORT_FILMS_PATH}
+									className="text-small text-primary-foreground/55 underline decoration-primary-foreground/25 underline-offset-4 transition-colors fine-hover:text-primary-foreground"
+								>
+									{t("filter.reset")}
+								</Link>
+							</div>
+						) : null}
+					</ScrollRevealBlock>
 
-				<VideoPosterRail
-					title={t("shortfilms.continueWatching")}
-					cards={continueWatching}
-					dark
-					cardWidthClass="w-44 sm:w-48 lg:w-52 2xl:w-64"
-				/>
-
-				<VideoPosterRail
-					title={t("shortfilms.more")}
-					cards={more.map(toPoster)}
-					dark
-					cardWidthClass="w-44 sm:w-48 lg:w-52 2xl:w-64"
-				/>
-			</div>
+					{visible.length === 0 ? (
+						// The dead timecode — the projector with no reel.
+						<div className="mt-6 border border-primary-foreground/20 bg-primary-foreground/5 px-6 py-14 text-center sm:mt-8">
+							<p
+								aria-hidden="true"
+								dir="ltr"
+								className="label font-medium tabular-nums text-primary-foreground/40"
+							>
+								{"// --:--"}
+							</p>
+							<p className="mt-2 text-body text-primary-foreground/70">
+								{t("shortfilms.noResults")}
+							</p>
+							<Link
+								href={SHORT_FILMS_PATH}
+								className="mt-4 inline-block font-heading text-small font-medium text-primary-foreground underline decoration-primary-foreground/30 underline-offset-4 transition-colors fine-hover:decoration-primary-foreground"
+							>
+								{t("filter.reset")}
+							</Link>
+						</div>
+					) : (
+						// Spotlight scope: hovering one film dims its siblings.
+						<ScrollReveal
+							key={gridKey}
+							className="spotlight-grid-dark mt-6 grid grid-cols-1 gap-4 sm:mt-8 sm:grid-cols-2 sm:gap-5 lg:grid-cols-3"
+						>
+							{visible.map((card) => (
+								<ScrollRevealItem
+									key={cardIdentity(card)}
+									className="h-full min-w-0"
+								>
+									<VideoPosterCard {...toPoster(card)} />
+								</ScrollRevealItem>
+							))}
+						</ScrollReveal>
+					)}
+				</div>
+			</section>
 		</main>
 	);
 }

@@ -121,6 +121,7 @@
 		"facebook": "Facebook",
 		"linkedin": "LinkedIn",
 		"youtube": "YouTube",
+		"whatsapp": "WhatsApp",
 		"email": "Email",
 		"copyright": "© 2026 Kurdish Heritage Institute · هەموو مافەکان پارێزراوە"
 	},
@@ -274,6 +275,9 @@
 	"Gallery": {
 		"pageTitle": "گەلەری",
 		"metaDescription": "ئەرشیفێکی دیمەنی ژیانی کوردی — وێنە، جلوبەرگی کۆن و پیشەی دەستی لە سەرانسەری کوردستان، پارێزراو لەلایەن ئینستیتووتی کەلەپووری کوردی.",
+		"hero": {
+			"title": "وێنە"
+		},
 		"search": {
 			"submit": "بگەڕێ",
 			"label": "گەڕان لە کۆکراوەکان",
@@ -727,12 +731,12 @@
 			"allTitle": "بەرنامەی کورتە فیلم.",
 			"watchNow": "ئێستا ببینە",
 			"details": "وردەکارییەکان",
-			"trending": "کورتە فیلمی بەناوبانگ",
-			"continueWatching": "بەردەوامبوون لە بینین",
 			"more": "کورتە فیلمی زیاتر",
+			"genreLabel": "جۆر",
+			"allGenres": "هەموو جۆرەکان",
 			"seeMore": "زیاتر ببینە",
-			"allPopular": "هەموو بەناوبانگەکان",
 			"empty": "لە ئێستادا هیچ کورتە فیلمێک بەردەست نییە.",
+			"noResults": "هیچ کورتە فیلمێک لەگەڵ ئەم پاڵاوتنە ناگونجێت.",
 			"promo": {
 				"title": "کورتە فیلم",
 				"cta": "کورتە فیلمەکان ببینە"
