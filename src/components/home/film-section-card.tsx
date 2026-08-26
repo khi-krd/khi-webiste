@@ -17,10 +17,9 @@ const imageEase = "ease-[cubic-bezier(0.22,1,0.36,1)]";
 
 type FilmCinemaHeroProps = {
 	item: FilmCardItem;
-	featuredLabel: string;
 };
 
-export function FilmCinemaHero({ item, featuredLabel }: FilmCinemaHeroProps) {
+export function FilmCinemaHero({ item }: FilmCinemaHeroProps) {
 	return (
 		<Link
 			href={item.href}
@@ -65,16 +64,13 @@ export function FilmCinemaHero({ item, featuredLabel }: FilmCinemaHeroProps) {
 			/>
 
 			<div className="relative flex h-full flex-col justify-end p-4 sm:p-5 lg:p-6">
-				<div className="flex flex-wrap items-center gap-2">
-					<span className="label border border-primary-foreground/30 bg-primary-foreground/10 px-2 py-0.5 font-medium text-primary-foreground/90 backdrop-blur-[2px]">
-						{featuredLabel}
-					</span>
-					{item.topicLabel ? (
+				{item.topicLabel ? (
+					<div className="flex flex-wrap items-center gap-2">
 						<span className="text-label text-primary-foreground/55">
 							{item.topicLabel}
 						</span>
-					) : null}
-				</div>
+					</div>
+				) : null}
 
 				<h3 className="mt-2 max-w-2xl font-heading text-h2 font-bold leading-[1.12] text-balance text-primary-foreground sm:text-h1">
 					{item.title}

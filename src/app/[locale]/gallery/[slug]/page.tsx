@@ -47,13 +47,15 @@ export default async function GalleryPostPage({
 	if (!detail) notFound();
 
 	const t = await getTranslations("Gallery");
+	// Back links are named after the menu entry for the section they return to.
+	const tNav = await getTranslations("Nav");
 
 	return (
 		<main>
 			<GalleryPostView
 				detail={detail}
 				backHref="/gallery"
-				backLabel={t("pageTitle")}
+				backLabel={tNav("menuGallery")}
 				backAriaLabel={t("post.back")}
 				photosLabel={t("posts.photosCount", {
 					count: detail.post.album.length,

@@ -19,7 +19,13 @@ import { cn } from "@/lib/utils";
  * `dir="ltr"` so `items-start` pins both lines flush left; each line then
  * carries its own lang/dir so the Arabic-script line still shapes correctly.
  */
-export async function Logo({ className }: { className?: string } = {}) {
+export async function Logo({
+	className,
+	reverse = false,
+}: {
+	className?: string;
+	reverse?: boolean;
+} = {}) {
 	const t = await getTranslations("Nav");
 	// Editors choose the mark in the CMS; the bundled file is the fallback, so
 	// the header never renders without a logo.
@@ -34,12 +40,18 @@ export async function Logo({ className }: { className?: string } = {}) {
 				className,
 			)}
 		>
+			{/* `order` swaps which element sits physically first without touching
+			    dir-row-unmirrored's direction math — used by the footer's lockup,
+			    which reads text-then-mark rather than the header's mark-then-text. */}
 			<Image
 				src={logoUrl ?? "/logo.png"}
 				alt=""
 				width={64}
 				height={64}
-				className="size-13 shrink-0 object-contain sm:size-16"
+				className={cn(
+					"size-13 shrink-0 object-contain sm:size-16",
+					reverse && "order-2",
+				)}
 				priority
 			/>
 
@@ -48,7 +60,10 @@ export async function Logo({ className }: { className?: string } = {}) {
 			    and end on the same two edges. */}
 			<span
 				dir="ltr"
-				className="hidden min-w-0 flex-col items-stretch justify-center gap-2 leading-[1.2] sm:flex"
+				className={cn(
+					"hidden min-w-0 flex-col items-stretch justify-center gap-2 leading-[1.2] sm:flex",
+					reverse && "order-1",
+				)}
 			>
 				<span
 					lang="ckb"

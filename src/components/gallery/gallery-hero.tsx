@@ -1,82 +1,104 @@
 import { galleryStripTrayClass } from "@/components/gallery/gallery-album-item";
 import { GalleryMarqueeColumn } from "@/components/gallery/gallery-marquee-column";
-import {
-	ScrollReveal,
-	ScrollRevealItem,
-} from "@/components/motion/scroll-reveal";
 import type { GalleryHeroColumns } from "@/lib/mock/gallery";
 import { cn } from "@/lib/utils";
 
 type GalleryHeroProps = {
-	eyebrow: string;
-	title: string;
+	/** Screen-reader name for the wall — it carries no visible text. */
+	label: string;
 	columns: GalleryHeroColumns;
 };
 
-export function GalleryHero({ eyebrow, title, columns }: GalleryHeroProps) {
-	// Third marquee column exists only ≥2xl (see hidden 2xl:block below).
-	// It reuses both pools combined and reversed: a marquee track always shows
-	// item 0 of the visible copy at load, so the reversed order surfaces the
-	// tail items — the ones columns one and two are NOT showing — and with the
-	// small CMS pools any single-pool rotation still duplicated the first
-	// column's visible frame.
-	const wideColumnItems = [...columns.up, ...columns.down].reverse();
+/**
+ * Wordless photo wall. Every column is the same pool rotated by a different
+ * offset, so no two columns ever show the same frame side by side, and each
+ * runs at its own speed so the grid never falls into lockstep.
+ */
+function rotate<T>(items: T[], by: number): T[] {
+	if (items.length === 0) {
+		return items;
+	}
+	const offset = by % items.length;
+	return [...items.slice(offset), ...items.slice(0, offset)];
+}
+
+/** Per-column drift, seconds. Deliberately co-prime-ish — no shared beat. */
+const COLUMN_DURATIONS = [58, 75, 67, 91, 83] as const;
+
+const MIN_COLUMNS = 2;
+
+/** Static class strings — Tailwind cannot see an interpolated column count. */
+const gridColumnsClass: Record<number, string> = {
+	2: "grid-cols-2",
+	3: "grid-cols-2 sm:grid-cols-3",
+	4: "grid-cols-2 sm:grid-cols-3 lg:grid-cols-4",
+	5: "grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 2xl:grid-cols-5",
+};
+
+/** Columns past a breakpoint's budget are hidden, never squeezed. */
+function visibilityClass(index: number): string {
+	if (index < 2) return "block";
+	if (index === 2) return "hidden sm:block";
+	if (index === 3) return "hidden lg:block";
+	return "hidden 2xl:block";
+}
+
+export function GalleryHero({ label, columns }: GalleryHeroProps) {
+	// One pool, five phases. The old split-pool arrangement only had enough
+	// material for the two columns that sat beside the headline; with the text
+	// gone the wall spans the full canvas and needs the whole set.
+	const pool = [...columns.up, ...columns.down];
+
+	if (pool.length === 0) {
+		return null;
+	}
+
+	// Never run more columns than the pool can tell apart: the CMS set is short,
+	// and a sixth phase of four images is just the same photo again one column
+	// over.
+	const columnCount = Math.min(
+		COLUMN_DURATIONS.length,
+		Math.max(MIN_COLUMNS, pool.length),
+	);
+
+	// Phase AND sequence both differ per column. Rotating by a fixed step alone
+	// put the same frame in neighbouring columns whenever the pool was small
+	// (the CMS set is short), so odd columns also walk the pool backwards.
+	const columnItems = (index: number) => {
+		const offset = Math.round((index * pool.length) / columnCount);
+		return index % 2 === 1
+			? rotate([...pool].reverse(), offset)
+			: rotate(pool, offset);
+	};
 
 	return (
 		<section
-			aria-labelledby="gallery-hero-heading"
-			className="relative w-full bg-background"
+			aria-label={label}
+			className="relative w-full overflow-hidden bg-background"
 		>
-			<div className="relative z-10 grid min-h-svh grid-cols-1 grid-rows-[auto_minmax(32rem,1fr)] lg:grid-cols-[minmax(0,5fr)_minmax(0,6fr)] lg:grid-rows-1">
-				{/* 2xl start inset mirrors homeInsetClass's wide-screen padding so the
-				    hero title shares one start line with the capped sections below,
-				    while the marquee side stays full-bleed. */}
-				<div className="flex flex-col px-6 pt-10 pb-8 sm:px-8 sm:pt-12 lg:pb-10 2xl:ps-[calc((100vw-96rem)/2+2rem)]">
-					<div className="flex flex-1 flex-col justify-center py-8 lg:py-10">
-						<ScrollReveal className="max-w-xl">
-							<ScrollRevealItem>
-								<p className="label font-medium">
-									<span aria-hidden="true" className="me-2">
-										{"//"}
-									</span>
-									{eyebrow}
-								</p>
-							</ScrollRevealItem>
-							<ScrollRevealItem>
-								{/* .display-title's clamp() ceiling (5rem) is saturated by
-								    1440px — give the headline back its weight on wide canvases. */}
-								<h1
-									id="gallery-hero-heading"
-									className="display-title mt-4 2xl:text-[5.5rem]"
-								>
-									{title}
-								</h1>
-							</ScrollRevealItem>
-						</ScrollReveal>
-					</div>
-				</div>
-
-				<div className="relative min-h-full">
-					<div
-						className={cn(
-							"marquee-zone absolute inset-0 overflow-hidden",
-							galleryStripTrayClass,
-						)}
-					>
-						<div className="grid h-full grid-cols-2 gap-1.5 2xl:grid-cols-3">
-							<GalleryMarqueeColumn items={columns.up} />
+			<div
+				className={cn(
+					"marquee-zone relative h-svh w-full overflow-hidden",
+					galleryStripTrayClass,
+				)}
+			>
+				<div
+					className={cn(
+						"grid h-full gap-1.5",
+						gridColumnsClass[columnCount] ?? gridColumnsClass[2],
+					)}
+				>
+					{COLUMN_DURATIONS.slice(0, columnCount).map(
+						(durationSeconds, index) => (
 							<GalleryMarqueeColumn
-								items={columns.down}
-								direction="down"
-								durationSeconds={75}
+								key={durationSeconds}
+								items={columnItems(index)}
+								direction={index % 2 === 1 ? "down" : "up"}
+								durationSeconds={durationSeconds}
+								className={visibilityClass(index)}
 							/>
-							<GalleryMarqueeColumn
-								items={wideColumnItems}
-								durationSeconds={95}
-								className="hidden 2xl:block"
-							/>
-						</div>
-					</div>
+						),
+					)}
 				</div>
 			</div>
 		</section>

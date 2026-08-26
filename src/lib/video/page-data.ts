@@ -44,7 +44,17 @@ export async function loadVideoPageData(
 	const showFeatured = page === 1 && !hasFilters;
 
 	const topicsPromise = getVideoTopics(locale);
-	const featuredLead = showFeatured ? await getFeaturedVideoLead(locale) : null;
+	// Resolved on EVERY unfiltered page, not just the one that renders the hero.
+	// Both the exclusion below and the page-one offset are properties of the
+	// pagination scheme, so every page has to agree on them — deciding them from
+	// `showFeatured` gave page two a different offset and made it repeat page
+	// one's last card.
+	const featuredLead = hasFilters ? null : await getFeaturedVideoLead(locale);
+
+	// With no dedicated featured record the shell promotes the listing's own
+	// first card into the hero slot, which would leave the grid one card short
+	// and its final row ragged. Page one asks for that card back.
+	const leadComesFromListing = !hasFilters && !featuredLead;
 
 	// The hero lead is dropped from the paginated flow (not just deduped on
 	// page 1) so every non-final page keeps full grid rows.
@@ -57,6 +67,7 @@ export async function loadVideoPageData(
 			page,
 			size: VIDEO_GRID_PAGE_SIZE,
 			excludeCardIdentity: featuredLead ? cardIdentity(featuredLead) : null,
+			firstPageExtra: leadComesFromListing ? 1 : 0,
 		}),
 		topicsPromise,
 	]);

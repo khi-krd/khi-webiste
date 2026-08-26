@@ -17,8 +17,8 @@ export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
 export const alt = "Kurdish Heritage Institute";
 
-// Sampled from public/logo.png so the card matches the mark.
-const GREEN = "#0f5c3f";
+// Exact institute brand green — matches --green-700 in globals.css.
+const GREEN = "#19563a";
 const CREAM = "#f4f1ea";
 
 export default async function OpengraphImage() {

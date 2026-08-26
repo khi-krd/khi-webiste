@@ -1,5 +1,5 @@
 import NextImage from "next/image";
-import { AudioPlayButton } from "@/components/audio/audio-play-button";
+import { AudioCardTransport } from "@/components/audio/audio-card-transport";
 import {
 	ScrollReveal,
 	ScrollRevealBlock,
@@ -35,13 +35,7 @@ function MemoriesCard({ item }: { item: ResolvedAudioCard }) {
 						className="object-cover brightness-[0.94] saturate-[0.88] sepia-[0.3] contrast-[0.96] transition-[filter,transform] duration-700 ease-[cubic-bezier(0.22,1,0.36,1)] group-fine:scale-[1.04] group-fine:brightness-100 group-fine:saturate-100"
 					/>
 				) : null}
-				{item.queue.length > 0 ? (
-					<AudioPlayButton
-						queue={item.queue}
-						size="overlay"
-						className="absolute bottom-0 start-0 z-2"
-					/>
-				) : null}
+				<AudioCardTransport seedId={item.id} queue={item.queue} />
 			</div>
 
 			<h3 className="mt-3 font-heading text-body font-bold leading-snug">

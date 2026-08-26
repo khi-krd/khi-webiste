@@ -9,6 +9,7 @@ import { useSearchParams } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { useCallback, useEffect, useRef, useState, useTransition } from "react";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { Select } from "@/components/ui/select";
 import { useRouter } from "@/i18n/navigation";
 import { soundTypeLabel } from "@/lib/audio/sound-types";
@@ -30,7 +31,6 @@ type AudioFilterBarProps = {
 	activeTopicId?: number | null;
 	activeTag?: string | null;
 	activeQuery?: string | null;
-	itemCount: number;
 	scrollTargetId?: string;
 	className?: string;
 };
@@ -52,7 +52,7 @@ function FilterPill({
 			className={cn(
 				"shrink-0 border px-3.5 py-2 font-heading text-small font-medium transition-colors sm:px-4",
 				active
-					? "border-foreground bg-primary text-primary-foreground"
+					? "border-primary bg-primary text-primary-foreground"
 					: "border-border-strong bg-background text-foreground fine-hover:border-foreground/40 fine-hover:bg-sunken",
 			)}
 		>
@@ -69,7 +69,6 @@ export function AudioFilterBar({
 	activeTopicId,
 	activeTag,
 	activeQuery,
-	itemCount,
 	scrollTargetId = "audio-grid",
 	className,
 }: AudioFilterBarProps) {
@@ -175,41 +174,23 @@ export function AudioFilterBar({
 		<div
 			className={cn("transition-opacity", isPending && "opacity-80", className)}
 		>
-			<div className="flex flex-wrap items-end justify-between gap-4 border-b border-border pb-4">
+			<div className="flex border-b border-border pb-4">
 				<button
 					type="button"
 					onClick={() => setExpanded((open) => !open)}
 					aria-expanded={expanded}
-					className="inline-flex items-center gap-2 font-heading text-body font-medium text-foreground underline decoration-foreground underline-offset-4 transition-colors fine-hover:text-foreground/80"
+					aria-label={t("filter.label")}
+					title={t("filter.label")}
+					className={cn(
+						"inline-flex size-11 shrink-0 items-center justify-center border transition-colors",
+						"focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring",
+						expanded
+							? "border-primary bg-primary text-primary-foreground"
+							: "border-border-strong bg-surface text-foreground fine-hover:border-foreground/40 fine-hover:bg-sunken",
+					)}
 				>
-					<AdjustmentsHorizontalIcon className="size-4 shrink-0" aria-hidden />
-					{t("filter.label")}
+					<AdjustmentsHorizontalIcon className="size-5" aria-hidden />
 				</button>
-
-				<div className="flex items-center gap-4 sm:gap-6">
-					<button
-						type="button"
-						onClick={handleClearAll}
-						disabled={!hasActiveFilters || isPending}
-						className={cn(
-							"font-heading text-small font-medium underline decoration-border underline-offset-4 transition-colors",
-							hasActiveFilters
-								? "text-muted fine-hover:text-foreground"
-								: "pointer-events-none text-muted/40",
-						)}
-					>
-						{t("filter.reset")}
-					</button>
-					<p className="text-small text-muted">
-						{/* `formatted` is a plain string so server and client agree on
-						    digits — Node's ICU lacks ckb number data, the browser's
-						    doesn't, and `#` would hydrate-mismatch. */}
-						{t("grid.itemCount", {
-							count: itemCount,
-							formatted: String(itemCount),
-						})}
-					</p>
-				</div>
 			</div>
 
 			{/* primary browse axis — always visible */}
@@ -256,7 +237,6 @@ export function AudioFilterBar({
 									name="q"
 									value={query}
 									onChange={(event) => handleQueryChange(event.target.value)}
-									placeholder={t("filter.searchPlaceholder")}
 									aria-label={t("filter.searchLabel")}
 									autoComplete="off"
 									className="h-full min-w-0 flex-1 bg-transparent px-3 py-0 text-body text-foreground placeholder:text-muted focus:outline-none sm:px-4"
@@ -273,6 +253,15 @@ export function AudioFilterBar({
 									</button>
 								) : null}
 							</div>
+							<Button
+								type="submit"
+								variant="primary"
+								size="lg"
+								className="h-12 shrink-0 sm:min-w-32"
+								disabled={isPending}
+							>
+								{t("filter.searchSubmit")}
+							</Button>
 						</form>
 					</search>
 
@@ -373,6 +362,17 @@ export function AudioFilterBar({
 										&ldquo;{activeQuery}&rdquo;
 									</Badge>
 								) : null}
+
+								{/* Reset lives beside the chips it clears — the header row
+								    above is the filter button alone. */}
+								<button
+									type="button"
+									onClick={handleClearAll}
+									disabled={isPending}
+									className="ms-auto font-heading text-small font-medium text-muted underline decoration-border underline-offset-4 transition-colors fine-hover:text-foreground"
+								>
+									{t("filter.reset")}
+								</button>
 							</div>
 						) : null}
 					</div>

@@ -195,7 +195,7 @@ export async function ShortFilmDetailView({
 				<div className="relative flex h-14 items-center justify-between gap-4 sm:h-16">
 					<BackToIndexLink
 						href="/videos/shortfilms"
-						label={t("shortfilms.pageTitle")}
+						label={t("shortfilms.promo.title")}
 						ariaLabel={t("shortfilms.detail.back")}
 						tone="dark"
 					/>

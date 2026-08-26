@@ -77,7 +77,7 @@ export function DonateHero({
 			{/* 2xl: height stops tracking svh so the text block keeps its 1440 share of the
 			    frame, and padding grows to the shared 96rem canvas inset (+1.5rem, matching
 			    lg:px-14 vs px-8 below; calc equals 3.5rem exactly at 1536px). */}
-			<div className="relative z-10 flex min-h-[68svh] flex-col justify-end px-6 pb-14 sm:min-h-[72svh] sm:px-10 sm:pb-16 lg:px-14 lg:pb-20 2xl:min-h-[min(72svh,52rem)] 2xl:px-[calc((100vw-96rem)/2+3.5rem)] 2xl:pb-24">
+			<div className="relative z-10 flex min-h-[68svh] flex-col justify-end px-6 pb-14 sm:min-h-[72svh] sm:px-10 sm:pb-16 lg:px-14 lg:pb-20 2xl:min-h-[min(72svh,52rem)] 2xl:px-[calc((100vw-var(--canvas))/2+3.5rem)] 2xl:pb-24">
 				<DonateHeroContent
 					eyebrow={eyebrow}
 					title={title}

@@ -93,7 +93,7 @@ export async function FilmSection() {
 				{/* Header is full-bleed (not inside the centered 7xl column) so the
 				    CTA parks in the section's top corner, where every other home
 				    section keeps its زیاتر. One word, hero scale. */}
-				<ScrollRevealBlock className="px-6 pt-10 pb-6 sm:px-8 sm:pt-12 sm:pb-7 2xl:px-[calc((100vw-96rem)/2+2rem)]">
+				<ScrollRevealBlock className="px-6 pt-10 pb-6 sm:px-8 sm:pt-12 sm:pb-7 2xl:px-[calc((100vw-var(--canvas))/2+2rem)]">
 					<header className="flex flex-row items-center justify-between gap-6">
 						<h2
 							id="film-heading"
@@ -118,12 +118,9 @@ export async function FilmSection() {
 
 				{/* 2xl bump keeps the cinema block's share of the (now 96rem) canvas
 				    close to its 1440 proportions instead of shrinking into it. */}
-				<div className="mx-auto max-w-7xl 2xl:max-w-[84rem]">
+				<div className="mx-auto max-w-7xl 2xl:max-w-[calc(var(--canvas)*0.875)]">
 					<ScrollRevealBlock className="border-y border-primary-foreground/15">
-						<FilmCinemaHero
-							item={featured}
-							featuredLabel={t("films.home.featuredLabel")}
-						/>
+						<FilmCinemaHero item={featured} />
 					</ScrollRevealBlock>
 
 					{gridItems.length > 0 ? (

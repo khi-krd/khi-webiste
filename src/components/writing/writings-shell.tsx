@@ -28,7 +28,6 @@ type WritingsShellProps = {
 	cards: WritingGridCardProps[];
 	currentPage: number;
 	totalPages: number;
-	totalElements: number;
 	activeGenre?: BookGenre | null;
 	activeQuery?: string | null;
 	activeWriter?: string | null;
@@ -53,7 +52,6 @@ export function WritingsShell({
 	cards,
 	currentPage,
 	totalPages,
-	totalElements,
 	activeGenre,
 	activeQuery,
 	activeWriter,
@@ -106,7 +104,6 @@ export function WritingsShell({
 					activeSort={activeSort}
 					genreLabels={genreLabels}
 					writers={writers}
-					itemCount={totalElements}
 					scrollTargetId={id}
 					className="mt-8 sm:mt-10"
 				/>

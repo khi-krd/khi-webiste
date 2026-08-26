@@ -6,4 +6,4 @@
  * calc equals 2rem exactly at 1536px, so the transition is seamless.
  */
 export const homeInsetClass =
-	"px-6 sm:px-8 2xl:px-[calc((100vw-96rem)/2+2rem)]";
+	"px-6 sm:px-8 2xl:px-[calc((100vw-var(--canvas))/2+2rem)]";

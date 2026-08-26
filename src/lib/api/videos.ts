@@ -75,6 +75,8 @@ export type VideoListingOptions = {
 	variant?: "home" | "listing";
 	/** Card identity to drop from the flow (e.g. the page-1 hero lead). */
 	excludeCardIdentity?: string | null;
+	/** Extra cards page one takes because the hero eats its first card. */
+	firstPageExtra?: number;
 };
 
 type VideoListingFilters = Pick<
@@ -321,6 +323,7 @@ export async function getVideoListing(
 		size = VIDEO_GRID_PAGE_SIZE,
 		variant = "listing",
 		excludeCardIdentity,
+		firstPageExtra = 0,
 	}: VideoListingOptions = {},
 ): Promise<VideoListResult> {
 	const filters: VideoListingFilters = {
@@ -343,6 +346,20 @@ export async function getVideoListing(
 
 	let items = sliceToCount(apiItems, variant === "home" ? size : undefined);
 
+	// One record can reach the listing twice (it is returned under more than one
+	// facet upstream), and the clip flatMap then emits the same card twice. Left
+	// in, the pair either sits side by side in one grid or straddles a page
+	// boundary and reads as page two repeating page one's last card.
+	const seenIdentities = new Set<string>();
+	items = items.filter((card) => {
+		const identity = cardIdentity(card);
+		if (seenIdentities.has(identity)) {
+			return false;
+		}
+		seenIdentities.add(identity);
+		return true;
+	});
+
 	if (excludeCardIdentity != null) {
 		items = items.filter((card) => cardIdentity(card) !== excludeCardIdentity);
 	}
@@ -357,7 +374,7 @@ export async function getVideoListing(
 		};
 	}
 
-	return paginateVideos(items, page, size);
+	return paginateVideos(items, page, size, firstPageExtra);
 }
 
 export async function getVideoById(

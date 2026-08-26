@@ -9,6 +9,7 @@ import {
 import { useReducedMotion } from "motion/react";
 import { useLocale, useTranslations } from "next-intl";
 import { type FormEvent, useEffect, useMemo, useRef, useState } from "react";
+import { Button } from "@/components/ui/button";
 import { DirectionalIcon } from "@/components/ui/directional-icon";
 import { Input } from "@/components/ui/input";
 import { Link } from "@/components/ui/link";
@@ -527,7 +528,6 @@ export function MenuSearch({ onBack, onNavigate }: MenuSearchProps) {
 							autoFocus
 							autoComplete="off"
 							spellCheck={false}
-							placeholder={t("searchPlaceholder")}
 							value={query}
 							onChange={(event) => setQuery(event.target.value)}
 							aria-invalid={showError ? true : undefined}
@@ -547,6 +547,15 @@ export function MenuSearch({ onBack, onNavigate }: MenuSearchProps) {
 								{t("searchErrorMinLength")}
 							</p>
 						)}
+
+						<Button
+							type="submit"
+							variant="primary"
+							size="lg"
+							className="self-start"
+						>
+							{t("searchSubmit")}
+						</Button>
 
 						<div className="mt-1 flex flex-wrap items-center gap-2 sm:gap-2.5">
 							<fieldset className="contents">

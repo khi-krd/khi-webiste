@@ -57,7 +57,8 @@ type UseInViewRevealOptions = {
 	extraDelay?: number;
 };
 
-/** Imperative fade/slide (or scale) reveal tied to viewport entry — once. */
+/** Imperative fade/slide (or scale) reveal tied to viewport entry. Fires once,
+ *  except inside the section-snap homepage, where it rearms on every arrival. */
 export function useInViewReveal(
 	ref: RefObject<HTMLElement | null>,
 	{
@@ -84,11 +85,44 @@ export function useInViewReveal(
 		const el = ref.current;
 		if (!el || prefersReducedMotion()) return;
 
-		el.style.opacity = "0";
-		el.style.transform =
-			scale !== undefined
-				? `translateY(${y}px) scale(${scale})`
-				: `translateY(${y}px)`;
+		/**
+		 * On the section-snap homepage a reveal REARMS instead of firing once.
+		 * Every landing there is a deliberate arrival at a whole section, and a
+		 * section that had already played its reveal simply sat there fully
+		 * formed — the scroll changed what was on screen but nothing happened,
+		 * which is what "it just changes the section and leaves it" was. Other
+		 * routes are read top-to-bottom in one pass, so a reveal that replayed on
+		 * every scroll-back would be noise: they keep the one-shot behavior.
+		 */
+		const rearms = Boolean(el.closest("main[data-snap-sections]"));
+
+		const hiddenKeyframes =
+			scale !== undefined ? { opacity: 0, y, scale } : { opacity: 0, y };
+
+		/**
+		 * Back to the pre-reveal state.
+		 *
+		 * The rearm path has to go through `animate`, not through a direct style
+		 * write. `animate(element, …)` keeps its own value state per element, so
+		 * an element it has already taken to `opacity: 1` is still recorded there
+		 * as 1 — a hand-written `style.opacity = "0"` is invisible to it, and the
+		 * next reveal animates 1 → 1 and paints nothing. The very first hide, run
+		 * before any reveal exists, stays a plain style write: it must land in the
+		 * same frame as mount or the content flashes in at full opacity first.
+		 */
+		const hidden = (viaMotion: boolean) => {
+			if (viaMotion) {
+				animate(el, hiddenKeyframes, { duration: 0 });
+				return;
+			}
+			el.style.opacity = "0";
+			el.style.transform =
+				scale !== undefined
+					? `translateY(${y}px) scale(${scale})`
+					: `translateY(${y}px)`;
+		};
+
+		hidden(false);
 
 		let cancelled = false;
 		let animControls: { stop: () => void } | undefined;
@@ -110,7 +144,22 @@ export function useInViewReveal(
 						el.style.willChange = "";
 					},
 				});
-				unobserve();
+				if (!rearms) {
+					unobserve();
+					return;
+				}
+				// Runs when the element leaves again. Rearming on the OBSERVER's
+				// inset boundary would re-hide content still visible at the edge of
+				// the screen — and, for an element parked right on that line, flip
+				// it on and off. It rearms only once the element is genuinely off
+				// the viewport, which a section-sized step always achieves.
+				return () => {
+					const box = el.getBoundingClientRect();
+					if (box.bottom > 0 && box.top < window.innerHeight) return;
+					animControls?.stop();
+					el.style.willChange = "";
+					hidden(true);
+				};
 			},
 			{ margin },
 		);

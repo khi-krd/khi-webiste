@@ -3,7 +3,7 @@
 
 import Autoplay, { type AutoplayType } from "embla-carousel-autoplay";
 import useEmblaCarousel from "embla-carousel-react";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { ScrollRevealBlock } from "@/components/motion/scroll-reveal";
 import {
 	WritingCard,
@@ -56,8 +56,6 @@ export function WritingCarousel({
 		autoplay ? [autoplay] : [],
 	);
 
-	const [selectedIndex, setSelectedIndex] = useState(0);
-	const [snapCount, setSnapCount] = useState(cards.length);
 	const [prefersReducedMotion, setPrefersReducedMotion] = useState(false);
 
 	useEffect(() => {
@@ -67,27 +65,6 @@ export function WritingCarousel({
 		mediaQuery.addEventListener("change", updatePreference);
 		return () => mediaQuery.removeEventListener("change", updatePreference);
 	}, []);
-
-	const syncEmbla = useCallback(() => {
-		if (!emblaApi) {
-			return;
-		}
-		setSelectedIndex(emblaApi.selectedScrollSnap());
-		setSnapCount(emblaApi.scrollSnapList().length);
-	}, [emblaApi]);
-
-	useEffect(() => {
-		if (!emblaApi) {
-			return;
-		}
-		syncEmbla();
-		emblaApi.on("select", syncEmbla);
-		emblaApi.on("reInit", syncEmbla);
-		return () => {
-			emblaApi.off("select", syncEmbla);
-			emblaApi.off("reInit", syncEmbla);
-		};
-	}, [emblaApi, syncEmbla]);
 
 	useEffect(() => {
 		emblaApi?.reInit();
@@ -139,24 +116,6 @@ export function WritingCarousel({
 							</ul>
 						</ScrollRevealBlock>
 					</div>
-
-					{hasMultipleSlides ? (
-						<div className="mt-8 border-t border-border pt-6">
-							<p
-								className="label font-medium tabular-nums text-muted"
-								aria-live="polite"
-								aria-atomic="true"
-							>
-								<span className="text-foreground">
-									{String(selectedIndex + 1).padStart(2, "0")}
-								</span>
-								<span aria-hidden="true" className="mx-2">
-									/
-								</span>
-								{String(snapCount).padStart(2, "0")}
-							</p>
-						</div>
-					) : null}
 				</div>
 			)}
 		</section>

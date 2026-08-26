@@ -64,7 +64,7 @@ export function VideoCinemaHero({
 			{/* 2xl inline padding mirrors homeInsetClass's 96rem canvas (+ the same
 			    24px it already sits deeper than the rails at lg), so the hero copy
 			    tracks the rails' start line on wide screens. */}
-			<div className="relative z-10 flex min-h-[inherit] flex-col justify-end p-6 sm:p-10 lg:p-14 2xl:px-[calc((100vw-96rem)/2+3.5rem)]">
+			<div className="relative z-10 flex min-h-[inherit] flex-col justify-end p-6 sm:p-10 lg:p-14 2xl:px-[calc((100vw-var(--canvas))/2+3.5rem)]">
 				<ScrollReveal className="max-w-2xl text-start">
 					<ScrollRevealItem>
 						<h1 className="font-heading text-display font-bold leading-[1.05] text-balance text-primary-foreground 2xl:text-[3.5rem]">

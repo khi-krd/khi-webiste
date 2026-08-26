@@ -8,7 +8,6 @@ import { NewsClearFilters } from "@/components/news/news-clear-filters";
 import { NewsFilterBar } from "@/components/news/news-filter-bar";
 import { NewsPagination } from "@/components/news/news-pagination";
 import { NewsSidebarPanel } from "@/components/news/news-sidebar-panel";
-import { Divider } from "@/components/ui/divider";
 import { homeInsetClass } from "@/lib/layout";
 import {
 	type NewsCategoryOption,
@@ -23,7 +22,6 @@ type NewsShellProps = {
 	latest: NewsItem[];
 	locale: string;
 	sectionTitle: string;
-	sectionDescription?: string;
 	categories: NewsCategoryOption[];
 	subCategories?: NewsCategoryOption[];
 	tags?: string[];
@@ -37,7 +35,6 @@ type NewsShellProps = {
 	paginationLabel: string;
 	previousLabel: string;
 	nextLabel: string;
-	featuredLabel: string;
 	latestLabel: string;
 	className?: string;
 };
@@ -48,7 +45,6 @@ export function NewsShell({
 	latest,
 	locale,
 	sectionTitle,
-	sectionDescription,
 	categories,
 	subCategories,
 	tags,
@@ -62,14 +58,33 @@ export function NewsShell({
 	paginationLabel,
 	previousLabel,
 	nextLabel,
-	featuredLabel,
 	latestLabel,
 	className,
 }: NewsShellProps) {
 	const hasFilters = Boolean(
-		activeCategory || activeSubCategory || activeTag?.trim() || activeQuery?.trim(),
+		activeCategory ||
+			activeSubCategory ||
+			activeTag?.trim() ||
+			activeQuery?.trim(),
 	);
 	const isEmpty = items.length === 0;
+
+	// One aside column instead of two: featured picks lead, the rest of the
+	// latest run follows, deduped by id and ordered newest first.
+	const seenSidebarIds = new Set<string>();
+	const sidebarItems = [...featured, ...latest]
+		.filter((item) => {
+			if (seenSidebarIds.has(item.id)) {
+				return false;
+			}
+			seenSidebarIds.add(item.id);
+			return true;
+		})
+		.sort(
+			(a, b) =>
+				new Date(b.publishedAt).getTime() - new Date(a.publishedAt).getTime(),
+		)
+		.slice(0, 6);
 
 	return (
 		<section
@@ -89,9 +104,6 @@ export function NewsShell({
 						>
 							{sectionTitle}
 						</h2>
-						{sectionDescription ? (
-							<p className="mt-3 text-body text-muted">{sectionDescription}</p>
-						) : null}
 					</div>
 				</header>
 			</ScrollRevealBlock>
@@ -155,23 +167,12 @@ export function NewsShell({
 				</div>
 
 				<aside className="mt-12 lg:mt-0 lg:sticky lg:top-28 lg:self-start">
-					<div className="flex flex-col gap-6">
-						<NewsSidebarPanel
-							title={featuredLabel}
-							items={featured}
-							locale={locale}
-							categories={categories}
-						/>
-
-						<Divider />
-
-						<NewsSidebarPanel
-							title={latestLabel}
-							items={latest}
-							locale={locale}
-							categories={categories}
-						/>
-					</div>
+					<NewsSidebarPanel
+						title={latestLabel}
+						items={sidebarItems}
+						locale={locale}
+						categories={categories}
+					/>
 				</aside>
 			</div>
 		</section>

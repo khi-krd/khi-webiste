@@ -1,8 +1,9 @@
 import type { Metadata } from "next";
 import { getTranslations, setRequestLocale } from "next-intl/server";
+import { VisuallyHidden } from "@/components/ui/visually-hidden";
 import { buildGenreLabels } from "@/components/writing/writing-card";
 import { WritingCarousel } from "@/components/writing/writing-carousel";
-import { WritingHero } from "@/components/writing/writing-hero";
+import { WritingHeroBackdrop } from "@/components/writing/writing-hero";
 import { WritingsShell } from "@/components/writing/writings-shell";
 import { getWritingsCarousel } from "@/lib/api/writings";
 import { homeInsetClass } from "@/lib/layout";
@@ -68,7 +69,6 @@ export default async function WritingsPage({
 		),
 		topicName: item.topicName,
 		fileUrl: item.fileUrl,
-		downloadLabel: t("carousel.download"),
 	}));
 
 	const heroTexture =
@@ -82,22 +82,20 @@ export default async function WritingsPage({
 
 	return (
 		<main className="bg-background">
-			<div className={cn(homeInsetClass, "pb-0")}>
-				<div className="overflow-hidden border border-border bg-surface">
-					<WritingHero
-						eyebrow={t("page.hero.eyebrow")}
-						title={t("page.hero.title")}
-						titleEmphasis={t("page.hero.titleEmphasis")}
-						textureUrl={heroTexture}
-						showEmphasisItalic={locale === "ku"}
-					/>
+			<VisuallyHidden as="h1">{t("pageTitle")}</VisuallyHidden>
 
-					<WritingCarousel
-						cards={cards}
-						direction={direction}
-						emptyLabel={t("carousel.empty")}
-						carouselLabel={t("carousel.autoplayLabel")}
-					/>
+			<div className={cn(homeInsetClass, "pb-0")}>
+				<div className="relative isolate overflow-hidden border border-border bg-surface">
+					<WritingHeroBackdrop textureUrl={heroTexture} />
+
+					<div className="relative z-1">
+						<WritingCarousel
+							cards={cards}
+							direction={direction}
+							emptyLabel={t("carousel.empty")}
+							carouselLabel={t("carousel.autoplayLabel")}
+						/>
+					</div>
 				</div>
 			</div>
 
@@ -109,7 +107,6 @@ export default async function WritingsPage({
 				cards={pageData.gridCards}
 				currentPage={pageData.listing.currentPage}
 				totalPages={pageData.listing.totalPages}
-				totalElements={pageData.listing.totalElements}
 				activeGenre={pageData.activeGenre}
 				activeQuery={pageData.activeQuery}
 				activeWriter={pageData.activeWriter}

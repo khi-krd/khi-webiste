@@ -25,13 +25,13 @@ type TopicOption = {
 
 type VideoShellProps = {
 	id?: string;
+	/** Screen-reader name for the catalogue — no longer rendered as a heading. */
 	title: string;
 	cards: ResolvedVideoCard[];
 	showFeatured?: boolean;
 	featuredLead?: ResolvedVideoCard | null;
 	currentPage: number;
 	totalPages: number;
-	totalElements: number;
 	topics: TopicOption[];
 	activeType?: VideoType | null;
 	activeTopicId?: number | null;
@@ -53,7 +53,6 @@ export async function VideoShell({
 	featuredLead,
 	currentPage,
 	totalPages,
-	totalElements,
 	topics,
 	activeType,
 	activeTopicId,
@@ -114,18 +113,9 @@ export async function VideoShell({
 				"w-full border-t border-border bg-surface/40 py-8 sm:py-10 lg:py-12",
 				className,
 			)}
-			aria-labelledby="videos-grid-heading"
+			aria-label={title}
 		>
 			<div className={homeInsetClass}>
-				<ScrollRevealBlock>
-					<h2
-						id="videos-grid-heading"
-						className="font-heading text-h2 font-bold leading-[1.08] text-balance sm:text-h1"
-					>
-						{title}
-					</h2>
-				</ScrollRevealBlock>
-
 				{showFilters ? (
 					<VideoFilterBar
 						topics={topics}
@@ -133,9 +123,7 @@ export async function VideoShell({
 						activeTopicId={activeTopicId}
 						activeMemories={activeMemories}
 						activeQuery={activeQuery}
-						itemCount={totalElements}
 						scrollTargetId={id}
-						className="mt-5 sm:mt-6"
 					/>
 				) : null}
 
@@ -158,12 +146,6 @@ export async function VideoShell({
 								key={`featured-${gridKey}`}
 								className="mt-5 sm:mt-6"
 							>
-								<p className="label mb-3 font-medium text-muted">
-									<span aria-hidden="true" className="me-2">
-										{"//"}
-									</span>
-									{t("films.home.featuredLabel")}
-								</p>
 								<VideoCard {...leadCard} variant="featured" />
 							</ScrollRevealBlock>
 						) : null}

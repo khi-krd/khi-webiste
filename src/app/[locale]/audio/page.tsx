@@ -1,8 +1,12 @@
 import type { Metadata } from "next";
 import { getTranslations, setRequestLocale } from "next-intl/server";
-import { AudioHero } from "@/components/audio/audio-hero";
+import {
+	AudioCoverStrip,
+	type AudioStripCover,
+} from "@/components/audio/audio-cover-strip";
 import { AudioMemoriesStrip } from "@/components/audio/audio-memories-strip";
 import { AudioShell } from "@/components/audio/audio-shell";
+import { VisuallyHidden } from "@/components/ui/visually-hidden";
 import { getAlbumOfMemories } from "@/lib/api/audio";
 import { loadAudioPageData } from "@/lib/audio/page-data";
 import { homeInsetClass } from "@/lib/layout";
@@ -51,7 +55,9 @@ export default async function AudioPage({
 		getAlbumOfMemories(locale),
 	]);
 
-	const heroCovers: { id: number; coverUrl: string; title: string }[] = [];
+	// The strip is the whole header — enough art to fill its widest budget,
+	// deduped by cover URL so a repeated sleeve never sits twice.
+	const heroCovers: AudioStripCover[] = [];
 	const seenCoverUrls = new Set<string>();
 	for (const item of [...pageData.listing.items, ...memories]) {
 		if (!item.coverUrl || seenCoverUrls.has(item.coverUrl)) {
@@ -63,24 +69,17 @@ export default async function AudioPage({
 			coverUrl: item.coverUrl,
 			title: item.title,
 		});
-		if (heroCovers.length >= 3) {
+		if (heroCovers.length >= 6) {
 			break;
 		}
 	}
 
 	return (
 		<main className="bg-background">
-			<div className={cn(homeInsetClass, "pb-0")}>
-				<div className="overflow-hidden border border-border bg-surface">
-					<AudioHero
-						eyebrow={t("page.hero.eyebrow")}
-						title={t("page.hero.title")}
-						titleEmphasis={t("page.hero.titleEmphasis")}
-						description={t("page.hero.description")}
-						covers={heroCovers}
-						showEmphasisItalic={locale === "ku"}
-					/>
-				</div>
+			<VisuallyHidden as="h1">{t("pageTitle")}</VisuallyHidden>
+
+			<div className={cn(homeInsetClass, "pt-6 pb-0 sm:pt-8")}>
+				<AudioCoverStrip covers={heroCovers} />
 			</div>
 
 			<AudioMemoriesStrip
@@ -94,7 +93,6 @@ export default async function AudioPage({
 					cards={pageData.listing.items}
 					currentPage={pageData.listing.currentPage}
 					totalPages={pageData.listing.totalPages}
-					totalElements={pageData.listing.totalElements}
 					soundTypes={pageData.soundTypes}
 					topics={pageData.topics}
 					activeType={pageData.activeType}

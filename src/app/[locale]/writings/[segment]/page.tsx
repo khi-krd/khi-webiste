@@ -103,7 +103,6 @@ export default async function WritingsSegmentPage({
 					cards={pageData.gridCards}
 					currentPage={pageData.listing.currentPage}
 					totalPages={pageData.listing.totalPages}
-					totalElements={pageData.listing.totalElements}
 					activeGenre={pageData.activeGenre}
 					activeQuery={pageData.activeQuery}
 					activeWriter={pageData.activeWriter}
@@ -148,7 +147,7 @@ export default async function WritingsSegmentPage({
 			<WritingPostView
 				detail={detail}
 				backHref="/writings"
-				backLabel={t("pageTitle")}
+				backLabel={navT("menuWritings")}
 				backAriaLabel={t("post.back")}
 				seriesBooks={seriesBooks}
 				related={related}

@@ -1,10 +1,6 @@
 "use client";
 
-import {
-	AdjustmentsHorizontalIcon,
-	MagnifyingGlassIcon,
-	XMarkIcon,
-} from "@heroicons/react/24/outline";
+import { MagnifyingGlassIcon, XMarkIcon } from "@heroicons/react/24/outline";
 import { useSearchParams } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { useCallback, useEffect, useRef, useState, useTransition } from "react";
@@ -163,7 +159,6 @@ export function GalleryFilterBar({
 							name="q"
 							value={query}
 							onChange={(event) => handleQueryChange(event.target.value)}
-							placeholder={t("search.placeholder")}
 							aria-label={t("search.label")}
 							autoComplete="off"
 							className="h-full min-w-0 flex-1 bg-transparent px-3 py-0 text-body text-foreground placeholder:text-muted focus:outline-none sm:px-4"
@@ -194,18 +189,8 @@ export function GalleryFilterBar({
 			</div>
 
 			<div className="px-4 py-4 sm:px-5 sm:py-5">
-				<div className="flex flex-wrap items-center justify-between gap-3">
-					<div className="flex items-center gap-2 text-muted">
-						<AdjustmentsHorizontalIcon
-							className="size-4 shrink-0"
-							aria-hidden
-						/>
-						<p className="font-heading text-label font-semibold uppercase tracking-[0.14em]">
-							{t("filter.heading")}
-						</p>
-					</div>
-
-					{hasActiveFilters ? (
+				{hasActiveFilters ? (
+					<div className="mb-4 flex justify-end">
 						<button
 							type="button"
 							onClick={handleClearAll}
@@ -213,31 +198,26 @@ export function GalleryFilterBar({
 						>
 							{t("filter.clear")}
 						</button>
-					) : null}
-				</div>
-
-				<div className="mt-4">
-					<p className="label font-semibold text-muted">
-						{t("filter.typeLabel")}
-					</p>
-					<div
-						className="mt-3 flex flex-wrap gap-2"
-						role="group"
-						aria-label={t("filter.label")}
-					>
-						<TypePill active={!hasActiveType} onClick={() => handleType(null)}>
-							{t("filter.all")}
-						</TypePill>
-						{GALLERY_TYPE_OPTIONS.map((type) => (
-							<TypePill
-								key={type}
-								active={activeType === type}
-								onClick={() => handleType(type)}
-							>
-								{t(`posts.types.${type}`)}
-							</TypePill>
-						))}
 					</div>
+				) : null}
+
+				<div
+					className="flex flex-wrap gap-2"
+					role="group"
+					aria-label={t("filter.label")}
+				>
+					<TypePill active={!hasActiveType} onClick={() => handleType(null)}>
+						{t("filter.all")}
+					</TypePill>
+					{GALLERY_TYPE_OPTIONS.map((type) => (
+						<TypePill
+							key={type}
+							active={activeType === type}
+							onClick={() => handleType(type)}
+						>
+							{t(`posts.types.${type}`)}
+						</TypePill>
+					))}
 				</div>
 
 				{topics.length > 0 ? (
@@ -307,7 +287,7 @@ function TypePill({ active, onClick, children }: TypePillProps) {
 			className={cn(
 				"shrink-0 border px-3.5 py-2 font-heading text-small font-medium transition-colors sm:px-4",
 				active
-					? "border-foreground bg-primary text-primary-foreground"
+					? "border-primary bg-primary text-primary-foreground"
 					: "border-border-strong bg-background text-foreground fine-hover:border-foreground/40 fine-hover:bg-sunken",
 			)}
 		>

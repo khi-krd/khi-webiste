@@ -1,6 +1,7 @@
 import { ArrowRightIcon, ArrowUpRightIcon } from "@heroicons/react/24/outline";
 import NextImage from "next/image";
 import { getTranslations } from "next-intl/server";
+import type { ComponentProps, ComponentType } from "react";
 import { Logo } from "@/components/layout/logo";
 import {
 	FooterReveal,
@@ -10,17 +11,71 @@ import { Container } from "@/components/ui/container";
 import { viewAllCtaOnBrandClass } from "@/components/ui/cta-styles";
 import { DirectionalIcon } from "@/components/ui/directional-icon";
 import { Link } from "@/components/ui/link";
+import { DONATE_HREF, FOOTER_COLUMNS, type FooterLink } from "@/config/site";
+import { getDonateBandImageUrl, getSiteLogoUrl } from "@/lib/api/site-settings";
 import {
-	DONATE_HREF,
-	FOOTER_COLUMNS,
-	FOOTER_SOCIAL_LINKS,
-	type FooterLink,
-} from "@/config/site";
-import { getDonateBandImageUrl } from "@/lib/api/site-settings";
+	getContactOffices,
+	getSocialPlatforms,
+	type SocialPlatformId,
+} from "@/lib/mock/contact";
 import { cn } from "@/lib/utils";
 
-const footerCtaClass =
-	"group/footer-cta relative inline-flex h-11 w-fit shrink-0 items-center gap-2.5 overflow-hidden border border-primary-foreground/70 bg-primary-foreground/10 px-5 font-heading text-small font-semibold text-primary-foreground no-underline backdrop-blur-[2px] transition-[color,gap,box-shadow,background-color,border-color] duration-300 ease-out before:absolute before:inset-0 before:z-0 before:origin-bottom before:scale-y-0 before:bg-primary-foreground before:transition-transform before:duration-300 before:ease-[cubic-bezier(0.22,1,0.36,1)] fine-hover:gap-3.5 fine-hover:border-primary-foreground fine-hover:text-foreground fine-hover:shadow-[0_8px_24px_-12px_color-mix(in_oklch,var(--color-foreground)_55%,transparent)] fine-hover:before:scale-y-100 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-foreground motion-reduce:before:transition-none motion-reduce:fine-hover:before:scale-y-100 motion-reduce:fine-hover:gap-2.5";
+function YoutubeIcon(props: ComponentProps<"svg">) {
+	return (
+		<svg
+			viewBox="0 0 24 24"
+			fill="none"
+			stroke="currentColor"
+			strokeWidth={1.7}
+			aria-hidden="true"
+			{...props}
+		>
+			<rect x="2.5" y="6" width="19" height="13" rx="3.5" />
+			<path d="M10 9.7v5.6l5-2.8z" fill="currentColor" stroke="none" />
+		</svg>
+	);
+}
+
+function FacebookIcon(props: ComponentProps<"svg">) {
+	return (
+		<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" {...props}>
+			<path d="M13.5 21v-7h2.4l.4-3h-2.8V9.1c0-.9.3-1.5 1.6-1.5h1.3V4.9c-.3 0-1.1-.1-2-.1-2 0-3.4 1.2-3.4 3.5V11H8.5v3H11v7z" />
+		</svg>
+	);
+}
+
+function InstagramIcon(props: ComponentProps<"svg">) {
+	return (
+		<svg
+			viewBox="0 0 24 24"
+			fill="none"
+			stroke="currentColor"
+			strokeWidth={1.7}
+			aria-hidden="true"
+			{...props}
+		>
+			<rect x="3" y="3" width="18" height="18" rx="5" />
+			<circle cx="12" cy="12" r="4" />
+			<circle cx="17.3" cy="6.7" r="1.1" fill="currentColor" stroke="none" />
+		</svg>
+	);
+}
+
+function EmailIcon(props: ComponentProps<"svg">) {
+	return (
+		<svg
+			viewBox="0 0 24 24"
+			fill="none"
+			stroke="currentColor"
+			strokeWidth={1.7}
+			aria-hidden="true"
+			{...props}
+		>
+			<rect x="3" y="5" width="18" height="14" rx="2.5" />
+			<path d="M4 7l8 6 8-6" />
+		</svg>
+	);
+}
 
 type FooterDonateBandProps = {
 	title: string;
@@ -92,42 +147,51 @@ function FooterDonateBand({
 	);
 }
 
+type FooterSocialLink = {
+	key: string;
+	href: string;
+	label: string;
+	icon: ComponentType<ComponentProps<"svg">>;
+	external?: boolean;
+};
+
+/** Circular icon-only social row over the dark footer ground — hover fills
+ *  brand green, same interactive color as every other filled control on the
+ *  site. Renders nothing while no real profile URLs resolve. */
+function FooterSocialIcons({ links }: { links: FooterSocialLink[] }) {
+	if (links.length === 0) return null;
+
+	return (
+		<div className="flex items-center gap-3">
+			{links.map(({ key, href, label, icon: Icon, external }) => (
+				<a
+					key={key}
+					href={href}
+					aria-label={label}
+					title={label}
+					{...(external ? { target: "_blank", rel: "noreferrer" } : {})}
+					// rounded-[50%], not rounded-full: --radius-full is 0 while the
+					// site-wide square-corner toggle is off, and these pills are
+					// round by design in the footer regardless of that setting.
+					className="flex size-11 items-center justify-center rounded-[50%] border border-primary-foreground/15 bg-primary-foreground/5 text-primary-foreground/75 transition-colors duration-200 fine-hover:border-brand fine-hover:bg-brand fine-hover:text-white focus-visible:border-brand focus-visible:bg-brand focus-visible:text-white"
+				>
+					<Icon className="size-[1.1875rem]" />
+				</a>
+			))}
+		</div>
+	);
+}
+
 type FooterNavPanelProps = {
-	index: string;
 	title: string;
 	links: FooterLink[];
 	resolveLabel: (link: FooterLink) => string;
-	isLast?: boolean;
 };
 
-function FooterNavPanel({
-	index,
-	title,
-	links,
-	resolveLabel,
-	isLast = false,
-}: FooterNavPanelProps) {
+function FooterNavPanel({ title, links, resolveLabel }: FooterNavPanelProps) {
 	return (
-		<nav
-			aria-label={title}
-			className={cn(
-				"flex min-h-full flex-col px-6 py-7 sm:px-7 sm:py-8 lg:px-8",
-				!isLast &&
-					"border-b border-primary-foreground/12 sm:border-b-0 sm:border-e",
-			)}
-		>
-			<div className="mb-6 flex items-baseline gap-3 border-b border-primary-foreground/12 pb-4">
-				<span
-					aria-hidden="true"
-					className="font-heading text-[0.6875rem] font-bold tabular-nums tracking-[0.14em] text-primary-foreground/40"
-				>
-					{index}
-				</span>
-				<h4 className="font-heading text-small font-bold uppercase tracking-[0.14em] text-primary-foreground">
-					{title}
-				</h4>
-			</div>
-			<ul className="flex flex-1 flex-col gap-0.5">
+		<nav aria-label={title} className="flex min-w-52 flex-col sm:min-w-60">
+			<ul className="flex flex-col gap-1">
 				{links.map((item) => {
 					const label = resolveLabel(item);
 					const key = item.navKey ?? item.labelKey ?? item.href;
@@ -140,8 +204,8 @@ function FooterNavPanel({
 									target="_blank"
 									rel="noreferrer"
 									className={cn(
-										"group flex w-full items-center justify-between gap-3 py-2.5",
-										"font-heading text-[0.9375rem] font-medium leading-snug text-primary-foreground/70",
+										"group flex w-full items-center justify-between gap-4 py-3.5",
+										"font-heading text-[1.25rem] font-medium leading-snug text-primary-foreground/75 lg:text-[1.375rem]",
 										"no-underline transition-colors duration-200 fine-hover:text-primary-foreground",
 									)}
 								>
@@ -153,7 +217,7 @@ function FooterNavPanel({
 										/>
 									</span>
 									<ArrowUpRightIcon
-										className="size-3.5 shrink-0 opacity-30 transition-[opacity,transform] duration-200 group-fine:translate-x-px group-fine:-translate-y-px group-fine:opacity-100"
+										className="size-[1.125rem] shrink-0 opacity-30 transition-[opacity,transform] duration-200 group-fine:translate-x-px group-fine:-translate-y-px group-fine:opacity-100"
 										aria-hidden="true"
 									/>
 								</a>
@@ -165,10 +229,11 @@ function FooterNavPanel({
 						<li key={key}>
 							<Link
 								href={item.href}
+								variant="nav"
 								className={cn(
-									"group flex w-full items-center justify-between gap-3 py-2.5",
-									"font-heading text-[0.9375rem] font-medium leading-snug text-primary-foreground/70",
-									"no-underline transition-colors duration-200 fine-hover:text-primary-foreground",
+									"group flex w-full items-center justify-between gap-4 py-3.5",
+									"font-heading text-[1.25rem] font-medium leading-snug text-primary-foreground/75 lg:text-[1.375rem]",
+									"transition-colors duration-200 fine-hover:text-primary-foreground",
 								)}
 							>
 								<span className="relative">
@@ -180,7 +245,7 @@ function FooterNavPanel({
 								</span>
 								<DirectionalIcon
 									icon={ArrowRightIcon}
-									className="size-3.5 shrink-0 opacity-0 transition-[opacity,transform] duration-200 group-fine:translate-x-0.5 group-fine:opacity-55"
+									className="size-[1.125rem] shrink-0 opacity-0 transition-[opacity,transform] duration-200 group-fine:translate-x-0.5 group-fine:opacity-55"
 								/>
 							</Link>
 						</li>
@@ -193,33 +258,74 @@ function FooterNavPanel({
 
 export async function Footer() {
 	const t = await getTranslations("Footer");
+	const logoUrl = await getSiteLogoUrl();
 	const donateImageUrl = await getDonateBandImageUrl();
 
 	const resolveLabel = (link: FooterLink) => t(link.labelKey ?? "");
 
-	const navPanels = [
-		...FOOTER_COLUMNS.map((column, index) => ({
-			key: column.titleKey,
-			index: String(index + 1).padStart(2, "0"),
-			title: t(column.titleKey),
-			links: column.links,
-		})),
-		// Omitted while no real social profiles are configured — an empty
-		// "connect" column reads as broken.
-		...(FOOTER_SOCIAL_LINKS.length > 0
+	const navPanels = FOOTER_COLUMNS.map((column) => ({
+		key: column.titleKey,
+		title: t(column.titleKey),
+		links: column.links,
+	}));
+
+	// Real profile URLs already used on the contact page — no placeholder
+	// "#" links (a bare, unconfigured icon row reads as broken to visitors).
+	const socialPlatforms = getSocialPlatforms();
+	const findSocialHref = (id: SocialPlatformId) =>
+		socialPlatforms.find((platform) => platform.id === id)?.href;
+	const hqEmail = getContactOffices().find(
+		(office) => office.badge === "hq",
+	)?.email;
+
+	const socialLinks: FooterSocialLink[] = [
+		...(findSocialHref("youtube")
 			? [
 					{
-						key: "connect",
-						index: String(FOOTER_COLUMNS.length + 1).padStart(2, "0"),
-						title: t("connect"),
-						links: FOOTER_SOCIAL_LINKS,
+						key: "youtube",
+						href: findSocialHref("youtube") as string,
+						label: t("youtube"),
+						icon: YoutubeIcon,
+						external: true,
+					},
+				]
+			: []),
+		...(findSocialHref("facebook")
+			? [
+					{
+						key: "facebook",
+						href: findSocialHref("facebook") as string,
+						label: t("facebook"),
+						icon: FacebookIcon,
+						external: true,
+					},
+				]
+			: []),
+		...(findSocialHref("instagram")
+			? [
+					{
+						key: "instagram",
+						href: findSocialHref("instagram") as string,
+						label: t("instagram"),
+						icon: InstagramIcon,
+						external: true,
+					},
+				]
+			: []),
+		...(hqEmail
+			? [
+					{
+						key: "email",
+						href: `mailto:${hqEmail}`,
+						label: t("email"),
+						icon: EmailIcon,
 					},
 				]
 			: []),
 	];
 
 	return (
-		<footer className="relative overflow-hidden">
+		<footer className="relative">
 			<FooterDonateBand
 				imageUrl={donateImageUrl}
 				title={t("donateTitle")}
@@ -227,97 +333,66 @@ export async function Footer() {
 				cta={t("donateCta")}
 			/>
 
-			<div
-				aria-hidden="true"
-				className="absolute inset-0 scale-125 saturate-150 contrast-125"
-			>
-				{/* Decorative, heavily blurred and behind dark overlays — a small
-				    low-quality variant is indistinguishable, so request a tiny
-				    width and let next/image serve AVIF/WebP. */}
-				<NextImage
-					src="/menu/1.jpg"
-					alt=""
-					fill
-					quality={40}
-					sizes="640px"
-					className="object-cover blur-lg"
-				/>
-			</div>
-			<div aria-hidden="true" className="absolute inset-0 bg-foreground/78" />
-			<div
-				aria-hidden="true"
-				className="absolute inset-0 bg-linear-to-b from-foreground/40 via-foreground/70 to-foreground/88"
-			/>
-			<div
-				aria-hidden="true"
-				className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,transparent_20%,color-mix(in_oklch,var(--color-foreground)_55%,transparent)_100%)]"
-			/>
+			{/* The gradient ground and watermark belong to the link area only — the
+			    donate band above carries its own solid brand-green panel. */}
+			<div className="footer-panel relative overflow-hidden">
+				{/* Giant, near-invisible brand mark behind everything — pure texture,
+				    not a real logo presentation, so it's excluded from a11y. */}
+				<div
+					aria-hidden="true"
+					// opacity kept low: the centered link columns sit directly over the
+					// mark's densest strokes, and anything heavier eats their contrast.
+					className="pointer-events-none absolute left-1/2 top-1/2 size-[26rem] -translate-x-1/2 -translate-y-1/2 select-none opacity-[0.055] saturate-[0.6] brightness-150 sm:size-[34rem] lg:size-[42rem]"
+				>
+					<NextImage
+						src={logoUrl ?? "/logo.png"}
+						alt=""
+						fill
+						quality={35}
+						sizes="(min-width: 1024px) 672px, (min-width: 640px) 544px, 416px"
+						className="object-contain"
+					/>
+				</div>
 
-			{/* Tight under the donate band (the two read as one block), roomy
-			    below so the copyright line still has air above the page edge. */}
-			<div className="relative z-10 pt-6 pb-16 sm:pt-7 sm:pb-20 lg:pt-8 lg:pb-24">
-				<Container className="max-w-none 2xl:max-w-[96rem]">
-					<FooterReveal>
-						<FooterRevealItem>
-							<section className="text-primary-foreground">
-								<div className="overflow-hidden border border-primary-foreground/14 bg-primary-foreground/4 backdrop-blur-[2px]">
-									<div className="grid lg:grid-cols-[minmax(0,20rem)_1fr] xl:grid-cols-[minmax(0,23rem)_1fr]">
-										<div className="flex flex-col justify-between gap-10 border-b border-primary-foreground/12 p-8 sm:p-9 lg:border-b-0 lg:border-e lg:p-10">
-											<div className="space-y-6">
-												<Logo className="text-primary-foreground" />
-												<p className="label font-medium text-primary-foreground/55">
-													{t("brandEyebrow")}
-												</p>
-												<h3 className="max-w-68 font-heading text-[clamp(1.625rem,2.5vw,2.25rem)] font-bold leading-[1.12] text-balance text-primary-foreground">
-													{t("brandTagline")}
-												</h3>
-											</div>
-											<Link href="/contact" className={footerCtaClass}>
-												<span className="relative z-1">{t("getInTouch")}</span>
-												<DirectionalIcon
-													icon={ArrowRightIcon}
-													className="relative z-1 size-4 shrink-0"
-												/>
-											</Link>
-										</div>
-
-										<div
-											className={cn(
-												"grid",
-												navPanels.length >= 3
-													? "sm:grid-cols-2 lg:grid-cols-3"
-													: "sm:grid-cols-2",
-											)}
-										>
-											{navPanels.map((panel, index) => (
-												<FooterNavPanel
-													key={panel.key}
-													index={panel.index}
-													title={panel.title}
-													links={panel.links}
-													resolveLabel={resolveLabel}
-													isLast={index === navPanels.length - 1}
-												/>
-											))}
-										</div>
-									</div>
-
-									<div className="flex flex-col gap-3 border-t border-primary-foreground/12 px-8 py-5 sm:flex-row sm:items-center sm:justify-between sm:px-10 lg:px-12">
-										<p className="text-small leading-relaxed text-primary-foreground/50">
-											{t("copyright")}
-										</p>
-										<p
-											aria-hidden="true"
-											className="font-heading text-[0.6875rem] font-bold uppercase tracking-[0.16em] text-primary-foreground/35"
-										>
-											KHI
-										</p>
-									</div>
+				<div className="relative z-10 pb-8 pt-14 sm:pt-16 lg:pt-20">
+					<Container className="max-w-none 2xl:max-w-[var(--canvas)]">
+						<FooterReveal>
+							<FooterRevealItem>
+								<div className="flex flex-wrap items-center justify-between gap-8">
+									<Logo className="text-primary-foreground" reverse />
+									<FooterSocialIcons links={socialLinks} />
 								</div>
-							</section>
-						</FooterRevealItem>
-					</FooterReveal>
-				</Container>
+
+								{/* Centered pair of content-sized columns. NOT a 2-track grid:
+							    equal tracks pushed the two lists to opposite page edges.
+							    justify-center centers the block under the watermark while
+							    each column keeps its own intrinsic width. */}
+								<div className="mt-12 flex flex-wrap justify-center gap-x-20 gap-y-8 sm:gap-x-32 lg:mt-14 lg:gap-x-40">
+									{navPanels.map((panel) => (
+										<FooterNavPanel
+											key={panel.key}
+											title={panel.title}
+											links={panel.links}
+											resolveLabel={resolveLabel}
+										/>
+									))}
+								</div>
+
+								<div className="mt-10 flex flex-col-reverse gap-3 border-t border-primary-foreground/10 pt-6 sm:mt-12 sm:flex-row sm:items-center sm:justify-between">
+									<p className="text-small leading-relaxed text-primary-foreground/50">
+										{t("copyright")}
+									</p>
+									<p
+										aria-hidden="true"
+										className="font-heading text-[0.6875rem] font-bold uppercase tracking-[0.16em] text-primary-foreground/35"
+									>
+										KHI
+									</p>
+								</div>
+							</FooterRevealItem>
+						</FooterReveal>
+					</Container>
+				</div>
 			</div>
 		</footer>
 	);

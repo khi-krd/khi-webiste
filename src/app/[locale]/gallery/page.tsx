@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { GalleryHero } from "@/components/gallery/gallery-hero";
 import { GalleryPosts } from "@/components/gallery/gallery-posts";
+import { VisuallyHidden } from "@/components/ui/visually-hidden";
 import {
 	filterGalleryPosts,
 	getGalleryHeroColumns,
@@ -79,17 +80,13 @@ export default async function GalleryPage({
 
 	return (
 		<main>
-			<GalleryHero
-				eyebrow={t("hero.eyebrow")}
-				title={t("hero.title")}
-				columns={columns}
-			/>
+			<VisuallyHidden as="h1">{t("pageTitle")}</VisuallyHidden>
+
+			<GalleryHero label={t("pageTitle")} columns={columns} />
 
 			{/* Carries the #gallery-content anchor for in-page scroll targets. */}
 			<GalleryPosts
-				eyebrow={t("posts.eyebrow")}
 				title={t("posts.title")}
-				description={t("posts.description")}
 				posts={posts}
 				currentPage={currentPage}
 				totalPages={totalPages}

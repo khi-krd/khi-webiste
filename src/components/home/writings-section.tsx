@@ -45,7 +45,12 @@ export async function WritingsSection() {
 
 	return (
 		<section
-			className="cv-auto w-full border-t border-border bg-background py-12 sm:py-16 lg:py-20"
+			// `min-h-svh` + centred content: the section owns at least one whole
+			// viewport, which is what the home page's section scroll steps
+			// between. Without it a short list (the CMS can return as few as
+			// four) left the next section showing underneath, and no landing
+			// could align either of them.
+			className="cv-auto flex min-h-svh w-full flex-col justify-center border-t border-border bg-background py-12 sm:py-16 lg:py-20"
 			// Placeholder height scales with the actual item count (4..16) so the
 			// pre-render scrollbar estimate stays close; self-corrects after paint.
 			style={
@@ -55,7 +60,7 @@ export async function WritingsSection() {
 		>
 			{/* Full-bleed gutters (like the video section) instead of the centered
 			    Container — the grid hangs from the page's main start line. */}
-			<div className="px-6 sm:px-8 2xl:px-[calc((100vw-96rem)/2+2rem)]">
+			<div className="px-6 sm:px-8 2xl:px-[calc((100vw-var(--canvas))/2+2rem)]">
 				<ScrollRevealBlock className="mb-8 sm:mb-10">
 					<header>
 						<div className="flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between sm:gap-8">

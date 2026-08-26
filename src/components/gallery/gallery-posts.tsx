@@ -27,9 +27,8 @@ type TopicOption = {
 };
 
 type GalleryPostsProps = {
-	eyebrow: string;
+	/** Screen-reader name for the section — no longer rendered as a heading. */
 	title: string;
-	description: string;
 	posts: GalleryPostWithMeta[];
 	currentPage: number;
 	totalPages: number;
@@ -116,9 +115,7 @@ function PostRow({ post }: { post: GalleryPostWithMeta }) {
 }
 
 export function GalleryPosts({
-	eyebrow,
 	title,
-	description,
 	posts,
 	currentPage,
 	totalPages,
@@ -134,31 +131,9 @@ export function GalleryPosts({
 	return (
 		<section
 			id="gallery-content"
-			aria-labelledby="gallery-posts-heading"
+			aria-label={title}
 			className="scroll-mt-26 bg-background sm:scroll-mt-30"
 		>
-			<div
-				className={cn(
-					"bg-primary py-12 text-primary-foreground sm:py-16 lg:py-20",
-					homeInsetClass,
-				)}
-			>
-				<div className="border-b border-primary-foreground/20 pb-5">
-					<p className="label font-medium text-primary-foreground/70">
-						<span aria-hidden="true" className="me-2">
-							{"//"}
-						</span>
-						{eyebrow}
-					</p>
-				</div>
-				<h2 id="gallery-posts-heading" className="display-title mt-8">
-					{title}
-				</h2>
-				<p className="mt-6 max-w-xl text-justify text-body leading-relaxed text-primary-foreground/70">
-					{description}
-				</p>
-			</div>
-
 			<div className={cn("pb-16 lg:pb-24", homeInsetClass)}>
 				<div className="pt-8 lg:pt-10">
 					<GalleryFilterBar

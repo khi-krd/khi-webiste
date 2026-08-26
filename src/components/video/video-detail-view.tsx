@@ -33,6 +33,8 @@ export async function VideoDetailView({
 	relatedVideos = [],
 }: VideoDetailViewProps) {
 	const t = await getTranslations("Video");
+	// Back links are named after the menu entry for the section they return to.
+	const tNav = await getTranslations("Nav");
 
 	// De-duplicated: the institute is often both director and producer, and
 	// "X · X" reads as a mistake in a byline.
@@ -121,7 +123,7 @@ export async function VideoDetailView({
 						<div className="mx-auto max-w-6xl py-8 sm:py-10 2xl:max-w-[92rem]">
 							<BackToIndexLink
 								href="/videos"
-								label={t("pageTitle")}
+								label={tNav("menuVideo")}
 								ariaLabel={t("detail.back")}
 								tone="dark"
 								className="mb-6"

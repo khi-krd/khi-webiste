@@ -204,7 +204,7 @@ export function AudioDialButton({
 				className={cn(
 					// Hub stays ink in every state — accent is reserved for progress, so
 					// the ring reads as a meter rather than a wash of colour.
-					"relative z-1 flex size-9 items-center justify-center rounded-full bg-foreground text-primary-foreground shadow-[0_6px_18px_-4px_rgba(0,0,0,0.6)] ring-0 ring-accent/70 transition-[box-shadow] duration-300 ease-out group-fine:ring-2 sm:size-11",
+					"relative z-1 flex size-9 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-[0_6px_18px_-4px_rgba(0,0,0,0.6)] ring-0 ring-accent/70 transition-[box-shadow] duration-300 ease-out group-fine:ring-2 sm:size-11",
 					isPlaying && "ring-2",
 				)}
 			>

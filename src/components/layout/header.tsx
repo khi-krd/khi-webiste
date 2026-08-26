@@ -41,7 +41,7 @@ export async function Header() {
 
 	return (
 		<HeaderShell>
-			<Container className="dir-row-unmirrored relative flex h-16 max-w-none items-center justify-between gap-4 px-8 sm:h-20 sm:px-10 2xl:max-w-[96rem]">
+			<Container className="dir-row-unmirrored relative flex h-16 max-w-none items-center justify-between gap-4 px-8 sm:h-20 sm:px-10 2xl:max-w-[var(--canvas)]">
 				<div className="dir-row-unmirrored flex min-w-0 items-center gap-4 sm:gap-6">
 					<Logo />
 

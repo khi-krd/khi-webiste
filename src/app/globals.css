@@ -41,14 +41,15 @@
 	--warm-500: oklch(0.500 0.014 75); /* ≈ #696158  muted — 5.5:1 on paper (WCAG AA ✓ at 12px) */
 	--warm-900: oklch(0.220 0.012 67); /* ≈ #1A1813  near-black ink           */
 
-	/* Kurdish-identity green — calm, archival (flag green, desaturated to sit
-	   on the warm paper). Referenced ONLY via --color-accent below. */
-	--green-600: oklch(0.52 0.105 152); /* ≈ #2E7B4D */
+	/* Kurdish-identity green. Referenced ONLY via --color-accent below.
+	   Unified onto the single institute green (user request): every green on
+	   the site is the same exact brand value. */
+	--green-600: #19563a;
 
 	/* Deep institute green. Authored as a literal hex, NOT an oklch ramp step:
 	   it is an exact brand value handed to us, so it must round-trip byte-for-
 	   byte rather than stay "tunable". Referenced ONLY via --color-brand below. */
-	--green-700: #1a563a; /* ≈ oklch(0.406 0.078 159) */
+	--green-700: #19563a; /* ≈ oklch(0.404 0.079 159) */
 }
 
 /* ----------------------------------------------------------------------------
@@ -73,9 +74,14 @@
 	--color-border-strong: var(--warm-400); /* interactive borders: inputs,
 		secondary button, drawn-stroke. ~3.5:1 on background — reads actionable. */
 
-	/* Primary = ink today (monochrome). Kept separate so an interactive
-	   surface has a stable hook independent of body text. */
-	--color-primary: var(--warm-900);
+	/* Primary = the interactive surface: filled buttons, active filter pills,
+	   the current pagination page, play buttons, solid badges.
+
+	   Brand green, NOT ink (user request). Kept separate from --color-foreground
+	   precisely so this swap is one line: body text stays near-black while every
+	   filled control on the site carries the institute's green. White sits on it
+	   at 7.6:1 — WCAG AA at every size. */
+	--color-primary: var(--green-700);
 	--color-primary-foreground: var(--warm-50); /* ink/text ON primary */
 
 	/* ▼▼ KURDISH-IDENTITY HOOK ▼▼
@@ -139,11 +145,52 @@
 	   CTA lands under the fold. The homepage escapes it only because snap
 	   scrolling parks the header out of view. */
 	--header-h: calc(4rem + 1px);
+
+	/* Shared content canvas — the width page content is centered in from 2xl up.
+	   Every `2xl:px-[calc((100vw-var(--canvas))/2+…)]` inset on the site derives
+	   its gutters from this one value, so the whole page widens together.
+
+	   It is a RAMP, not a constant. 96rem was drawn against a ~1440–1536px
+	   screen; left there, a 27" display (1920 or 2560 across) renders the site
+	   as a narrow column stranded in the middle of the glass, with a third of
+	   the width dead on either side. The steps below hand that space back
+	   without ever letting a text column run past a comfortable measure. */
+	--canvas: 96rem;
 }
 
 @media (min-width: 40rem) {
 	:root {
 		--header-h: calc(5rem + 1px);
+	}
+}
+
+/* ~1840px and up — the 27" class at 1080p, and ultrawides. */
+@media (min-width: 115rem) {
+	:root {
+		--canvas: 106rem;
+
+		/* Type steps up with the canvas. A 27" is not just a wider 15" laptop:
+		   it is also sat further back, so the whole scale needs the extra size
+		   to hold the same apparent reading weight. */
+		--text-display: 3.5rem;
+		--text-h1: 2.5rem;
+		--text-h2: 2rem;
+		--text-h3: 1.5rem;
+		--text-body: 1.125rem;
+		--text-lead: 1.1875rem;
+		--text-small: 0.9375rem;
+	}
+}
+
+/* ~2240px and up — 27" at 1440p (2560×1440) and 4K. */
+@media (min-width: 140rem) {
+	:root {
+		--canvas: 120rem;
+
+		--text-display: 3.75rem;
+		--text-h1: 2.625rem;
+		--text-h2: 2.125rem;
+		--text-h3: 1.5625rem;
 	}
 }
 
@@ -898,6 +945,28 @@ html[data-corners="rounded"]
 	}
 }
 
+/* --- Footer: dark brand-green gradient ground -------------------------------
+   Bespoke gradient stops (no logical/token equivalent, same reasoning as
+   .directional-flip above): two near-black stops easing into a deep green.
+   The two off-center glows are tied to --green-700 via color-mix so they
+   track the one brand green everywhere on the site if it's ever retuned.
+   Purely decorative and left unmirrored between ckb/ku, same as the site's
+   other ambient background gradients. */
+.footer-panel {
+	background:
+		radial-gradient(
+			820px 400px at 12% 8%,
+			color-mix(in oklch, var(--green-700) 40%, transparent),
+			transparent 62%
+		),
+		radial-gradient(
+			1000px 480px at 88% 100%,
+			color-mix(in oklch, var(--green-700) 55%, transparent),
+			transparent 65%
+		),
+		linear-gradient(172deg, #0a1410 0%, #08110d 45%, #0f2a1c 100%);
+}
+
 /* --- Gallery hero: display headline + vertical marquee --------------------
    .display-title is the ink-on-paper sibling of .hero-slide-title — same
    fluid scale and per-script handling, minus the text-shadow (that shadow is
@@ -916,6 +985,21 @@ html[data-corners="rounded"]
 	}
 	to {
 		transform: translateY(-50%);
+	}
+}
+
+/* --- Video hero: horizontal filmstrip -------------------------------------
+   Same seamless-loop contract as the gallery's vertical marquee (list rendered
+   twice, translate by exactly one copy, NO gap/padding/margin on the track —
+   all spacing lives inside the items), turned on its side. The keyframe is
+   authored in the physical direction on purpose: the strip is film running
+   through a projector, not text, so it travels the same way in ckb and ku. */
+@keyframes khi-marquee-x {
+	from {
+		transform: translateX(0);
+	}
+	to {
+		transform: translateX(-50%);
 	}
 }
 
@@ -946,10 +1030,32 @@ html[data-corners="rounded"]
 	.marquee-track-reverse {
 		animation-direction: reverse;
 	}
+	/* The strip itself carries dir="ltr" (see VideoFilmstrip) — translateX and
+	   the copy order have to agree, and under rtl they do not. */
+	.filmstrip-track {
+		display: flex;
+		width: max-content;
+		animation: khi-marquee-x var(--marquee-duration, 64s) linear infinite;
+	}
+	/* Same keyframes played backwards — the lower row drifts the other way and
+	   starts at a different phase for free. */
+	.filmstrip-track-reverse {
+		animation-direction: reverse;
+	}
+	/* Perforated film edge — the strip's whole identity, drawn in CSS so the
+	   hero stays a Server Component. */
+	.filmstrip-perf {
+		background-image: repeating-linear-gradient(
+			to right,
+			transparent 0 0.55rem,
+			var(--color-background) 0.55rem 1.05rem
+		);
+	}
 	/* Pause while inspecting — fine pointers only (mirrors the fine-hover
 	   variant; touch devices have no meaningful hover). */
 	@media (hover: hover) and (pointer: fine) {
-		.marquee-zone:hover .marquee-track {
+		.marquee-zone:hover .marquee-track,
+		.filmstrip-zone:hover .filmstrip-track {
 			animation-play-state: paused;
 		}
 	}

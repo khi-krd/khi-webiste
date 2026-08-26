@@ -1,8 +1,5 @@
-import { ArrowUpRightIcon } from "@heroicons/react/24/outline";
 import NextImage from "next/image";
-import { DirectionalIcon } from "@/components/ui/directional-icon";
 import { Link } from "@/components/ui/link";
-import { cn } from "@/lib/utils";
 import { formatFileSize } from "@/lib/writing/resolve";
 import type { BookGenre } from "@/types/writing";
 
@@ -16,7 +13,6 @@ export type WritingCardProps = {
 	genreLabels: string[];
 	topicName: string | null;
 	fileUrl: string | null;
-	downloadLabel: string;
 };
 
 function CoverImage({ src, alt }: { src: string; alt: string }) {
@@ -40,7 +36,6 @@ export function WritingCard({
 	hoverCoverUrl,
 	genreLabels,
 	topicName,
-	downloadLabel,
 }: WritingCardProps) {
 	const hasHoverCover =
 		hoverCoverUrl != null &&
@@ -49,7 +44,7 @@ export function WritingCard({
 	const subtitle = genreLabels[0] ?? topicName ?? null;
 
 	return (
-		<article className="group flex h-full w-full flex-col overflow-hidden border border-border bg-surface">
+		<article className="group relative flex h-full w-full flex-col overflow-hidden border border-border bg-surface">
 			<div className="relative aspect-[4/3] w-full overflow-hidden">
 				<div className="absolute inset-0">
 					{coverUrl ? (
@@ -81,7 +76,16 @@ export function WritingCard({
 					<div className="space-y-2">
 						<div>
 							<p className="font-heading text-h3 font-bold leading-tight">
-								{writer || title}
+								{/* Stretched over the whole card: the read button that used
+								    to carry this link is gone, and a cover you cannot click
+								    is a dead end. */}
+								<Link
+									href={`/writings/${id}`}
+									variant="nav"
+									className="text-inherit no-underline after:absolute after:inset-0 after:z-1 after:content-['']"
+								>
+									{writer || title}
+								</Link>
 							</p>
 							{subtitle ? (
 								<p className="mt-1 text-small text-primary-foreground/72">
@@ -101,19 +105,6 @@ export function WritingCard({
 								{excerpt}
 							</p>
 						) : null}
-
-						<div className="flex items-end justify-between gap-4">
-							<Link
-								href={`/writings/${id}`}
-								variant="nav"
-								className={cn(
-									"inline-flex items-center gap-2 border border-primary-foreground/30 bg-primary-foreground/12 px-4 py-2.5 text-small font-medium text-primary-foreground no-underline backdrop-blur-md transition-[background-color,gap] duration-300 fine-hover:gap-2.5 fine-hover:bg-primary-foreground/22",
-								)}
-							>
-								{downloadLabel}
-								<DirectionalIcon icon={ArrowUpRightIcon} className="size-3.5" />
-							</Link>
-						</div>
 					</div>
 				</div>
 			</div>

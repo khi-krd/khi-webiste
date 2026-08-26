@@ -1,5 +1,5 @@
 import NextImage from "next/image";
-import { AudioPlayButton } from "@/components/audio/audio-play-button";
+import { AudioCardTransport } from "@/components/audio/audio-card-transport";
 import { Link } from "@/components/ui/link";
 import { audioDetailHref } from "@/lib/audio/resolve";
 import { cn } from "@/lib/utils";
@@ -107,13 +107,7 @@ export function AudioCard({
 					</span>
 				) : null}
 
-				{queue.length > 0 ? (
-					<AudioPlayButton
-						queue={queue}
-						size="overlay"
-						className="absolute bottom-0 start-0 z-2"
-					/>
-				) : null}
+				<AudioCardTransport seedId={id} queue={queue} />
 			</div>
 
 			<div className="flex flex-1 flex-col gap-1.5 px-4 py-4 sm:px-5 sm:py-5">

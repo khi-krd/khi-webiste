@@ -34,6 +34,8 @@ export default async function ProjectDetailPage({
 	if (!detail) notFound();
 
 	const t = await getTranslations("ProjectsPage");
+	// Back links are named after the menu entry for the section they return to.
+	const tNav = await getTranslations("Nav");
 
 	return (
 		<main className="bg-background">
@@ -41,7 +43,7 @@ export default async function ProjectDetailPage({
 				detail={detail}
 				locale={locale}
 				backHref="/projects"
-				backLabel={t("pageTitle")}
+				backLabel={tNav("menuProjects")}
 				backAriaLabel={t("detail.back")}
 				typeLabel={t("detail.type")}
 				statusLabel={t("detail.status")}

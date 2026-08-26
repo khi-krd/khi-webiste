@@ -1,18 +1,9 @@
 import NextImage from "next/image";
-import {
-	ScrollReveal,
-	ScrollRevealItem,
-} from "@/components/motion/scroll-reveal";
-import { cn } from "@/lib/utils";
 import { WRITINGS_STILL } from "@/lib/writing/still";
 
-type WritingHeroProps = {
-	eyebrow: string;
-	title: string;
-	titleEmphasis?: string;
+type WritingHeroBackdropProps = {
 	/** Optional soft texture — one image only, heavily diffused. */
 	textureUrl?: string | null;
-	showEmphasisItalic?: boolean;
 };
 
 function WritingHeroBackground({ textureUrl }: { textureUrl?: string | null }) {
@@ -52,56 +43,15 @@ function WritingHeroBackground({ textureUrl }: { textureUrl?: string | null }) {
 	);
 }
 
-export function WritingHero({
-	eyebrow,
-	title,
-	titleEmphasis,
+/**
+ * Paper wash + diffused texture for the writings carousel container.
+ *
+ * This used to be a full hero band carrying an eyebrow and headline; with the
+ * copy removed an empty strip was left over, so the wash now sits behind the
+ * carousel itself and the strip is gone.
+ */
+export function WritingHeroBackdrop({
 	textureUrl = WRITINGS_STILL,
-	showEmphasisItalic = false,
-}: WritingHeroProps) {
-	return (
-		// <section>, not <header>: a nested <header> has the implicit `generic`
-		// role, which does not support aria-labelledby. <section> maps to
-		// `region`, making this a properly named landmark.
-		<section
-			aria-labelledby="writings-hero-heading"
-			className="relative overflow-hidden border-b border-border"
-		>
-			<WritingHeroBackground textureUrl={textureUrl} />
-
-			<div className="relative z-1 px-6 pt-5 pb-8 text-center sm:px-10 sm:pt-6 sm:pb-9 lg:px-14 lg:pt-7 lg:pb-10">
-				<ScrollReveal className="mx-auto max-w-4xl">
-					<ScrollRevealItem>
-						<p className="label font-medium text-muted">
-							<span aria-hidden="true" className="me-2">
-								{"//"}
-							</span>
-							{eyebrow}
-						</p>
-					</ScrollRevealItem>
-
-					<ScrollRevealItem>
-						<h1
-							id="writings-hero-heading"
-							className="mx-auto mt-3 max-w-4xl text-balance"
-						>
-							<span className="block font-heading text-[clamp(1.5rem,3.2vw,2.25rem)] font-medium leading-[1.2] text-foreground/80">
-								{title}
-							</span>
-							{titleEmphasis ? (
-								<span
-									className={cn(
-										"mt-2 block font-heading text-[clamp(1.875rem,4.8vw,3.25rem)] font-bold leading-[1.08] tracking-[-0.02em] text-foreground",
-										showEmphasisItalic && "font-semibold italic",
-									)}
-								>
-									{titleEmphasis}
-								</span>
-							) : null}
-						</h1>
-					</ScrollRevealItem>
-				</ScrollReveal>
-			</div>
-		</section>
-	);
+}: WritingHeroBackdropProps) {
+	return <WritingHeroBackground textureUrl={textureUrl} />;
 }

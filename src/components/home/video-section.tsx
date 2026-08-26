@@ -72,7 +72,7 @@ export async function VideoSection() {
 			{/* Header is full-bleed and top-aligned: the زیاتر CTA parks in the
 			    section's top corner, the fixed spot every other home section keeps
 			    it in. */}
-			<ScrollRevealBlock className="px-6 pt-18 pb-4 sm:px-8 sm:pt-20 sm:pb-5 lg:pt-24 2xl:px-[calc((100vw-96rem)/2+2rem)]">
+			<ScrollRevealBlock className="px-6 pt-18 pb-4 sm:px-8 sm:pt-20 sm:pb-5 lg:pt-24 2xl:px-[calc((100vw-var(--canvas))/2+2rem)]">
 				<header className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between sm:gap-10">
 					<h2
 						id="video-heading"
@@ -100,7 +100,7 @@ export async function VideoSection() {
 			    backdrop) so the block reads as a single player panel; the spacing
 			    lives inside the queue instead. At `lg` the stage takes a capped share
 			    of the viewport so the whole section still lands in one snap step. */}
-			<div className="px-6 pb-8 sm:px-8 sm:pb-10 2xl:px-[calc((100vw-96rem)/2+2rem)]">
+			<div className="px-6 pb-8 sm:px-8 sm:pb-10 2xl:px-[calc((100vw-var(--canvas))/2+2rem)]">
 				<ScrollRevealBlock delay={0.06}>
 					<VideoStage
 						items={stageItems}

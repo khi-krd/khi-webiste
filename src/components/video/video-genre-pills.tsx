@@ -40,7 +40,7 @@ function Pill({
 						? "border-primary-foreground bg-primary-foreground text-foreground"
 						: "border-primary-foreground/20 bg-primary-foreground/10 text-primary-foreground fine-hover:border-primary-foreground/40 fine-hover:bg-primary-foreground/15"
 					: active
-						? "border-foreground bg-primary text-primary-foreground"
+						? "border-primary bg-primary text-primary-foreground"
 						: "border-border-strong bg-background text-foreground fine-hover:border-foreground/40 fine-hover:bg-sunken",
 			)}
 		>

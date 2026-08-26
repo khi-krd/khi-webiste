@@ -32,8 +32,8 @@
 		"library": "Pirtûkxane",
 		"searchOpen": "Lêgerînê veke",
 		"searchBack": "Vegere",
-		"searchPlaceholder": "Di naverokê de bigere…",
 		"searchLabel": "Lêgerîn",
+		"searchSubmit": "Bigere",
 		"searchErrorMinLength": "Kêm kêm 2 tîp binivîse",
 		"searchResults": "Encam",
 		"searchNoResults": "Tu encam nehatin dîtin",
@@ -103,12 +103,8 @@
 		"donateTitle": "Neteweyek arşîva xwe diparêze",
 		"donateDescription": "Bi bexşînek beşdar bibe di parastina deng, wêne û nivîsên mîrateya kurdî de.",
 		"donateCta": "Niha Bexşîne",
-		"brandEyebrow": "Enstîtuya Mîrateya Kurdî",
-		"brandTagline": "Em arşîva neteweyekê diparêzin.",
-		"getInTouch": "Têkilî Dayne",
 		"collections": "Koleksiyon",
 		"institute": "Enstîtû",
-		"connect": "Girêdan",
 		"writings": "Nivîs",
 		"sound": "Deng",
 		"video": "Deng û Reng",
@@ -124,6 +120,8 @@
 		"instagram": "Instagram",
 		"facebook": "Facebook",
 		"linkedin": "LinkedIn",
+		"youtube": "YouTube",
+		"email": "Email",
 		"copyright": "© 2026 Enstîtuya Mîrateya Kurdî. Maf hemû parastî ne."
 	},
 	"LanguageSwitcher": {
@@ -149,13 +147,10 @@
 		"pageTitle": "Nûçeyên",
 		"metaDescription": "Lêkolîn, nûçe û çîrok li ser çand, dîrok, ziman, mîrat û civaka Kurdî ji Enstîtûya Mîrateya Kurdî.",
 		"hero": {
-			"eyebrow": "Nûçeyên",
-			"title": "Lêkolînên me yên dawî bibîne",
-			"description": "Nûçe, raporên qeyadan û dîtina arşîvê ji herêmên Kurdî — bi lêgerîn û li gorî mijarê."
+			"title": "Nûçe"
 		},
 		"search": {
-			"placeholder": "Nûçeyan bigere…",
-			"submit": "Bibîne",
+			"submit": "Bigere",
 			"label": "Lêgerîna nûçeyan",
 			"clear": "Lêgerînê paqij bike",
 			"noResults": "Ti nûçe bi lêgerîna we re li hev nayên. Peyvek din biceribîne an filtreyan paqij bike."
@@ -166,19 +161,17 @@
 			"label": "Li gorî mijarê filtir bike",
 			"active": "Tê xuyang kirin",
 			"keywords": "Peyvên sereke",
-			"subcategories": "Bin-mijar",
+			"subcategories": "Mijar",
 			"tags": "Etîket"
 		},
 		"sections": {
 			"spotlight": "Nûçeyên taybet",
 			"allNews": "Hemû nûçe",
 			"filtered": "Nûçeyên {category}",
-			"browseDescription": "Arşîva tevahî bigere — li gorî mijarê filtir bike an bi peyvekê bigere.",
 			"filteredByKeyword": "Nûçeyên bi peyva sereke ya «{keyword}»",
 			"filteredByTag": "Nûçeyên bi etîketa «{tag}»"
 		},
 		"sidebar": {
-			"featured": "Taybet",
 			"latest": "Dawîtirîn"
 		},
 		"categories": {
@@ -229,8 +222,7 @@
 			"count": "{count, plural, one {# proje} other {# proje}}"
 		},
 		"search": {
-			"placeholder": "Projeyan bigere…",
-			"submit": "Bibîne",
+			"submit": "Bigere",
 			"label": "Lêgerîna projeyan",
 			"clear": "Lêgerînê paqij bike"
 		},
@@ -282,14 +274,8 @@
 	"Gallery": {
 		"pageTitle": "Galerî",
 		"metaDescription": "Arşîveke dîmenî ya jiyana Kurdî — wêne, cilên kevneşopî û kariya destan ji seranserê Kurdistanê.",
-		"hero": {
-			"eyebrow": "Arşîva dîmenî",
-			"title": "Mîrateya dîmenî ya zindî ya Kurdistanê bibîne",
-			"scrollDown": "Berjêr biçe"
-		},
 		"search": {
-			"placeholder": "Li gorî sernav, etîket an mijarê bigere…",
-			"submit": "Bibîne",
+			"submit": "Bigere",
 			"label": "Di berhevokan de bigere",
 			"clear": "Lêgerînê paqij bike",
 			"noResults": "Tu berhevok bi lêgerîn an fîltreya te re li hev nayê. Peyvek din biceribîne an fîltreyan paqij bike."
@@ -305,9 +291,7 @@
 			"typeLabel": "Cureyê berhevokê"
 		},
 		"posts": {
-			"eyebrow": "Pêrista arşîvê",
 			"title": "Berhevok",
-			"description": "Her berhevokek wêneyan li dora cihekî, pîşeyekî an kevneşopiyekê kom dike — wek beşên tomareke dîmenî ya jiyana Kurdî.",
 			"photosCount": "{count} wêne",
 			"types": {
 				"SINGLE": "Wêneyeke tak",
@@ -354,15 +338,6 @@
 	"Audio": {
 		"pageTitle": "Arşîva Dengê",
 		"metaDescription": "Tomarên dengî yên dîroka devkî, stranên gelêrî, xwendinên helbestan û arşîva radyoyê ku ji aliyê Enstîtuya Mîrateya Kurdî ve hatine parastin.",
-		"page": {
-			"hero": {
-				"eyebrow": "Arşîva dengê",
-				"title": "Hin deng bi demê re winda dibin.",
-				"titleEmphasis": "Ev hatine tomarkirin da ku tu carî winda nebin.",
-				"description": "Stranên gelêrî, xwendinên helbestan, dîroka devkî û tomarên radyoyê ji arşîva dengê ya enstîtuyê.",
-				"cta": "Li arşîvê bigere"
-			}
-		},
 		"memories": {
 			"title": "Albûma Bîranînan",
 			"description": "Tomarên nûvekirî ji plak, kaset û radyoyê — bîranîneke dengî ji bo dengên berê.",
@@ -370,7 +345,6 @@
 		},
 		"grid": {
 			"allTitle": "Berhevoka dengê.",
-			"itemCount": "{formatted} tomar",
 			"empty": "Niha tu tomar tune ne. Ji kerema xwe paşê dîsa serdana me bikin.",
 			"noResults": "Tu tomar bi fîltreyên te re li hev nayê. Wan biguherîne an paqij bike."
 		},
@@ -383,10 +357,10 @@
 			"stateLabel": "Format",
 			"topicLabel": "Mijar",
 			"topicAll": "Hemû mijar",
-			"searchPlaceholder": "Li gorî sernav, hunermend an etîketê bigere…",
 			"searchLabel": "Di tomaran de bigere",
 			"searchClear": "Lêgerînê paqij bike",
-			"tagRemove": "Etîketê rake"
+			"tagRemove": "Etîketê rake",
+			"searchSubmit": "Bigere"
 		},
 		"state": {
 			"all": "Hemû format",
@@ -521,16 +495,8 @@
 		"description": "Nivîsên zanistî û edebî li ser kultura, ziman, dîrok û civaka Kurdî.",
 		"viewAll": "Hemû nivîsan bibîne",
 		"readTime": "{minutes} deq xwendin",
-		"page": {
-			"hero": {
-				"eyebrow": "Nivîs",
-				"title": "Hin nivîs agahdar dikin.",
-				"titleEmphasis": "Yên din jî parastina nêrîna me li xwe ne."
-			}
-		},
 		"carousel": {
 			"empty": "Niha ti nivîs tune ne. Ji kerema xwe paşê dîsa serdan bikin.",
-			"download": "Bixwîne",
 			"paginationLabel": "Rûpelkirina nivîsan",
 			"autoplayLabel": "Bixweber diçe",
 			"previous": "Rûpela berê",
@@ -539,7 +505,6 @@
 		},
 		"grid": {
 			"allTitle": "Nivîs",
-			"itemCount": "{count, plural, one {# tişt} other {# tişt}}",
 			"empty": "Ti nivîs bi van filtreyan re nayê hev.",
 			"noResults": "Ti encam nehat dîtin. Filtreyan biguherîne.",
 			"categoryNavLabel": "Li gorî kategoriyê bigere"
@@ -551,13 +516,13 @@
 			"clear": "Filtreyan paqij bike",
 			"active": "Aktîf:",
 			"genreLabel": "Janr",
-			"searchPlaceholder": "Li gorî sernav, nivîskar an rêzê bigere…",
 			"searchLabel": "Di nivîsan de bigere",
 			"searchClear": "Lêgerînê paqij bike",
 			"keywordLabel": "Peyva sereke",
 			"tagLabel": "Etîket",
 			"writerAll": "Hemû nivîskar",
-			"writerLabel": "Nivîskar"
+			"writerLabel": "Nivîskar",
+			"searchSubmit": "Bigere"
 		},
 		"sort": {
 			"label": "Rêz bike li gorî",
@@ -676,19 +641,6 @@
 			"lectures": "Ders",
 			"newsreels": "Nûçeyên wêneyî"
 		},
-		"page": {
-			"hero": {
-				"eyebrow": "Arşîva fîlm û vîdyo",
-				"title": "Wêneyên livok tiştê ku bêdengî nikare digirin.",
-				"titleEmphasis": "Sînematêkek ji bîranîna kurdî, wêne bi wêne.",
-				"description": "Fîlm, belgefîlm û performansên tomarkirî — hatine berhevkirin, parastin û ji bo nifşên pêşerojê di livê de têne hiştin.",
-				"cta": "Li arşîvê bigere"
-			},
-			"stats": {
-				"label": "Agahiyên arşîvê",
-				"holdings": "Tomar"
-			}
-		},
 		"grid": {
 			"allTitle": "Koleksiyona wêneyên livok.",
 			"itemCount": "{formatted} {count, plural, one {fîlm} other {fîlm}}",
@@ -700,14 +652,14 @@
 			"reset": "Jê bibe",
 			"all": "Hemû",
 			"typeLabel": "Format",
-			"searchPlaceholder": "Bi sernav, derhêner an etîketê bigere…",
 			"searchLabel": "Li vîdyoyan bigere",
 			"searchClear": "Lêgerînê paqij bike",
 			"topicLabel": "Mijar",
 			"topicAll": "Hemû mijar",
 			"collectionLabel": "Koleksiyon",
 			"memoriesLabel": "Albuma bîranînan",
-			"active": "Çalak:"
+			"active": "Çalak:",
+			"searchSubmit": "Bigere"
 		},
 		"types": {
 			"FILM": "Fîlm",
@@ -760,7 +712,6 @@
 				"title": "Fîlm",
 				"description": "Fîlmên dirêj, belgefîlm û performansên tomarkirî — ji arşîva wêneyên livok ya Enstîtuyê.",
 				"viewAll": "Fîlman keşf bike",
-				"featuredLabel": "Hilbijartî",
 				"programLabel": "Bername",
 				"moreLabel": "Zêdetir fîlm"
 			}
@@ -769,7 +720,6 @@
 			"pageTitle": "Kurtefîlm",
 			"metaDescription": "Hilbijartineke kurtefîlmên kurdî ji arşîva Enstîtuya Kelepora Kurdî.",
 			"hero": {
-				"eyebrow": "Kurtefîlm",
 				"title": "Wêneyên biçûk, cîhanên temam.",
 				"description": "Bernameyeke bijartî ya kurtefîlmên kurdî — nêz, afirîner û bi mebest kurt.",
 				"cta": "Kurtefîlman bibîne"
@@ -784,10 +734,8 @@
 			"allPopular": "Hemû navdar",
 			"empty": "Niha tu kurtefîlm tune ye.",
 			"promo": {
-				"title": "Kurtefîlmên kurdî — çîrokên nêz di çarçoveyên biçûk de.",
-				"description": "Bernameyeke bijartî ya kurtefîlman ji arşîvê — cuda ji koleksiyona sereke ya fîlman.",
-				"cta": "Kurtefîlman bibîne",
-				"count": "{formatted} kurtefîlm di bernameyê de"
+				"title": "Kurtefîlm",
+				"cta": "Kurtefîlman bibîne"
 			},
 			"detail": {
 				"back": "Vegere kurtefîlman",
@@ -1060,7 +1008,6 @@
 		"search": {
 			"clear": "Nivîsa lêgerînê paqij bike",
 			"label": "Di nav xizmetan de bigere",
-			"placeholder": "Di nav xizmetan de bigere…",
 			"submit": "Bigere"
 		}
 	},

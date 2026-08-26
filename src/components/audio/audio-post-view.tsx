@@ -102,6 +102,8 @@ export async function AudioPostView({
 	related,
 }: AudioPostViewProps) {
 	const t = await getTranslations("Audio");
+	// Back links are named after the menu entry for the section they return to.
+	const tNav = await getTranslations("Nav");
 
 	const typeLabel = soundTypeLabel((key) => t(key), detail.soundType);
 	const stateLabel = t(
@@ -185,7 +187,7 @@ export async function AudioPostView({
 			<div className={cn("pt-10 pb-12 sm:pt-12 sm:pb-16", homeInsetClass)}>
 				<BackToIndexLink
 					href="/audio"
-					label={t("pageTitle")}
+					label={tNav("menuSound")}
 					ariaLabel={t("post.back")}
 					className="mb-6 sm:mb-8"
 				/>

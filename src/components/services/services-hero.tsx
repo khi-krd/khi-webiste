@@ -77,7 +77,7 @@ export function ServicesHero({
 
 			{/* 2xl padding tracks homeInsetClass so the text block shares the centered
 			    96rem canvas start line; max() keeps it from dipping below lg's 3.5rem. */}
-			<ServicesHeroMotion className="relative z-10 flex min-h-[calc(100svh-var(--header-h,5rem))] flex-col justify-end px-6 pb-14 sm:px-10 sm:pb-16 lg:px-14 lg:pb-20 2xl:px-[max(3.5rem,calc((100vw-96rem)/2+2rem))] 2xl:pb-24">
+			<ServicesHeroMotion className="relative z-10 flex min-h-[calc(100svh-var(--header-h,5rem))] flex-col justify-end px-6 pb-14 sm:px-10 sm:pb-16 lg:px-14 lg:pb-20 2xl:px-[max(3.5rem,calc((100vw-var(--canvas))/2+2rem))] 2xl:pb-24">
 				<div className="max-w-4xl text-start text-white">
 					<ServicesHeroBlock>
 						<p className="hero-slide-eyebrow">{eyebrow}</p>

@@ -1,7 +1,6 @@
 import { NewsCard } from "@/components/home/news-card";
 import {
 	ScrollReveal,
-	ScrollRevealBlock,
 	ScrollRevealItem,
 } from "@/components/motion/scroll-reveal";
 import { NewsEditorialCard } from "@/components/news/news-editorial-card";
@@ -16,6 +15,7 @@ import { cn } from "@/lib/utils";
 type NewsBentoProps = {
 	locale: string;
 	categories: NewsCategoryOption[];
+	/** Screen-reader name for the section — no longer rendered as a heading. */
 	spotlightLabel: string;
 	className?: string;
 };
@@ -40,19 +40,8 @@ export async function NewsBento({
 				"w-full border-b border-border bg-background py-12 sm:py-16 lg:py-20",
 				className,
 			)}
-			aria-labelledby="news-bento-heading"
+			aria-label={spotlightLabel}
 		>
-			<ScrollRevealBlock className={cn(homeInsetClass, "mb-8 sm:mb-10")}>
-				<header>
-					<h2
-						id="news-bento-heading"
-						className="font-heading text-h1 font-bold leading-[1.1] text-balance"
-					>
-						{spotlightLabel}
-					</h2>
-				</header>
-			</ScrollRevealBlock>
-
 			<div className={homeInsetClass}>
 				{/* 2xl rows: the 96rem canvas is ~7% wider than the 1440 design, so taller rows keep the featured card at its intended ~1.35:1 crop. */}
 				<ScrollReveal className="grid grid-cols-1 gap-3 sm:gap-4 sm:grid-cols-2 lg:grid-cols-12 lg:grid-rows-[minmax(18rem,1fr)_minmax(18rem,1fr)] lg:gap-4 2xl:grid-rows-[minmax(19.25rem,1fr)_minmax(19.25rem,1fr)]">

@@ -53,7 +53,6 @@ export async function VideoShortFilmsPromo() {
 	}
 
 	const posters = shortFilms.map(toPoster);
-	const totalCount = listing.totalElements;
 
 	return (
 		<section
@@ -62,38 +61,14 @@ export async function VideoShortFilmsPromo() {
 		>
 			<div className={homeInsetClass}>
 				<ScrollRevealBlock>
-					<div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
-						<div className="max-w-xl">
-							<p className="label font-medium text-primary-foreground/70">
-								<span aria-hidden="true" className="me-2">
-									{"//"}
-								</span>
-								{t("shortfilms.hero.eyebrow")}
-							</p>
-							<h2
-								id="shortfilms-promo-heading"
-								className="mt-1.5 font-heading text-h2 font-bold leading-tight text-balance sm:text-h1"
-							>
-								{t("shortfilms.promo.title")}
-								{/* Two-digit shelf count — the short-film family's own idiom. */}
-								<span
-									dir="ltr"
-									aria-hidden="true"
-									className="ms-3 align-middle text-label font-medium tabular-nums text-primary-foreground/40"
-								>
-									{String(totalCount).padStart(2, "0")}
-								</span>
-							</h2>
-							<p className="visually-hidden">
-								{t("shortfilms.promo.count", {
-									count: totalCount,
-									formatted: String(totalCount),
-								})}
-							</p>
-							<p className="mt-2 text-body text-primary-foreground/75">
-								{t("shortfilms.promo.description")}
-							</p>
-						</div>
+					{/* Title and the way through — nothing else. */}
+					<div className="flex flex-wrap items-end justify-between gap-4">
+						<h2
+							id="shortfilms-promo-heading"
+							className="font-heading text-h2 font-bold leading-tight text-balance sm:text-h1"
+						>
+							{t("shortfilms.promo.title")}
+						</h2>
 
 						<Link
 							href="/videos/shortfilms"

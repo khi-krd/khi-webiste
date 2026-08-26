@@ -2,16 +2,42 @@
 
 import { animate } from "motion";
 import { useEffect } from "react";
-import { SCROLL_EASE } from "@/lib/scroll-to-section";
 
-/** A committed section change. The COMMIT is instant (see COMMIT_TRAVEL); this
- *  is only how long the travel itself takes, and it has to stay long enough to
- *  read as a glide rather than a cut. */
-const STEP_DURATION = 0.62;
+/**
+ * Section-travel easing.
+ *
+ * NOT the site's `SCROLL_EASE` (expo-out, slope 6.25 out of the gate). A hash
+ * link fires while the page is already still and a hard launch reads as
+ * decisive there; a section step fires under the reader's own gesture, and that
+ * same launch is what made the page feel like it CUT to the next section and
+ * stopped. This curve leaves at a third of that speed and spends the rest of
+ * the move decelerating, so the section slides in rather than snapping in.
+ */
+const SECTION_EASE = [0.32, 0.72, 0, 1] as const;
+
+/** A full-viewport section change. Long enough that the incoming section is
+ *  READ on the way in — its reveals play while it travels, not after it lands. */
+const STEP_DURATION = 0.92;
+
+/** Floor for a short step, so a near-landing correction is not sluggish. */
+const MIN_STEP_DURATION = 0.52;
 
 /** Correcting to the nearest section after a scroll that never committed —
  *  a smaller move than a section change, so a shorter one. */
-const SETTLE_DURATION = 0.42;
+const SETTLE_DURATION = 0.58;
+
+/**
+ * Travel time for a step, scaled by how far it actually has to go.
+ *
+ * A commit that fires early has a whole viewport to cross; one that fires after
+ * the reader has already dragged the page half-way has half that. Holding both
+ * to one duration made the short one crawl — the page appeared to hang on after
+ * the gesture ended. Scaling keeps the apparent SPEED constant instead.
+ */
+function stepDuration(distance: number): number {
+	const share = Math.min(1, distance / Math.max(1, window.innerHeight));
+	return Math.max(MIN_STEP_DURATION, STEP_DURATION * (0.45 + 0.55 * share));
+}
 
 /** Wheel silence that ends a gesture, including its momentum tail. */
 const GESTURE_GAP_MS = 130;
@@ -27,8 +53,15 @@ const SETTLE_IDLE_MS = 90;
  * first stretch, so it never reads as dead; past this point the intent is
  * unambiguous and it takes over and lands the section immediately, instead of
  * drifting on and only tidying up once you stop.
+ *
+ * A FIFTH of the viewport, not a tenth: the hand-over is the moment the page
+ * stops answering to the gesture, and taking it that early is what made a
+ * gentle two-finger nudge fling the whole section away. At this bar the reader
+ * has already seen a good strip of the next section arrive under their own
+ * fingers, so the takeover continues a move in progress instead of starting a
+ * new one.
  */
-const COMMIT_TRAVEL = 0.12;
+const COMMIT_TRAVEL = 0.2;
 
 /**
  * A wheel event is a discrete mouse notch (rather than a trackpad glide) when
@@ -54,8 +87,11 @@ const TAIL_GROWTH = 4;
 const TAIL_FLOOR = 12;
 
 /** Minimum ms between chained steps, so a hard wheel spin steps through
- *  sections at a readable pace instead of teleporting across the page. */
-const CHAIN_COOLDOWN_MS = 160;
+ *  sections at a readable pace instead of teleporting across the page. Held a
+ *  little over half the step time: the next step starts while the current one
+ *  is still decelerating, which chains as one continuous run rather than a
+ *  stutter of separate jumps. */
+const CHAIN_COOLDOWN_MS = 260;
 
 /**
  * Wheel delta in PIXELS, whatever units the browser reports.
@@ -359,7 +395,7 @@ export function SectionScroll() {
 
 			playback = animate(from, top, {
 				duration,
-				ease: SCROLL_EASE,
+				ease: SECTION_EASE,
 				onUpdate: (latest) => {
 					window.scrollTo(window.scrollX, latest);
 				},
@@ -419,7 +455,7 @@ export function SectionScroll() {
 				tailDelta = 0;
 				lastTailMagnitude = Math.abs(pixelDelta(event));
 				chainReadyAt = now + CHAIN_COOLDOWN_MS;
-				run(top, STEP_DURATION);
+				run(top, stepDuration(Math.abs(top - window.scrollY)));
 				return true;
 			};
 
@@ -453,7 +489,7 @@ export function SectionScroll() {
 						lastStepTarget = top;
 						tailDelta = 0;
 						chainReadyAt = now + CHAIN_COOLDOWN_MS;
-						run(top, STEP_DURATION);
+						run(top, stepDuration(Math.abs(top - window.scrollY)));
 					};
 
 					if (gestureIsMouse) {

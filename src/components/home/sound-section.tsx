@@ -71,7 +71,7 @@ export async function SoundSection({
 			    stay inside this section's viewport. `pt` clears the sticky header. */}
 			{/* 2xl inline padding tracks the homeInsetClass 96rem canvas; max() keeps
 			    the lg 3.5rem inset until the canvas calc overtakes it (~1584px). */}
-			<div className="relative z-10 flex min-h-[inherit] flex-col justify-end gap-5 px-6 pt-20 pb-10 sm:gap-6 sm:px-10 sm:pt-24 sm:pb-12 lg:px-14 2xl:px-[max(3.5rem,calc((100vw-96rem)/2+2rem))]">
+			<div className="relative z-10 flex min-h-[inherit] flex-col justify-end gap-5 px-6 pt-20 pb-10 sm:gap-6 sm:px-10 sm:pt-24 sm:pb-12 lg:px-14 2xl:px-[max(3.5rem,calc((100vw-var(--canvas))/2+2rem))]">
 				<SoundSectionContent
 					title={t("title")}
 					ctaLabel={t("cta")}

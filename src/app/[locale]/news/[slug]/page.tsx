@@ -31,6 +31,8 @@ export default async function NewsPostPage({ params }: NewsPostPageProps) {
 	if (!detail) notFound();
 
 	const t = await getTranslations("News");
+	// Back links are named after the menu entry for the section they return to.
+	const tNav = await getTranslations("Nav");
 	const related = await getRelatedNews(locale, detail.item, {
 		excludeIds: [detail.previous?.id, detail.next?.id].filter(
 			(id): id is string => Boolean(id),
@@ -42,7 +44,7 @@ export default async function NewsPostPage({ params }: NewsPostPageProps) {
 			<NewsPostView
 				item={detail.item}
 				backHref="/news"
-				backLabel={t("pageTitle")}
+				backLabel={tNav("menuNews")}
 				backAriaLabel={t("post.back")}
 				authorLabel={
 					detail.item.author

@@ -88,10 +88,20 @@ export function cardIdentity(card: ResolvedVideoCard): string {
 		: String(card.id);
 }
 
+/**
+ * Card-level pagination.
+ *
+ * `firstPageExtra` exists for the hero: page one hands its first card to the
+ * featured slot above the grid, which left the grid one short and its last row
+ * ragged while a whole page still followed. Page one takes that many cards
+ * MORE, and every later page shifts by the same amount, so the grid always
+ * gets a full `size` and no card is skipped between pages.
+ */
 export function paginateVideos(
 	items: ResolvedVideoCard[],
 	page: number,
 	size: number,
+	firstPageExtra = 0,
 ): {
 	items: ResolvedVideoCard[];
 	totalPages: number;
@@ -100,10 +110,16 @@ export function paginateVideos(
 	empty: boolean;
 } {
 	const totalElements = items.length;
-	const totalPages = Math.max(1, Math.ceil(totalElements / size));
+	const firstPageSize = size + firstPageExtra;
+	const totalPages =
+		totalElements <= firstPageSize
+			? 1
+			: 1 + Math.ceil((totalElements - firstPageSize) / size);
 	const currentPage = Math.min(Math.max(1, page), totalPages);
-	const start = (currentPage - 1) * size;
-	const pageItems = items.slice(start, start + size);
+	const start =
+		currentPage === 1 ? 0 : firstPageSize + (currentPage - 2) * size;
+	const take = currentPage === 1 ? firstPageSize : size;
+	const pageItems = items.slice(start, start + take);
 
 	return {
 		items: pageItems,

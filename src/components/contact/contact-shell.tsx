@@ -6,7 +6,8 @@ import { cn } from "@/lib/utils";
  * grows so content sits in a centered 96rem canvas while backgrounds/borders on
  * the same element stay full-bleed (calc equals 2rem exactly at 1536px).
  */
-export const pageXClass = "px-6 sm:px-8 2xl:px-[calc((100vw-96rem)/2+2rem)]";
+export const pageXClass =
+	"px-6 sm:px-8 2xl:px-[calc((100vw-var(--canvas))/2+2rem)]";
 
 export const homeIntroClass = cn(
 	pageXClass,

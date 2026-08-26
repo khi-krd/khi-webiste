@@ -49,7 +49,8 @@ export default async function NewsPage({
 	setRequestLocale(locale);
 
 	const t = await getTranslations("News");
-	const { categories, subCategories, tags } = await getNewsFilterOptions(locale);
+	const { categories, subCategories, tags } =
+		await getNewsFilterOptions(locale);
 	const activeCategory =
 		category && isKnownCategory(category, categories) ? category : null;
 	const activeSubCategory =
@@ -97,11 +98,7 @@ export default async function NewsPage({
 
 	return (
 		<main>
-			<NewsHero
-				eyebrow={t("hero.eyebrow")}
-				title={t("hero.title")}
-				description={t("hero.description")}
-			/>
+			<NewsHero title={t("hero.title")} />
 
 			<NewsBento
 				locale={locale}
@@ -115,7 +112,6 @@ export default async function NewsPage({
 				latest={latestItems}
 				locale={locale}
 				sectionTitle={sectionTitle}
-				sectionDescription={t("sections.browseDescription")}
 				categories={categories}
 				subCategories={subCategories}
 				tags={tags}
@@ -129,7 +125,6 @@ export default async function NewsPage({
 				paginationLabel={t("pagination.label")}
 				previousLabel={t("pagination.previous")}
 				nextLabel={t("pagination.next")}
-				featuredLabel={t("sidebar.featured")}
 				latestLabel={t("sidebar.latest")}
 			/>
 		</main>

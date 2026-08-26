@@ -29,12 +29,12 @@ export type HomeVideoCardItem = {
 	href: string;
 };
 
-/** Square black play affordance — the same mark at both stage sizes. */
+/** Square play affordance — brand green, the same mark at both stage sizes. */
 function PlayMark({ size }: { size: "sm" | "lg" }) {
 	return (
 		<span
 			className={cn(
-				"inline-flex items-center justify-center bg-foreground text-white shadow-[0_6px_18px_-8px_rgba(0,0,0,0.8)]",
+				"inline-flex items-center justify-center bg-primary text-primary-foreground shadow-[0_6px_18px_-8px_rgba(0,0,0,0.8)]",
 				"transition-[transform,background-color] duration-300 ease-out",
 				"motion-reduce:transition-none",
 				size === "lg"
@@ -208,9 +208,12 @@ function PlaylistRow({
 	return (
 		<article
 			className={cn(
-				"group relative flex min-h-20 min-w-0 items-stretch overflow-hidden border border-border/70 bg-surface/60 text-start sm:min-h-24",
-				"transition-[background-color,border-color,box-shadow] duration-300 ease-out",
-				"fine-hover:border-foreground/25 fine-hover:bg-surface fine-hover:shadow-[0_10px_28px_-18px_rgba(26,24,19,0.5)]",
+				// Frameless: no border, no card fill. The rows read as one continuous
+				// list beside the stage rather than four boxed cards, so the only line
+				// anywhere in the block is the edge of the artwork itself.
+				"group relative flex min-h-20 min-w-0 items-stretch overflow-hidden text-start sm:min-h-24",
+				"transition-colors duration-300 ease-out motion-reduce:transition-none",
+				"fine-hover:bg-sunken/55",
 				"lg:min-h-0 lg:flex-1",
 				// A row repaints on its own account — a hover on one is never a reflow
 				// of the queue above it, however many rows are in the column.
@@ -223,7 +226,15 @@ function PlaylistRow({
 				onClick={onActivate}
 				disabled={!item.previewVideoUrl}
 				aria-label={item.title}
-				className="relative w-28 shrink-0 cursor-pointer self-stretch overflow-hidden bg-foreground/10 focus-visible:outline focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-ring disabled:cursor-default sm:w-36 lg:w-44"
+				// Always 16:9. Beside the stage the still takes the row's FULL height
+				// and derives its width from that (`lg:h-full lg:w-auto`), so the top
+				// of the first still lands exactly on the top of the hero image and
+				// the bottom of the last on its bottom — the stills read as one line
+				// with the big frame. Centring them instead left every still inset
+				// from that line, and stretching a fixed width made them near-square.
+				// Stacked under the hero the rows are content-height, so there a
+				// fixed width drives the ratio.
+				className="relative aspect-video w-36 shrink-0 cursor-pointer self-center overflow-hidden bg-foreground/10 focus-visible:outline focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-ring disabled:cursor-default sm:w-44 lg:h-full lg:w-auto lg:self-stretch"
 			>
 				{item.coverUrl ? (
 					<NextImage
@@ -263,7 +274,7 @@ function PlaylistRow({
 				) : null}
 			</button>
 
-			<div className="flex min-w-0 flex-1 flex-col justify-center gap-1 px-3 py-2 lg:px-4">
+			<div className="flex min-w-0 flex-1 flex-col justify-center gap-1.5 px-4 py-2 lg:px-5">
 				<p className="truncate text-label font-medium text-muted">
 					{item.categoryLabel}
 				</p>
@@ -513,8 +524,15 @@ export function VideoStage({
 	if (!hero) return null;
 
 	return (
-		<div className="overflow-hidden border border-border bg-border">
-			<div className="grid grid-cols-1 gap-px lg:h-[min(74svh,52rem)] lg:grid-cols-[minmax(0,1fr)_clamp(22rem,30vw,30rem)]">
+		// Frameless stage: the old wrapper was a bordered panel filled with
+		// border-colour so a 1px seam showed through the grid's `gap-px`. Both are
+		// gone — the artwork's own edges carry the composition, and a real gap
+		// separates hero from queue instead of a hairline.
+		<div className="overflow-hidden">
+			{/* Queue column widened from clamp(22rem,30vw,30rem): the stills now
+			    scale off the row height, and at 16:9 a full-height still is wide —
+			    the old track left the titles beside it only a sliver. */}
+			<div className="grid grid-cols-1 gap-4 lg:h-[min(74svh,52rem)] lg:grid-cols-[minmax(0,1fr)_clamp(24rem,35vw,34rem)] lg:gap-3">
 				<div className="relative aspect-video min-h-0 overflow-hidden lg:aspect-auto lg:h-full">
 					<StageHero
 						item={hero}
@@ -525,12 +543,16 @@ export function VideoStage({
 				</div>
 
 				{queue.length > 0 ? (
-					<div className="flex min-h-0 flex-col bg-background lg:h-full">
+					<div className="flex min-h-0 flex-col lg:h-full">
 						<div
 							ref={queueScrollRef}
 							data-wheel-scrollable=""
 							className={cn(
-								"flex min-h-0 flex-1 flex-col gap-2.5 overflow-y-auto p-3 lg:gap-3 lg:p-4",
+								// No padding: the rows are flush to the column edges, so the
+								// first row's top and the last row's bottom land exactly on the
+								// hero's top and bottom. That flush alignment is the whole
+								// point — inset padding left the queue visibly short of it.
+								"flex min-h-0 flex-1 flex-col gap-3 overflow-y-auto lg:gap-4",
 								// NOT `overscroll-contain`. The rows are `lg:flex-1`, so a short
 								// queue stretches to fill the column and never overflows — and
 								// `contain` still applies to a scroll container with nothing to

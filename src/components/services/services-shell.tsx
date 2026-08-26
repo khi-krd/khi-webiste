@@ -34,7 +34,7 @@ export function ServicesShell({
 				// The 2xl padding pulls the nav rail and sections onto the centered
 				// 96rem canvas (columns carry their own inner padding); equals 0 at
 				// exactly 1536px so nothing shifts below the breakpoint.
-				"grid w-full bg-background lg:grid-cols-[minmax(0,18rem)_minmax(0,1fr)] lg:gap-12 xl:grid-cols-[minmax(0,20rem)_minmax(0,1fr)] xl:gap-14 2xl:px-[calc((100vw-96rem)/2)]",
+				"grid w-full bg-background lg:grid-cols-[minmax(0,18rem)_minmax(0,1fr)] lg:gap-12 xl:grid-cols-[minmax(0,20rem)_minmax(0,1fr)] xl:gap-14 2xl:px-[calc((100vw-var(--canvas))/2)]",
 				className,
 			)}
 		>

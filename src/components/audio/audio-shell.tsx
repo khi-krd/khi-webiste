@@ -22,7 +22,6 @@ type AudioShellProps = {
 	cards: ResolvedAudioCard[];
 	currentPage: number;
 	totalPages: number;
-	totalElements: number;
 	soundTypes: string[];
 	topics: TopicOption[];
 	activeType?: string | null;
@@ -39,7 +38,6 @@ export async function AudioShell({
 	cards,
 	currentPage,
 	totalPages,
-	totalElements,
 	soundTypes,
 	topics,
 	activeType,
@@ -95,7 +93,6 @@ export async function AudioShell({
 					activeTopicId={activeTopicId}
 					activeTag={activeTag}
 					activeQuery={activeQuery}
-					itemCount={totalElements}
 					scrollTargetId={id}
 				/>
 

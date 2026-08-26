@@ -3,6 +3,7 @@
 import { PlayIcon } from "@heroicons/react/24/solid";
 import NextImage from "next/image";
 import { Link } from "@/components/ui/link";
+import { VideoHoverPreview } from "@/components/video/video-hover-preview";
 import { VideoStillPreview } from "@/components/video/video-still-preview-lazy";
 import { cn } from "@/lib/utils";
 import { videoDetailHref } from "@/lib/video/resolve";
@@ -46,6 +47,7 @@ export function VideoPosterCard({
 			href={detailHref}
 			variant="nav"
 			aria-label={title}
+			data-preview-host
 			className={cn(
 				// `spotlight-item` is inert outside a `.spotlight-grid-dark` scope;
 				// the opacity transition makes the beam glide, not flicker.
@@ -82,37 +84,49 @@ export function VideoPosterCard({
 					</div>
 				)}
 
+				{/* Hover plays the film itself — the sibling dim from
+				    `.spotlight-grid-dark` already isolates it, so the only thing
+				    missing was the motion. */}
+				{previewVideoUrl ? <VideoHoverPreview src={previewVideoUrl} /> : null}
+
 				<div
 					aria-hidden
-					className="pointer-events-none absolute inset-0 bg-linear-to-t from-foreground/85 from-0% via-foreground/15 via-42% to-transparent to-68%"
+					className="pointer-events-none absolute inset-0 z-1 bg-linear-to-t from-foreground/90 from-0% via-foreground/25 via-45% to-transparent to-72% transition-opacity duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] group-fine:from-foreground group-data-[previewing]:from-foreground"
 				/>
 
 				{durationLabel ? (
 					<span
 						dir="ltr"
 						className={cn(
-							"label absolute top-0 end-0 z-2 border-b border-s px-2 py-1 font-medium tabular-nums backdrop-blur-[1px]",
+							"label absolute top-0 end-0 z-3 border-b border-s px-2 py-1 font-medium tabular-nums backdrop-blur-[1px] transition-colors duration-300",
 							dark
 								? "border-primary-foreground/20 bg-foreground/70 text-primary-foreground"
 								: "border-border bg-surface/90 text-foreground",
+							"group-fine:border-primary group-fine:bg-primary group-fine:text-primary-foreground",
 						)}
 					>
 						{durationLabel}
 					</span>
 				) : null}
 
-				{showPlay ? (
-					<span
-						aria-hidden
-						className="pointer-events-none absolute inset-0 z-2 flex items-center justify-center"
-					>
-						<span className="inline-flex size-12 items-center justify-center rounded-pill bg-primary-foreground/90 text-foreground ring-1 ring-foreground/10 backdrop-blur-[2px] transition-transform duration-300 group-fine:scale-110 motion-reduce:transition-none motion-reduce:group-fine:scale-100">
-							<PlayIcon className="size-5 translate-x-0.5" />
-						</span>
+				{/* Resting only where the row is explicitly a "continue watching"
+				    shelf; everywhere else it fades in under the pointer, and it
+				    recedes again once the clip is actually rolling. */}
+				<span
+					aria-hidden
+					className={cn(
+						"pointer-events-none absolute inset-0 z-2 flex items-center justify-center transition-opacity duration-300",
+						showPlay
+							? "opacity-100 group-data-[previewing]:opacity-0"
+							: "opacity-0 group-fine:opacity-100 group-data-[previewing]:opacity-0",
+					)}
+				>
+					<span className="inline-flex size-12 items-center justify-center rounded-pill bg-primary/70 text-primary-foreground ring-1 ring-primary-foreground/30 backdrop-blur-[2px] transition-[transform,background-color] duration-300 group-fine:scale-110 group-fine:bg-primary/85 motion-reduce:transition-none motion-reduce:group-fine:scale-100">
+						<PlayIcon className="size-5 translate-x-0.5" />
 					</span>
-				) : null}
+				</span>
 
-				<div className="absolute inset-x-0 bottom-0 z-1 p-3.5 sm:p-4">
+				<div className="absolute inset-x-0 bottom-0 z-2 p-3.5 transition-transform duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] group-fine:-translate-y-0.5 motion-reduce:transition-none motion-reduce:group-fine:translate-y-0 sm:p-4">
 					<h3 className="font-heading text-body font-semibold leading-snug text-balance text-primary-foreground line-clamp-2 sm:text-h3">
 						{title}
 					</h3>
@@ -124,7 +138,7 @@ export function VideoPosterCard({
 				</div>
 
 				{progressPct != null ? (
-					<div className="absolute inset-x-0 bottom-0 z-3 h-[3px] bg-primary-foreground/25">
+					<div className="absolute inset-x-0 bottom-0 z-4 h-[3px] bg-primary-foreground/25">
 						<div
 							className="h-full bg-accent"
 							style={{ width: `${progressPct}%` }}
