@@ -1,10 +1,8 @@
 import type { Metadata } from "next";
 import { getTranslations, setRequestLocale } from "next-intl/server";
-import { GalleryHero } from "@/components/gallery/gallery-hero";
 import { GalleryPosts } from "@/components/gallery/gallery-posts";
 import {
 	filterGalleryPosts,
-	getGalleryHeroColumns,
 	getGalleryPosts,
 	getGalleryTopics,
 	paginateGalleryPosts,
@@ -56,8 +54,7 @@ export default async function GalleryPage({
 	// at 0 so the query/topic refinement runs over the whole set.
 	const page = Math.max(1, Number.parseInt(pageParam ?? "1", 10) || 1);
 
-	const [columns, records, topics] = await Promise.all([
-		getGalleryHeroColumns(locale),
+	const [records, topics] = await Promise.all([
 		// Only one dimension reaches the wire (see buildCollectionParams);
 		// filterGalleryPosts below narrows the other, plus `q`, which has no
 		// upstream endpoint of its own.
@@ -66,9 +63,12 @@ export default async function GalleryPage({
 	]);
 
 	const allPosts = filterGalleryPosts(records, q, activeType, activeTopicId);
+	// 12 covers per page — the mosaic pattern needs a full board to read as an
+	// album wall (the old 4-per-page row list left it sparse).
 	const { items, totalPages, currentPage } = paginateGalleryPosts(
 		allPosts,
 		page,
+		12,
 	);
 	const posts = items.map((post) => ({
 		...post,
@@ -79,14 +79,9 @@ export default async function GalleryPage({
 
 	return (
 		<main>
-			<GalleryHero
-				title={t("hero.title")}
-				scrollCueLabel={t("posts.title")}
-				columns={columns}
-			/>
-
 			{/* Carries the #gallery-content anchor for in-page scroll targets. */}
 			<GalleryPosts
+				heading={t("hero.title")}
 				title={t("posts.title")}
 				posts={posts}
 				currentPage={currentPage}

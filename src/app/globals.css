@@ -1012,25 +1012,72 @@ dialog[open]::backdrop {
 		linear-gradient(172deg, #0a1410 0%, #08110d 45%, #0f2a1c 100%);
 }
 
-/* --- Gallery hero: display headline + vertical marquee --------------------
-   .display-title is the ink-on-paper sibling of .hero-slide-title — same
-   fluid scale and per-script handling, minus the text-shadow (that shadow is
-   tuned for text over dark imagery).
+/* --- Gallery وێنە page: lit paper print board ------------------------------
+   Collection covers lie on a warm board lit by a single source at the TOP-LEFT:
+   the board gradient is brightest up-left, every print casts down-right — a
+   hairline of light on its own top-left edge, a tight contact shadow, then a
+   longer soft throw. Shadow ink is the warm near-black (26,24,19 = --warm-900),
+   NEVER the brand green — green stays on controls/chips so the light reads
+   physical. Directions are authored physically on purpose (135deg, +x +y
+   offsets): light does not flip under rtl.
 
-   Marquee: pure CSS so the gallery hero stays a Server Component. The track
-   holds the SAME item list twice; translateY(-50%) is exactly one copy height,
-   so the wrap frame is pixel-identical to frame 0 (seamless loop). The
-   invariant that keeps -50% exact: the track gets NO gap/padding/margin — all
-   inter-item spacing lives INSIDE the items. The global prefers-reduced-motion
-   handler above sets animation:none, leaving a calm static masonry (copy A,
-   top-aligned) as the built-in fallback. */
-@keyframes khi-marquee-y {
-	from {
-		transform: translateY(0);
+   .display-title below is the ink-on-paper sibling of .hero-slide-title — same
+   fluid scale and per-script handling, minus the text-shadow (that shadow is
+   tuned for text over dark imagery). */
+.gallery-board {
+	background: linear-gradient(
+		135deg,
+		var(--warm-50) 0%,
+		var(--warm-200) 55%,
+		var(--warm-300) 100%
+	);
+}
+
+.gallery-print {
+	--print-shadow: 1px 1px 0 rgba(255, 255, 255, 0.55),
+		5px 6px 7px -2px rgba(26, 24, 19, 0.26),
+		12px 15px 24px -8px rgba(26, 24, 19, 0.32);
+	box-shadow: var(--print-shadow);
+	transition:
+		box-shadow 0.3s ease,
+		transform 0.3s ease;
+}
+
+/* Every few prints rests a touch higher off the board — deeper drop, longer
+   throw — the way photos stack unevenly in a real album. */
+.gallery-print-high {
+	--print-shadow: 1px 1px 0 rgba(255, 255, 255, 0.55),
+		7px 8px 9px -2px rgba(26, 24, 19, 0.28),
+		18px 22px 34px -8px rgba(26, 24, 19, 0.36);
+}
+
+/* Lift toward the light on hover/keyboard focus: print rises up-left, its
+   cast shadow grows longer down-right. */
+@media (hover: hover) and (pointer: fine) {
+	.gallery-print:hover {
+		--print-shadow: 1px 1px 0 rgba(255, 255, 255, 0.6),
+			8px 10px 10px -2px rgba(26, 24, 19, 0.26),
+			26px 32px 44px -10px rgba(26, 24, 19, 0.38);
+		transform: translate(-2px, -3px);
 	}
-	to {
-		transform: translateY(-50%);
-	}
+}
+.gallery-print:focus-visible {
+	--print-shadow: 1px 1px 0 rgba(255, 255, 255, 0.6),
+		8px 10px 10px -2px rgba(26, 24, 19, 0.26),
+		26px 32px 44px -10px rgba(26, 24, 19, 0.38);
+	transform: translate(-2px, -3px);
+	outline: 2px solid var(--color-ring);
+	outline-offset: 3px;
+}
+
+/* Faint sheen across the upper-left of each print — the same light source
+   grazing the paper surface. */
+.gallery-print-sheen {
+	background: linear-gradient(
+		135deg,
+		rgba(255, 255, 255, 0.14) 0%,
+		rgba(255, 255, 255, 0) 45%
+	);
 }
 
 /* --- Video hero: horizontal filmstrip -------------------------------------
@@ -1065,16 +1112,6 @@ dialog[open]::backdrop {
 		line-height: var(--leading-heading-arabic);
 	}
 
-	.marquee-track {
-		display: flex;
-		flex-direction: column;
-		animation: khi-marquee-y var(--marquee-duration, 55s) linear infinite;
-	}
-	/* Same keyframes played backwards — the column drifts DOWN and starts at a
-	   different phase than the up column for free. */
-	.marquee-track-reverse {
-		animation-direction: reverse;
-	}
 	/* The strip itself carries dir="ltr" (see VideoFilmstrip) — translateX and
 	   the copy order have to agree, and under rtl they do not. */
 	.filmstrip-track {
@@ -1099,7 +1136,6 @@ dialog[open]::backdrop {
 	/* Pause while inspecting — fine pointers only (mirrors the fine-hover
 	   variant; touch devices have no meaningful hover). */
 	@media (hover: hover) and (pointer: fine) {
-		.marquee-zone:hover .marquee-track,
 		.filmstrip-zone:hover .filmstrip-track {
 			animation-play-state: paused;
 		}

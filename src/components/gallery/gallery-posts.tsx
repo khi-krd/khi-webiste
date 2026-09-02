@@ -1,25 +1,11 @@
-import NextImage from "next/image";
-import {
-	galleryPhotoSurfaceClass,
-	galleryStripTrayClass,
-} from "@/components/gallery/gallery-album-item";
 import { GalleryFilterBar } from "@/components/gallery/gallery-filter-bar";
-import {
-	GalleryReveal,
-	GalleryRevealItem,
-} from "@/components/gallery/gallery-motion";
 import { GalleryPagination } from "@/components/gallery/gallery-pagination";
-import { Badge } from "@/components/ui/badge";
-import { RichText } from "@/components/ui/rich-text";
-import { Link } from "@/i18n/navigation";
+import {
+	GalleryPrintBoard,
+	type GalleryPrintPost,
+} from "@/components/gallery/gallery-print-board";
 import { homeInsetClass } from "@/lib/layout";
-import type { GalleryPost } from "@/lib/mock/gallery";
 import { cn } from "@/lib/utils";
-
-type GalleryPostWithMeta = GalleryPost & {
-	photosLabel: string;
-	typeLabel: string;
-};
 
 type TopicOption = {
 	id: number;
@@ -27,9 +13,11 @@ type TopicOption = {
 };
 
 type GalleryPostsProps = {
-	/** Screen-reader name for the section — no longer rendered as a heading. */
+	/** Page h1 — the wall's own name (وێنە). */
+	heading: string;
+	/** Quiet subtitle beside the h1 (the collections label). */
 	title: string;
-	posts: GalleryPostWithMeta[];
+	posts: GalleryPrintPost[];
 	currentPage: number;
 	totalPages: number;
 	topics: TopicOption[];
@@ -42,79 +30,14 @@ type GalleryPostsProps = {
 	nextLabel: string;
 };
 
-const sliceEase = "ease-[cubic-bezier(0.22,1,0.36,1)]";
-
-function PostRow({ post }: { post: GalleryPostWithMeta }) {
-	const stripItems = post.album.filter((item) => item.imageUrl).slice(0, 4);
-
-	return (
-		<article className="border-t border-border py-10 first:border-t-0 sm:py-12 lg:py-16">
-			<GalleryReveal className="grid gap-8 lg:grid-cols-[minmax(0,4fr)_minmax(0,6fr)] lg:items-end lg:gap-14">
-				<GalleryRevealItem>
-					<p className="label flex flex-wrap items-center gap-2 font-medium">
-						<span aria-hidden="true">{"//"}</span>
-						<span>{post.typeLabel}</span>
-						<span aria-hidden="true">·</span>
-						<span>{post.photosLabel}</span>
-						{post.topicName && (
-							<Badge variant="outline" size="sm" className="ms-1">
-								{post.topicName}
-							</Badge>
-						)}
-					</p>
-					<h3 className="display-title mt-5 text-display">
-						<Link
-							href={`/gallery/${post.id}`}
-							className="underline decoration-transparent decoration-[3px] underline-offset-[0.16em] transition-[text-decoration-color] duration-300 fine-hover:decoration-current"
-						>
-							{post.title}
-						</Link>
-					</h3>
-					<RichText
-						content={post.description}
-						compact
-						className="mt-5 line-clamp-3 max-w-md text-justify text-muted"
-					/>
-				</GalleryRevealItem>
-
-				{/* Strip links through to the collection — title above is the
-				    accessible entry; slices are decorative click-through. */}
-				<Link
-					href={`/gallery/${post.id}`}
-					aria-hidden="true"
-					tabIndex={-1}
-					className={cn(galleryStripTrayClass, "block no-underline")}
-				>
-					<div className="flex h-72 gap-1 sm:h-96 lg:h-[32rem]">
-						{stripItems.map((item) => (
-							<GalleryRevealItem
-								key={item.id}
-								className={cn(
-									"relative grow basis-0 overflow-hidden transition-[flex-grow] duration-600 fine-hover:grow-[2.6]",
-									galleryPhotoSurfaceClass,
-									sliceEase,
-								)}
-							>
-								<NextImage
-									src={item.imageUrl as string}
-									alt=""
-									fill
-									sizes="(max-width: 1023px) 25vw, 20vw"
-									className={cn(
-										"object-cover brightness-[0.97] saturate-[0.85] transition-[filter,scale] duration-700 group-fine:scale-105 group-fine:brightness-100 group-fine:saturate-100",
-										sliceEase,
-									)}
-								/>
-							</GalleryRevealItem>
-						))}
-					</div>
-				</Link>
-			</GalleryReveal>
-		</article>
-	);
-}
-
+/**
+ * The وێنە page body: small title + filter up top, then the covers laid out
+ * as prints on a lit board (see GalleryPrintBoard). The `.gallery-board`
+ * gradient grounds the whole section so the filter and the prints share one
+ * light source.
+ */
 export function GalleryPosts({
+	heading,
 	title,
 	posts,
 	currentPage,
@@ -131,11 +54,15 @@ export function GalleryPosts({
 	return (
 		<section
 			id="gallery-content"
-			aria-label={title}
-			className="scroll-mt-26 bg-background sm:scroll-mt-30"
+			className="gallery-board scroll-mt-26 sm:scroll-mt-30"
 		>
 			<div className={cn("pb-16 lg:pb-24", homeInsetClass)}>
-				<div className="pt-8 lg:pt-10">
+				<header className="flex flex-wrap items-baseline gap-x-4 gap-y-1 pt-10 lg:pt-14">
+					<h1 className="font-heading text-h1 font-semibold">{heading}</h1>
+					<span className="text-small text-muted">{title}</span>
+				</header>
+
+				<div className="mt-8">
 					<GalleryFilterBar
 						topics={topics}
 						activeQuery={activeQuery}
@@ -149,15 +76,11 @@ export function GalleryPosts({
 						{noResultsMessage}
 					</p>
 				) : (
-					<div>
-						{posts.map((post, _index) => (
-							<PostRow key={post.id} post={post} />
-						))}
-					</div>
+					<GalleryPrintBoard posts={posts} className="mt-10 lg:mt-12" />
 				)}
 
 				{totalPages > 1 ? (
-					<div className="flex justify-center border-t border-border pt-8 lg:pt-10">
+					<div className="mt-12 flex justify-center border-t border-border pt-8 lg:pt-10">
 						<GalleryPagination
 							currentPage={currentPage}
 							totalPages={totalPages}
