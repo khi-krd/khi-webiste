@@ -6,8 +6,6 @@ import {
 	ArrowsPointingOutIcon,
 	ChevronLeftIcon,
 	ChevronRightIcon,
-	MinusIcon,
-	PlusIcon,
 } from "@heroicons/react/24/outline";
 import useEmblaCarousel from "embla-carousel-react";
 import NextImage from "next/image";
@@ -15,6 +13,7 @@ import { useLocale, useTranslations } from "next-intl";
 import { useCallback, useEffect, useState } from "react";
 import { DirectionalIcon } from "@/components/ui/directional-icon";
 import { ImageWatermark } from "@/components/ui/image-watermark";
+import { useGestureZoom } from "@/lib/use-gesture-zoom";
 import { useScrollLock } from "@/lib/use-scroll-lock";
 import { cn } from "@/lib/utils";
 import type { ResolvedBrochureItem } from "@/types/audio";
@@ -22,8 +21,6 @@ import type { ResolvedBrochureItem } from "@/types/audio";
 type AudioBookletReaderLabels = {
 	previous: string;
 	next: string;
-	zoomIn: string;
-	zoomOut: string;
 	fullscreen: string;
 	exitFullscreen: string;
 };
@@ -34,10 +31,6 @@ type AudioBookletReaderProps = {
 	labels: AudioBookletReaderLabels;
 };
 
-const MIN_ZOOM = 0.5;
-const MAX_ZOOM = 2;
-const ZOOM_STEP = 0.1;
-
 const VIEWPORT_HEIGHT_CLASS = "h-[26rem] sm:h-[30rem]";
 const SLIDE_FRAME_CLASS = "relative h-full w-full overflow-hidden";
 
@@ -45,8 +38,14 @@ const controlButtonClass =
 	"inline-flex size-9 items-center justify-center border border-primary bg-primary text-primary-foreground transition-opacity fine-hover:opacity-90 disabled:pointer-events-none disabled:opacity-30";
 
 /**
- * Paginated booklet viewer — Embla carousel navigation, fixed viewport, zoom,
- * and fullscreen.
+ * Paginated booklet viewer — Embla carousel navigation, fixed viewport,
+ * gesture zoom, and fullscreen.
+ *
+ * Zoom has no buttons: it is the same wheel / double-click / drag-to-pan
+ * scroll-box gesture system as the gallery lightbox (useGestureZoom), so the
+ * two brochure viewers feel identical. While a page is zoomed Embla's own
+ * drag is switched off (watchDrag) so panning the page never flips it; at the
+ * fitted size, swiping between pages keeps working.
  */
 export function AudioBookletReader({
 	title,
@@ -57,7 +56,6 @@ export function AudioBookletReader({
 	const t = useTranslations("Audio.brochures");
 	const direction = locale === "ckb" ? "rtl" : "ltr";
 
-	const [zoomLevel, setZoomLevel] = useState(1);
 	const [isFullscreen, setIsFullscreen] = useState(false);
 	const [selectedIndex, setSelectedIndex] = useState(0);
 
@@ -70,6 +68,16 @@ export function AudioBookletReader({
 		duration: 28,
 	});
 
+	// Zoom resets on every page change (resetKey), so a zoomed page can always
+	// be left via prev/next even while swiping is off.
+	const {
+		zoomLevel,
+		viewportRef: zoomViewportRef,
+		viewportProps: zoomViewportProps,
+		cursorClass: zoomCursorClass,
+	} = useGestureZoom({ resetKey: selectedIndex });
+	const isZoomed = zoomLevel > 1;
+
 	useScrollLock(isFullscreen);
 
 	const totalPages = items.length;
@@ -80,9 +88,7 @@ export function AudioBookletReader({
 		if (!emblaApi) {
 			return;
 		}
-		const index = emblaApi.selectedScrollSnap();
-		setSelectedIndex(index);
-		setZoomLevel(1);
+		setSelectedIndex(emblaApi.selectedScrollSnap());
 	}, [emblaApi]);
 
 	useEffect(() => {
@@ -98,6 +104,14 @@ export function AudioBookletReader({
 		};
 	}, [emblaApi, syncCarousel]);
 
+	// While zoomed the pointer pans the page INSIDE the slide, so Embla must
+	// not read the same drag as a page flip. watchDrag (rather than
+	// stopPropagation) because Embla's own listeners sit on an ancestor and
+	// would see the pointer before a React handler could stop it.
+	useEffect(() => {
+		emblaApi?.reInit({ watchDrag: !isZoomed });
+	}, [emblaApi, isZoomed]);
+
 	const scrollPrevious = useCallback(() => {
 		emblaApi?.scrollPrev();
 	}, [emblaApi]);
@@ -105,14 +119,6 @@ export function AudioBookletReader({
 	const scrollNext = useCallback(() => {
 		emblaApi?.scrollNext();
 	}, [emblaApi]);
-
-	const zoomIn = useCallback(() => {
-		setZoomLevel((level) => Math.min(MAX_ZOOM, level + ZOOM_STEP));
-	}, []);
-
-	const zoomOut = useCallback(() => {
-		setZoomLevel((level) => Math.max(MIN_ZOOM, level - ZOOM_STEP));
-	}, []);
 
 	const toggleFullscreen = useCallback(() => {
 		setIsFullscreen((value) => !value);
@@ -150,7 +156,6 @@ export function AudioBookletReader({
 		current: selectedIndex + 1,
 		total: totalPages,
 	});
-	const zoomLabel = `${Math.round(zoomLevel * 100)}%`;
 
 	return (
 		<section aria-label={title}>
@@ -180,7 +185,12 @@ export function AudioBookletReader({
 					>
 						<ul
 							className={cn(
-								"flex touch-pan-y",
+								"flex",
+								// At the fitted size the vertical pan belongs to the page and
+								// the horizontal one to Embla; while zoomed BOTH axes belong
+								// to the slide's own scroll box, so touch panning must be
+								// unrestricted.
+								isZoomed ? "touch-auto" : "touch-pan-y",
 								isFullscreen ? "h-full" : VIEWPORT_HEIGHT_CLASS,
 							)}
 							aria-roledescription="carousel"
@@ -196,34 +206,56 @@ export function AudioBookletReader({
 									className="min-w-0 shrink-0 grow-0 basis-full"
 								>
 									<div className={SLIDE_FRAME_CLASS}>
-										<div
-											className={cn(
-												"flex h-full w-full items-center justify-center p-4 transition-transform duration-300 ease-out sm:p-6",
-												index === selectedIndex ? "origin-center" : "",
-											)}
-											style={
-												index === selectedIndex
-													? { transform: `scale(${zoomLevel})` }
-													: undefined
-											}
-										>
-											<div className="relative h-full w-full">
-												<NextImage
-													src={item.imageUrl}
-													alt={
-														item.caption ??
-														t("pageIndicator", {
-															current: index + 1,
-															total: totalPages,
-														})
-													}
-													fill
-													sizes="(max-width: 768px) 90vw, 42rem"
-													className="object-contain"
-													priority={index === 0}
-													draggable={false}
-												/>
-												<ImageWatermark contain={item.imageUrl} />
+										{/* Breathing room lives OUTSIDE the zoom scroll box so a
+										    100%-sized child means exactly "fitted". */}
+										<div className="absolute inset-0 p-4 sm:p-6">
+											{/* Zoom scroll box (selected slide only): the child
+											    grows with the zoom level and `fill` re-anchors to
+											    it, so the page and its watermark scale together
+											    while every corner stays reachable by scrolling or
+											    dragging — same pattern as the gallery lightbox. */}
+											<div
+												ref={
+													index === selectedIndex ? zoomViewportRef : undefined
+												}
+												{...(index === selectedIndex
+													? zoomViewportProps
+													: undefined)}
+												className={cn(
+													"h-full w-full overflow-auto",
+													index === selectedIndex && zoomCursorClass,
+												)}
+											>
+												<div
+													className="relative"
+													style={{
+														width:
+															index === selectedIndex
+																? `${zoomLevel * 100}%`
+																: "100%",
+														height:
+															index === selectedIndex
+																? `${zoomLevel * 100}%`
+																: "100%",
+													}}
+												>
+													<NextImage
+														src={item.imageUrl}
+														alt={
+															item.caption ??
+															t("pageIndicator", {
+																current: index + 1,
+																total: totalPages,
+															})
+														}
+														fill
+														sizes="(max-width: 768px) 90vw, 42rem"
+														className="object-contain"
+														priority={index === 0}
+														draggable={false}
+													/>
+													<ImageWatermark contain={item.imageUrl} />
+												</div>
 											</div>
 										</div>
 										<span className="pointer-events-none absolute inset-x-0 bottom-3 text-center text-label text-muted/60">
@@ -268,30 +300,6 @@ export function AudioBookletReader({
 						>
 							<DirectionalIcon icon={ChevronRightIcon} className="size-4" />
 						</button>
-
-						<div className="flex items-center gap-1 border-s border-border ps-3 sm:ps-4">
-							<button
-								type="button"
-								onClick={zoomOut}
-								disabled={zoomLevel <= MIN_ZOOM}
-								aria-label={labels.zoomOut}
-								className={controlButtonClass}
-							>
-								<MinusIcon aria-hidden className="size-3.5" />
-							</button>
-							<span className="min-w-10 text-center text-label text-muted tabular-nums">
-								{zoomLabel}
-							</span>
-							<button
-								type="button"
-								onClick={zoomIn}
-								disabled={zoomLevel >= MAX_ZOOM}
-								aria-label={labels.zoomIn}
-								className={controlButtonClass}
-							>
-								<PlusIcon aria-hidden className="size-3.5" />
-							</button>
-						</div>
 
 						<button
 							type="button"

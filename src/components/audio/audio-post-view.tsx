@@ -399,8 +399,6 @@ export async function AudioPostView({
 										labels={{
 											previous: t("brochures.previous"),
 											next: t("brochures.next"),
-											zoomIn: t("brochures.zoomIn"),
-											zoomOut: t("brochures.zoomOut"),
 											fullscreen: t("brochures.fullscreen"),
 											exitFullscreen: t("brochures.exitFullscreen"),
 										}}

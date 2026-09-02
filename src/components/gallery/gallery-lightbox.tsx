@@ -16,6 +16,7 @@ import {
 import { prefersReducedMotion } from "@/components/motion/scroll-reveal";
 import { DirectionalIcon } from "@/components/ui/directional-icon";
 import { ImageWatermark } from "@/components/ui/image-watermark";
+import { useGestureZoom } from "@/lib/use-gesture-zoom";
 import { useScrollLock } from "@/lib/use-scroll-lock";
 import { cn } from "@/lib/utils";
 
@@ -35,17 +36,6 @@ type GalleryLightboxProps = {
 
 const navButtonClass =
 	"inline-flex size-9 items-center justify-center border border-primary-foreground/25 bg-primary text-primary-foreground transition-[opacity,transform] fine-hover:opacity-90 active:scale-95";
-
-/**
- * Lightbox zoom — gesture-driven, no buttons: double-click/double-tap glides
- * between the fitted size and MAX, ctrl/cmd + wheel (what a trackpad pinch
- * emits) lands anywhere in between. MIN 1 keeps the fitted size (shrinking
- * below fit is pointless here).
- */
-const MIN_ZOOM = 1;
-const MAX_ZOOM = 2;
-/** Divisor for wheel deltaY — higher means a gentler ctrl+wheel zoom. */
-const WHEEL_ZOOM_EASE = 200;
 
 function hasDimensions(item: GalleryLightboxItem): boolean {
 	return item.widthPx != null && item.heightPx != null;
@@ -125,154 +115,16 @@ export function GalleryLightbox({
 		[activeIndex, items.length, onActiveIndexChange],
 	);
 
-	const [zoomLevel, setZoomLevel] = useState(1);
-	const zoomViewportRef = useRef<HTMLDivElement>(null);
-	// Mirrors zoomLevel for handlers that must read it without re-binding.
-	const zoomLevelRef = useRef(1);
-	useEffect(() => {
-		zoomLevelRef.current = zoomLevel;
-	}, [zoomLevel]);
-
-	const zoomTweenRef = useRef<number | null>(null);
-	const stopZoomTween = useCallback(() => {
-		if (zoomTweenRef.current !== null) {
-			cancelAnimationFrame(zoomTweenRef.current);
-			zoomTweenRef.current = null;
-		}
-	}, []);
-	useEffect(() => stopZoomTween, [stopZoomTween]);
-	// Where the next zoom change should land: the content point (fractions
-	// fx/fy of the scroll size) to pin under the viewport point vx/vy. Set by
-	// the gesture handlers, consumed once by the re-scroll effect below;
-	// null = keep the middle of the page in view.
-	const zoomAnchorRef = useRef<{
-		fx: number;
-		fy: number;
-		vx: number;
-		vy: number;
-	} | null>(null);
-
-	// Records the content point under a gesture so the same spot stays put
-	// (roughly) once the page has been re-laid-out at the new zoom level.
-	const computeZoomAnchor = useCallback((clientX: number, clientY: number) => {
-		const viewport = zoomViewportRef.current;
-		if (!viewport) return null;
-		const rect = viewport.getBoundingClientRect();
-		// In RTL scrollLeft runs 0 → negative; normalize to a 0-based offset
-		// from the content's left edge.
-		const leftOffset =
-			document.documentElement.dir === "rtl"
-				? viewport.scrollLeft + viewport.scrollWidth - viewport.clientWidth
-				: viewport.scrollLeft;
-		const vx = clientX - rect.left;
-		const vy = clientY - rect.top;
-		return {
-			fx: (vx + leftOffset) / viewport.scrollWidth,
-			fy: (vy + viewport.scrollTop) / viewport.scrollHeight,
-			vx,
-			vy,
-		};
-	}, []);
-
-	const setZoomAnchor = useCallback(
-		(clientX: number, clientY: number) => {
-			zoomAnchorRef.current = computeZoomAnchor(clientX, clientY);
-		},
-		[computeZoomAnchor],
-	);
-
-	// Glides the zoom level to `target` over a short rAF tween instead of
-	// jumping. The re-scroll effect consumes one anchor per zoom change, so the
-	// gesture point is re-pinned every frame — that is what keeps it stationary
-	// while the page grows or shrinks under it. Reduced motion jumps straight
-	// to the target, matching the old behavior.
-	const animateZoomTo = useCallback(
-		(target: number, clientX: number, clientY: number) => {
-			stopZoomTween();
-			const anchor = computeZoomAnchor(clientX, clientY);
-			const from = zoomLevelRef.current;
-			if (!anchor || prefersReducedMotion() || Math.abs(target - from) < 0.01) {
-				zoomAnchorRef.current = anchor;
-				setZoomLevel(target);
-				return;
-			}
-			const started = performance.now();
-			const durationMs = 300;
-			const tick = (now: number) => {
-				const progress = Math.min(1, (now - started) / durationMs);
-				const eased = 1 - (1 - progress) ** 3;
-				zoomAnchorRef.current = { ...anchor };
-				setZoomLevel(from + (target - from) * eased);
-				zoomTweenRef.current =
-					progress < 1 ? requestAnimationFrame(tick) : null;
-			};
-			zoomTweenRef.current = requestAnimationFrame(tick);
-		},
-		[computeZoomAnchor, stopZoomTween],
-	);
-
-	// Every page opens at the fitted size — zoom never carries across pages.
-	// biome-ignore lint/correctness/useExhaustiveDependencies: activeIndex is the reset trigger, not an input.
-	useEffect(() => {
-		stopZoomTween();
-		zoomAnchorRef.current = null;
-		setZoomLevel(1);
-	}, [activeIndex]);
-
-	// Keep the gesture's anchor point — or, with no gesture, the middle of the
-	// page — in view on each zoom change; the old center-origin `scale()` did
-	// the centering implicitly, and the edges are what the scroll box adds.
-	// In RTL the horizontal scroll range runs 0 → negative.
-	// biome-ignore lint/correctness/useExhaustiveDependencies: zoomLevel is the re-scroll trigger; the scroll metrics it resizes are read off the DOM.
-	useEffect(() => {
-		const viewport = zoomViewportRef.current;
-		if (!viewport) return;
-		const maxX = viewport.scrollWidth - viewport.clientWidth;
-		const maxY = viewport.scrollHeight - viewport.clientHeight;
-		const anchor = zoomAnchorRef.current ?? {
-			fx: 0.5,
-			fy: 0.5,
-			vx: viewport.clientWidth / 2,
-			vy: viewport.clientHeight / 2,
-		};
-		zoomAnchorRef.current = null;
-		const x = Math.min(
-			maxX,
-			Math.max(0, anchor.fx * viewport.scrollWidth - anchor.vx),
-		);
-		viewport.scrollTo({
-			left: document.documentElement.dir === "rtl" ? x - maxX : x,
-			top: Math.min(
-				maxY,
-				Math.max(0, anchor.fy * viewport.scrollHeight - anchor.vy),
-			),
-		});
-	}, [zoomLevel]);
-
-	// ctrl/cmd + wheel — what a trackpad pinch emits — zooms smoothly; plain
-	// wheel falls through and keeps scrolling/panning the zoomed image. A
-	// native non-passive listener because React registers wheel handlers
-	// passively, and zooming must preventDefault so the browser doesn't zoom
-	// the whole page.
-	// biome-ignore lint/correctness/useExhaustiveDependencies: activeIndex re-binds the listener when a page (re)mounts the viewport node.
-	useEffect(() => {
-		const viewport = zoomViewportRef.current;
-		if (!viewport) return;
-		const onWheel = (event: WheelEvent) => {
-			if (!event.ctrlKey && !event.metaKey) return;
-			event.preventDefault();
-			stopZoomTween();
-			setZoomAnchor(event.clientX, event.clientY);
-			setZoomLevel((level) =>
-				Math.min(
-					MAX_ZOOM,
-					Math.max(MIN_ZOOM, level * Math.exp(-event.deltaY / WHEEL_ZOOM_EASE)),
-				),
-			);
-		};
-		viewport.addEventListener("wheel", onWheel, { passive: false });
-		return () => viewport.removeEventListener("wheel", onWheel);
-	}, [setZoomAnchor, stopZoomTween, activeIndex]);
+	// Zoom feel — gesture-driven, no buttons: plain wheel (and trackpad pinch)
+	// zooms up to 3× (brochure text becomes readable), double-click glides
+	// fitted ↔ 2×, and a mouse drag pans while zoomed. Shared with the audio
+	// booklet reader so both viewers feel identical.
+	const {
+		zoomLevel,
+		viewportRef: zoomViewportRef,
+		viewportProps: zoomViewportProps,
+		cursorClass: zoomCursorClass,
+	} = useGestureZoom({ resetKey: activeIndex });
 
 	// The thumbnail rail follows the arrows/keys: whichever page becomes
 	// active, its thumb glides into view instead of drifting off the strip.
@@ -286,17 +138,6 @@ export function GalleryLightbox({
 			inline: "nearest",
 		});
 	}, [activeIndex]);
-
-	// Double-click / double-tap glides fitted ↔ MAX, anchored at the gesture.
-	const onZoomViewportDoubleClick = (
-		event: React.MouseEvent<HTMLDivElement>,
-	) => {
-		animateZoomTo(
-			zoomLevelRef.current > MIN_ZOOM ? MIN_ZOOM : MAX_ZOOM,
-			event.clientX,
-			event.clientY,
-		);
-	};
 
 	useScrollLock(activeIndex !== null);
 
@@ -378,16 +219,15 @@ export function GalleryLightbox({
 									    at 1×. Sized rather than transform-scaled so the scroll
 									    range is real and already settled when the re-center
 									    effect runs; the double-click glide re-runs that effect
-									    every frame, which is what keeps it anchored. */}
-									{/* biome-ignore lint/a11y/noStaticElementInteractions: Double-click zoom is a pointer-only enhancement over a scroll box — every page stays fully reachable without it, so no role or keyboard handler is warranted. */}
+									    every frame, which is what keeps it anchored. Its wheel /
+								    double-click / drag gestures are pointer-only enhancements
+								    — every page stays fully reachable without them. */}
 									<div
 										ref={zoomViewportRef}
-										onDoubleClick={onZoomViewportDoubleClick}
+										{...zoomViewportProps}
 										className={cn(
 											"absolute inset-0 overflow-auto",
-											zoomLevel > MIN_ZOOM
-												? "cursor-zoom-out"
-												: "cursor-zoom-in",
+											zoomCursorClass,
 										)}
 									>
 										<div
@@ -404,6 +244,7 @@ export function GalleryLightbox({
 												fill
 												sizes="(max-width: 1023px) 98vw, 90vw"
 												className="object-contain"
+												draggable={false}
 											/>
 											{/* Lifted clear of the caption strip when that strip is
 											    the one rendered over the media. */}
