@@ -35,7 +35,7 @@ const NAV_DRAWER_ID = "site-nav-drawer";
 export { NAV_DRAWER_ID };
 
 const overlayFooterIconButtonClass =
-	"draw-border-host relative isolate inline-flex min-h-11 min-w-11 items-center justify-center overflow-hidden border border-primary-foreground/20 bg-primary-foreground/8 text-primary-foreground backdrop-blur-sm transition-colors fine-hover:border-primary-foreground/35 fine-hover:bg-primary-foreground/14";
+	"draw-border-host relative isolate inline-flex min-h-11 min-w-11 items-center justify-center overflow-hidden border border-primary-foreground/25 bg-primary text-primary-foreground transition-opacity fine-hover:opacity-90";
 
 const FOCUSABLE =
 	'a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])';
@@ -370,7 +370,7 @@ export function NavDrawer({
 												type="button"
 												onClick={close}
 												aria-label={t("menuClose")}
-												className="inline-flex min-h-11 min-w-11 shrink-0 items-center justify-center border border-transparent bg-foreground/40 p-2 transition-colors hover:border-primary-foreground/30 hover:bg-foreground/60 focus-visible:border-primary-foreground/40 focus-visible:bg-foreground/60"
+												className="inline-flex min-h-11 min-w-11 shrink-0 items-center justify-center border border-primary-foreground/25 bg-primary p-2 text-primary-foreground transition-opacity hover:opacity-90 focus-visible:opacity-90"
 											>
 												<XMarkIcon
 													className="size-6 shrink-0"
