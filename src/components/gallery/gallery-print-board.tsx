@@ -14,51 +14,55 @@ type GalleryPrintBoardProps = {
 	className?: string;
 };
 
-/* Mosaic rhythm — span pairs cycled over the covers, dense-packed so the board
-   reads as three uneven columns of prints (like the reference album wall).
-   Phones drop to a 4-column board with two prints per row. `high` prints rest
-   a touch further off the board than their neighbours — a real album never
-   lies perfectly flat. */
-const PRINT_PATTERN = [
-	{ span: "col-span-2 row-span-2 sm:col-span-2 sm:row-span-2", high: true },
-	{ span: "col-span-2 row-span-3 sm:col-span-2 sm:row-span-3", high: false },
-	{ span: "col-span-4 row-span-3 sm:col-span-3 sm:row-span-3", high: false },
-	{ span: "col-span-2 row-span-3 sm:col-span-2 sm:row-span-3", high: false },
-	{ span: "col-span-2 row-span-2 sm:col-span-3 sm:row-span-2", high: true },
-	{ span: "col-span-4 row-span-2 sm:col-span-2 sm:row-span-2", high: false },
-	{ span: "col-span-2 row-span-3 sm:col-span-3 sm:row-span-3", high: false },
-	{ span: "col-span-2 row-span-2 sm:col-span-2 sm:row-span-2", high: true },
-	{ span: "col-span-4 row-span-3 sm:col-span-2 sm:row-span-3", high: false },
-] as const;
+/* The cover file itself decides the print's shape: the column fixes the
+   width, the image's own aspect ratio gives the height — NEVER cropped to a
+   preset box (user request: real image size; the container adapts to the
+   image). Upload metadata seeds the pre-load reserve; once the file loads,
+   `h-auto` lets its true intrinsic ratio win either way. */
+type PrintCover = {
+	url: string;
+	width: number;
+	height: number;
+};
 
-function coverOf(post: GalleryPost): string | undefined {
-	return post.coverUrl ?? post.album.find((item) => item.imageUrl)?.imageUrl;
+function coverOf(post: GalleryPost): PrintCover | null {
+	const url =
+		post.coverUrl ?? post.album.find((item) => item.imageUrl)?.imageUrl;
+	if (!url) {
+		return null;
+	}
+	const meta = post.album.find((item) => item.imageUrl === url);
+	return {
+		url,
+		width: meta?.widthPx ?? 1600,
+		height: meta?.heightPx ?? 1067,
+	};
 }
 
 function Print({
 	post,
 	cover,
-	pattern,
+	high,
 }: {
 	post: GalleryPrintPost;
-	cover: string;
-	pattern: (typeof PRINT_PATTERN)[number];
+	cover: PrintCover;
+	high: boolean;
 }) {
 	return (
 		<Link
 			href={`/gallery/${post.id}`}
 			className={cn(
-				"gallery-print group relative block overflow-hidden bg-sunken no-underline",
-				pattern.span,
-				pattern.high && "gallery-print-high",
+				"gallery-print group relative mb-4 block break-inside-avoid overflow-hidden bg-sunken no-underline",
+				high && "gallery-print-high",
 			)}
 		>
 			<NextImage
-				src={cover}
+				src={cover.url}
 				alt={post.title}
-				fill
-				sizes="(max-width: 639px) 100vw, 45vw"
-				className="object-cover"
+				width={cover.width}
+				height={cover.height}
+				sizes="(max-width: 639px) 50vw, (max-width: 1023px) 50vw, 33vw"
+				className="block h-auto w-full"
 			/>
 
 			{/* Light sheen across the upper-left of the print — over the photo,
@@ -97,9 +101,12 @@ function Print({
 }
 
 /**
- * Lit-paper mosaic of collection covers. Every print casts down-right (the
- * board is lit from the top-left — see the .gallery-print rules in globals);
- * hovering lifts a print toward the light and reveals its caption.
+ * Album columns of collection covers at their REAL proportions — equal-width
+ * columns, print heights set by each image's own ratio, so the board falls
+ * into naturally uneven stacks like the reference album wall. Every print
+ * casts down-right (the board is lit from the top-left — see the
+ * .gallery-print rules in globals); hovering lifts a print toward the light
+ * and reveals its caption. Every third print rests a touch higher.
  */
 export function GalleryPrintBoard({
 	posts,
@@ -107,7 +114,7 @@ export function GalleryPrintBoard({
 }: GalleryPrintBoardProps) {
 	const prints = posts
 		.map((post) => ({ post, cover: coverOf(post) }))
-		.filter((entry): entry is { post: GalleryPrintPost; cover: string } =>
+		.filter((entry): entry is { post: GalleryPrintPost; cover: PrintCover } =>
 			Boolean(entry.cover),
 		);
 
@@ -116,19 +123,9 @@ export function GalleryPrintBoard({
 	}
 
 	return (
-		<div
-			className={cn(
-				"grid grid-flow-dense grid-cols-4 auto-rows-[clamp(70px,9vw,110px)] gap-4 sm:grid-cols-7",
-				className,
-			)}
-		>
+		<div className={cn("columns-2 gap-4 lg:columns-3", className)}>
 			{prints.map(({ post, cover }, index) => (
-				<Print
-					key={post.id}
-					post={post}
-					cover={cover}
-					pattern={PRINT_PATTERN[index % PRINT_PATTERN.length]}
-				/>
+				<Print key={post.id} post={post} cover={cover} high={index % 3 === 0} />
 			))}
 		</div>
 	);
