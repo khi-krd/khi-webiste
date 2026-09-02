@@ -19,8 +19,10 @@ type WritingCarouselProps = {
 	carouselLabel: string;
 };
 
+/* Narrower slides than the old 4:3 tiles — covers are portrait books now, and
+   the wider gap gives each cast shadow room to land on the board. */
 const slideClass =
-	"min-w-0 shrink-0 basis-[82%] pe-4 sm:basis-[48%] md:basis-[32%] lg:basis-[25%] last:pe-0";
+	"min-w-0 shrink-0 basis-[66%] pe-6 sm:basis-[40%] md:basis-[29%] lg:basis-[22%] last:pe-0";
 
 export function WritingCarousel({
 	cards,
@@ -99,7 +101,7 @@ export function WritingCarousel({
 					{emptyLabel}
 				</p>
 			) : (
-				<div className="px-6 pb-8 pt-2 sm:px-10 sm:pb-10 sm:pt-4">
+				<div className="px-6 pb-10 pt-6 sm:px-10 sm:pb-12 sm:pt-8">
 					<div className="touch-pan-y overflow-hidden" ref={emblaRef}>
 						<ScrollRevealBlock>
 							<ul className="flex touch-pan-y">
