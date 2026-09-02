@@ -139,7 +139,7 @@ export function CoverLightbox({
 							type="button"
 							onClick={close}
 							aria-label={closeLabel}
-							className="absolute end-3 top-3 inline-flex size-9 items-center justify-center border border-border/80 bg-background/90 text-foreground transition-colors fine-hover:bg-background"
+							className="absolute end-3 top-3 inline-flex size-9 items-center justify-center border border-primary-foreground/25 bg-primary text-primary-foreground transition-opacity fine-hover:opacity-90"
 						>
 							<XMarkIcon aria-hidden="true" className="size-4" />
 						</button>

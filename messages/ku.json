@@ -454,7 +454,7 @@
 			"year": "Sal"
 		},
 		"brochures": {
-			"title": "Broşur & karên hunerî",
+			"title": "Broşur",
 			"open": "Wêneyê bibîne",
 			"close": "Bigire",
 			"previous": "Wêneya berê",
@@ -553,13 +553,13 @@
 			"navLabel": "Nivîsên din",
 			"previous": "Nivîsa berê",
 			"next": "Nivîsa paş",
-			"related": "Nivîsên din",
+			"related": "Pirtûkên din",
 			"languages": {
 				"ckb": "Soranî (CKB)",
 				"kmr": "Kurmancî (KMR)"
 			},
 			"preview": {
-				"title": "Pêşdîtina belgeyê"
+				"title": "Çend rûpelan bixwîne"
 			},
 			"reader": {
 				"previousPage": "Rûpela berê",

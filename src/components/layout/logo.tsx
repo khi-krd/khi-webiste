@@ -1,5 +1,5 @@
 import Image from "next/image";
-import { getTranslations } from "next-intl/server";
+import { getLocale, getTranslations } from "next-intl/server";
 import { Link } from "@/i18n/navigation";
 import { getSiteLogoUrl } from "@/lib/api/site-settings";
 import { cn } from "@/lib/utils";
@@ -7,17 +7,16 @@ import { cn } from "@/lib/utils";
 /**
  * Brand mark — links to the locale home. Server Component.
  *
- * Bilingual lockup: the CMS logo (falling back to the bundled `/logo.png`),
- * then the institute name in Sorani with the
- * Kurmanji name stacked directly under it. BOTH lines show in BOTH locales —
- * it is one bilingual wordmark, not a translated string, so it must not switch
- * with the active language.
+ * Renders the CMS logo (falling back to the bundled `/logo.png`) plus ONE
+ * name line chosen by the active locale: the Sorani Arabic-script name on
+ * "ckb", the Latin Kurmanji name on "ku". The former bilingual stacked
+ * lockup (both names shown in both locales) is suspended — both message
+ * keys `Nav.brandNameCkb` / `Nav.brandNameKu` remain in messages/*.json.
  *
  * Geometry is physical, not logical, and therefore explicit: the mark always
- * sits at the far LEFT with the name block to its right, in ckb (RTL) as well
- * as ku (LTR). `dir-row-unmirrored` un-mirrors the row, and the name block runs
- * `dir="ltr"` so `items-start` pins both lines flush left; each line then
- * carries its own lang/dir so the Arabic-script line still shapes correctly.
+ * sits at the far LEFT with the name to its right, in ckb (RTL) as well as
+ * ku (LTR). `dir-row-unmirrored` un-mirrors the row, and the name line
+ * carries its own lang/dir so each script shapes correctly.
  */
 export async function Logo({
 	className,
@@ -27,6 +26,10 @@ export async function Logo({
 	reverse?: boolean;
 } = {}) {
 	const t = await getTranslations("Nav");
+	const locale = await getLocale();
+	// routing.locales is exactly ["ckb", "ku"] (src/i18n/routing.ts), so a
+	// boolean is safe; anything unexpected falls through to the Latin line.
+	const isSorani = locale === "ckb";
 	// Editors choose the mark in the CMS; the bundled file is the fallback, so
 	// the header never renders without a logo.
 	const logoUrl = await getSiteLogoUrl();
@@ -55,32 +58,21 @@ export async function Logo({
 				priority
 			/>
 
-			{/* items-stretch + text-align-last:justify — the wider line sets the
-			    block width and the other spreads to match, so both titles start
-			    and end on the same two edges. */}
+			{/* One name line, switched by locale. Each script keeps its own lang/dir. */}
 			<span
-				dir="ltr"
+				lang={isSorani ? "ckb" : "ku"}
+				dir={isSorani ? "rtl" : "ltr"}
 				className={cn(
-					"hidden min-w-0 flex-col items-stretch justify-center gap-2 leading-[1.2] sm:flex",
+					"hidden min-w-0 whitespace-nowrap text-small font-bold leading-[1.2] sm:block lg:text-body",
+					// ckb is pinned to Vazirmatn rather than font-heading: on ku that
+					// token resolves to Clash Display, which has no Arabic glyphs.
+					isSorani
+						? "font-[family-name:var(--font-vazirmatn)]"
+						: "font-heading",
 					reverse && "order-1",
 				)}
 			>
-				<span
-					lang="ckb"
-					dir="rtl"
-					// Pinned to Vazirmatn rather than font-heading: on ku that token
-					// resolves to Clash Display, which has no Arabic glyphs.
-					className="whitespace-nowrap font-[family-name:var(--font-vazirmatn)] text-small font-bold [text-align-last:justify] lg:text-body"
-				>
-					{t("brandNameCkb")}
-				</span>
-				<span
-					lang="ku"
-					dir="ltr"
-					className="whitespace-nowrap font-heading text-small font-bold [text-align-last:justify] lg:text-body"
-				>
-					{t("brandNameKu")}
-				</span>
+				{isSorani ? t("brandNameCkb") : t("brandNameKu")}
 			</span>
 		</Link>
 	);

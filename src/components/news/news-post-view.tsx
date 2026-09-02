@@ -173,7 +173,7 @@ export function NewsPostView({
 				{((!bodyContent && tags.length > 0) || mediaGallery.length > 0) && (
 					<ScrollReveal className="mt-10 space-y-8 border-t border-border pt-6 sm:mt-12 sm:pt-8">
 						{!bodyContent && tags.length > 0 && (
-							<div>
+							<ScrollRevealItem>
 								<ul className="flex flex-wrap items-baseline gap-x-4 gap-y-2">
 									{tags.map((tag) => (
 										<li key={tag}>
@@ -186,14 +186,20 @@ export function NewsPostView({
 										</li>
 									))}
 								</ul>
-							</div>
+							</ScrollRevealItem>
 						)}
 
-						<NewsMediaGallery
-							items={mediaGallery}
-							title={galleryLabel}
-							articleTitle={item.title}
-						/>
+						{/* Guarded: an empty gallery renders null, and an unconditional
+						    wrapper would add a phantom `space-y-8` gap after the tags. */}
+						{mediaGallery.length > 0 ? (
+							<ScrollRevealItem>
+								<NewsMediaGallery
+									items={mediaGallery}
+									title={galleryLabel}
+									articleTitle={item.title}
+								/>
+							</ScrollRevealItem>
+						) : null}
 					</ScrollReveal>
 				)}
 

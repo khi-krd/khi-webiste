@@ -6,6 +6,7 @@ import { AudioBookletReader } from "@/components/audio/audio-booklet-reader";
 import { AudioBrochures } from "@/components/audio/audio-brochures";
 import { AudioCard, type AudioCardProps } from "@/components/audio/audio-card";
 import { AudioHeroWave } from "@/components/audio/audio-hero-wave";
+import { AudioPlayButton } from "@/components/audio/audio-play-button";
 import {
 	AudioTracklist,
 	type AudioTracklistLabels,
@@ -233,11 +234,20 @@ export async function AudioPostView({
 								</h1>
 
 								{detail.queue.length > 0 ? (
-									<AudioHeroWave
-										seedId={detail.id}
-										fileIds={detail.queue.map((payload) => payload.fileId)}
-										className="mt-8 h-11 min-w-0"
-									/>
+									/* `dir-row-unmirrored`: transport controls read left-to-right in
+									   every locale — play first, then the strip it drives. */
+									<div className="dir-row-unmirrored mt-8 flex items-center gap-3 sm:gap-4">
+										<AudioPlayButton
+											queue={detail.queue}
+											size="hero"
+											className="shrink-0"
+										/>
+										<AudioHeroWave
+											seedId={detail.id}
+											fileIds={detail.queue.map((payload) => payload.fileId)}
+											className="h-11 min-w-0 flex-1"
+										/>
+									</div>
 								) : null}
 							</div>
 
@@ -403,6 +413,8 @@ export async function AudioPostView({
 										closeLabel={t("brochures.close")}
 										previousLabel={t("brochures.previous")}
 										nextLabel={t("brochures.next")}
+										zoomInLabel={t("brochures.zoomIn")}
+										zoomOutLabel={t("brochures.zoomOut")}
 										metadataLabels={{
 											dimensions: t("brochures.metadata.dimensions"),
 											fileSize: t("brochures.metadata.fileSize"),
@@ -441,6 +453,8 @@ export async function AudioPostView({
 										closeLabel={t("brochures.close")}
 										previousLabel={t("brochures.previous")}
 										nextLabel={t("brochures.next")}
+										zoomInLabel={t("brochures.zoomIn")}
+										zoomOutLabel={t("brochures.zoomOut")}
 										metadataLabels={{
 											dimensions: t("brochures.metadata.dimensions"),
 											fileSize: t("brochures.metadata.fileSize"),

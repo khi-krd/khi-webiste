@@ -14,16 +14,18 @@ type AudioPlayButtonProps = {
 	/** Which queue entry this button represents. */
 	startIndex?: number;
 	size?: Size;
-	/** Visible label — rendered for the `hero` size only. */
-	label?: string;
 	className?: string;
 };
 
+// Each size declares its own rounding — the base class below carries none, so
+// the hero circle and the rounded-md squares can coexist (cn() is a plain
+// joiner; competing rounded-* utilities resolve by stylesheet order).
 const sizeClasses: Record<Size, string> = {
 	overlay:
-		"size-10 bg-primary text-primary-foreground transition-opacity fine-hover:opacity-90 [&_svg]:size-4",
-	row: "size-9 border border-border-strong bg-transparent text-foreground transition-colors fine-hover:bg-sunken [&_svg]:size-4",
-	hero: "h-11 gap-2.5 bg-primary px-6 text-small font-medium text-primary-foreground transition-opacity fine-hover:opacity-90 [&_svg]:size-4",
+		"size-10 rounded-md bg-primary text-primary-foreground transition-opacity fine-hover:opacity-90 [&_svg]:size-4",
+	row: "size-9 rounded-md border border-border-strong bg-transparent text-foreground transition-colors fine-hover:bg-sunken [&_svg]:size-4",
+	// Circular hero transport — the album page's lead play control.
+	hero: "size-12 rounded-full bg-primary text-primary-foreground transition-opacity fine-hover:opacity-90 [&_svg]:size-5 sm:size-14 sm:[&_svg]:size-6",
 	// Fills a cover thumbnail: a green wash over the art with the glyph centered.
 	cover:
 		"absolute inset-0 rounded-none bg-primary/30 text-white transition-colors fine-hover:bg-primary/50 [&_svg]:size-8 [&_svg]:drop-shadow-[0_1px_4px_rgba(0,0,0,0.45)]",
@@ -38,7 +40,6 @@ export function AudioPlayButton({
 	queue,
 	startIndex = 0,
 	size = "row",
-	label,
 	className,
 }: AudioPlayButtonProps) {
 	const { state, actions } = usePlayer();
@@ -68,13 +69,12 @@ export function AudioPlayButton({
 			aria-label={`${actionLabel} — ${target.title}`}
 			aria-pressed={isPlaying}
 			className={cn(
-				"inline-flex shrink-0 items-center justify-center rounded-md focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring",
+				"inline-flex shrink-0 items-center justify-center focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring",
 				sizeClasses[size],
 				className,
 			)}
 		>
 			{isPlaying ? <PauseIcon aria-hidden /> : <PlayIcon aria-hidden />}
-			{size === "hero" && label ? <span>{label}</span> : null}
 		</button>
 	);
 }

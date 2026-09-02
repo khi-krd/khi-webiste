@@ -9,10 +9,10 @@ export async function ImageCollectionSection() {
 
 	return (
 		<section
-			// 2xl inline padding centers the bento in the shared 96rem canvas; no
-			// +2rem here because the showcase's own `px-6 sm:px-8` supplies it. It
-			// also stops the square tiles outgrowing the h-svh clip on wide screens.
-			className="cv-auto flex h-svh max-h-svh min-h-0 w-full flex-col overflow-hidden border-t border-border bg-background [--cv-intrinsic:100svh] 2xl:px-[calc((100vw-var(--canvas))/2)]"
+			// Full-width section: the bento tray bleeds edge to edge, so no canvas
+			// inset here — the header centers itself via HOME_IMAGE_BENTO_HEADER_CLASS's
+			// 2xl padding, matching the other home sections.
+			className="cv-auto flex h-svh max-h-svh min-h-0 w-full flex-col overflow-hidden border-t border-border bg-background [--cv-intrinsic:100svh]"
 			aria-labelledby="image-collection-heading"
 		>
 			<ImageCollectionShowcase

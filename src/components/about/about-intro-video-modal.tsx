@@ -129,7 +129,7 @@ export function AboutIntroVideoModal({
 								type="button"
 								onClick={onClose}
 								aria-label={closeLabel}
-								className="inline-flex min-h-11 min-w-11 items-center justify-center border border-transparent bg-primary-foreground/10 p-2 text-primary-foreground transition-colors hover:border-primary-foreground/30 hover:bg-primary-foreground/20 focus-visible:border-primary-foreground/40 focus-visible:bg-primary-foreground/20"
+								className="inline-flex min-h-11 min-w-11 items-center justify-center border border-primary-foreground/25 bg-primary p-2 text-primary-foreground transition-opacity hover:opacity-90 focus-visible:opacity-90"
 							>
 								<XMarkIcon className="size-6 shrink-0" aria-hidden="true" />
 							</button>

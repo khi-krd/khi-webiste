@@ -48,6 +48,11 @@ type ImageWatermarkProps = {
  * rendered rect of the <img>, re-run on resize and on load, and the mark only
  * fades in once that measurement has landed — otherwise it would visibly jump
  * from the frame corner to the picture corner on every next/previous step.
+ *
+ * Once placed, the mark slowly patrols the picture's corners (the
+ * `khi-watermark-drift` loop in globals.css) so it never permanently hides
+ * the same area of the artwork; the global reduced-motion kill-switch
+ * parks it in the bottom-start corner instead.
  */
 export function ImageWatermark({
 	contain,
@@ -58,8 +63,11 @@ export function ImageWatermark({
 	const [placement, setPlacement] = useState<{
 		x: number;
 		y: number;
+		/** How far the mark may drift while staying on the artwork (layout px). */
+		driftX: number;
+		driftY: number;
 		ready: boolean;
-	}>({ x: 0, y: 0, ready: false });
+	}>({ x: 0, y: 0, driftX: 0, driftY: 0, ready: false });
 
 	useEffect(() => {
 		const mark = ref.current;
@@ -134,9 +142,20 @@ export function ImageWatermark({
 				height = shownHeight;
 			}
 
+			// The patrol animation's corner-to-corner travel, measured per picture
+			// and normalised into the same layout-px space as x/y (see the scale
+			// note above). Clamps to 0 when the picture is smaller than the mark.
+			// The `clearance` lift is part of the mark's base position, so it
+			// comes off the vertical travel too — otherwise the top-corner
+			// keyframes would carry the mark past the picture's top edge.
+			const markW = mark.offsetWidth;
+			const markH = mark.offsetHeight;
+
 			setPlacement({
 				x: Math.max(0, left / safeScale),
 				y: Math.max(0, (hostRect.height - (top + height)) / safeScale),
+				driftX: Math.max(0, width / safeScale - markW),
+				driftY: Math.max(0, height / safeScale - markH - clearance),
 				ready: true,
 			});
 		};
@@ -156,7 +175,7 @@ export function ImageWatermark({
 			observer.disconnect();
 			picture?.removeEventListener("load", measure);
 		};
-	}, [contain]);
+	}, [contain, clearance]);
 
 	return (
 		<span
@@ -164,10 +183,17 @@ export function ImageWatermark({
 			aria-hidden
 			className={cn(
 				"pointer-events-none absolute z-20 p-3 transition-opacity duration-200 sm:p-4",
-				placement.ready ? "opacity-100" : "opacity-0",
+				placement.ready ? "khi-watermark-drift opacity-100" : "opacity-0",
 				className,
 			)}
-			style={{ left: placement.x, bottom: placement.y + clearance }}
+			style={
+				{
+					left: placement.x,
+					bottom: placement.y + clearance,
+					"--wm-drift-x": `${placement.driftX}px`,
+					"--wm-drift-y": `${placement.driftY}px`,
+				} as React.CSSProperties
+			}
 		>
 			<NextImage
 				src={LOGO_SRC}

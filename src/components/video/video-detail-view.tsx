@@ -185,7 +185,7 @@ export async function VideoDetailView({
 													triggerLabel={t("detail.lightboxOpen")}
 													className="absolute end-3 top-3 z-10 max-w-fit"
 												>
-													<span className="inline-flex size-9 items-center justify-center border border-border/80 bg-background/90 text-foreground transition-colors fine-hover:bg-background">
+													<span className="inline-flex size-9 items-center justify-center border border-primary-foreground/25 bg-primary text-primary-foreground transition-opacity fine-hover:opacity-90">
 														<ArrowsPointingOutIcon
 															aria-hidden
 															className="size-4"

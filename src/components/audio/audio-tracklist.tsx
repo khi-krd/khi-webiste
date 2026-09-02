@@ -107,7 +107,7 @@ export function AudioTracklist({
 											target="_blank"
 											rel="noopener noreferrer"
 											aria-label={`${labels.externalLink} — ${row.title}`}
-											className="absolute inset-0 inline-flex items-center justify-center bg-foreground/30 text-white transition-colors fine-hover:bg-foreground/50 focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-ring"
+											className="absolute inset-0 inline-flex items-center justify-center bg-primary/30 text-white transition-colors fine-hover:bg-primary/50 focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-ring"
 										>
 											<ArrowTopRightOnSquareIcon
 												aria-hidden
@@ -117,7 +117,7 @@ export function AudioTracklist({
 									) : null}
 								</span>
 
-								<span className="min-w-0 flex-1 text-start">
+								<span className="min-w-0 flex-1 text-start sm:max-w-[22rem] sm:flex-initial">
 									<span className="block truncate text-body font-bold text-foreground">
 										{row.title}
 									</span>
@@ -128,14 +128,16 @@ export function AudioTracklist({
 									) : null}
 								</span>
 
-								{/* A resting contour on every row, the live playhead on the
-								    one loaded in the player. From sm up it grows into all the
-								    free width between the title and the duration; on phones
-								    the order swap makes it the item that wraps to a full-width
-								    second line, where there is no room beside the jacket. */}
+								{/* A resting contour on every row, the live playhead on the one
+								    loaded in the player. From sm up it begins one gap step after
+								    the title block — content-sized since its 22rem cap — and
+								    stretches across ALL the free width to the duration label; on
+								    phones the order swap makes it the item that wraps to a
+								    full-width second line, where there is no room beside the
+								    jacket. */}
 								<AudioTrackWave
 									fileId={row.id}
-									className="order-2 w-full sm:order-1 sm:w-auto sm:min-w-0 sm:flex-[3]"
+									className="order-2 w-full sm:order-1 sm:w-auto sm:min-w-0 sm:flex-1"
 								/>
 
 								{formatDuration(row.durationSeconds) ? (

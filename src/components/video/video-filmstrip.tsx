@@ -1,6 +1,7 @@
 import { PlayIcon } from "@heroicons/react/24/solid";
 import NextImage from "next/image";
 import type { CSSProperties } from "react";
+import { ScrollRevealBlock } from "@/components/motion/scroll-reveal";
 import { Link } from "@/components/ui/link";
 import { VideoHoverPreview } from "@/components/video/video-hover-preview";
 import { cn } from "@/lib/utils";
@@ -180,12 +181,12 @@ export function VideoFilmstrip({
 			)}
 		>
 			<Perforation />
-			<div className="flex flex-col gap-2 py-2">
+			<ScrollRevealBlock className="flex flex-col gap-2 py-2">
 				<Row frames={topRow} durationSeconds={64} eager />
 				{bottomRow.length > 0 ? (
 					<Row frames={bottomRow} reverse durationSeconds={82} />
 				) : null}
-			</div>
+			</ScrollRevealBlock>
 			<Perforation />
 		</section>
 	);

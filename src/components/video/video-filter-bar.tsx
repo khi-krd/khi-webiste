@@ -78,7 +78,7 @@ export function VideoFilterBar({
 	const router = useRouter();
 	const searchParams = useSearchParams();
 	const [isPending, startTransition] = useTransition();
-	const [expanded, setExpanded] = useState(false);
+	const [expanded, setExpanded] = useState(true);
 	const [query, setQuery] = useState(activeQuery ?? "");
 	const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 	const scrollToSection = useScrollToSection();
@@ -179,29 +179,26 @@ export function VideoFilterBar({
 				className,
 			)}
 		>
-			<div className="flex border-b border-border px-4 py-3 sm:px-5">
-				<button
-					type="button"
-					onClick={() => setExpanded((open) => !open)}
-					aria-expanded={expanded}
-					aria-label={t("filter.label")}
-					title={t("filter.label")}
-					className={cn(
-						"inline-flex size-11 shrink-0 items-center justify-center border transition-colors",
-						"focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring",
-						expanded
-							? "border-primary bg-primary text-primary-foreground"
-							: "border-border-strong bg-surface text-foreground fine-hover:border-foreground/40 fine-hover:bg-sunken",
-					)}
-				>
-					<AdjustmentsHorizontalIcon className="size-5" aria-hidden />
-				</button>
-			</div>
-
 			{/* primary browse axis — a film strip of type cells */}
 			<fieldset className="px-4 py-3 sm:px-5">
 				<legend className="sr-only">{t("filter.typeLabel")}</legend>
-				<div className="flex flex-wrap gap-2">
+				<div className="flex flex-wrap items-center gap-2">
+					<button
+						type="button"
+						onClick={() => setExpanded((open) => !open)}
+						aria-expanded={expanded}
+						aria-label={t("filter.label")}
+						title={t("filter.label")}
+						className={cn(
+							"inline-flex size-11 shrink-0 items-center justify-center border transition-colors",
+							"focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring",
+							expanded
+								? "border-primary bg-primary text-primary-foreground"
+								: "border-border-strong bg-surface text-foreground fine-hover:border-foreground/40 fine-hover:bg-sunken",
+						)}
+					>
+						<AdjustmentsHorizontalIcon className="size-5" aria-hidden />
+					</button>
 					{TYPE_OPTIONS.map((option) => (
 						<CellPill
 							key={option.key}
@@ -227,10 +224,6 @@ export function VideoFilterBar({
 									"transition-colors focus-within:border-foreground",
 								)}
 							>
-								<span className="flex shrink-0 items-center border-e border-border-strong px-3 text-muted sm:px-4">
-									<MagnifyingGlassIcon className="size-5" aria-hidden />
-								</span>
-
 								<input
 									type="search"
 									name="q"
@@ -256,6 +249,7 @@ export function VideoFilterBar({
 								type="submit"
 								variant="primary"
 								size="lg"
+								leadingIcon={<MagnifyingGlassIcon aria-hidden />}
 								className="h-12 shrink-0 sm:min-w-32"
 								disabled={isPending}
 							>
@@ -338,8 +332,7 @@ export function VideoFilterBar({
 										&ldquo;{activeQuery}&rdquo;
 									</Badge>
 								) : null}
-								{/* Reset lives beside the chips it clears — the header row
-								    above is the filter button alone. */}
+								{/* Reset lives beside the chips it clears. */}
 								<button
 									type="button"
 									onClick={handleClearAll}

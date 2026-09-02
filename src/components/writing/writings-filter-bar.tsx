@@ -78,7 +78,7 @@ export function WritingsFilterBar({
 	const router = useRouter();
 	const searchParams = useSearchParams();
 	const [isPending, startTransition] = useTransition();
-	const [expanded, setExpanded] = useState(false);
+	const [expanded, setExpanded] = useState(true);
 	const [query, setQuery] = useState(activeQuery ?? "");
 	const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 	const scrollToSection = useScrollToSection();
@@ -194,24 +194,39 @@ export function WritingsFilterBar({
 		<div
 			className={cn("transition-opacity", isPending && "opacity-80", className)}
 		>
-			<div className="flex border-b border-border pb-4">
-				<button
-					type="button"
-					onClick={() => setExpanded((open) => !open)}
-					aria-expanded={expanded}
-					aria-label={t("filter.label")}
-					title={t("filter.label")}
-					className={cn(
-						"inline-flex size-11 shrink-0 items-center justify-center border transition-colors",
-						"focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring",
-						expanded
-							? "border-primary bg-primary text-primary-foreground"
-							: "border-border-strong bg-surface text-foreground fine-hover:border-foreground/40 fine-hover:bg-sunken",
-					)}
-				>
-					<AdjustmentsHorizontalIcon className="size-5" aria-hidden />
-				</button>
-			</div>
+			<fieldset>
+				<legend className="sr-only">{t("filter.genreLabel")}</legend>
+				<div className="flex flex-wrap items-center gap-2">
+					<button
+						type="button"
+						onClick={() => setExpanded((open) => !open)}
+						aria-expanded={expanded}
+						aria-label={t("filter.label")}
+						title={t("filter.label")}
+						className={cn(
+							"inline-flex size-11 shrink-0 items-center justify-center border transition-colors",
+							"focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring",
+							expanded
+								? "border-primary bg-primary text-primary-foreground"
+								: "border-border-strong bg-surface text-foreground fine-hover:border-foreground/40 fine-hover:bg-sunken",
+						)}
+					>
+						<AdjustmentsHorizontalIcon className="size-5" aria-hidden />
+					</button>
+					<CategoryPill active={!activeGenre} onClick={() => handleGenre(null)}>
+						{t("filter.all")}
+					</CategoryPill>
+					{availableGenres.map((genre) => (
+						<CategoryPill
+							key={genre}
+							active={activeGenre === genre}
+							onClick={() => handleGenre(genre)}
+						>
+							{genreLabels[genre]}
+						</CategoryPill>
+					))}
+				</div>
+			</fieldset>
 
 			{expanded ? (
 				<div className="mt-6 space-y-6 border border-border bg-surface">
@@ -227,10 +242,6 @@ export function WritingsFilterBar({
 									"transition-colors focus-within:border-foreground",
 								)}
 							>
-								<span className="flex shrink-0 items-center border-e border-border-strong px-3 text-muted sm:px-4">
-									<MagnifyingGlassIcon className="size-5" aria-hidden />
-								</span>
-
 								<input
 									type="search"
 									name="q"
@@ -256,6 +267,7 @@ export function WritingsFilterBar({
 								type="submit"
 								variant="primary"
 								size="lg"
+								leadingIcon={<MagnifyingGlassIcon aria-hidden />}
 								className="h-12 shrink-0 sm:min-w-32"
 								disabled={isPending}
 							>
@@ -265,44 +277,7 @@ export function WritingsFilterBar({
 					</div>
 
 					<div className="px-4 py-4 sm:px-5 sm:py-5">
-						<div className="flex flex-wrap items-center justify-between gap-3">
-							<p className="font-heading text-label font-semibold uppercase tracking-[0.14em] text-muted">
-								{t("filter.genreLabel")}
-							</p>
-							{hasActiveFilters ? (
-								<button
-									type="button"
-									onClick={handleClearAll}
-									className="font-heading text-label font-medium text-muted underline decoration-border underline-offset-4 transition-colors fine-hover:text-foreground"
-								>
-									{t("filter.clear")}
-								</button>
-							) : null}
-						</div>
-
-						<div
-							className="mt-4 flex flex-wrap gap-2"
-							role="group"
-							aria-label={t("filter.genreLabel")}
-						>
-							<CategoryPill
-								active={!activeGenre}
-								onClick={() => handleGenre(null)}
-							>
-								{t("filter.all")}
-							</CategoryPill>
-							{availableGenres.map((genre) => (
-								<CategoryPill
-									key={genre}
-									active={activeGenre === genre}
-									onClick={() => handleGenre(genre)}
-								>
-									{genreLabels[genre]}
-								</CategoryPill>
-							))}
-						</div>
-
-						<div className="mt-6 border-t border-border pt-4">
+						<div>
 							<p className="font-heading text-label font-semibold uppercase tracking-[0.14em] text-muted">
 								{t("sort.label")}
 							</p>
@@ -382,8 +357,7 @@ export function WritingsFilterBar({
 										{t(`sort.${activeSort}`)}
 									</Badge>
 								) : null}
-								{/* Reset lives beside the chips it clears — the header row
-								    above is the filter button alone. */}
+								{/* Reset lives beside the chips it clears. */}
 								<button
 									type="button"
 									onClick={handleClearAll}

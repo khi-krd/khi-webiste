@@ -42,7 +42,7 @@ const VIEWPORT_HEIGHT_CLASS = "h-[26rem] sm:h-[30rem]";
 const SLIDE_FRAME_CLASS = "relative h-full w-full overflow-hidden";
 
 const controlButtonClass =
-	"inline-flex size-9 items-center justify-center border border-border-strong text-foreground transition-colors fine-hover:bg-sunken disabled:pointer-events-none disabled:opacity-30";
+	"inline-flex size-9 items-center justify-center border border-primary bg-primary text-primary-foreground transition-opacity fine-hover:opacity-90 disabled:pointer-events-none disabled:opacity-30";
 
 /**
  * Paginated booklet viewer — Embla carousel navigation, fixed viewport, zoom,

@@ -241,7 +241,7 @@ export async function ShortFilmDetailView({
 										// cap the width instead.
 										className="absolute end-3 top-3 z-10 max-w-fit"
 									>
-										<span className="inline-flex size-9 items-center justify-center border border-primary-foreground/30 bg-foreground/70 text-primary-foreground transition-colors fine-hover:bg-foreground">
+										<span className="inline-flex size-9 items-center justify-center border border-primary-foreground/25 bg-primary text-primary-foreground transition-opacity fine-hover:opacity-90">
 											<ArrowsPointingOutIcon
 												aria-hidden="true"
 												className="size-4"
@@ -386,12 +386,16 @@ export async function ShortFilmDetailView({
 				) : null}
 
 				{relatedShortFilms.length > 0 ? (
-					<VideoRelatedGrid
-						title={t("shortfilms.detail.related")}
-						cards={relatedShortFilms}
-						dark
-						seamClassName="pt-5 sm:pt-6"
-					/>
+					<ScrollReveal>
+						<ScrollRevealItem>
+							<VideoRelatedGrid
+								title={t("shortfilms.detail.related")}
+								cards={relatedShortFilms}
+								dark
+								seamClassName="pt-5 sm:pt-6"
+							/>
+						</ScrollRevealItem>
+					</ScrollReveal>
 				) : null}
 			</div>
 		</article>

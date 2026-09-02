@@ -733,6 +733,36 @@ html[data-corners="rounded"]
 	}
 }
 
+/* Image watermark: slow patrol between the picture's corners so the mark
+   never permanently hides the same area of the artwork. Travel distances are
+   measured per picture (--wm-drift-*). The global prefers-reduced-motion
+   handler above sets `animation: none`, parking the mark in its bottom-start
+   corner — still visible, just static. */
+@keyframes khi-watermark-drift {
+	0%,
+	14% {
+		transform: translate(0, 0);
+	}
+	25%,
+	39% {
+		transform: translate(var(--wm-drift-x, 0px), 0);
+	}
+	50%,
+	64% {
+		transform: translate(
+			var(--wm-drift-x, 0px),
+			calc(-1 * var(--wm-drift-y, 0px))
+		);
+	}
+	75%,
+	89% {
+		transform: translate(0, calc(-1 * var(--wm-drift-y, 0px)));
+	}
+	100% {
+		transform: translate(0, 0);
+	}
+}
+
 @layer components {
 	/* Spinner: a thin ring (hairline) with one border-strong arc that rotates.
 	   Width comes from a Tailwind border-* utility per size; color/animation here.
@@ -767,6 +797,11 @@ html[data-corners="rounded"]
 	/* Token-driven pill/circle — square when border radius is disabled. */
 	.rounded-pill {
 		border-radius: var(--radius-full);
+	}
+
+	/* Applied by ImageWatermark once its measured placement has landed. */
+	.khi-watermark-drift {
+		animation: khi-watermark-drift 48s ease-in-out infinite;
 	}
 }
 

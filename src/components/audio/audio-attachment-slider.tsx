@@ -23,6 +23,8 @@ type AudioAttachmentSliderProps = {
 	previousLabel: string;
 	nextLabel: string;
 	metadataLabels: GalleryAlbumMetadataLabels;
+	zoomInLabel?: string;
+	zoomOutLabel?: string;
 };
 
 const slideClass =
@@ -43,6 +45,8 @@ export function AudioAttachmentSlider({
 	previousLabel,
 	nextLabel,
 	metadataLabels,
+	zoomInLabel,
+	zoomOutLabel,
 }: AudioAttachmentSliderProps) {
 	const locale = useLocale();
 	const direction = locale === "ckb" ? "rtl" : "ltr";
@@ -185,7 +189,7 @@ export function AudioAttachmentSlider({
 									aria-hidden
 									className={cn(
 										"block h-[2px] w-5 rounded-full transition-colors duration-200 sm:w-6",
-										isActive ? "bg-foreground" : "bg-foreground/30",
+										isActive ? "bg-primary" : "bg-primary/30",
 									)}
 								/>
 							</button>
@@ -204,6 +208,8 @@ export function AudioAttachmentSlider({
 				nextLabel={nextLabel}
 				metadataLabels={metadataLabels}
 				fallbackTitle={title}
+				zoomInLabel={zoomInLabel}
+				zoomOutLabel={zoomOutLabel}
 			/>
 		</section>
 	);

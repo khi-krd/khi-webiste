@@ -868,9 +868,6 @@ export function WritingPdfViewer({
 		[fileOffers, locale],
 	);
 
-	const [activeOffer, setActiveOffer] = useState<WritingFileOffer | null>(
-		defaultOffer,
-	);
 	const [pageNumber, setPageNumber] = useState(1);
 	const [numPages, setNumPages] = useState(0);
 	const [fitMode, setFitMode] = useState<FitMode>("height");
@@ -898,8 +895,8 @@ export function WritingPdfViewer({
 
 	const pdfSrc = useMemo(
 		() =>
-			activeOffer?.fileUrl ? resolvePdfViewerUrl(activeOffer.fileUrl) : null,
-		[activeOffer?.fileUrl],
+			defaultOffer?.fileUrl ? resolvePdfViewerUrl(defaultOffer.fileUrl) : null,
+		[defaultOffer?.fileUrl],
 	);
 
 	const toolbarLabels = useMemo(
@@ -936,8 +933,8 @@ export function WritingPdfViewer({
 		[t],
 	);
 
+	// biome-ignore lint/correctness/useExhaustiveDependencies: reset the reader state whenever the previewed document changes.
 	useEffect(() => {
-		setActiveOffer(defaultOffer);
 		setPageNumber(1);
 		setNumPages(0);
 		setLoadError(false);
@@ -951,18 +948,6 @@ export function WritingPdfViewer({
 	}, [defaultOffer]);
 
 	useScrollLock(isFullscreen);
-
-	const selectOffer = useCallback((offer: WritingFileOffer) => {
-		setActiveOffer(offer);
-		setPageNumber(1);
-		setNumPages(0);
-		setLoadError(false);
-		setDocumentReady(false);
-		setIsDisplayReady(false);
-		setFitMode("height");
-		setZoom(1);
-		stablePageRenderSizeRef.current = {};
-	}, []);
 
 	const effectiveTwoPageSpread = twoPageSpread && !isMobile;
 	const effectiveFitMode: FitMode = isMobile ? "width" : fitMode;
@@ -1130,37 +1115,9 @@ export function WritingPdfViewer({
 		);
 	}
 
-	const languageNav =
-		pdfOffers.length > 1 ? (
-			<nav
-				aria-label={title}
-				className="mb-6 flex flex-wrap gap-x-6 gap-y-2 border-b border-border pb-4"
-			>
-				{pdfOffers.map((offer) => {
-					const isActive = offer.language === activeOffer?.language;
-					return (
-						<button
-							key={offer.language}
-							type="button"
-							onClick={() => selectOffer(offer)}
-							className={cn(
-								"font-heading text-body font-medium transition-colors",
-								isActive
-									? "text-foreground underline decoration-foreground underline-offset-4"
-									: "text-muted fine-hover:text-foreground fine-hover:underline fine-hover:decoration-border fine-hover:underline-offset-4",
-							)}
-						>
-							{offer.languageLabel}
-						</button>
-					);
-				})}
-			</nav>
-		) : null;
-
 	if (!isReaderActive) {
 		return (
 			<div className={cn("writing-pdf-viewer", className)}>
-				{languageNav}
 				<PdfReaderLaunch
 					title={title}
 					coverUrl={coverUrl}
@@ -1239,8 +1196,6 @@ export function WritingPdfViewer({
 
 	return (
 		<div className={cn("writing-pdf-viewer", className)}>
-			{languageNav}
-
 			{!isFullscreen ? (
 				<PdfReaderFrame
 					toolbar={

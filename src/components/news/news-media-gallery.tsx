@@ -27,7 +27,7 @@ function MediaKindBadge({ kind }: { kind: MediaItem["kind"] }) {
 
 	return (
 		<span className="pointer-events-none absolute inset-0 flex items-center justify-center bg-foreground/28">
-			<span className="inline-flex size-8 items-center justify-center border border-border/80 bg-background/90 text-foreground">
+			<span className="inline-flex size-8 items-center justify-center border border-primary-foreground/25 bg-primary text-primary-foreground">
 				{kind === "VIDEO" ? (
 					<PlayIcon className="size-4" aria-hidden />
 				) : (

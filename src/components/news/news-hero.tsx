@@ -15,10 +15,7 @@ export function NewsHero({ title, className }: NewsHeroProps) {
 	return (
 		<section
 			aria-labelledby="news-hero-heading"
-			className={cn(
-				"relative w-full overflow-hidden bg-background",
-				className,
-			)}
+			className={cn("relative w-full overflow-hidden bg-background", className)}
 		>
 			<ScrollRevealBlock
 				className={cn(

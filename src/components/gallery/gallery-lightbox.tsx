@@ -3,10 +3,12 @@
 import {
 	ChevronLeftIcon,
 	ChevronRightIcon,
+	MinusIcon,
+	PlusIcon,
 	XMarkIcon,
 } from "@heroicons/react/24/outline";
 import NextImage from "next/image";
-import { useCallback, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import {
 	formatAspectRatio,
 	formatFileSizeBytes,
@@ -30,10 +32,22 @@ type GalleryLightboxProps = {
 	nextLabel: string;
 	metadataLabels: GalleryAlbumMetadataLabels;
 	fallbackTitle?: string;
+	/** Present together, these enable the zoom controls on image slides. */
+	zoomInLabel?: string;
+	zoomOutLabel?: string;
 };
 
 const navButtonClass =
-	"inline-flex size-9 items-center justify-center border border-background/30 bg-foreground/40 text-background backdrop-blur-md transition-colors fine-hover:bg-background/15";
+	"inline-flex size-9 items-center justify-center border border-primary-foreground/25 bg-primary text-primary-foreground transition-opacity fine-hover:opacity-90";
+
+/**
+ * Lightbox zoom — MIN 1 keeps the fitted size (shrinking below fit is
+ * pointless here) and 0.25 steps reach MAX in four clicks; deliberately
+ * coarser than the booklet reader's 0.1 steps.
+ */
+const MIN_ZOOM = 1;
+const MAX_ZOOM = 2;
+const ZOOM_STEP = 0.25;
 
 function hasDimensions(item: GalleryLightboxItem): boolean {
 	return item.widthPx != null && item.heightPx != null;
@@ -101,6 +115,8 @@ export function GalleryLightbox({
 	nextLabel,
 	metadataLabels,
 	fallbackTitle,
+	zoomInLabel,
+	zoomOutLabel,
 }: GalleryLightboxProps) {
 	const step = useCallback(
 		(delta: number) => {
@@ -112,6 +128,29 @@ export function GalleryLightbox({
 		},
 		[activeIndex, items.length, onActiveIndexChange],
 	);
+
+	const [zoomLevel, setZoomLevel] = useState(1);
+	const zoomViewportRef = useRef<HTMLDivElement>(null);
+
+	// Every page opens at the fitted size — zoom never carries across pages.
+	// biome-ignore lint/correctness/useExhaustiveDependencies: activeIndex is the reset trigger, not an input.
+	useEffect(() => {
+		setZoomLevel(1);
+	}, [activeIndex]);
+
+	// Keep the middle of the page in view on each zoom step — the old
+	// center-origin `scale()` did this implicitly; the edges are what the
+	// scroll box adds. In RTL the horizontal scroll range runs 0 → negative.
+	// biome-ignore lint/correctness/useExhaustiveDependencies: zoomLevel is the re-center trigger; the scroll metrics it resizes are read off the DOM.
+	useEffect(() => {
+		const viewport = zoomViewportRef.current;
+		if (!viewport) return;
+		const x = (viewport.scrollWidth - viewport.clientWidth) / 2;
+		viewport.scrollTo({
+			left: document.documentElement.dir === "rtl" ? -x : x,
+			top: (viewport.scrollHeight - viewport.clientHeight) / 2,
+		});
+	}, [zoomLevel]);
 
 	useScrollLock(activeIndex !== null);
 
@@ -186,20 +225,40 @@ export function GalleryLightbox({
 										className="scale-110 object-cover opacity-40 blur-2xl"
 										draggable={false}
 									/>
-									<NextImage
-										key={item.id}
-										src={item.imageUrl}
-										alt={item.alt ?? item.caption ?? collectionTitle}
-										fill
-										sizes="(max-width: 1023px) 98vw, 90vw"
-										className="object-contain"
-									/>
-									{/* Lifted clear of the caption strip when that strip is
-									    the one rendered over the media. */}
-									<ImageWatermark
-										contain={item.imageUrl}
-										clearance={showPanel ? 0 : 40}
-									/>
+									{/* Zoom scroll box: its child grows with the zoom level and
+									    `fill` re-anchors to that child, so the picture and its
+									    watermark scale together while every edge stays reachable
+									    by scrolling — the ambient blur behind them stays outside
+									    at 1×. Sized rather than transform-scaled (and unanimated)
+									    so the scroll range is real and already settled when the
+									    re-center effect runs. */}
+									<div
+										ref={zoomViewportRef}
+										className="absolute inset-0 overflow-auto"
+									>
+										<div
+											className="relative"
+											style={{
+												width: `${zoomLevel * 100}%`,
+												height: `${zoomLevel * 100}%`,
+											}}
+										>
+											<NextImage
+												key={item.id}
+												src={item.imageUrl}
+												alt={item.alt ?? item.caption ?? collectionTitle}
+												fill
+												sizes="(max-width: 1023px) 98vw, 90vw"
+												className="object-contain"
+											/>
+											{/* Lifted clear of the caption strip when that strip is
+											    the one rendered over the media. */}
+											<ImageWatermark
+												contain={item.imageUrl}
+												clearance={showPanel ? 0 : 40}
+											/>
+										</div>
+									</div>
 								</>
 							) : item.embedUrl ? (
 								<iframe
@@ -233,6 +292,43 @@ export function GalleryLightbox({
 									>
 										<XMarkIcon aria-hidden="true" className="size-4" />
 									</button>
+
+									{item.imageUrl && zoomInLabel && zoomOutLabel ? (
+										<div className="absolute end-3 top-14 z-10 flex flex-col gap-2">
+											<button
+												type="button"
+												onClick={() =>
+													setZoomLevel((level) =>
+														Math.min(MAX_ZOOM, level + ZOOM_STEP),
+													)
+												}
+												disabled={zoomLevel >= MAX_ZOOM}
+												aria-label={zoomInLabel}
+												className={cn(
+													navButtonClass,
+													"disabled:pointer-events-none disabled:opacity-30",
+												)}
+											>
+												<PlusIcon aria-hidden className="size-4" />
+											</button>
+											<button
+												type="button"
+												onClick={() =>
+													setZoomLevel((level) =>
+														Math.max(MIN_ZOOM, level - ZOOM_STEP),
+													)
+												}
+												disabled={zoomLevel <= MIN_ZOOM}
+												aria-label={zoomOutLabel}
+												className={cn(
+													navButtonClass,
+													"disabled:pointer-events-none disabled:opacity-30",
+												)}
+											>
+												<MinusIcon aria-hidden className="size-4" />
+											</button>
+										</div>
+									) : null}
 
 									{showNav && (
 										<>

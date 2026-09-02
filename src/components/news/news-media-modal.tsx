@@ -28,7 +28,7 @@ type NewsMediaModalProps = {
 };
 
 const navButtonClass =
-	"inline-flex size-9 items-center justify-center border border-background/30 bg-foreground/40 text-background backdrop-blur-md transition-colors fine-hover:bg-background/15";
+	"inline-flex size-9 items-center justify-center border border-primary-foreground/25 bg-primary text-primary-foreground transition-opacity fine-hover:opacity-90";
 
 function isRemoteSrc(src: string): boolean {
 	return src.startsWith("http://") || src.startsWith("https://");
@@ -203,7 +203,7 @@ export function NewsMediaModal({
 												/>
 												{thumb.kind === "VIDEO" ? (
 													<span className="pointer-events-none absolute inset-0 flex items-center justify-center bg-foreground/25">
-														<span className="inline-flex size-6 items-center justify-center bg-foreground/80 text-white">
+														<span className="inline-flex size-6 items-center justify-center bg-primary text-primary-foreground">
 															<PlayIcon
 																className="size-3 translate-x-px"
 																aria-hidden

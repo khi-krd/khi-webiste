@@ -1,6 +1,10 @@
 "use client";
 
-import { MagnifyingGlassIcon, XMarkIcon } from "@heroicons/react/24/outline";
+import {
+	AdjustmentsHorizontalIcon,
+	MagnifyingGlassIcon,
+	XMarkIcon,
+} from "@heroicons/react/24/outline";
 import { useSearchParams } from "next/navigation";
 import { useTranslations } from "next-intl";
 import {
@@ -58,6 +62,7 @@ export function NewsFilterBar({
 	const router = useRouter();
 	const searchParams = useSearchParams();
 	const [isPending, startTransition] = useTransition();
+	const [expanded, setExpanded] = useState(true);
 	const [query, setQuery] = useState(activeQuery ?? "");
 	const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 	const scrollToSection = useScrollToSection();
@@ -169,159 +174,178 @@ export function NewsFilterBar({
 
 	return (
 		<div
-			className={cn(
-				"border border-border bg-surface transition-opacity",
-				isPending && "opacity-80",
-				className,
-			)}
+			className={cn("transition-opacity", isPending && "opacity-80", className)}
 		>
-			<div className="border-b border-border bg-background px-4 py-4 sm:px-5 sm:py-5">
-				<form
-					onSubmit={handleSearchSubmit}
-					className="flex flex-col gap-3 sm:flex-row sm:items-stretch"
-					role="search"
-				>
-					<div
-						className={cn(
-							"flex h-12 min-w-0 flex-1 items-stretch border border-border-strong bg-surface",
-							"transition-colors focus-within:border-foreground",
-						)}
-					>
-						<span className="flex shrink-0 items-center border-e border-border-strong px-3 text-muted sm:px-4">
-							<MagnifyingGlassIcon className="size-5" aria-hidden />
-						</span>
-
-						<input
-							type="search"
-							name="q"
-							value={query}
-							onChange={(event) => handleQueryChange(event.target.value)}
-							aria-label={t("search.label")}
-							autoComplete="off"
-							className="h-full min-w-0 flex-1 bg-transparent px-3 py-0 text-body text-foreground placeholder:text-muted focus:outline-none sm:px-4"
-						/>
-
-						{query ? (
-							<button
-								type="button"
-								onClick={handleClearSearch}
-								className="flex shrink-0 items-center px-3 text-muted transition-colors fine-hover:text-foreground"
-								aria-label={t("search.clear")}
-							>
-								<XMarkIcon className="size-4" aria-hidden />
-							</button>
-						) : null}
-					</div>
-
-					<Button
-						type="submit"
-						variant="primary"
-						size="lg"
-						className="h-12 shrink-0 sm:min-w-32"
-						disabled={isPending}
-					>
-						{t("search.submit")}
-					</Button>
-				</form>
-			</div>
-
-			<div className="px-4 py-4 sm:px-5 sm:py-5">
-				{hasActiveFilters ? (
-					<div className="mb-4 flex justify-end">
-						<button
-							type="button"
-							onClick={handleClearAll}
-							className="font-heading text-label font-medium text-muted underline decoration-border underline-offset-4 transition-colors fine-hover:text-foreground"
-						>
-							{t("filter.clear")}
-						</button>
-					</div>
-				) : null}
-
-				<div
-					className="flex flex-wrap gap-2"
-					role="group"
+			<div
+				className="flex flex-wrap items-center gap-2"
+				role="group"
+				aria-label={t("filter.label")}
+			>
+				<button
+					type="button"
+					onClick={() => setExpanded((open) => !open)}
+					aria-expanded={expanded}
 					aria-label={t("filter.label")}
+					title={t("filter.label")}
+					className={cn(
+						"inline-flex size-11 shrink-0 items-center justify-center border transition-colors",
+						"focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring",
+						expanded
+							? "border-primary bg-primary text-primary-foreground"
+							: "border-border-strong bg-surface text-foreground fine-hover:border-foreground/40 fine-hover:bg-sunken",
+					)}
 				>
+					<AdjustmentsHorizontalIcon className="size-5" aria-hidden />
+				</button>
+				<CategoryPill
+					active={!activeCategory}
+					onClick={() => handleCategory(null)}
+				>
+					{t("filter.all")}
+				</CategoryPill>
+				{categories.map((category) => (
 					<CategoryPill
-						active={!activeCategory}
-						onClick={() => handleCategory(null)}
+						key={category.key}
+						active={activeCategory === category.key}
+						onClick={() => handleCategory(category.key)}
 					>
-						{t("filter.all")}
+						{category.label}
 					</CategoryPill>
-					{categories.map((category) => (
-						<CategoryPill
-							key={category.key}
-							active={activeCategory === category.key}
-							onClick={() => handleCategory(category.key)}
-						>
-							{category.label}
-						</CategoryPill>
-					))}
-				</div>
-
-				{subCategoryOptions.length > 0 ? (
-					<FilterRow label={t("filter.subcategories")}>
-						{subCategoryOptions.map((subCategory) => {
-							const active = activeSubCategory === subCategory.key;
-							return (
-								<CategoryPill
-									key={subCategory.key}
-									active={active}
-									onClick={() =>
-										handleSubCategory(active ? null : subCategory.key)
-									}
-								>
-									{subCategory.label}
-								</CategoryPill>
-							);
-						})}
-					</FilterRow>
-				) : null}
-
-				{tagOptions.length > 0 ? (
-					<FilterRow label={t("filter.tags")}>
-						{tagOptions.map((tag) => {
-							const active = activeTag === tag;
-							return (
-								<CategoryPill
-									key={tag}
-									active={active}
-									onClick={() => handleTag(active ? null : tag)}
-								>
-									#{tag}
-								</CategoryPill>
-							);
-						})}
-					</FilterRow>
-				) : null}
-
-				{hasActiveFilters ? (
-					<div className="mt-4 flex flex-wrap items-center gap-2 border-t border-border pt-4">
-						<span className="text-label text-muted">{t("filter.active")}</span>
-						{activeCategoryLabel ? (
-							<Badge variant="outline" size="sm">
-								{activeCategoryLabel}
-							</Badge>
-						) : null}
-						{activeSubCategoryLabel ? (
-							<Badge variant="outline" size="sm">
-								{activeSubCategoryLabel}
-							</Badge>
-						) : null}
-						{hasActiveTag && activeTag ? (
-							<Badge variant="outline" size="sm">
-								#{activeTag}
-							</Badge>
-						) : null}
-						{hasActiveQuery && activeQuery ? (
-							<Badge variant="outline" size="sm">
-								&ldquo;{activeQuery}&rdquo;
-							</Badge>
-						) : null}
-					</div>
-				) : null}
+				))}
 			</div>
+
+			{expanded ? (
+				<div className="mt-6 border border-border bg-surface">
+					<div className="border-b border-border bg-background px-4 py-4 sm:px-5 sm:py-5">
+						<form
+							onSubmit={handleSearchSubmit}
+							className="flex flex-col gap-3 sm:flex-row sm:items-stretch"
+							role="search"
+						>
+							<div
+								className={cn(
+									"flex h-12 min-w-0 flex-1 items-stretch border border-border-strong bg-surface",
+									"transition-colors focus-within:border-foreground",
+								)}
+							>
+								<input
+									type="search"
+									name="q"
+									value={query}
+									onChange={(event) => handleQueryChange(event.target.value)}
+									aria-label={t("search.label")}
+									autoComplete="off"
+									className="h-full min-w-0 flex-1 bg-transparent px-3 py-0 text-body text-foreground placeholder:text-muted focus:outline-none sm:px-4"
+								/>
+
+								{query ? (
+									<button
+										type="button"
+										onClick={handleClearSearch}
+										className="flex shrink-0 items-center px-3 text-muted transition-colors fine-hover:text-foreground"
+										aria-label={t("search.clear")}
+									>
+										<XMarkIcon className="size-4" aria-hidden />
+									</button>
+								) : null}
+							</div>
+
+							<Button
+								type="submit"
+								variant="primary"
+								size="lg"
+								leadingIcon={<MagnifyingGlassIcon aria-hidden />}
+								className="h-12 shrink-0 sm:min-w-32"
+								disabled={isPending}
+							>
+								{t("search.submit")}
+							</Button>
+						</form>
+					</div>
+
+					{subCategoryOptions.length > 0 ||
+					tagOptions.length > 0 ||
+					hasActiveFilters ? (
+						<div className="px-4 py-4 sm:px-5 sm:py-5">
+							{hasActiveFilters ? (
+								<div className="mb-4 flex justify-end">
+									<button
+										type="button"
+										onClick={handleClearAll}
+										className="font-heading text-label font-medium text-muted underline decoration-border underline-offset-4 transition-colors fine-hover:text-foreground"
+									>
+										{t("filter.clear")}
+									</button>
+								</div>
+							) : null}
+
+							{subCategoryOptions.length > 0 ? (
+								<FilterRow label={t("filter.subcategories")}>
+									{subCategoryOptions.map((subCategory) => {
+										const active = activeSubCategory === subCategory.key;
+										return (
+											<CategoryPill
+												key={subCategory.key}
+												active={active}
+												onClick={() =>
+													handleSubCategory(active ? null : subCategory.key)
+												}
+											>
+												{subCategory.label}
+											</CategoryPill>
+										);
+									})}
+								</FilterRow>
+							) : null}
+
+							{tagOptions.length > 0 ? (
+								<FilterRow label={t("filter.tags")}>
+									{tagOptions.map((tag) => {
+										const active = activeTag === tag;
+										return (
+											<CategoryPill
+												key={tag}
+												active={active}
+												onClick={() => handleTag(active ? null : tag)}
+											>
+												#{tag}
+											</CategoryPill>
+										);
+									})}
+								</FilterRow>
+							) : null}
+
+							{hasActiveFilters ? (
+								<div className="mt-4 flex flex-wrap items-center gap-2 border-t border-border pt-4">
+									<span className="text-label text-muted">
+										{t("filter.active")}
+									</span>
+									{activeCategoryLabel ? (
+										<Badge variant="outline" size="sm">
+											{activeCategoryLabel}
+										</Badge>
+									) : null}
+									{activeSubCategoryLabel ? (
+										<Badge variant="outline" size="sm">
+											{activeSubCategoryLabel}
+										</Badge>
+									) : null}
+									{hasActiveTag && activeTag ? (
+										<Badge variant="outline" size="sm">
+											#{activeTag}
+										</Badge>
+									) : null}
+									{hasActiveQuery && activeQuery ? (
+										<Badge variant="outline" size="sm">
+											&ldquo;{activeQuery}&rdquo;
+										</Badge>
+									) : null}
+								</div>
+							) : null}
+						</div>
+					) : null}
+				</div>
+			) : null}
 		</div>
 	);
 }
