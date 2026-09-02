@@ -174,122 +174,137 @@ export function GalleryFilterBar({
 				))}
 			</div>
 
-			{expanded ? (
-				<div className="mt-6 border border-border bg-surface">
-					<div className="border-b border-border bg-background px-4 py-4 sm:px-5 sm:py-5">
-						<form
-							onSubmit={handleSearchSubmit}
-							className="flex flex-col gap-3 sm:flex-row sm:items-stretch"
-							role="search"
-						>
-							<div
-								className={cn(
-									"flex h-12 min-w-0 flex-1 items-stretch border border-border-strong bg-surface",
-									"transition-colors focus-within:border-foreground",
-								)}
+			{/* Collapsible panel — the 0fr↔1fr grid-row tween animates height
+			    without measuring; `inert` parks the hidden controls out of the
+			    tab order and the accessibility tree while collapsed. */}
+			<div
+				className={cn(
+					"grid transition-[grid-template-rows,opacity] duration-300 ease-out",
+					expanded
+						? "grid-rows-[1fr] opacity-100"
+						: "grid-rows-[0fr] opacity-0",
+				)}
+				inert={!expanded}
+			>
+				<div className="min-h-0 overflow-hidden">
+					<div className="mt-6 border border-border bg-surface">
+						<div className="border-b border-border bg-background px-4 py-4 sm:px-5 sm:py-5">
+							<form
+								onSubmit={handleSearchSubmit}
+								className="flex flex-col gap-3 sm:flex-row sm:items-stretch"
+								role="search"
 							>
-								<input
-									type="search"
-									name="q"
-									value={query}
-									onChange={(event) => handleQueryChange(event.target.value)}
-									aria-label={t("search.label")}
-									autoComplete="off"
-									className="h-full min-w-0 flex-1 bg-transparent px-3 py-0 text-body text-foreground placeholder:text-muted focus:outline-none sm:px-4"
-								/>
+								<div
+									className={cn(
+										"flex h-12 min-w-0 flex-1 items-stretch border border-border-strong bg-surface",
+										"transition-colors focus-within:border-foreground",
+									)}
+								>
+									<input
+										type="search"
+										name="q"
+										value={query}
+										onChange={(event) => handleQueryChange(event.target.value)}
+										aria-label={t("search.label")}
+										autoComplete="off"
+										className="h-full min-w-0 flex-1 bg-transparent px-3 py-0 text-body text-foreground placeholder:text-muted focus:outline-none sm:px-4"
+									/>
 
-								{query ? (
-									<button
-										type="button"
-										onClick={handleClearSearch}
-										className="flex shrink-0 items-center px-3 text-muted transition-colors fine-hover:text-foreground"
-										aria-label={t("search.clear")}
-									>
-										<XMarkIcon className="size-4" aria-hidden />
-									</button>
+									{query ? (
+										<button
+											type="button"
+											onClick={handleClearSearch}
+											className="flex shrink-0 items-center px-3 text-muted transition-colors fine-hover:text-foreground"
+											aria-label={t("search.clear")}
+										>
+											<XMarkIcon className="size-4" aria-hidden />
+										</button>
+									) : null}
+								</div>
+
+								<Button
+									type="submit"
+									variant="primary"
+									size="lg"
+									leadingIcon={<MagnifyingGlassIcon aria-hidden />}
+									className="h-12 shrink-0 sm:min-w-32"
+									disabled={isPending}
+								>
+									{t("search.submit")}
+								</Button>
+							</form>
+						</div>
+
+						{topics.length > 0 || hasActiveFilters ? (
+							<div className="px-4 py-4 sm:px-5 sm:py-5">
+								{hasActiveFilters ? (
+									<div className="mb-4 flex justify-end">
+										<button
+											type="button"
+											onClick={handleClearAll}
+											className="font-heading text-label font-medium text-muted underline decoration-border underline-offset-4 transition-colors fine-hover:text-foreground"
+										>
+											{t("filter.clear")}
+										</button>
+									</div>
+								) : null}
+
+								{topics.length > 0 ? (
+									<div>
+										<label
+											htmlFor="gallery-topic-select"
+											className="label font-semibold text-muted"
+										>
+											{t("filter.topicLabel")}
+										</label>
+										<div className="mt-3 max-w-xs">
+											<Select
+												id="gallery-topic-select"
+												value={
+													activeTopicId != null ? String(activeTopicId) : ""
+												}
+												onChange={(event) =>
+													handleTopic(parseGalleryTopicId(event.target.value))
+												}
+											>
+												<option value="">{t("filter.topicAll")}</option>
+												{topics.map((topic) => (
+													<option key={topic.id} value={topic.id}>
+														{topic.name}
+													</option>
+												))}
+											</Select>
+										</div>
+									</div>
+								) : null}
+
+								{hasActiveFilters ? (
+									<div className="mt-4 flex flex-wrap items-center gap-2 border-t border-border pt-4">
+										<span className="text-label text-muted">
+											{t("filter.active")}
+										</span>
+										{activeTypeLabel ? (
+											<Badge variant="outline" size="sm">
+												{activeTypeLabel}
+											</Badge>
+										) : null}
+										{activeTopicName ? (
+											<Badge variant="outline" size="sm">
+												{activeTopicName}
+											</Badge>
+										) : null}
+										{hasActiveQuery && activeQuery ? (
+											<Badge variant="outline" size="sm">
+												&ldquo;{activeQuery}&rdquo;
+											</Badge>
+										) : null}
+									</div>
 								) : null}
 							</div>
-
-							<Button
-								type="submit"
-								variant="primary"
-								size="lg"
-								leadingIcon={<MagnifyingGlassIcon aria-hidden />}
-								className="h-12 shrink-0 sm:min-w-32"
-								disabled={isPending}
-							>
-								{t("search.submit")}
-							</Button>
-						</form>
+						) : null}
 					</div>
-
-					{topics.length > 0 || hasActiveFilters ? (
-						<div className="px-4 py-4 sm:px-5 sm:py-5">
-							{hasActiveFilters ? (
-								<div className="mb-4 flex justify-end">
-									<button
-										type="button"
-										onClick={handleClearAll}
-										className="font-heading text-label font-medium text-muted underline decoration-border underline-offset-4 transition-colors fine-hover:text-foreground"
-									>
-										{t("filter.clear")}
-									</button>
-								</div>
-							) : null}
-
-							{topics.length > 0 ? (
-								<div>
-									<label
-										htmlFor="gallery-topic-select"
-										className="label font-semibold text-muted"
-									>
-										{t("filter.topicLabel")}
-									</label>
-									<div className="mt-3 max-w-xs">
-										<Select
-											id="gallery-topic-select"
-											value={activeTopicId != null ? String(activeTopicId) : ""}
-											onChange={(event) =>
-												handleTopic(parseGalleryTopicId(event.target.value))
-											}
-										>
-											<option value="">{t("filter.topicAll")}</option>
-											{topics.map((topic) => (
-												<option key={topic.id} value={topic.id}>
-													{topic.name}
-												</option>
-											))}
-										</Select>
-									</div>
-								</div>
-							) : null}
-
-							{hasActiveFilters ? (
-								<div className="mt-4 flex flex-wrap items-center gap-2 border-t border-border pt-4">
-									<span className="text-label text-muted">
-										{t("filter.active")}
-									</span>
-									{activeTypeLabel ? (
-										<Badge variant="outline" size="sm">
-											{activeTypeLabel}
-										</Badge>
-									) : null}
-									{activeTopicName ? (
-										<Badge variant="outline" size="sm">
-											{activeTopicName}
-										</Badge>
-									) : null}
-									{hasActiveQuery && activeQuery ? (
-										<Badge variant="outline" size="sm">
-											&ldquo;{activeQuery}&rdquo;
-										</Badge>
-									) : null}
-								</div>
-							) : null}
-						</div>
-					) : null}
 				</div>
-			) : null}
+			</div>
 		</div>
 	);
 }

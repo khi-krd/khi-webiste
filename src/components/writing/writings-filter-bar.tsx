@@ -228,149 +228,162 @@ export function WritingsFilterBar({
 				</div>
 			</fieldset>
 
-			{expanded ? (
-				<div className="mt-6 space-y-6 border border-border bg-surface">
-					<div className="border-b border-border bg-background px-4 py-4 sm:px-5 sm:py-5">
-						<form
-							onSubmit={handleSearchSubmit}
-							className="flex flex-col gap-3 sm:flex-row sm:items-stretch"
-							role="search"
-						>
-							<div
-								className={cn(
-									"flex h-12 min-w-0 flex-1 items-stretch border border-border-strong bg-surface",
-									"transition-colors focus-within:border-foreground",
-								)}
+			{/* Collapsible panel — the 0fr↔1fr grid-row tween animates height
+			    without measuring; `inert` parks the hidden controls out of the
+			    tab order and the accessibility tree while collapsed. */}
+			<div
+				className={cn(
+					"grid transition-[grid-template-rows,opacity] duration-300 ease-out",
+					expanded
+						? "grid-rows-[1fr] opacity-100"
+						: "grid-rows-[0fr] opacity-0",
+				)}
+				inert={!expanded}
+			>
+				<div className="min-h-0 overflow-hidden">
+					<div className="mt-6 space-y-6 border border-border bg-surface">
+						<div className="border-b border-border bg-background px-4 py-4 sm:px-5 sm:py-5">
+							<form
+								onSubmit={handleSearchSubmit}
+								className="flex flex-col gap-3 sm:flex-row sm:items-stretch"
+								role="search"
 							>
-								<input
-									type="search"
-									name="q"
-									value={query}
-									onChange={(event) => handleQueryChange(event.target.value)}
-									aria-label={t("filter.searchLabel")}
-									autoComplete="off"
-									className="h-full min-w-0 flex-1 bg-transparent px-3 py-0 text-body text-foreground placeholder:text-muted focus:outline-none sm:px-4"
-								/>
-
-								{query ? (
-									<button
-										type="button"
-										onClick={handleClearSearch}
-										className="flex shrink-0 items-center px-3 text-muted transition-colors fine-hover:text-foreground"
-										aria-label={t("filter.searchClear")}
-									>
-										<XMarkIcon className="size-4" aria-hidden />
-									</button>
-								) : null}
-							</div>
-							<Button
-								type="submit"
-								variant="primary"
-								size="lg"
-								leadingIcon={<MagnifyingGlassIcon aria-hidden />}
-								className="h-12 shrink-0 sm:min-w-32"
-								disabled={isPending}
-							>
-								{t("filter.searchSubmit")}
-							</Button>
-						</form>
-					</div>
-
-					<div className="px-4 py-4 sm:px-5 sm:py-5">
-						<div>
-							<p className="font-heading text-label font-semibold uppercase tracking-[0.14em] text-muted">
-								{t("sort.label")}
-							</p>
-							<div className="mt-4 flex flex-wrap gap-2" role="group">
-								<CategoryPill
-									active={activeSort === "newest"}
-									onClick={() => handleSort("newest")}
+								<div
+									className={cn(
+										"flex h-12 min-w-0 flex-1 items-stretch border border-border-strong bg-surface",
+										"transition-colors focus-within:border-foreground",
+									)}
 								>
-									{t("sort.newest")}
-								</CategoryPill>
-								<CategoryPill
-									active={activeSort === "title"}
-									onClick={() => handleSort("title")}
+									<input
+										type="search"
+										name="q"
+										value={query}
+										onChange={(event) => handleQueryChange(event.target.value)}
+										aria-label={t("filter.searchLabel")}
+										autoComplete="off"
+										className="h-full min-w-0 flex-1 bg-transparent px-3 py-0 text-body text-foreground placeholder:text-muted focus:outline-none sm:px-4"
+									/>
+
+									{query ? (
+										<button
+											type="button"
+											onClick={handleClearSearch}
+											className="flex shrink-0 items-center px-3 text-muted transition-colors fine-hover:text-foreground"
+											aria-label={t("filter.searchClear")}
+										>
+											<XMarkIcon className="size-4" aria-hidden />
+										</button>
+									) : null}
+								</div>
+								<Button
+									type="submit"
+									variant="primary"
+									size="lg"
+									leadingIcon={<MagnifyingGlassIcon aria-hidden />}
+									className="h-12 shrink-0 sm:min-w-32"
+									disabled={isPending}
 								>
-									{t("sort.title")}
-								</CategoryPill>
-							</div>
+									{t("filter.searchSubmit")}
+								</Button>
+							</form>
 						</div>
 
-						{writers.length > 0 ? (
-							<div className="mt-6 border-t border-border pt-4">
-								<label
-									htmlFor="writings-writer-select"
-									className="font-heading text-label font-semibold uppercase tracking-[0.14em] text-muted"
-								>
-									{t("filter.writerLabel")}
-								</label>
-								<div className="mt-4 max-w-xs">
-									<Select
-										id="writings-writer-select"
-										value={activeWriter ?? ""}
-										onChange={(event) => handleWriter(event.target.value)}
+						<div className="px-4 py-4 sm:px-5 sm:py-5">
+							<div>
+								<p className="font-heading text-label font-semibold uppercase tracking-[0.14em] text-muted">
+									{t("sort.label")}
+								</p>
+								<div className="mt-4 flex flex-wrap gap-2" role="group">
+									<CategoryPill
+										active={activeSort === "newest"}
+										onClick={() => handleSort("newest")}
 									>
-										<option value="">{t("filter.writerAll")}</option>
-										{writers.map((writer) => (
-											<option key={writer} value={writer}>
-												{writer}
-											</option>
-										))}
-									</Select>
+										{t("sort.newest")}
+									</CategoryPill>
+									<CategoryPill
+										active={activeSort === "title"}
+										onClick={() => handleSort("title")}
+									>
+										{t("sort.title")}
+									</CategoryPill>
 								</div>
 							</div>
-						) : null}
 
-						{hasActiveFilters ? (
-							<div className="mt-4 flex flex-wrap items-center gap-2 border-t border-border pt-4">
-								<span className="text-label text-muted">
-									{t("filter.active")}
-								</span>
-								{activeGenre ? (
-									<Badge variant="outline" size="sm">
-										{genreLabels[activeGenre]}
-									</Badge>
-								) : null}
-								{hasActiveQuery && activeQuery ? (
-									<Badge variant="outline" size="sm">
-										&ldquo;{activeQuery}&rdquo;
-									</Badge>
-								) : null}
-								{activeWriter ? (
-									<Badge variant="outline" size="sm">
-										{activeWriter}
-									</Badge>
-								) : null}
-								{activeTag ? (
-									<Badge variant="outline" size="sm">
-										{t("filter.tagLabel")}: #{activeTag}
-									</Badge>
-								) : null}
-								{activeKeyword ? (
-									<Badge variant="outline" size="sm">
-										{t("filter.keywordLabel")}: {activeKeyword}
-									</Badge>
-								) : null}
-								{hasActiveSort ? (
-									<Badge variant="outline" size="sm">
-										{t(`sort.${activeSort}`)}
-									</Badge>
-								) : null}
-								{/* Reset lives beside the chips it clears. */}
-								<button
-									type="button"
-									onClick={handleClearAll}
-									disabled={isPending}
-									className="ms-auto font-heading text-small font-medium text-muted underline decoration-border underline-offset-4 transition-colors fine-hover:text-foreground"
-								>
-									{t("filter.reset")}
-								</button>
-							</div>
-						) : null}
+							{writers.length > 0 ? (
+								<div className="mt-6 border-t border-border pt-4">
+									<label
+										htmlFor="writings-writer-select"
+										className="font-heading text-label font-semibold uppercase tracking-[0.14em] text-muted"
+									>
+										{t("filter.writerLabel")}
+									</label>
+									<div className="mt-4 max-w-xs">
+										<Select
+											id="writings-writer-select"
+											value={activeWriter ?? ""}
+											onChange={(event) => handleWriter(event.target.value)}
+										>
+											<option value="">{t("filter.writerAll")}</option>
+											{writers.map((writer) => (
+												<option key={writer} value={writer}>
+													{writer}
+												</option>
+											))}
+										</Select>
+									</div>
+								</div>
+							) : null}
+
+							{hasActiveFilters ? (
+								<div className="mt-4 flex flex-wrap items-center gap-2 border-t border-border pt-4">
+									<span className="text-label text-muted">
+										{t("filter.active")}
+									</span>
+									{activeGenre ? (
+										<Badge variant="outline" size="sm">
+											{genreLabels[activeGenre]}
+										</Badge>
+									) : null}
+									{hasActiveQuery && activeQuery ? (
+										<Badge variant="outline" size="sm">
+											&ldquo;{activeQuery}&rdquo;
+										</Badge>
+									) : null}
+									{activeWriter ? (
+										<Badge variant="outline" size="sm">
+											{activeWriter}
+										</Badge>
+									) : null}
+									{activeTag ? (
+										<Badge variant="outline" size="sm">
+											{t("filter.tagLabel")}: #{activeTag}
+										</Badge>
+									) : null}
+									{activeKeyword ? (
+										<Badge variant="outline" size="sm">
+											{t("filter.keywordLabel")}: {activeKeyword}
+										</Badge>
+									) : null}
+									{hasActiveSort ? (
+										<Badge variant="outline" size="sm">
+											{t(`sort.${activeSort}`)}
+										</Badge>
+									) : null}
+									{/* Reset lives beside the chips it clears. */}
+									<button
+										type="button"
+										onClick={handleClearAll}
+										disabled={isPending}
+										className="ms-auto font-heading text-small font-medium text-muted underline decoration-border underline-offset-4 transition-colors fine-hover:text-foreground"
+									>
+										{t("filter.reset")}
+									</button>
+								</div>
+							) : null}
+						</div>
 					</div>
 				</div>
-			) : null}
+			</div>
 		</div>
 	);
 }

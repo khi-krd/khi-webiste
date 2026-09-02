@@ -214,138 +214,151 @@ export function NewsFilterBar({
 				))}
 			</div>
 
-			{expanded ? (
-				<div className="mt-6 border border-border bg-surface">
-					<div className="border-b border-border bg-background px-4 py-4 sm:px-5 sm:py-5">
-						<form
-							onSubmit={handleSearchSubmit}
-							className="flex flex-col gap-3 sm:flex-row sm:items-stretch"
-							role="search"
-						>
-							<div
-								className={cn(
-									"flex h-12 min-w-0 flex-1 items-stretch border border-border-strong bg-surface",
-									"transition-colors focus-within:border-foreground",
-								)}
+			{/* Collapsible panel — the 0fr↔1fr grid-row tween animates height
+			    without measuring; `inert` parks the hidden controls out of the
+			    tab order and the accessibility tree while collapsed. */}
+			<div
+				className={cn(
+					"grid transition-[grid-template-rows,opacity] duration-300 ease-out",
+					expanded
+						? "grid-rows-[1fr] opacity-100"
+						: "grid-rows-[0fr] opacity-0",
+				)}
+				inert={!expanded}
+			>
+				<div className="min-h-0 overflow-hidden">
+					<div className="mt-6 border border-border bg-surface">
+						<div className="border-b border-border bg-background px-4 py-4 sm:px-5 sm:py-5">
+							<form
+								onSubmit={handleSearchSubmit}
+								className="flex flex-col gap-3 sm:flex-row sm:items-stretch"
+								role="search"
 							>
-								<input
-									type="search"
-									name="q"
-									value={query}
-									onChange={(event) => handleQueryChange(event.target.value)}
-									aria-label={t("search.label")}
-									autoComplete="off"
-									className="h-full min-w-0 flex-1 bg-transparent px-3 py-0 text-body text-foreground placeholder:text-muted focus:outline-none sm:px-4"
-								/>
+								<div
+									className={cn(
+										"flex h-12 min-w-0 flex-1 items-stretch border border-border-strong bg-surface",
+										"transition-colors focus-within:border-foreground",
+									)}
+								>
+									<input
+										type="search"
+										name="q"
+										value={query}
+										onChange={(event) => handleQueryChange(event.target.value)}
+										aria-label={t("search.label")}
+										autoComplete="off"
+										className="h-full min-w-0 flex-1 bg-transparent px-3 py-0 text-body text-foreground placeholder:text-muted focus:outline-none sm:px-4"
+									/>
 
-								{query ? (
-									<button
-										type="button"
-										onClick={handleClearSearch}
-										className="flex shrink-0 items-center px-3 text-muted transition-colors fine-hover:text-foreground"
-										aria-label={t("search.clear")}
-									>
-										<XMarkIcon className="size-4" aria-hidden />
-									</button>
+									{query ? (
+										<button
+											type="button"
+											onClick={handleClearSearch}
+											className="flex shrink-0 items-center px-3 text-muted transition-colors fine-hover:text-foreground"
+											aria-label={t("search.clear")}
+										>
+											<XMarkIcon className="size-4" aria-hidden />
+										</button>
+									) : null}
+								</div>
+
+								<Button
+									type="submit"
+									variant="primary"
+									size="lg"
+									leadingIcon={<MagnifyingGlassIcon aria-hidden />}
+									className="h-12 shrink-0 sm:min-w-32"
+									disabled={isPending}
+								>
+									{t("search.submit")}
+								</Button>
+							</form>
+						</div>
+
+						{subCategoryOptions.length > 0 ||
+						tagOptions.length > 0 ||
+						hasActiveFilters ? (
+							<div className="px-4 py-4 sm:px-5 sm:py-5">
+								{hasActiveFilters ? (
+									<div className="mb-4 flex justify-end">
+										<button
+											type="button"
+											onClick={handleClearAll}
+											className="font-heading text-label font-medium text-muted underline decoration-border underline-offset-4 transition-colors fine-hover:text-foreground"
+										>
+											{t("filter.clear")}
+										</button>
+									</div>
+								) : null}
+
+								{subCategoryOptions.length > 0 ? (
+									<FilterRow label={t("filter.subcategories")}>
+										{subCategoryOptions.map((subCategory) => {
+											const active = activeSubCategory === subCategory.key;
+											return (
+												<CategoryPill
+													key={subCategory.key}
+													active={active}
+													onClick={() =>
+														handleSubCategory(active ? null : subCategory.key)
+													}
+												>
+													{subCategory.label}
+												</CategoryPill>
+											);
+										})}
+									</FilterRow>
+								) : null}
+
+								{tagOptions.length > 0 ? (
+									<FilterRow label={t("filter.tags")}>
+										{tagOptions.map((tag) => {
+											const active = activeTag === tag;
+											return (
+												<CategoryPill
+													key={tag}
+													active={active}
+													onClick={() => handleTag(active ? null : tag)}
+												>
+													#{tag}
+												</CategoryPill>
+											);
+										})}
+									</FilterRow>
+								) : null}
+
+								{hasActiveFilters ? (
+									<div className="mt-4 flex flex-wrap items-center gap-2 border-t border-border pt-4">
+										<span className="text-label text-muted">
+											{t("filter.active")}
+										</span>
+										{activeCategoryLabel ? (
+											<Badge variant="outline" size="sm">
+												{activeCategoryLabel}
+											</Badge>
+										) : null}
+										{activeSubCategoryLabel ? (
+											<Badge variant="outline" size="sm">
+												{activeSubCategoryLabel}
+											</Badge>
+										) : null}
+										{hasActiveTag && activeTag ? (
+											<Badge variant="outline" size="sm">
+												#{activeTag}
+											</Badge>
+										) : null}
+										{hasActiveQuery && activeQuery ? (
+											<Badge variant="outline" size="sm">
+												&ldquo;{activeQuery}&rdquo;
+											</Badge>
+										) : null}
+									</div>
 								) : null}
 							</div>
-
-							<Button
-								type="submit"
-								variant="primary"
-								size="lg"
-								leadingIcon={<MagnifyingGlassIcon aria-hidden />}
-								className="h-12 shrink-0 sm:min-w-32"
-								disabled={isPending}
-							>
-								{t("search.submit")}
-							</Button>
-						</form>
+						) : null}
 					</div>
-
-					{subCategoryOptions.length > 0 ||
-					tagOptions.length > 0 ||
-					hasActiveFilters ? (
-						<div className="px-4 py-4 sm:px-5 sm:py-5">
-							{hasActiveFilters ? (
-								<div className="mb-4 flex justify-end">
-									<button
-										type="button"
-										onClick={handleClearAll}
-										className="font-heading text-label font-medium text-muted underline decoration-border underline-offset-4 transition-colors fine-hover:text-foreground"
-									>
-										{t("filter.clear")}
-									</button>
-								</div>
-							) : null}
-
-							{subCategoryOptions.length > 0 ? (
-								<FilterRow label={t("filter.subcategories")}>
-									{subCategoryOptions.map((subCategory) => {
-										const active = activeSubCategory === subCategory.key;
-										return (
-											<CategoryPill
-												key={subCategory.key}
-												active={active}
-												onClick={() =>
-													handleSubCategory(active ? null : subCategory.key)
-												}
-											>
-												{subCategory.label}
-											</CategoryPill>
-										);
-									})}
-								</FilterRow>
-							) : null}
-
-							{tagOptions.length > 0 ? (
-								<FilterRow label={t("filter.tags")}>
-									{tagOptions.map((tag) => {
-										const active = activeTag === tag;
-										return (
-											<CategoryPill
-												key={tag}
-												active={active}
-												onClick={() => handleTag(active ? null : tag)}
-											>
-												#{tag}
-											</CategoryPill>
-										);
-									})}
-								</FilterRow>
-							) : null}
-
-							{hasActiveFilters ? (
-								<div className="mt-4 flex flex-wrap items-center gap-2 border-t border-border pt-4">
-									<span className="text-label text-muted">
-										{t("filter.active")}
-									</span>
-									{activeCategoryLabel ? (
-										<Badge variant="outline" size="sm">
-											{activeCategoryLabel}
-										</Badge>
-									) : null}
-									{activeSubCategoryLabel ? (
-										<Badge variant="outline" size="sm">
-											{activeSubCategoryLabel}
-										</Badge>
-									) : null}
-									{hasActiveTag && activeTag ? (
-										<Badge variant="outline" size="sm">
-											#{activeTag}
-										</Badge>
-									) : null}
-									{hasActiveQuery && activeQuery ? (
-										<Badge variant="outline" size="sm">
-											&ldquo;{activeQuery}&rdquo;
-										</Badge>
-									) : null}
-								</div>
-							) : null}
-						</div>
-					) : null}
 				</div>
-			) : null}
+			</div>
 		</div>
 	);
 }

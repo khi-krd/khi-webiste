@@ -152,7 +152,7 @@ export function VideoPosterCard({
 					aria-hidden
 					className="pointer-events-none absolute inset-0 z-2 flex items-center justify-center opacity-0 transition-opacity duration-300 group-fine:opacity-100 group-focus-visible:opacity-100 group-data-[previewing]:opacity-0"
 				>
-					<span className="inline-flex size-12 items-center justify-center rounded-pill bg-primary/70 text-primary-foreground ring-1 ring-primary-foreground/30 backdrop-blur-[2px] transition-[transform,background-color] duration-300 group-fine:scale-110 group-fine:bg-primary/85 motion-reduce:transition-none motion-reduce:group-fine:scale-100">
+					<span className="inline-flex size-12 items-center justify-center rounded-pill bg-primary text-primary-foreground ring-1 ring-primary-foreground/25 backdrop-blur-[2px] transition-transform duration-300 group-fine:scale-110 motion-reduce:transition-none motion-reduce:group-fine:scale-100">
 						<PlayIcon className="size-5 translate-x-0.5" />
 					</span>
 				</span>

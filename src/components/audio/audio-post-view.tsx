@@ -413,8 +413,6 @@ export async function AudioPostView({
 										closeLabel={t("brochures.close")}
 										previousLabel={t("brochures.previous")}
 										nextLabel={t("brochures.next")}
-										zoomInLabel={t("brochures.zoomIn")}
-										zoomOutLabel={t("brochures.zoomOut")}
 										metadataLabels={{
 											dimensions: t("brochures.metadata.dimensions"),
 											fileSize: t("brochures.metadata.fileSize"),
@@ -453,8 +451,6 @@ export async function AudioPostView({
 										closeLabel={t("brochures.close")}
 										previousLabel={t("brochures.previous")}
 										nextLabel={t("brochures.next")}
-										zoomInLabel={t("brochures.zoomIn")}
-										zoomOutLabel={t("brochures.zoomOut")}
 										metadataLabels={{
 											dimensions: t("brochures.metadata.dimensions"),
 											fileSize: t("brochures.metadata.fileSize"),

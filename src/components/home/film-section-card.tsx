@@ -85,9 +85,9 @@ export function FilmCinemaHero({ item }: FilmCinemaHeroProps) {
 				<div className="mt-3 flex flex-wrap items-center gap-3">
 					<span
 						className={cn(
-							"inline-flex size-9 items-center justify-center rounded-pill bg-primary-foreground/15 text-primary-foreground ring-1 ring-primary-foreground/30 backdrop-blur-md",
-							"transition-[transform,background-color] duration-300",
-							"group-fine:scale-110 group-fine:bg-primary-foreground/25",
+							"inline-flex size-9 items-center justify-center rounded-pill bg-primary text-primary-foreground ring-1 ring-primary-foreground/30",
+							"transition-[transform,opacity] duration-300",
+							"group-fine:scale-110 group-fine:opacity-90",
 							"motion-reduce:transition-none motion-reduce:group-fine:scale-100",
 						)}
 					>
@@ -148,7 +148,7 @@ export function FilmGridCard({ item }: FilmGridCardProps) {
 					aria-hidden
 					className="pointer-events-none absolute inset-0 flex items-center justify-center opacity-0 transition-opacity duration-300 group-fine:opacity-100 motion-reduce:opacity-0"
 				>
-					<span className="inline-flex size-9 items-center justify-center rounded-pill bg-primary-foreground/20 text-primary-foreground ring-1 ring-primary-foreground/25 backdrop-blur-sm">
+					<span className="inline-flex size-9 items-center justify-center rounded-pill bg-primary text-primary-foreground ring-1 ring-primary-foreground/25">
 						<PlayIcon className="size-4 translate-x-0.5" />
 					</span>
 				</div>

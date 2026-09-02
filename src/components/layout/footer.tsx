@@ -346,7 +346,9 @@ export async function Footer() {
 						src={logoUrl ?? "/logo.png"}
 						alt=""
 						fill
-						quality={35}
+						// 40 is the lowest step in next.config's images.qualities — 35
+						// isn't configured there and warns on every render.
+						quality={40}
 						sizes="(min-width: 1024px) 672px, (min-width: 640px) 544px, 416px"
 						className="object-contain"
 					/>

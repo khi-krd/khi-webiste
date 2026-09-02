@@ -23,7 +23,7 @@ type VideoCinemaHeroProps = {
 };
 
 const watchNowClass =
-	"group/cta inline-flex h-12 items-center gap-2 border border-primary-foreground bg-primary-foreground px-7 font-heading text-small font-semibold text-foreground no-underline transition-[gap,box-shadow] duration-300 ease-out fine-hover:gap-2.5 fine-hover:shadow-[0_12px_32px_-14px_rgba(0,0,0,0.35)]";
+	"group/cta inline-flex h-12 items-center gap-2 border border-primary-foreground/25 bg-primary px-7 font-heading text-small font-semibold text-primary-foreground no-underline transition-[gap,box-shadow,opacity] duration-300 ease-out fine-hover:gap-2.5 fine-hover:opacity-90 fine-hover:shadow-[0_12px_32px_-14px_rgba(0,0,0,0.35)]";
 
 const detailsClass =
 	"inline-flex h-12 items-center gap-2 border border-primary-foreground/40 bg-primary-foreground/10 px-7 font-heading text-small font-semibold text-primary-foreground no-underline backdrop-blur-[2px] transition-colors duration-300 fine-hover:border-primary-foreground/70 fine-hover:bg-primary-foreground/20";

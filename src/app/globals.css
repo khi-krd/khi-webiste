@@ -733,6 +733,45 @@ html[data-corners="rounded"]
 	}
 }
 
+/* Native <dialog> viewers (lightboxes, media modals, the PDF fullscreen
+   reader): fade/rise on open, fade out on close, backdrop fading in step.
+   Progressive — engines without @starting-style / allow-discrete just pop
+   open exactly as before, and the global prefers-reduced-motion handler
+   above neutralizes the transitions. `overlay` keeps the dialog in the top
+   layer for the duration of the close transition (Chromium); it is a plain
+   custom-ident in `transition-property` elsewhere, so listing it is safe. */
+dialog {
+	opacity: 0;
+	transform: translateY(0.5rem) scale(0.985);
+	transition-property: opacity, transform, display, overlay;
+	transition-duration: 0.3s;
+	transition-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
+	transition-behavior: allow-discrete;
+}
+dialog[open] {
+	opacity: 1;
+	transform: none;
+}
+dialog::backdrop {
+	opacity: 0;
+	transition-property: opacity, display, overlay;
+	transition-duration: 0.3s;
+	transition-timing-function: ease-out;
+	transition-behavior: allow-discrete;
+}
+dialog[open]::backdrop {
+	opacity: 1;
+}
+@starting-style {
+	dialog[open] {
+		opacity: 0;
+		transform: translateY(0.5rem) scale(0.985);
+	}
+	dialog[open]::backdrop {
+		opacity: 0;
+	}
+}
+
 /* Image watermark: slow patrol between the picture's corners so the mark
    never permanently hides the same area of the artwork. Travel distances are
    measured per picture (--wm-drift-*). The global prefers-reduced-motion

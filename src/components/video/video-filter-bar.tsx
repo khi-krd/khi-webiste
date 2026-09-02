@@ -211,141 +211,154 @@ export function VideoFilterBar({
 				</div>
 			</fieldset>
 
-			{expanded ? (
-				<div className="border-t border-border">
-					<search className="border-b border-border bg-background px-4 py-4 sm:px-5 sm:py-5">
-						<form
-							onSubmit={handleSearchSubmit}
-							className="flex flex-col gap-3 sm:flex-row sm:items-stretch"
-						>
-							<div
-								className={cn(
-									"flex h-12 min-w-0 flex-1 items-stretch border border-border-strong bg-surface",
-									"transition-colors focus-within:border-foreground",
-								)}
+			{/* Collapsible panel — the 0fr↔1fr grid-row tween animates height
+			    without measuring; `inert` parks the hidden controls out of the
+			    tab order and the accessibility tree while collapsed. */}
+			<div
+				className={cn(
+					"grid transition-[grid-template-rows,opacity] duration-300 ease-out",
+					expanded
+						? "grid-rows-[1fr] opacity-100"
+						: "grid-rows-[0fr] opacity-0",
+				)}
+				inert={!expanded}
+			>
+				<div className="min-h-0 overflow-hidden">
+					<div className="border-t border-border">
+						<search className="border-b border-border bg-background px-4 py-4 sm:px-5 sm:py-5">
+							<form
+								onSubmit={handleSearchSubmit}
+								className="flex flex-col gap-3 sm:flex-row sm:items-stretch"
 							>
-								<input
-									type="search"
-									name="q"
-									value={query}
-									onChange={(event) => handleQueryChange(event.target.value)}
-									aria-label={t("filter.searchLabel")}
-									autoComplete="off"
-									className="h-full min-w-0 flex-1 bg-transparent px-3 py-0 text-body text-foreground placeholder:text-muted focus:outline-none sm:px-4"
-								/>
-
-								{query ? (
-									<button
-										type="button"
-										onClick={handleClearSearch}
-										className="flex shrink-0 items-center px-3 text-muted transition-colors fine-hover:text-foreground"
-										aria-label={t("filter.searchClear")}
-									>
-										<XMarkIcon className="size-4" aria-hidden />
-									</button>
-								) : null}
-							</div>
-							<Button
-								type="submit"
-								variant="primary"
-								size="lg"
-								leadingIcon={<MagnifyingGlassIcon aria-hidden />}
-								className="h-12 shrink-0 sm:min-w-32"
-								disabled={isPending}
-							>
-								{t("filter.searchSubmit")}
-							</Button>
-						</form>
-					</search>
-
-					<div className="px-4 py-4 sm:px-5 sm:py-5">
-						{topics.length > 0 ? (
-							<div>
-								<label
-									htmlFor="video-topic-select"
-									className="label font-semibold text-muted"
+								<div
+									className={cn(
+										"flex h-12 min-w-0 flex-1 items-stretch border border-border-strong bg-surface",
+										"transition-colors focus-within:border-foreground",
+									)}
 								>
-									{t("filter.topicLabel")}
-								</label>
-								<div className="mt-3 max-w-xs">
-									<Select
-										id="video-topic-select"
-										value={activeTopicId != null ? String(activeTopicId) : ""}
-										onChange={(event) =>
-											pushFilters({
-												topic: event.target.value
-													? Number.parseInt(event.target.value, 10)
-													: null,
-											})
-										}
+									<input
+										type="search"
+										name="q"
+										value={query}
+										onChange={(event) => handleQueryChange(event.target.value)}
+										aria-label={t("filter.searchLabel")}
+										autoComplete="off"
+										className="h-full min-w-0 flex-1 bg-transparent px-3 py-0 text-body text-foreground placeholder:text-muted focus:outline-none sm:px-4"
+									/>
+
+									{query ? (
+										<button
+											type="button"
+											onClick={handleClearSearch}
+											className="flex shrink-0 items-center px-3 text-muted transition-colors fine-hover:text-foreground"
+											aria-label={t("filter.searchClear")}
+										>
+											<XMarkIcon className="size-4" aria-hidden />
+										</button>
+									) : null}
+								</div>
+								<Button
+									type="submit"
+									variant="primary"
+									size="lg"
+									leadingIcon={<MagnifyingGlassIcon aria-hidden />}
+									className="h-12 shrink-0 sm:min-w-32"
+									disabled={isPending}
+								>
+									{t("filter.searchSubmit")}
+								</Button>
+							</form>
+						</search>
+
+						<div className="px-4 py-4 sm:px-5 sm:py-5">
+							{topics.length > 0 ? (
+								<div>
+									<label
+										htmlFor="video-topic-select"
+										className="label font-semibold text-muted"
 									>
-										<option value="">{t("filter.topicAll")}</option>
-										{topics.map((topic) => (
-											<option key={topic.id} value={topic.id}>
-												{topic.name}
-											</option>
-										))}
-									</Select>
+										{t("filter.topicLabel")}
+									</label>
+									<div className="mt-3 max-w-xs">
+										<Select
+											id="video-topic-select"
+											value={activeTopicId != null ? String(activeTopicId) : ""}
+											onChange={(event) =>
+												pushFilters({
+													topic: event.target.value
+														? Number.parseInt(event.target.value, 10)
+														: null,
+												})
+											}
+										>
+											<option value="">{t("filter.topicAll")}</option>
+											{topics.map((topic) => (
+												<option key={topic.id} value={topic.id}>
+													{topic.name}
+												</option>
+											))}
+										</Select>
+									</div>
+								</div>
+							) : null}
+
+							<div className="mt-6 border-t border-border pt-4">
+								<p className="label font-semibold text-muted">
+									{t("filter.collectionLabel")}
+								</p>
+								<div className="mt-3 flex flex-wrap gap-2">
+									<CellPill
+										active={Boolean(activeMemories)}
+										onClick={() => pushFilters({ memories: !activeMemories })}
+									>
+										{t("filter.memoriesLabel")}
+									</CellPill>
 								</div>
 							</div>
-						) : null}
 
-						<div className="mt-6 border-t border-border pt-4">
-							<p className="label font-semibold text-muted">
-								{t("filter.collectionLabel")}
-							</p>
-							<div className="mt-3 flex flex-wrap gap-2">
-								<CellPill
-									active={Boolean(activeMemories)}
-									onClick={() => pushFilters({ memories: !activeMemories })}
-								>
-									{t("filter.memoriesLabel")}
-								</CellPill>
-							</div>
+							{hasActiveFilters ? (
+								<div className="mt-6 flex flex-wrap items-center gap-2 border-t border-border pt-4">
+									<span aria-hidden="true" className="label me-1 text-muted">
+										{"//"}
+									</span>
+									<span className="text-label text-muted">
+										{t("filter.active")}
+									</span>
+									{activeType ? (
+										<Badge variant="outline" size="sm">
+											{t(`types.${activeType}`)}
+										</Badge>
+									) : null}
+									{activeTopic ? (
+										<Badge variant="outline" size="sm">
+											{activeTopic.name}
+										</Badge>
+									) : null}
+									{activeMemories ? (
+										<Badge variant="outline" size="sm">
+											{t("filter.memoriesLabel")}
+										</Badge>
+									) : null}
+									{activeQuery?.trim() ? (
+										<Badge variant="outline" size="sm">
+											&ldquo;{activeQuery}&rdquo;
+										</Badge>
+									) : null}
+									{/* Reset lives beside the chips it clears. */}
+									<button
+										type="button"
+										onClick={handleClearAll}
+										disabled={isPending}
+										className="ms-auto font-heading text-small font-medium text-muted underline decoration-border underline-offset-4 transition-colors fine-hover:text-foreground"
+									>
+										{t("filter.reset")}
+									</button>
+								</div>
+							) : null}
 						</div>
-
-						{hasActiveFilters ? (
-							<div className="mt-6 flex flex-wrap items-center gap-2 border-t border-border pt-4">
-								<span aria-hidden="true" className="label me-1 text-muted">
-									{"//"}
-								</span>
-								<span className="text-label text-muted">
-									{t("filter.active")}
-								</span>
-								{activeType ? (
-									<Badge variant="outline" size="sm">
-										{t(`types.${activeType}`)}
-									</Badge>
-								) : null}
-								{activeTopic ? (
-									<Badge variant="outline" size="sm">
-										{activeTopic.name}
-									</Badge>
-								) : null}
-								{activeMemories ? (
-									<Badge variant="outline" size="sm">
-										{t("filter.memoriesLabel")}
-									</Badge>
-								) : null}
-								{activeQuery?.trim() ? (
-									<Badge variant="outline" size="sm">
-										&ldquo;{activeQuery}&rdquo;
-									</Badge>
-								) : null}
-								{/* Reset lives beside the chips it clears. */}
-								<button
-									type="button"
-									onClick={handleClearAll}
-									disabled={isPending}
-									className="ms-auto font-heading text-small font-medium text-muted underline decoration-border underline-offset-4 transition-colors fine-hover:text-foreground"
-								>
-									{t("filter.reset")}
-								</button>
-							</div>
-						) : null}
 					</div>
 				</div>
-			) : null}
+			</div>
 		</div>
 	);
 }
