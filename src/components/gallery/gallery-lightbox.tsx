@@ -251,6 +251,7 @@ export function GalleryLightbox({
 											<ImageWatermark
 												contain={item.imageUrl}
 												clearance={showPanel ? 0 : 40}
+												zoom={zoomLevel}
 											/>
 										</div>
 									</div>

@@ -773,9 +773,10 @@ dialog[open]::backdrop {
 }
 
 /* Image watermark: no keyframes here on purpose. The mark rests in the
-   picture's bottom-start corner and only dodges to another corner when the
-   zoomed view closes in on it — measured, transition-driven behavior that
-   lives entirely in components/ui/image-watermark.tsx. */
+   picture's bottom-start corner and simply scales down in place as the viewer
+   zooms in (growing back to at most its natural size on zoom out) — it never
+   drifts or relocates. The logic lives entirely in
+   components/ui/image-watermark.tsx. */
 
 @layer components {
 	/* Spinner: a thin ring (hairline) with one border-strong arc that rotates.

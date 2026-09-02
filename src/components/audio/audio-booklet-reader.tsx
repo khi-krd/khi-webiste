@@ -254,7 +254,10 @@ export function AudioBookletReader({
 														priority={index === 0}
 														draggable={false}
 													/>
-													<ImageWatermark contain={item.imageUrl} />
+													<ImageWatermark
+														contain={item.imageUrl}
+														zoom={zoomLevel}
+													/>
 												</div>
 											</div>
 										</div>

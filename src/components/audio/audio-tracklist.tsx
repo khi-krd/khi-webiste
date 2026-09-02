@@ -117,7 +117,7 @@ export function AudioTracklist({
 									) : null}
 								</span>
 
-								<span className="min-w-0 flex-1 text-start sm:max-w-[22rem] sm:flex-initial">
+								<span className="min-w-0 flex-1 text-start sm:w-[22rem] sm:flex-none">
 									<span className="block truncate text-body font-bold text-foreground">
 										{row.title}
 									</span>
@@ -129,9 +129,10 @@ export function AudioTracklist({
 								</span>
 
 								{/* A resting contour on every row, the live playhead on the one
-								    loaded in the player. From sm up it begins one gap step after
-								    the title block — content-sized since its 22rem cap — and
-								    stretches across ALL the free width to the duration label; on
+								    loaded in the player. From sm up the title column is a
+								    FIXED 22rem, so every row's wave starts at the same edge and
+								    runs flush to the duration label — justified lengths across
+								    the whole list (user request); on
 								    phones the order swap makes it the item that wraps to a
 								    full-width second line, where there is no room beside the
 								    jacket. */}
