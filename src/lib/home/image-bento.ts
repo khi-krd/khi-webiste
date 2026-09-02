@@ -48,5 +48,7 @@ export const HOME_IMAGE_BENTO_SECTION_CLASS =
 export const HOME_IMAGE_BENTO_HEADER_CLASS =
 	"shrink-0 px-6 pt-10 pb-4 sm:px-8 sm:pt-12 sm:pb-5 lg:pt-14 lg:pb-5 2xl:px-[calc((100vw-var(--canvas))/2+2rem)]";
 
+// No bottom padding: the dark band ends exactly where the tiles do and meets
+// the next home section (the donate band) edge to edge (user request).
 export const HOME_IMAGE_BENTO_BODY_CLASS =
-	"flex min-h-0 flex-1 flex-col justify-center pb-8 sm:pb-10 lg:pb-10";
+	"flex min-h-0 flex-1 flex-col justify-center";
