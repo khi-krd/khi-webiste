@@ -75,7 +75,7 @@ export function ServiceSectionVideo({
 				<span className="pointer-events-none absolute inset-0 flex items-center justify-center">
 					<span
 						className={cn(
-							"inline-flex items-center justify-center bg-primary text-primary-foreground ring-1 ring-primary-foreground/25 transition-[transform,opacity] duration-300 group-fine:scale-110 group-fine:opacity-90 motion-reduce:transition-none motion-reduce:group-fine:scale-100",
+							"inline-flex scale-90 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-[0_12px_32px_-10px_rgb(0_0_0/0.55)] ring-1 ring-primary-foreground/30 transition-[transform] duration-300 ease-out group-fine:scale-100 motion-reduce:scale-100 motion-reduce:transition-none",
 							compact ? "size-11 sm:size-12" : "size-14 sm:size-16",
 						)}
 					>

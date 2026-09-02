@@ -29,17 +29,15 @@ export type HomeVideoCardItem = {
 	href: string;
 };
 
-/** Square play affordance — brand green, the same mark at both stage sizes. */
+/** Circular play affordance — brand green, the same mark at both stage sizes. */
 function PlayMark({ size }: { size: "sm" | "lg" }) {
 	return (
 		<span
 			className={cn(
-				"inline-flex items-center justify-center bg-primary text-primary-foreground shadow-[0_6px_18px_-8px_rgba(0,0,0,0.8)]",
-				"transition-[transform,background-color] duration-300 ease-out",
-				"motion-reduce:transition-none",
-				size === "lg"
-					? "size-14 group-fine:scale-105 lg:size-18"
-					: "size-9 group-fine:scale-110",
+				"inline-flex items-center justify-center rounded-full bg-primary text-primary-foreground shadow-[0_12px_32px_-10px_rgb(0_0_0/0.55)] ring-1 ring-primary-foreground/30",
+				"scale-90 transition-[transform,background-color] duration-300 ease-out group-fine:scale-100",
+				"motion-reduce:scale-100 motion-reduce:transition-none",
+				size === "lg" ? "size-14 lg:size-16" : "size-10",
 			)}
 		>
 			<PlayIcon

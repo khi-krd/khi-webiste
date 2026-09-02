@@ -150,9 +150,14 @@ export function VideoPosterCard({
 				    actually rolling. */}
 				<span
 					aria-hidden
-					className="pointer-events-none absolute inset-0 z-2 flex items-center justify-center opacity-0 transition-opacity duration-300 group-fine:opacity-100 group-focus-visible:opacity-100 group-data-[previewing]:opacity-0"
+					className={cn(
+						"pointer-events-none absolute inset-0 z-2 flex items-center justify-center opacity-0 transition-opacity duration-300 group-fine:opacity-100 group-focus-visible:opacity-100 group-data-[previewing]:opacity-0",
+						// The overlay variant seats the title at the foot of the still —
+						// bias the circle up so it blooms in the clear area above the text.
+						!isCaption && "pb-14 sm:pb-16",
+					)}
 				>
-					<span className="inline-flex size-12 items-center justify-center rounded-pill bg-primary text-primary-foreground ring-1 ring-primary-foreground/25 backdrop-blur-[2px] transition-transform duration-300 group-fine:scale-110 motion-reduce:transition-none motion-reduce:group-fine:scale-100">
+					<span className="inline-flex size-12 scale-75 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-[0_12px_32px_-10px_rgb(0_0_0/0.55)] ring-1 ring-primary-foreground/30 backdrop-blur-[2px] transition-[transform] duration-300 ease-out group-fine:scale-100 group-focus-visible:scale-100 motion-reduce:scale-100 motion-reduce:transition-none">
 						<PlayIcon className="size-5 translate-x-0.5" />
 					</span>
 				</span>

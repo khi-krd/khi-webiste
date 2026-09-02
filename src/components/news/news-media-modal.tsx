@@ -203,7 +203,7 @@ export function NewsMediaModal({
 												/>
 												{thumb.kind === "VIDEO" ? (
 													<span className="pointer-events-none absolute inset-0 flex items-center justify-center bg-foreground/25">
-														<span className="inline-flex size-6 items-center justify-center bg-primary text-primary-foreground">
+														<span className="inline-flex size-6 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-[0_12px_32px_-10px_rgb(0_0_0/0.55)] ring-1 ring-primary-foreground/30">
 															<PlayIcon
 																className="size-3 translate-x-px"
 																aria-hidden

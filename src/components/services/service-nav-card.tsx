@@ -63,7 +63,7 @@ export function ServiceNavCard({
 
 			<div className="pointer-events-none relative z-10 flex h-full flex-col justify-between p-3 sm:p-4">
 				<span
-					className="ms-auto inline-flex size-8 items-center justify-center border border-white/30 bg-white/10 text-white backdrop-blur-[2px] sm:size-9"
+					className="ms-auto inline-flex size-8 items-center justify-center border border-primary-foreground/25 bg-primary text-primary-foreground transition-opacity duration-300 group-fine:opacity-90 motion-reduce:transition-none sm:size-9"
 					aria-hidden
 				>
 					<DirectionalIcon

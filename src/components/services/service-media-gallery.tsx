@@ -173,7 +173,7 @@ export function ServiceMediaGallery({
 
 									{isVideo && (
 										<span className="pointer-events-none absolute inset-x-0 top-0 flex justify-end bg-linear-to-b from-foreground/55 to-transparent px-1.5 py-1">
-											<span className="inline-flex size-5 items-center justify-center bg-primary text-primary-foreground">
+											<span className="inline-flex size-5 items-center justify-center rounded-full bg-primary text-primary-foreground">
 												<PlayIcon
 													className="size-2.5 translate-x-px"
 													aria-hidden

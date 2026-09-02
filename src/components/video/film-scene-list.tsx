@@ -172,10 +172,10 @@ export function FilmSceneList({
 									>
 										<span
 											className={cn(
-												"inline-flex size-10 items-center justify-center rounded-pill bg-primary text-primary-foreground ring-1 ring-primary-foreground/25 backdrop-blur-[2px] transition-transform duration-300 sm:size-11",
+												"inline-flex size-10 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-[0_12px_32px_-10px_rgb(0_0_0/0.55)] ring-1 ring-primary-foreground/30 backdrop-blur-[2px] transition-[transform] duration-300 ease-out sm:size-11",
 												isActive
 													? null
-													: "group-fine:scale-110 motion-reduce:group-fine:scale-100",
+													: "scale-75 group-fine:scale-100 motion-reduce:scale-100 motion-reduce:transition-none",
 											)}
 										>
 											<PlayIcon className="size-4 translate-x-0.5 sm:size-5" />

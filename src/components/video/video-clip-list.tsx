@@ -149,10 +149,10 @@ export function VideoClipList({
 									>
 										<span
 											className={cn(
-												"inline-flex size-11 items-center justify-center rounded-pill bg-primary text-primary-foreground ring-1 ring-primary-foreground/25 backdrop-blur-[2px] transition-transform duration-300",
+												"inline-flex size-11 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-[0_12px_32px_-10px_rgb(0_0_0/0.55)] ring-1 ring-primary-foreground/30 backdrop-blur-[2px] transition-[transform] duration-300 ease-out",
 												isActive
 													? null
-													: "group-fine:scale-110 motion-reduce:group-fine:scale-100",
+													: "scale-75 group-fine:scale-100 motion-reduce:scale-100 motion-reduce:transition-none",
 											)}
 										>
 											{isActive ? (

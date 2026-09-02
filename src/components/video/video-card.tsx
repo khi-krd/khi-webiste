@@ -77,13 +77,13 @@ function PlayMark({ large = false }: { large?: boolean }) {
 				className={cn(
 					// Solid institute green — the mark belongs to the same family as
 					// every other filled control on the site.
-					"inline-flex items-center justify-center rounded-pill bg-primary text-primary-foreground ring-1 ring-primary-foreground/25 backdrop-blur-[2px]",
+					"inline-flex items-center justify-center rounded-full bg-primary text-primary-foreground shadow-[0_12px_32px_-10px_rgb(0_0_0/0.55)] ring-1 ring-primary-foreground/30 backdrop-blur-[2px]",
 					"transition-[transform,opacity] duration-[350ms] ease-[cubic-bezier(0.34,1.56,0.64,1)]",
-					"opacity-0 scale-[0.85] sm:opacity-80 sm:scale-90",
+					"opacity-0 scale-75 sm:opacity-80 sm:scale-90",
 					"group-fine:opacity-100 group-fine:scale-100 group-fine:delay-150",
 					"group-focus-visible:opacity-100 group-focus-visible:scale-100",
 					"group-data-[previewing]:opacity-70! group-data-[previewing]:scale-90!",
-					"motion-reduce:transition-none motion-reduce:group-fine:scale-100",
+					"motion-reduce:transition-none motion-reduce:scale-100",
 					large ? "size-16" : "size-12",
 				)}
 			>

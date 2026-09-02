@@ -111,9 +111,9 @@ export function AboutHero({
 							aria-haspopup="dialog"
 							aria-label={playLabel}
 							className={cn(
-								"mt-8 inline-flex size-14 items-center justify-center rounded-pill bg-primary text-white backdrop-blur-[2px] sm:mt-9 sm:size-16",
-								"transition-[transform,background-color,opacity] duration-300",
-								"opacity-90 fine-hover:scale-110 fine-hover:bg-primary fine-hover:opacity-100",
+								"mt-8 inline-flex size-14 items-center justify-center rounded-full bg-primary text-white shadow-[0_12px_32px_-10px_rgb(0_0_0/0.55)] ring-1 ring-primary-foreground/30 backdrop-blur-[2px] sm:mt-9 sm:size-16",
+								"transition-[transform,background-color,opacity] duration-300 ease-out",
+								"opacity-90 fine-hover:scale-105 fine-hover:bg-primary fine-hover:opacity-100 active:scale-95",
 								"focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white",
 								"motion-reduce:transition-none motion-reduce:fine-hover:scale-100",
 							)}

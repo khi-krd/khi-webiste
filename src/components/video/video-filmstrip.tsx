@@ -69,7 +69,7 @@ function Frame({
 				aria-hidden
 				className="pointer-events-none absolute inset-0 z-2 flex items-center justify-center"
 			>
-				<span className="inline-flex size-11 items-center justify-center rounded-pill bg-primary text-primary-foreground ring-1 ring-primary-foreground/25 backdrop-blur-[2px] transition-[transform,opacity] duration-[350ms] ease-[cubic-bezier(0.34,1.56,0.64,1)] opacity-75 scale-90 group-fine:scale-100 group-fine:opacity-100 group-data-[previewing]:scale-90 group-data-[previewing]:opacity-0 motion-reduce:transition-none motion-reduce:group-fine:scale-90">
+				<span className="inline-flex size-11 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-[0_12px_32px_-10px_rgb(0_0_0/0.55)] ring-1 ring-primary-foreground/30 backdrop-blur-[2px] transition-[transform,opacity] duration-[350ms] ease-[cubic-bezier(0.34,1.56,0.64,1)] opacity-75 scale-90 group-fine:scale-100 group-fine:opacity-100 group-data-[previewing]:scale-90 group-data-[previewing]:opacity-0 motion-reduce:transition-none motion-reduce:group-fine:scale-90">
 					<PlayIcon className="size-5 translate-x-0.5" />
 				</span>
 			</span>

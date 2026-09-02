@@ -27,9 +27,9 @@ function MediaKindBadge({ kind }: { kind: MediaItem["kind"] }) {
 
 	return (
 		<span className="pointer-events-none absolute inset-0 flex items-center justify-center bg-foreground/28">
-			<span className="inline-flex size-8 items-center justify-center border border-primary-foreground/25 bg-primary text-primary-foreground">
+			<span className="inline-flex size-10 scale-90 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-[0_12px_32px_-10px_rgb(0_0_0/0.55)] ring-1 ring-primary-foreground/30 transition-[transform] duration-300 ease-out group-fine:scale-100 motion-reduce:scale-100 motion-reduce:transition-none">
 				{kind === "VIDEO" ? (
-					<PlayIcon className="size-4" aria-hidden />
+					<PlayIcon className="size-4 translate-x-0.5" aria-hidden />
 				) : (
 					<MusicalNoteIcon className="size-3.5" aria-hidden />
 				)}

@@ -150,7 +150,7 @@ export function GalleryHero({
 					<a
 						href="#gallery-content"
 						aria-label={scrollCueLabel}
-						className="inline-flex size-9 items-center justify-center border border-white/40 bg-foreground/40 text-white no-underline backdrop-blur-[2px] transition-colors duration-300 fine-hover:border-white fine-hover:bg-foreground/70"
+						className="inline-flex size-9 items-center justify-center border border-primary-foreground/25 bg-primary text-primary-foreground no-underline transition-opacity duration-300 fine-hover:opacity-90"
 					>
 						<ChevronDownIcon className="size-4 animate-bounce" aria-hidden />
 					</a>
