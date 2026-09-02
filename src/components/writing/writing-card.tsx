@@ -21,8 +21,8 @@ function CoverImage({ src, alt }: { src: string; alt: string }) {
 			src={src}
 			alt={alt}
 			fill
-			sizes="(max-width: 640px) 66vw, (max-width: 1024px) 40vw, 22vw"
-			className="object-cover brightness-[0.96] saturate-[0.92] transition-[filter,opacity] duration-700 ease-[cubic-bezier(0.22,1,0.36,1)] group-fine:brightness-100 group-fine:saturate-100"
+			sizes="(max-width: 640px) 82vw, (max-width: 1024px) 48vw, 25vw"
+			className="object-cover brightness-[0.94] saturate-[0.88] transition-[filter,opacity,scale] duration-700 ease-[cubic-bezier(0.22,1,0.36,1)] group-fine:scale-[1.04] group-fine:brightness-100 group-fine:saturate-100"
 		/>
 	);
 }
@@ -44,17 +44,14 @@ export function WritingCard({
 	const subtitle = genreLabels[0] ?? topicName ?? null;
 
 	return (
-		<article className="group relative flex h-full w-full flex-col">
-			{/* The book: portrait cover with spine crease at the binding edge and
-			    fore-edge corners softly rounded (rounded-e), standing on its own
-			    contact shadow. */}
-			<div className="relative">
-				<div className="book-cover relative aspect-[5/7] w-full overflow-hidden rounded-s-[2px] rounded-e-[6px] bg-sunken">
+		<article className="group relative flex h-full w-full flex-col overflow-hidden border border-border bg-surface">
+			<div className="relative aspect-[4/3] w-full overflow-hidden">
+				<div className="absolute inset-0">
 					{coverUrl ? (
 						<>
 							<CoverImage src={coverUrl} alt="" />
 							{hasHoverCover ? (
-								<div className="absolute inset-0 opacity-0 transition-opacity duration-700 group-fine:opacity-100">
+								<div className="absolute inset-0 opacity-0 transition-opacity duration-700 fine-hover:opacity-100">
 									<CoverImage src={hoverCoverUrl} alt="" />
 								</div>
 							) : null}
@@ -62,7 +59,7 @@ export function WritingCard({
 					) : (
 						<div
 							aria-hidden
-							className="flex h-full w-full items-center justify-center"
+							className="flex h-full w-full items-center justify-center bg-sunken"
 						>
 							<span className="font-heading text-display font-bold text-foreground/10">
 								{title.charAt(0)}
@@ -71,46 +68,45 @@ export function WritingCard({
 					)}
 					<div
 						aria-hidden
-						className="book-spine pointer-events-none absolute inset-y-0 start-0 w-4"
-					/>
-					<div
-						aria-hidden
-						className="book-sheen pointer-events-none absolute inset-0"
+						className="absolute inset-0 bg-linear-to-t from-foreground/92 via-foreground/48 to-foreground/12"
 					/>
 				</div>
-				<div
-					aria-hidden
-					className="book-ground pointer-events-none absolute -bottom-3 inset-x-2 h-6"
-				/>
-			</div>
 
-			{/* Ink below the cover — the cover art itself carries the title, so the
-			    caption leads with the writer, like a shelf card. */}
-			<div className="flex flex-1 flex-col pt-6">
-				<p className="font-heading text-h3 font-bold leading-tight text-balance">
-					{/* Stretched over the whole card: the read button that used
-					    to carry this link is gone, and a cover you cannot click
-					    is a dead end. */}
-					<Link
-						href={`/writings/${id}`}
-						variant="nav"
-						className="text-inherit no-underline after:absolute after:inset-0 after:z-1 after:content-['']"
-					>
-						{writer || title}
-					</Link>
-				</p>
-				{subtitle ? (
-					<p className="mt-1 text-small italic text-muted">{subtitle}</p>
-				) : writer ? (
-					<p className="mt-1 line-clamp-2 text-small italic text-muted">
-						{title}
-					</p>
-				) : null}
-				{excerpt ? (
-					<p className="mt-3 line-clamp-3 text-small leading-relaxed text-foreground/75">
-						{excerpt}
-					</p>
-				) : null}
+				<div className="relative z-1 flex h-full flex-col justify-between p-5 text-primary-foreground sm:p-6">
+					<div className="space-y-2">
+						<div>
+							<p className="font-heading text-h3 font-bold leading-tight">
+								{/* Stretched over the whole card: the read button that used
+								    to carry this link is gone, and a cover you cannot click
+								    is a dead end. */}
+								<Link
+									href={`/writings/${id}`}
+									variant="nav"
+									className="text-inherit no-underline after:absolute after:inset-0 after:z-1 after:content-['']"
+								>
+									{writer || title}
+								</Link>
+							</p>
+							{subtitle ? (
+								<p className="mt-1 text-small text-primary-foreground/72">
+									{subtitle}
+								</p>
+							) : writer ? (
+								<p className="mt-1 line-clamp-2 text-small text-primary-foreground/72">
+									{title}
+								</p>
+							) : null}
+						</div>
+					</div>
+
+					<div className="space-y-4">
+						{excerpt ? (
+							<p className="line-clamp-3 text-small leading-relaxed text-primary-foreground/88 sm:line-clamp-4">
+								{excerpt}
+							</p>
+						) : null}
+					</div>
+				</div>
 			</div>
 		</article>
 	);
