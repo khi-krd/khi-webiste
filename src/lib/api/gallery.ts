@@ -14,6 +14,7 @@ import {
 	resolveGalleryPosts,
 } from "@/lib/gallery/resolve";
 import {
+	collectRelatedGalleryPosts,
 	filterGalleryPosts,
 	GALLERY_POSTS_PER_PAGE,
 	type GalleryCollectionType,
@@ -162,6 +163,28 @@ export async function getGalleryHeroColumns(
 	return hasApiColumns ? apiColumns : emptyColumns;
 }
 
+function buildGalleryPostDetail(
+	post: GalleryPost,
+	allPosts: GalleryPost[],
+	slug: string,
+): GalleryPostDetail {
+	const index = allPosts.findIndex(
+		(entry) => entry.id === post.id || entry.id === slug,
+	);
+
+	return {
+		post,
+		previous: index > 0 ? allPosts[index - 1] : null,
+		next:
+			index >= 0 && index < allPosts.length - 1 ? allPosts[index + 1] : null,
+		// The unknown-index fallback starts at the head of the list, which may
+		// include the opened post itself — filter it back out.
+		related: collectRelatedGalleryPosts(allPosts, index).filter(
+			(entry) => entry.id !== post.id,
+		),
+	};
+}
+
 export async function getGalleryPostBySlug(
 	locale: string,
 	slug: string,
@@ -188,17 +211,7 @@ export async function getGalleryPostBySlug(
 			const post = resolveGalleryPost(locale, slugDetail.data);
 			if (post) {
 				const allPosts = await getGalleryPosts(locale);
-				const index = allPosts.findIndex(
-					(entry) => entry.id === post.id || entry.id === slug,
-				);
-				return {
-					post,
-					previous: index > 0 ? allPosts[index - 1] : null,
-					next:
-						index >= 0 && index < allPosts.length - 1
-							? allPosts[index + 1]
-							: null,
-				};
+				return buildGalleryPostDetail(post, allPosts, slug);
 			}
 		}
 
@@ -215,15 +228,7 @@ export async function getGalleryPostBySlug(
 				const post = resolveGalleryPost(locale, detail.data);
 				if (post) {
 					const allPosts = await getGalleryPosts(locale);
-					const index = allPosts.findIndex((entry) => entry.id === post.id);
-					return {
-						post,
-						previous: index > 0 ? allPosts[index - 1] : null,
-						next:
-							index >= 0 && index < allPosts.length - 1
-								? allPosts[index + 1]
-								: null,
-					};
+					return buildGalleryPostDetail(post, allPosts, slug);
 				}
 			}
 		}

@@ -33,9 +33,9 @@ type GalleryAlbumProps = {
 };
 
 /**
- * Opened collection album as exhibition-catalog plates: each image carries a
- * hairline-topped wall label with its plate number and caption. Every image
- * opens the lightbox with the full `ImageItemDto` record when present.
+ * Opened collection album as a uniform square grid — the video page's card
+ * language: framed tiles, every cover cropped to the same 1:1 box. Every
+ * image opens the lightbox with the full `ImageItemDto` record when present.
  */
 export function GalleryAlbum({
 	items,
@@ -71,59 +71,41 @@ export function GalleryAlbum({
 					)}
 				</header>
 
-				<div className="columns-2 gap-4 pt-6 lg:columns-3">
+				<div className="grid grid-cols-2 gap-3 pt-6 sm:gap-4 lg:grid-cols-3">
 					{items.map((sheetItem, index) => (
-						<figure key={sheetItem.id} className="mb-5 break-inside-avoid">
-							<button
-								type="button"
-								onClick={() => open(index + albumIndexOffset)}
-								aria-label={sheetItem.caption ?? postTitle}
-								className="group block w-full cursor-pointer"
-							>
-								{sheetItem.imageUrl ? (
-									<Image
-										src={sheetItem.imageUrl}
-										alt=""
-										aspectRatio={
-											sheetItem.aspectRatio
-												? String(sheetItem.aspectRatio)
-												: "3/4"
-										}
-										sizes="(max-width: 1023px) 50vw, 33vw"
-										className={cn(
-											"transition-colors group-fine:border-border-strong",
-											galleryPhotoSurfaceClass,
-										)}
-										imageClassName={cn(
-											"brightness-[0.97] saturate-[0.85] transition-[filter,scale] duration-700 group-fine:scale-[1.04] group-fine:brightness-100 group-fine:saturate-100",
-											sliceEase,
-										)}
-									/>
-								) : (
-									<div
-										className={cn(
-											"flex aspect-3/4 items-center justify-center p-4 text-center text-small text-muted",
-											galleryPhotoSurfaceClass,
-										)}
-									>
-										{sheetItem.externalUrl ?? sheetItem.embedUrl}
-									</div>
-								)}
-							</button>
-							{/* Wall label: hairline rule, plate number, quiet caption. */}
-							<figcaption className="mt-2 border-t border-border pt-2">
-								<p className="flex items-baseline gap-2">
-									<span aria-hidden="true" className="label">
-										{plateNumber(index)}
-									</span>
-									{sheetItem.caption ? (
-										<span className="text-small leading-snug text-muted">
-											{sheetItem.caption}
-										</span>
-									) : null}
-								</p>
-							</figcaption>
-						</figure>
+						<button
+							key={sheetItem.id}
+							type="button"
+							onClick={() => open(index + albumIndexOffset)}
+							aria-label={sheetItem.caption ?? postTitle}
+							className="group block w-full cursor-pointer"
+						>
+							{sheetItem.imageUrl ? (
+								<Image
+									src={sheetItem.imageUrl}
+									alt=""
+									aspectRatio="square"
+									sizes="(max-width: 1023px) 50vw, 33vw"
+									className={cn(
+										"transition-colors group-fine:border-border-strong",
+										galleryPhotoSurfaceClass,
+									)}
+									imageClassName={cn(
+										"brightness-[0.97] saturate-[0.85] transition-[filter,scale] duration-700 group-fine:scale-[1.04] group-fine:brightness-100 group-fine:saturate-100",
+										sliceEase,
+									)}
+								/>
+							) : (
+								<div
+									className={cn(
+										"flex aspect-square items-center justify-center p-4 text-center text-small text-muted",
+										galleryPhotoSurfaceClass,
+									)}
+								>
+									{sheetItem.externalUrl ?? sheetItem.embedUrl}
+								</div>
+							)}
+						</button>
 					))}
 				</div>
 			</section>

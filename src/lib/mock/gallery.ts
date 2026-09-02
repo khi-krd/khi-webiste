@@ -867,7 +867,37 @@ export type GalleryPostDetail = {
 	post: GalleryPost;
 	previous: GalleryPost | null;
 	next: GalleryPost | null;
+	/** Nearest other collections — the detail page's "وێنەی تر" row. */
+	related: GalleryPost[];
 };
+
+/**
+ * Nearest neighbours around `index` (next first, then previous, widening
+ * outward), so the row stays meaningful at either end of the archive. An
+ * unknown index falls back to the head of the list.
+ */
+export function collectRelatedGalleryPosts(
+	posts: GalleryPost[],
+	index: number,
+	count = 3,
+): GalleryPost[] {
+	if (index < 0) {
+		return posts.slice(0, count);
+	}
+
+	const related: GalleryPost[] = [];
+	for (let offset = 1; offset < posts.length; offset++) {
+		const after = posts[index + offset];
+		if (after) related.push(after);
+		if (related.length >= count) break;
+
+		const before = posts[index - offset];
+		if (before) related.push(before);
+		if (related.length >= count) break;
+	}
+
+	return related.slice(0, count);
+}
 
 export function getGalleryPostBySlug(
 	locale: string,
@@ -881,5 +911,6 @@ export function getGalleryPostBySlug(
 		post: posts[index],
 		previous: posts[index - 1] ?? null,
 		next: posts[index + 1] ?? null,
+		related: collectRelatedGalleryPosts(posts, index),
 	};
 }

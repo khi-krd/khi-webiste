@@ -64,9 +64,15 @@ export default async function GalleryPostPage({
 				dateLabel={formatPublishmentDate(locale, detail.post.publishmentDate)}
 				locationLabel={t("post.location")}
 				collectedByLabel={t("post.collectedBy")}
-				navLabel={t("post.navLabel")}
-				previousLabel={t("post.previous")}
-				nextLabel={t("post.next")}
+				relatedLabel={t("post.related")}
+				related={detail.related.map((entry) => ({
+					id: entry.id,
+					title: entry.title,
+					coverUrl:
+						entry.coverUrl ??
+						entry.album.find((item) => item.imageUrl)?.imageUrl,
+					photosLabel: t("posts.photosCount", { count: entry.album.length }),
+				}))}
 				closeLabel={t("lightbox.close")}
 				lightboxPreviousLabel={t("lightbox.previous")}
 				lightboxNextLabel={t("lightbox.next")}

@@ -310,9 +310,7 @@
 		},
 		"post": {
 			"back": "Pêrista arşîvê",
-			"navLabel": "Berhevokên din",
-			"previous": "Berhevoka berê",
-			"next": "Berhevoka paşê",
+			"related": "Wêneyên din",
 			"location": "Cih",
 			"collectedBy": "Berhevkirî ji aliyê",
 			"tags": "Etîket"

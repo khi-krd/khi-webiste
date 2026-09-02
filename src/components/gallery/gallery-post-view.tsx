@@ -1,19 +1,32 @@
-import { ArrowLeftIcon, ArrowRightIcon } from "@heroicons/react/24/outline";
 import { GalleryAlbum } from "@/components/gallery/gallery-album";
 import type { GalleryAlbumMetadataLabels } from "@/components/gallery/gallery-album-item";
+import { galleryPhotoSurfaceClass } from "@/components/gallery/gallery-album-item";
 import { ScrollRevealBlock } from "@/components/motion/scroll-reveal";
 import { BackToIndexLink } from "@/components/ui/back-to-index";
 import { Badge } from "@/components/ui/badge";
 import { CoverLightbox } from "@/components/ui/cover-lightbox";
-import { DirectionalIcon } from "@/components/ui/directional-icon";
 import { Image } from "@/components/ui/image";
 import { RichText } from "@/components/ui/rich-text";
 import { Link } from "@/i18n/navigation";
 import { homeInsetClass } from "@/lib/layout";
-import type { GalleryPost, GalleryPostDetail } from "@/lib/mock/gallery";
+import type { GalleryPostDetail } from "@/lib/mock/gallery";
 import { galleryTagHref } from "@/lib/search/taxonomy-href";
 import { displayTitleSizeClass } from "@/lib/title-scale";
 import { cn } from "@/lib/utils";
+
+const sliceEase = "ease-[cubic-bezier(0.22,1,0.36,1)]";
+
+/** One row only — enough square cards to fill it, no overflow scroll. */
+const RELATED_GALLERY_VISIBLE = 3;
+
+/** Card-shaped slice of a related collection, labels pre-translated in the page. */
+export type GalleryRelatedCard = {
+	id: string;
+	title: string;
+	coverUrl?: string;
+	/** Pre-translated "{count} photographs" for that collection. */
+	photosLabel: string;
+};
 
 type GalleryPostViewProps = {
 	detail: GalleryPostDetail;
@@ -31,17 +44,17 @@ type GalleryPostViewProps = {
 	dateLabel?: string;
 	locationLabel: string;
 	collectedByLabel: string;
-	navLabel: string;
-	previousLabel: string;
-	nextLabel: string;
+	/** Heading over the other-collections row ("وێنەی تر"). */
+	relatedLabel: string;
+	related: GalleryRelatedCard[];
 	closeLabel: string;
 	lightboxPreviousLabel: string;
 	lightboxNextLabel: string;
 	metadataLabels: GalleryAlbumMetadataLabels;
 };
 
-/** One museum wall label: hairline-topped placard, tiny label over quiet value. */
-function CreditCell({
+/** Quiet credit pair under the tags — tiny label over value, no hairlines. */
+function CreditPair({
 	label,
 	children,
 }: {
@@ -49,55 +62,48 @@ function CreditCell({
 	children: React.ReactNode;
 }) {
 	return (
-		<div className="flex flex-col gap-1.5 border-t border-border pt-3">
+		<div className="flex flex-col gap-1">
 			<dt className="label font-medium">{label}</dt>
 			<dd className="text-small text-muted">{children}</dd>
 		</div>
 	);
 }
 
-function AdjacentLink({
-	post,
-	label,
-	direction,
-}: {
-	post: GalleryPost;
-	label: string;
-	direction: "previous" | "next";
-}) {
-	const isNext = direction === "next";
-
+/** Other collection as a square-cover card in the video page's grid language. */
+function RelatedCard({ card }: { card: GalleryRelatedCard }) {
 	return (
 		<Link
-			href={`/gallery/${post.id}`}
-			className={cn(
-				"group flex flex-col gap-3 py-6 no-underline sm:py-8",
-				isNext &&
-					"items-end border-t border-border text-end sm:border-t-0 sm:border-s sm:ps-8",
-				!isNext && "sm:pe-8",
-			)}
+			href={`/gallery/${card.id}`}
+			className="group flex h-full min-w-0 flex-col border border-border bg-surface no-underline transition-[border-color,box-shadow] duration-300 fine-hover:border-foreground/30 fine-hover:shadow-[0_8px_24px_-12px_rgba(26,24,19,0.12)]"
 		>
-			<span className="label flex items-center gap-2 font-medium">
-				<DirectionalIcon
-					icon={isNext ? ArrowRightIcon : ArrowLeftIcon}
-					className="size-3.5"
-				/>
-				{label}
-			</span>
-			<span className="font-heading text-h3 font-bold text-foreground underline decoration-transparent decoration-2 underline-offset-4 transition-[text-decoration-color] duration-300 group-fine:decoration-current">
-				{post.title}
-			</span>
+			<Image
+				src={card.coverUrl ?? ""}
+				alt=""
+				aspectRatio="square"
+				sizes="(max-width: 639px) 100vw, 33vw"
+				className="w-full bg-sunken"
+				imageClassName={cn(
+					"brightness-[0.97] saturate-[0.85] transition-[filter,scale] duration-700 group-fine:scale-[1.04] group-fine:brightness-100 group-fine:saturate-100",
+					sliceEase,
+				)}
+			/>
+			<div className="flex w-full flex-1 flex-col gap-1.5 px-4 py-4 text-start sm:px-5">
+				<p className="label text-muted">{card.photosLabel}</p>
+				<h3 className="font-heading text-h3 font-bold leading-snug text-foreground">
+					{card.title}
+				</h3>
+			</div>
 		</Link>
 	);
 }
 
 /**
  * Opened collection as an exhibition-catalog spread: typographic header with
- * an offset cover "plate" beside it (click-to-enlarge via CoverLightbox, with
- * a museum-style label caption), a hashtag row under the description,
- * wall-label credit placards (location, collectedBy),
- * the album as numbered plates, and prev/next collection
- * navigation. Server Component; mirrors in RTL via logical props.
+ * an offset square cover "plate" beside it (click-to-enlarge via
+ * CoverLightbox), a hashtag row under the description with the quiet
+ * location/collectedBy credits directly beneath it, the album as a uniform
+ * square grid, and a "وێنەی تر" row of other collections as square cover
+ * cards. Server Component; mirrors in RTL via logical props.
  */
 export function GalleryPostView({
 	detail,
@@ -109,17 +115,17 @@ export function GalleryPostView({
 	dateLabel,
 	locationLabel,
 	collectedByLabel,
-	navLabel,
-	previousLabel,
-	nextLabel,
+	relatedLabel,
+	related,
 	closeLabel,
 	lightboxPreviousLabel,
 	lightboxNextLabel,
 	metadataLabels,
 }: GalleryPostViewProps) {
-	const { post, previous, next } = detail;
+	const { post } = detail;
 	const albumImages = [...post.album].sort((a, b) => a.sortOrder - b.sortOrder);
 	const hasCredits = Boolean(post.location || post.collectedBy);
+	const relatedCards = related.slice(0, RELATED_GALLERY_VISIBLE);
 
 	return (
 		<article>
@@ -179,6 +185,21 @@ export function GalleryPostView({
 								))}
 							</div>
 						)}
+
+						{/* Location / collectedBy sit right under the tags — quiet
+						    pairs, no wall-label hairlines. */}
+						{hasCredits && (
+							<dl className="mt-6 flex flex-wrap gap-x-10 gap-y-3">
+								{post.location && (
+									<CreditPair label={locationLabel}>{post.location}</CreditPair>
+								)}
+								{post.collectedBy && (
+									<CreditPair label={collectedByLabel}>
+										{post.collectedBy}
+									</CreditPair>
+								)}
+							</dl>
+						)}
 					</div>
 
 					{post.coverUrl && (
@@ -192,32 +213,14 @@ export function GalleryPostView({
 								<Image
 									src={post.coverUrl}
 									alt=""
-									aspectRatio="4/3"
+									aspectRatio="square"
 									sizes="(max-width: 1023px) 100vw, 40vw"
-									className="bg-surface"
+									className={galleryPhotoSurfaceClass}
 								/>
 							</CoverLightbox>
-							{/* Museum label under the plate — photo count only; the title
-							    already sits in the adjacent h1. */}
-							<figcaption className="mt-2 border-t border-border pt-2">
-								<p className="label">{photosLabel}</p>
-							</figcaption>
 						</figure>
 					)}
 				</div>
-
-				{hasCredits && (
-					<dl className="mt-8 grid gap-x-8 gap-y-5 sm:grid-cols-2 lg:mt-10 lg:grid-cols-3">
-						{post.location && (
-							<CreditCell label={locationLabel}>{post.location}</CreditCell>
-						)}
-						{post.collectedBy && (
-							<CreditCell label={collectedByLabel}>
-								{post.collectedBy}
-							</CreditCell>
-						)}
-					</dl>
-				)}
 			</ScrollRevealBlock>
 
 			<ScrollRevealBlock>
@@ -233,28 +236,28 @@ export function GalleryPostView({
 				/>
 			</ScrollRevealBlock>
 
-			{(previous || next) && (
+			{relatedCards.length > 0 && (
 				<ScrollRevealBlock>
-					<nav
-						aria-label={navLabel}
+					<section
+						aria-labelledby="gallery-related-heading"
 						className={cn(
-							"grid border-t border-border sm:grid-cols-2",
+							"border-t border-border pt-8 pb-10 sm:pt-10 lg:pb-14",
 							homeInsetClass,
 						)}
 					>
-						{previous ? (
-							<AdjacentLink
-								post={previous}
-								label={previousLabel}
-								direction="previous"
-							/>
-						) : (
-							<div aria-hidden="true" />
-						)}
-						{next ? (
-							<AdjacentLink post={next} label={nextLabel} direction="next" />
-						) : null}
-					</nav>
+						<h2
+							id="gallery-related-heading"
+							className="font-heading text-h3 font-bold text-foreground"
+						>
+							{relatedLabel}
+						</h2>
+
+						<div className="mt-4 grid grid-cols-1 gap-4 sm:mt-5 sm:grid-cols-3 sm:gap-5">
+							{relatedCards.map((card) => (
+								<RelatedCard key={card.id} card={card} />
+							))}
+						</div>
+					</section>
 				</ScrollRevealBlock>
 			)}
 		</article>
