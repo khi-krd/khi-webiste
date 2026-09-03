@@ -10,76 +10,45 @@ import {
 	ScrollRevealItem,
 } from "@/components/motion/scroll-reveal";
 import type { DonateTypeCardData } from "@/lib/donate/content";
-import { cn } from "@/lib/utils";
 
 type DonateTypesGridProps = {
-	eyebrow?: string;
 	heading: string;
-	description?: string;
-	/** Resolved cards, in draw order — the first one is the big featured card. */
+	/** Resolved cards, in draw order. Every card is drawn at the same size. */
 	items: DonateTypeCardData[];
 };
 
-export function DonateTypesGrid({
-	eyebrow,
-	heading,
-	description,
-	items,
-}: DonateTypesGridProps) {
-	const [featured, ...rail] = items;
-
+export function DonateTypesGrid({ heading, items }: DonateTypesGridProps) {
 	return (
 		<HomeSection aria-labelledby="donate-types-heading">
 			<ScrollRevealBlock className={homeSectionHeaderClass}>
-				<header>
-					<div className="max-w-2xl text-start">
-						{eyebrow ? <p className="label font-medium">{eyebrow}</p> : null}
-						<h2
-							id="donate-types-heading"
-							className={cn(
-								"font-heading text-h1 font-bold leading-[1.1] text-balance",
-								eyebrow ? "mt-2" : undefined,
-							)}
-						>
-							{heading}
-						</h2>
-						{description ? (
-							<p className="mt-3 text-body text-muted">{description}</p>
-						) : null}
-					</div>
+				<header className="max-w-2xl text-start">
+					<h2
+						id="donate-types-heading"
+						className="font-heading text-h1 font-bold leading-[1.1] text-balance"
+					>
+						{heading}
+					</h2>
 				</header>
 			</ScrollRevealBlock>
 
 			<div className={homeSectionContentClass}>
-				<ScrollReveal className="grid grid-cols-1 gap-3 sm:grid-cols-2 sm:gap-4 lg:grid-cols-12 lg:grid-rows-[minmax(18rem,1fr)_minmax(18rem,1fr)] lg:gap-4">
-					{featured ? (
-						<ScrollRevealItem className="sm:col-span-2 lg:col-span-7 lg:row-span-2">
+				{/* One size for every block. The layout used to promote item 1 into a
+				    half-width hero and shrink the rest into a 2x2 rail, which made the
+				    set read as "one important thing plus leftovers" and left the small
+				    cards too short for their titles. Every donation type is equal, so
+				    every tile is now the same 4:3 box. */}
+				<ScrollReveal className="grid grid-cols-1 gap-3 sm:grid-cols-2 sm:gap-4 lg:grid-cols-3">
+					{items.map((item) => (
+						<ScrollRevealItem key={item.id} className="aspect-[4/3]">
 							<DonateTypeCard
-								index={String(featured.index).padStart(2, "0")}
-								title={featured.title}
-								description={featured.description}
-								image={featured.image}
-								variant="featured"
+								index={String(item.index).padStart(2, "0")}
+								title={item.title}
+								description={item.description}
+								image={item.image}
 								className="h-full"
 							/>
 						</ScrollRevealItem>
-					) : null}
-
-					<ScrollRevealItem className="lg:col-span-5 lg:row-span-2">
-						<ScrollReveal className="grid h-full grid-cols-2 gap-3 sm:gap-4 lg:grid-rows-2">
-							{rail.map((item) => (
-								<ScrollRevealItem key={item.id}>
-									<DonateTypeCard
-										index={String(item.index).padStart(2, "0")}
-										title={item.title}
-										description={item.description}
-										image={item.image}
-										variant="small"
-									/>
-								</ScrollRevealItem>
-							))}
-						</ScrollReveal>
-					</ScrollRevealItem>
+					))}
 				</ScrollReveal>
 			</div>
 		</HomeSection>

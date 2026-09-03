@@ -1,17 +1,9 @@
-import type { DonateTypeId, DonateTypeItem } from "@/lib/donate/content";
 import type { DonationSettings, DonationType } from "@/types/donation";
 
 export type DonateVisibility = {
 	archive: boolean;
 	financial: boolean;
 };
-
-const ARCHIVE_TYPE_IDS = new Set<DonateTypeId>([
-	"visualArchive",
-	"documents",
-	"oralHeritage",
-	"scientific",
-]);
 
 export function resolveDonateVisibility(
 	settings: DonationSettings | null,
@@ -30,21 +22,4 @@ export function resolveDonateVisibility(
 		financial:
 			settings?.financialDonationsEnabled !== false && financialFromTypes,
 	};
-}
-
-export function filterDonateTypeItems(
-	items: DonateTypeItem[],
-	visibility: DonateVisibility,
-): DonateTypeItem[] {
-	return items.filter((item) => {
-		if (item.id === "financial") {
-			return visibility.financial;
-		}
-
-		if (ARCHIVE_TYPE_IDS.has(item.id)) {
-			return visibility.archive;
-		}
-
-		return true;
-	});
 }

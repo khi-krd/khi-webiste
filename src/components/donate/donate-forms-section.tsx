@@ -13,7 +13,6 @@ import {
 } from "@/components/motion/scroll-reveal";
 
 type DonateFormsSectionProps = {
-	eyebrow: string;
 	heading: string;
 	description: string;
 	showArchive?: boolean;
@@ -23,7 +22,6 @@ type DonateFormsSectionProps = {
 };
 
 export function DonateFormsSection({
-	eyebrow,
 	heading,
 	description,
 	showArchive = true,
@@ -37,17 +35,16 @@ export function DonateFormsSection({
 	return (
 		<HomeSection aria-labelledby="donate-forms-heading">
 			<ScrollRevealBlock className={homeSectionHeaderClass}>
-				<header>
-					<div className="max-w-2xl text-start">
-						<p className="label font-medium">{eyebrow}</p>
-						<h2
-							id="donate-forms-heading"
-							className="mt-2 font-heading text-h1 font-bold leading-[1.1] text-balance"
-						>
-							{heading}
-						</h2>
+				<header className="max-w-2xl text-start">
+					<h2
+						id="donate-forms-heading"
+						className="font-heading text-h1 font-bold leading-[1.1] text-balance"
+					>
+						{heading}
+					</h2>
+					{description ? (
 						<p className="mt-3 text-body text-muted">{description}</p>
-					</div>
+					) : null}
 				</header>
 			</ScrollRevealBlock>
 

@@ -25,39 +25,32 @@ type OfficeCopyBundle = Record<
 type ContactExperienceProps = {
 	offices: ResolvedContactOffice[];
 	officeCopy: OfficeCopyBundle;
-	officesEyebrow: string;
 	officesHeading: string;
 	officesDescription: string;
-	selectLabel: string;
 	fieldLabels: {
 		address: string;
+		workingHours: string;
 		phone: string;
 		email: string;
-	};
-	badgeLabels: {
-		hq: string;
-		regional: string;
 	};
 	mapCopy: {
 		heading: string;
 		body: string;
 		openInMaps: string;
 		iframeTitle: string;
+		selectOffice: string;
 	};
 };
 
 export function ContactExperience({
 	offices,
 	officeCopy,
-	officesEyebrow,
 	officesHeading,
 	officesDescription,
-	selectLabel,
 	fieldLabels,
-	badgeLabels,
 	mapCopy,
 }: ContactExperienceProps) {
-	const [selectedId, setSelectedId] = useState<OfficeId>("sulaymaniyah");
+	const [selectedId, setSelectedId] = useState<OfficeId | null>(null);
 	const selectedOffice =
 		offices.find((office) => office.id === selectedId) ?? offices[0];
 
@@ -65,24 +58,45 @@ export function ContactExperience({
 		return null;
 	}
 
+	// The card used to be one big <button>, which put <a href="tel:…"> inside a
+	// button — invalid HTML, and it made the whole card a click target whose only
+	// effect was scrolling a map further down. Choosing an office now lives on the
+	// map itself, where the result of the choice is visible.
+	const cards = offices.flatMap((office) => {
+		const localized = office.localizedCopy;
+		const fallback = officeCopy[office.id];
+		// CMS copy wins; the bundled copy is the fallback and carries no hours.
+		const copy = localized?.address ? localized : fallback;
+		if (!copy) {
+			return [];
+		}
+		return [
+			{
+				office,
+				name: copy.name,
+				nameLatin: copy.nameLatin,
+				subtitle: copy.subtitle,
+				address: copy.address,
+				workingHours: localized?.address ? localized.workingHours : undefined,
+			},
+		];
+	});
+
 	return (
-		<HomeSection aria-labelledby="contact-offices-heading">
+		<HomeSection divider={false} aria-labelledby="contact-offices-heading">
 			<ScrollRevealBlock className={homeSectionHeaderClass}>
-				<header>
-					<div className="max-w-2xl text-start">
-						<p className="label font-medium">{officesEyebrow}</p>
-						<h2
-							id="contact-offices-heading"
-							className="mt-2 font-heading text-h1 font-bold leading-[1.1] text-balance"
-						>
-							{officesHeading}
-						</h2>
-						{officesDescription ? (
-							<p className="mt-3 text-body leading-relaxed text-muted">
-								{officesDescription}
-							</p>
-						) : null}
-					</div>
+				<header className="max-w-2xl text-start">
+					<h2
+						id="contact-offices-heading"
+						className="font-heading text-h1 font-bold leading-[1.1] text-balance"
+					>
+						{officesHeading}
+					</h2>
+					{officesDescription ? (
+						<p className="mt-3 text-body leading-relaxed text-muted">
+							{officesDescription}
+						</p>
+					) : null}
 				</header>
 			</ScrollRevealBlock>
 
@@ -90,43 +104,28 @@ export function ContactExperience({
 				<ScrollRevealBlock>
 					<div className="overflow-hidden border border-border bg-surface">
 						<div className="grid lg:grid-cols-2">
-							{offices.map((office, index) => {
-								const localized = office.localizedCopy;
-								const fallback = officeCopy[office.id];
-								const copy = localized?.address
-									? {
-											name: localized.name,
-											nameLatin: localized.nameLatin,
-											subtitle: localized.subtitle,
-											address: localized.address,
-										}
-									: fallback;
-								if (!copy) {
-									return null;
-								}
-								return (
-									<ContactOfficeCard
-										key={office.id}
-										office={office}
-										isSelected={selectedId === office.id}
-										onSelect={setSelectedId}
-										className={
-											index > 0 ? "lg:border-s lg:border-border" : undefined
-										}
-										copy={{
-											name: copy.name,
-											nameLatin: copy.nameLatin,
-											subtitle: copy.subtitle,
-											address: copy.address,
-											badgeLabel: badgeLabels[office.badge],
-											addressLabel: fieldLabels.address,
-											phoneLabel: fieldLabels.phone,
-											emailLabel: fieldLabels.email,
-											selectLabel,
-										}}
-									/>
-								);
-							})}
+							{cards.map((entry, index) => (
+								<ContactOfficeCard
+									key={entry.office.id}
+									office={entry.office}
+									className={
+										index > 0
+											? "border-t border-border lg:border-t-0 lg:border-s"
+											: undefined
+									}
+									copy={{
+										name: entry.name,
+										nameLatin: entry.nameLatin,
+										subtitle: entry.subtitle,
+										address: entry.address,
+										workingHours: entry.workingHours,
+										addressLabel: fieldLabels.address,
+										workingHoursLabel: fieldLabels.workingHours,
+										phoneLabel: fieldLabels.phone,
+										emailLabel: fieldLabels.email,
+									}}
+								/>
+							))}
 						</div>
 					</div>
 				</ScrollRevealBlock>
@@ -138,6 +137,12 @@ export function ContactExperience({
 						body={mapCopy.body}
 						openInMapsLabel={mapCopy.openInMaps}
 						iframeTitle={mapCopy.iframeTitle}
+						selectOfficeLabel={mapCopy.selectOffice}
+						onSelect={setSelectedId}
+						options={cards.map((entry) => ({
+							id: entry.office.id,
+							label: entry.name,
+						}))}
 					/>
 				</ScrollRevealBlock>
 			</div>

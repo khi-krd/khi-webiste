@@ -2,16 +2,13 @@ import "server-only";
 import { apiFetch, apiPost, DEFAULT_REVALIDATE } from "@/lib/api/client";
 import { getApiBaseUrl } from "@/lib/api/config";
 import { preferLocaleText } from "@/lib/api/locale-text";
-import {
-	type DonateHeroMedia,
-	type DonatePaymentDetails,
-	type DonateTypeCardData,
-	type DonateTypeItem,
-	getDonateTypeItems,
+import type {
+	DonateHeroMedia,
+	DonatePaymentDetails,
+	DonateTypeCardData,
 } from "@/lib/donate/content";
 import {
 	type DonateVisibility,
-	filterDonateTypeItems,
 	resolveDonateVisibility,
 } from "@/lib/donate/resolve";
 import {
@@ -36,9 +33,8 @@ export type DonatePageData = {
 	heroMedia: DonateHeroMedia;
 	heroCopy: DonateHeroCopy;
 	/** CMS cards — when non-empty, the page draws these and nothing else. */
+	/** The editor's cards. Empty means the section does not render. */
 	typeCards: DonateTypeCardData[];
-	/** Hardcoded fallback set, drawn only while `typeCards` is empty. */
-	typeItems: DonateTypeItem[];
 	payment: DonatePaymentDetails;
 	visibility: DonateVisibility;
 };
@@ -205,18 +201,6 @@ function resolvePaymentDetails(
 	return apiValue ?? { fibAccount: "", fastpayNumber: "" };
 }
 
-function resolveTypeItems(
-	settings: Awaited<ReturnType<typeof getDonationSettings>>,
-	types: Awaited<ReturnType<typeof getDonationTypes>>,
-	visibility: DonateVisibility,
-): DonateTypeItem[] {
-	if (!settings && types.length === 0) {
-		return [];
-	}
-
-	return filterDonateTypeItems(getDonateTypeItems(), visibility);
-}
-
 export async function getDonatePageDataFromApi(
 	locale: string,
 ): Promise<DonatePageData> {
@@ -231,7 +215,6 @@ export async function getDonatePageDataFromApi(
 		heroMedia: resolveHeroMedia(settings),
 		heroCopy: resolveDonateHeroCopy(locale, settings),
 		typeCards: resolveDonateTypeCards(locale, cardRecords),
-		typeItems: resolveTypeItems(settings, types, visibility),
 		payment: resolvePaymentDetails(settings),
 		visibility,
 	};

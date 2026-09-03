@@ -1,1281 +1,1204 @@
 {
-	"Nav": {
-		"brandAlt": "Enstîtuya Mîrateya Kurdî",
-		"brandNameCkb": "ئینستیتووتی کەلەپووری کورد",
-		"brandNameKu": "Enstîtuya Mîrateya Kurdî",
-		"menuNews": "Nûçe",
-		"menuProjects": "Proje",
-		"menuSound": "Deng",
-		"menuVideo": "Deng û Reng",
-		"menuGallery": "Wêne",
-		"menuWritings": "Nivîs",
-		"menuServices": "Xizmet",
-		"menuAbout": "Em",
-		"menuContact": "Têkilî",
-		"menuDonate": "Bexşîn",
-		"menuOpen": "Menûyê veke",
-		"menuClose": "Bigire",
-		"menuTitle": "Menûya malperê",
-		"primary": "Sereke",
-		"services": "Xizmet",
-		"donate": "Bexşîn",
-		"news": "Nûçeyên",
-		"projects": "Proje",
-		"sound": "Deng",
-		"video": "Vîdyo",
-		"gallery": "Galerî",
-		"writings": "Nivîs",
-		"about": "Derbarê",
-		"us": "Em",
-		"publications": "Weşan",
-		"archive": "Arşîv",
-		"library": "Pirtûkxane",
-		"searchOpen": "Lêgerînê veke",
-		"searchBack": "Vegere",
-		"searchLabel": "Lêgerîn",
-		"searchSubmit": "Bigere",
-		"searchErrorMinLength": "Kêm kêm 2 tîp binivîse",
-		"searchResults": "Encam",
-		"searchNoResults": "Tu encam nehatin dîtin",
-		"searchLoading": "Lêgerîn…",
-		"searchNavFallback": "Di menuyê de",
-		"searchTaxonomy": "Tag û kategorî",
-		"searchTaxonomyCategory": "Kategorî",
-		"searchTaxonomyTag": "Tag",
-		"searchTaxonomyTopic": "Mijar",
-		"searchTaxonomyGenre": "Cure",
-		"searchTaxonomyType": "Cure",
-		"searchTaxonomyUnavailable": "Tag û kategorî niha berdest nîn in.",
-		"searchContentUnavailable": "Lêgerîna naveroka arşîvê niha berdest nîne. Hûn dikarin li sernavên menuyê bigerin.",
-		"searchScopeLabel": "Qada lêgerînê",
-		"searchScopeMain": "Malper",
-		"searchScopeArchive": "Arşîv",
-		"searchScopeLibrary": "Pirtûkxane",
-		"searchScopeComingSoon": "Dê di demeke nêz de berdest bibe",
-		"searchScopeNoneSelected": "Ji bo lêgerînê herî kêm çavkaniyekê hilbijêre",
-		"searchFilterLabel": "Cureya naverokê",
-		"searchFilterAll": "Hemû cure",
-		"searchFilterCount": "{count} cure",
-		"secondaryLinkPrefix": "Lêkolîn",
-		"newsDescription": "Nûçeyên lêkolînê li ser çand, dîrok, ziman û civaka Kurd.",
-		"newsSubCulture": "Çand",
-		"newsSubHistory": "Dîrok",
-		"newsSubLanguage": "Ziman",
-		"newsSubSociety": "Civak",
-		"newsSubHeritage": "Mîrat",
-		"projectsDescription": "Bernameyên dirêj-dem ji bo dîjîtalîzekirina destnivîs, dîroka devkî, stran, cil û wêne li hemû herêmên Kurdistanê.",
-		"projectsSubOralHistory": "Arşîva dîroka devkî",
-		"projectsSubManuscripts": "Dîjîtalîzekirina destnivîsan",
-		"projectsSubFolkMusic": "Koleksiyona stranên gelêrî",
-		"projectsSubDress": "Arşîva cilên kevneşopî",
-		"soundDescription": "Tomarên dengî yên dîrokê devkî, hevpeyvîn û arşîva radyoyê.",
-		"soundSubOralHistory": "Dîroka devkî",
-		"soundSubInterviews": "Hevpeyvîn",
-		"soundSubRadio": "Arşîva radyoyê",
-		"videoDescription": "Belgefîlm, performans, ders û tomarên wêneyî yên mîrateya Kurdî.",
-		"videoSubShortFilms": "Kurtefîlm",
-		"videoSubDocumentaries": "Belgefîlm",
-		"videoSubPerformances": "Performans",
-		"videoSubLectures": "Ders û civîn",
-		"videoSubNewsreels": "Nûçeyên wêneyî",
-		"galleryDescription": "Wêne, cil û berhemên hunerî yên mîrateya dîmenî ya Kurdistanê.",
-		"gallerySubPhotography": "Wêne",
-		"gallerySubDress": "Cilên kevneşopî",
-		"gallerySubCrafts": "Kariya destan",
-		"writingsDescription": "Pirtûk, broşûr û weşanên çapkirî û dîjîtal li ser ziman, wêje û dîroka Kurdî.",
-		"writingsSubLiterature": "Wêje",
-		"writingsSubHistory": "Dîrok",
-		"writingsSubPoetry": "Helbest",
-		"writingsSubManuscripts": "Destnivîs",
-		"servicesDescription": "Salon, stûdyo, lêkolîn, çap, firotin, pirtûkxane û xizmetên arşîva Enstîtuyê.",
-		"servicesSubInstituteHall": "Salona enstîtuyê",
-		"servicesSubStudio": "Stûdyo",
-		"servicesSubResearch": "Lêkolîn û weşandin",
-		"servicesSubLibrary": "Pirtûkxane",
-		"aboutDescription": "Enstîtuya Mîrateya Kurdî — parastin, lêkolîn û belavkirina mîrateya Kurdî.",
-		"aboutSubMission": "Armanc û dîtbarî",
-		"aboutSubTeam": "Tîm",
-		"aboutSubContact": "Têkilî",
-		"contactDescription": "Bi enstîtuyê re têkilî daynin — ofîsên Silêmanî û Dihokê, forma têkiliyê û tora civakî.",
-		"donateDescription": "Hevkarî û bexşîn — şandina arşîvê, piştgiriya darayî û parastina mîrateya kurdî."
-	},
-	"Footer": {
-		"donateTitle": "Neteweyek arşîva xwe diparêze",
-		"donateDescription": "Bi bexşînek beşdar bibe di parastina deng, wêne û nivîsên mîrateya kurdî de.",
-		"donateCta": "Niha Bexşîne",
-		"collections": "Koleksiyon",
-		"institute": "Enstîtû",
-		"writings": "Nivîs",
-		"sound": "Deng",
-		"video": "Deng û Reng",
-		"shortFilms": "Fîlm",
-		"gallery": "Wêne",
-		"news": "Nûçe",
-		"projects": "Proje",
-		"services": "Xizmet",
-		"donate": "Bexşîn",
-		"about": "Em",
-		"contact": "Têkilî",
-		"x": "X.com",
-		"instagram": "Instagram",
-		"facebook": "Facebook",
-		"linkedin": "LinkedIn",
-		"youtube": "YouTube",
-		"whatsapp": "WhatsApp",
-		"email": "Email",
-		"copyright": "© 2026 Enstîtuya Mîrateya Kurdî. Maf hemû parastî ne."
-	},
-	"LanguageSwitcher": {
-		"label": "Ziman"
-	},
-	"Home": {
-		"placeholder": "Pirtûkxaneya dîjîtal a çanda, mîrat û rastiya Kurdî."
-	},
-	"LatestUpdates": {
-		"eyebrow": "Nûçe",
-		"title": "Nûvekirina Dawî",
-		"viewAll": "Hemû nûçeyan bibîne",
-		"byAuthor": "Ji aliyê {author}",
-		"categories": {
-			"culture": "Çand",
-			"history": "Dîrok",
-			"language": "Ziman",
-			"heritage": "Mîrat",
-			"society": "Civak"
-		}
-	},
-	"News": {
-		"pageTitle": "Nûçeyên",
-		"metaDescription": "Lêkolîn, nûçe û çîrok li ser çand, dîrok, ziman, mîrat û civaka Kurdî ji Enstîtûya Mîrateya Kurdî.",
-		"hero": {
-			"title": "Nûçe"
-		},
-		"search": {
-			"submit": "Bigere",
-			"label": "Lêgerîna nûçeyan",
-			"clear": "Lêgerînê paqij bike",
-			"noResults": "Ti nûçe bi lêgerîna we re li hev nayên. Peyvek din biceribîne an filtreyan paqij bike."
-		},
-		"filter": {
-			"all": "Hemû",
-			"clear": "Filtreyan paqij bike",
-			"label": "Li gorî mijarê filtir bike",
-			"active": "Tê xuyang kirin",
-			"keywords": "Peyvên sereke",
-			"subcategories": "Mijar",
-			"tags": "Etîket"
-		},
-		"sections": {
-			"spotlight": "Nûçeyên taybet",
-			"allNews": "Hemû nûçe",
-			"filtered": "Nûçeyên {category}",
-			"filteredByKeyword": "Nûçeyên bi peyva sereke ya «{keyword}»",
-			"filteredByTag": "Nûçeyên bi etîketa «{tag}»"
-		},
-		"sidebar": {
-			"latest": "Dawîtirîn"
-		},
-		"categories": {
-			"culture": "Çand",
-			"history": "Dîrok",
-			"language": "Ziman",
-			"heritage": "Mîrat",
-			"society": "Civak",
-			"viewAll": "Hemû mijaran bibîne"
-		},
-		"readTime": "{minutes} xulek xwendin",
-		"post": {
-			"back": "Vegere nûçeyan",
-			"byAuthor": "Ji aliyê {author}",
-			"tags": "Tag",
-			"gallery": "Medya & galerî",
-			"lightbox": {
-				"close": "Bigire",
-				"previous": "Medya berê",
-				"next": "Medya paşê"
-			},
-			"navLabel": "Nûçeyên têkildar",
-			"previous": "Berê",
-			"next": "Piştî",
-			"related": "Nûçeyên din bi heman mijarê"
-		},
-		"pagination": {
-			"label": "Rûpelkirina nûçeyan",
-			"featuredLabel": "Rûpelkirina nûçeyên taybet",
-			"latestLabel": "Rûpelkirina nûçeyên dawîtirîn",
-			"previous": "Berê",
-			"next": "Paş"
-		}
-	},
-	"Projects": {
-		"title": "Proje",
-		"viewAll": "Hemû bibîne"
-	},
-	"ProjectsPage": {
-		"pageTitle": "Projeyên",
-		"metaDescription": "Bernameyên dirêjdem ên Enstîtuya Mîrateya Kurdî ji bo parastin, dîjîtalîzekirin û guncawkirina mîrata kurdî.",
-		"hero": {
-			"eyebrow": "Bernameyên parastinê",
-			"title": "Projeyên",
-			"titleEmphasis": "Xebatên dirêjdem ên ku mîratê diparêzin.",
-			"description": "Ji tomarkirina dengê heta dîjîtalîzekirina destnivîsan — her proje beşek ji arşîveke giştî ye ji bo nifşên pêşerojê.",
-			"cta": "Projeyan bigere",
-			"count": "{count, plural, one {# proje} other {# proje}}"
-		},
-		"search": {
-			"submit": "Bigere",
-			"label": "Lêgerîna projeyan",
-			"clear": "Lêgerînê paqij bike"
-		},
-		"filter": {
-			"all": "Hemû",
-			"clear": "Filtreyan paqij bike",
-			"label": "Li gorî etîketê filtir bike",
-			"active": "Tê xuyang kirin"
-		},
-		"filters": {
-			"years": "Sal",
-			"tags": "Etîket",
-			"allYears": "Hemû"
-		},
-		"grid": {
-			"eyebrow": "Katalog",
-			"title": "Hemû projeyan",
-			"description": "Projeyên bi şêweyekî stûnî hatine rêzkirin — her kartekeke şêwazek cuda ye, lê hemû ji bo hûragahiyan amade ne.",
-			"preview": "Pêşdîtin",
-			"count": "{count, plural, one {# encam} other {# encam}}",
-			"noResults": "Ti proje bi lêgerîn an filtreya we re li hev nayên. Peyvek din biceribîne an filtreyan paqij bike."
-		},
-		"pagination": {
-			"label": "Rûpelkirina projeyan",
-			"previous": "Berê",
-			"next": "Paş"
-		},
-		"detail": {
-			"back": "Vegere projeyan",
-			"lightboxClose": "Bigire",
-			"location": "Cih",
-			"type": "Cure",
-			"status": "Rewş",
-			"date": "Dîrok",
-			"tags": "Etîket",
-			"content": "Naverok",
-			"gallery": "Medya & galerî",
-			"navLabel": "Projeyên din",
-			"previous": "Projeya berê",
-			"next": "Projeya paşê",
-			"statusValues": {
-				"ACTIVE": "Çalak",
-				"ONGOING": "Domdar",
-				"COMPLETED": "Qediya",
-				"ARCHIVED": "Arşîvkirî"
-			}
-		}
-	},
-	"Gallery": {
-		"pageTitle": "Galerî",
-		"metaDescription": "Arşîveke dîmenî ya jiyana Kurdî — wêne, cilên kevneşopî û kariya destan ji seranserê Kurdistanê.",
-		"hero": {
-			"title": "Wêne"
-		},
-		"search": {
-			"submit": "Bigere",
-			"label": "Di berhevokan de bigere",
-			"clear": "Lêgerînê paqij bike",
-			"noResults": "Tu berhevok bi lêgerîn an fîltreya te re li hev nayê. Peyvek din biceribîne an fîltreyan paqij bike."
-		},
-		"filter": {
-			"all": "Hemû",
-			"clear": "Fîltreyan paqij bike",
-			"label": "Li gorî cureyê filtir bike",
-			"active": "Tê xuyang kirin",
-			"heading": "Fîltre",
-			"topicAll": "Hemû mijar",
-			"topicLabel": "Mijar",
-			"typeLabel": "Cureyê berhevokê"
-		},
-		"posts": {
-			"title": "Berhevok",
-			"photosCount": "{count} wêne",
-			"types": {
-				"SINGLE": "Wêneyeke tak",
-				"GALLERY": "Galerî",
-				"PHOTO_STORY": "Çîroka wêneyî"
-			},
-			"pagination": {
-				"label": "Rûpelkirina galerîyê",
-				"previous": "Berê",
-				"next": "Paş"
-			}
-		},
-		"post": {
-			"back": "Pêrista arşîvê",
-			"related": "Wêneyên din",
-			"location": "Cih",
-			"collectedBy": "Berhevkirî ji aliyê",
-			"tags": "Etîket"
-		},
-		"lightbox": {
-			"close": "Bigire",
-			"previous": "Wêneya berê",
-			"next": "Wêneya paşê",
-			"metadata": {
-				"dimensions": "Pîvan",
-				"fileSize": "Mezinahiya pelê",
-				"fileSizeBytes": "Mezinahiya pelê (byte)",
-				"mimeType": "Cureya MIME",
-				"aspectRatio": "Rêjeya alîyan",
-				"sortOrder": "Rêza rêzkirinê",
-				"externalUrl": "Girêdana derve",
-				"embedUrl": "URL-ya embedê"
-			}
-		}
-	},
-	"Sound": {
-		"eyebrow": "Deng & dîroka devkî",
-		"title": "Albûma Bîranînan",
-		"description": "Tomarên dengî yên dîrokê devkî, hevpeyvîn û arşîva radyoyê ji Kurdistanê.",
-		"cta": "Arşîva dengê keşf bike"
-	},
-	"Audio": {
-		"pageTitle": "Arşîva Dengê",
-		"metaDescription": "Tomarên dengî yên dîroka devkî, stranên gelêrî, xwendinên helbestan û arşîva radyoyê ku ji aliyê Enstîtuya Mîrateya Kurdî ve hatine parastin.",
-		"memories": {
-			"title": "Albûma Bîranînan",
-			"description": "Tomarên nûvekirî ji plak, kaset û radyoyê — bîranîneke dengî ji bo dengên berê.",
-			"badge": "Albûma Bîranînan"
-		},
-		"grid": {
-			"allTitle": "Berhevoka dengê.",
-			"empty": "Niha tu tomar tune ne. Ji kerema xwe paşê dîsa serdana me bikin.",
-			"noResults": "Tu tomar bi fîltreyên te re li hev nayê. Wan biguherîne an paqij bike."
-		},
-		"filter": {
-			"label": "Fîltre & lêgerîn",
-			"all": "Hemû cure",
-			"reset": "Ji nû ve dest pê bike",
-			"active": "Aktîf:",
-			"typeLabel": "Cureyê dengê",
-			"stateLabel": "Format",
-			"topicLabel": "Mijar",
-			"topicAll": "Hemû mijar",
-			"searchLabel": "Di tomaran de bigere",
-			"searchClear": "Lêgerînê paqij bike",
-			"tagRemove": "Etîketê rake",
-			"searchSubmit": "Bigere"
-		},
-		"state": {
-			"all": "Hemû format",
-			"single": "Tomara tek",
-			"multi": "Albûm"
-		},
-		"soundTypes": {
-			"poem": "Helbest",
-			"music": "Muzîk",
-			"folk": "Folklor",
-			"religious": "Olî",
-			"speech": "Axaftin",
-			"interview": "Hevpeyvîn",
-			"radio": "Radyo"
-		},
-		"pagination": {
-			"label": "Rûpelkirina dengan",
-			"previous": "Rûpela berê",
-			"next": "Rûpela paş"
-		},
-		"card": {
-			"instituteBadge": "Berhema enstîtuyê",
-			"albumTracks": "{count, plural, one {Albûm — # parçe} other {Albûm — # parçe}}"
-		},
-		"player": {
-			"label": "Lêdana dengê",
-			"play": "Lê bide",
-			"pause": "Rawestîne",
-			"previous": "Parçeya berê",
-			"next": "Parçeya paş",
-			"rewind": "5 çirke şûnde",
-			"forward": "5 çirke pêşde",
-			"seek": "Di parçeyê de bigere",
-			"volume": "Asta dengê",
-			"mute": "Bêdeng bike",
-			"unmute": "Dengê vegerîne",
-			"close": "Bigire"
-		},
-		"post": {
-			"back": "Vegere arşîvê",
-			"playAlbum": "Albûmê lê bide",
-			"playTrack": "Tomarê lê bide",
-			"albumSubtitle": "Albûma «{name}»",
-			"about": "Derbarê",
-			"topic": "Mijar",
-			"terms": "Zarava / têgîn",
-			"genre": "Janr",
-			"locations": "Cih",
-			"reader": "Xwendevan / hunermend",
-			"directors": "Derhêner",
-			"languagesLabel": "Ziman",
-			"languages": {
-				"CKB": "Kurdiya Soranî",
-				"KMR": "Kurdiya Kurmancî"
-			},
-			"tracklist": "Lîsteya parçeyan",
-			"cdNumber": "CD {number}",
-			"fileDetails": "Agahiyên teknîkî",
-			"externalLink": "Girêdana derveyî veke",
-			"tags": "Etîket",
-			"keywords": "Peyvên sereke",
-			"published": "Hat zêdekirin",
-			"updated": "Hat nûvekirin",
-			"navLabel": "Tomarên din",
-			"previous": "Tomara berê",
-			"next": "Tomara paşê",
-			"related": "Tomarên têkildar"
-		},
-		"stats": {
-			"duration": "Dirêjahiya giştî",
-			"size": "Mezinahiya giştî",
-			"tracks": "Parçe",
-			"trackCount": "{count} parçe",
-			"year": "Sal"
-		},
-		"channel": {
-			"STEREO": "Stereo",
-			"MONO": "Mono"
-		},
-		"tech": {
-			"fileFormat": "Format",
-			"bitRate": "Rêjeya bit",
-			"sampleRate": "Rêjeya nimûneyê",
-			"audioChannel": "Kanal",
-			"size": "Mezinahiya dosyayê",
-			"recordingVenue": "Cihê tomarkirinê",
-			"year": "Sal"
-		},
-		"brochures": {
-			"title": "Broşur",
-			"open": "Wêneyê bibîne",
-			"close": "Bigire",
-			"previous": "Wêneya berê",
-			"next": "Wêneya paş",
-			"zoomIn": "Mezin bike",
-			"zoomOut": "Biçûk bike",
-			"fullscreen": "Dîmender tijî",
-			"exitFullscreen": "Ji dîmender tijî derkeve",
-			"pageIndicator": "{current} / {total}",
-			"metadata": {
-				"dimensions": "Pîvan",
-				"fileSize": "Mezinahiya dosyayê",
-				"fileSizeBytes": "Mezinahî (bayt)",
-				"mimeType": "Cureyê MIME",
-				"aspectRatio": "Rêjeya aliyan",
-				"sortOrder": "Rêzkirin",
-				"externalUrl": "Girêdana derveyî",
-				"embedUrl": "Girêdana embedê"
-			}
-		},
-		"video": {
-			"title": "Vîdyo"
-		},
-		"attachments": {
-			"title": "Çavkanî",
-			"filesTitle": "Dosyayên din",
-			"untitled": "Pêveka bê sernav",
-			"types": {
-				"PDF": "Belgeya PDF",
-				"VIDEO": "Vîdyo",
-				"IMAGE": "Wêne",
-				"AUDIO": "Deng",
-				"OTHER": "Dosya"
-			}
-		}
-	},
-	"Writings": {
-		"pageTitle": "Nivîs",
-		"metaDescription": "Nivîsên zanistî û edebî li ser ziman, edebiyat û dîroka Kurdî ji Enstîtuya Kevneşopiya Kurdî.",
-		"eyebrow": "Nivîs",
-		"title": "Lêkolîn û çap",
-		"description": "Nivîsên zanistî û edebî li ser kultura, ziman, dîrok û civaka Kurdî.",
-		"viewAll": "Hemû nivîsan bibîne",
-		"readTime": "{minutes} deq xwendin",
-		"grid": {
-			"allTitle": "Nivîs",
-			"empty": "Ti nivîs bi van filtreyan re nayê hev.",
-			"noResults": "Ti encam nehat dîtin. Filtreyan biguherîne.",
-			"categoryNavLabel": "Li gorî kategoriyê bigere"
-		},
-		"filter": {
-			"label": "Fîltre & rêz",
-			"all": "Hemû janr",
-			"reset": "Ji nû ve dest pê bike",
-			"clear": "Filtreyan paqij bike",
-			"active": "Aktîf:",
-			"genreLabel": "Janr",
-			"searchLabel": "Di nivîsan de bigere",
-			"searchClear": "Lêgerînê paqij bike",
-			"keywordLabel": "Peyva sereke",
-			"tagLabel": "Etîket",
-			"writerAll": "Hemû nivîskar",
-			"writerLabel": "Nivîskar",
-			"searchSubmit": "Bigere"
-		},
-		"sort": {
-			"label": "Rêz bike li gorî",
-			"newest": "Herî nû",
-			"title": "Sernav A–Z"
-		},
-		"pagination": {
-			"label": "Rûpelkirina nivîsan",
-			"previous": "Rûpela berê",
-			"next": "Rûpela paş"
-		},
-		"post": {
-			"back": "Vegere nivîsan",
-			"lightboxClose": "Bigire",
-			"writer": "Nivîskar",
-			"topic": "Mijar",
-			"series": "Rêz",
-			"seriesVolume": "Cild {order} ji {total}",
-			"tags": "Etîket",
-			"keywords": "Peyvên sereke",
-			"downloads": "Daxistin",
-			"published": "Weşandin",
-			"updated": "Rojanekirin",
-			"navLabel": "Nivîsên din",
-			"previous": "Nivîsa berê",
-			"next": "Nivîsa paş",
-			"related": "Pirtûkên din",
-			"languages": {
-				"ckb": "Soranî (CKB)",
-				"kmr": "Kurmancî (KMR)"
-			},
-			"preview": {
-				"title": "Çend rûpelan bixwîne"
-			},
-			"reader": {
-				"previousPage": "Rûpela berê",
-				"nextPage": "Rûpela din",
-				"pageOf": "Rûpel {page} ji {total}",
-				"pageNavLabel": "Navigasyona rûpelan",
-				"goToPage": "Here rûpel {page}",
-				"pagesRemaining": "{count} rûpel mayî",
-				"twoPageSpread": "Du rûpel",
-				"singlePage": "Rûpelek",
-				"zoomIn": "Nêzîk bike",
-				"zoomOut": "Dûr bike",
-				"fitWidth": "Firehî",
-				"fitHeight": "Bilindî",
-				"fullSize": "Mezinahiya tevahî",
-				"exitFullSize": "Ji mezinahiya tevahî derkeve",
-				"readButton": "Bixwîne",
-				"loading": "Belge tê barkirin…",
-				"errorTitle": "Belge nehat barkirin",
-				"errorDescription": "Dibe ku pel ne berdest be an ji hêla geroka te ve were astengkirin. Paşê dîsa biceribîne.",
-				"unavailableTitle": "Pêşdîtin tune",
-				"unavailableDescription": "Ev nivîs PDFek ji bo nîşandanê tune."
-			},
-			"by": "Nivîsîna",
-			"format": "Format",
-			"languagesLabel": "Ziman"
-		},
-		"subcategories": {
-			"literature": {
-				"metaDescription": "Roman, çîroka kurt, şano û nivîsên edebî ji Enstîtuya Kevneşopiya Kurdî."
-			},
-			"history": {
-				"metaDescription": "Nivîsên dîrokî, jiyanname û civakî li ser dîrok û civata Kurdî."
-			},
-			"poetry": {
-				"metaDescription": "Şîir û helbest ji tradîsyonên edebî yên Kurdî."
-			},
-			"manuscripts": {
-				"metaDescription": "Zargotina gelêrî, nivîsên olî, zimanzanî û koleksiyonên destnivîsê."
-			}
-		},
-		"genres": {
-			"POETRY": "Şîir",
-			"NOVEL": "Roman",
-			"SHORT_STORY": "Çîroka kurt",
-			"DRAMA": "Şano",
-			"HISTORY": "Dîrok",
-			"BIOGRAPHY": "Jiyanname",
-			"PHILOSOPHY": "Felsefe",
-			"RELIGION": "Ol",
-			"FOLKLORE": "Zargotina gelêrî",
-			"POLITICS": "Siyaset",
-			"SOCIOLOGY": "Komelezanî",
-			"ECONOMICS": "Aborî",
-			"LAW": "Qanûn",
-			"LINGUISTICS": "Zimanzanî",
-			"ARTS": "Huner",
-			"CULTURAL": "Kultûrî",
-			"SCIENCE": "Zanist",
-			"MEDICINE": "Pizîşkî",
-			"EDUCATIONAL": "Perwerdeyî",
-			"CHILDREN": "Zarokan",
-			"TRAVEL": "Ger û gerr",
-			"OTHER": "Yên din"
-		},
-		"categories": {
-			"culture": "Kultûr",
-			"history": "Dîrok",
-			"language": "Ziman",
-			"heritage": "Mîrat",
-			"society": "Civak"
-		}
-	},
-	"Video": {
-		"title": "Deng û Reng",
-		"description": "Rêzeyên klîp, dersên tomarkirî û tomarên wêneyî yên kurt — li ser bingeha mijaran têne rêzkirin.",
-		"viewAll": "Klîpan keşf bike",
-		"pageTitle": "Arşîva Fîlm û Vîdyo",
-		"metaDescription": "Fîlm, belgefîlm, performans û tomarên wêneyî yên mîrateya kurdî — sînematêka Enstîtuya Kelepora Kurdî.",
-		"categories": {
-			"documentaries": "Belgefîlm",
-			"performances": "Performans",
-			"lectures": "Ders",
-			"newsreels": "Nûçeyên wêneyî"
-		},
-		"grid": {
-			"allTitle": "Koleksiyona wêneyên livok.",
-			"itemCount": "{formatted} {count, plural, one {fîlm} other {fîlm}}",
-			"empty": "Niha tu vîdyo tune ye.",
-			"noResults": "Tu vîdyo li gorî parzûnên te nayê."
-		},
-		"filter": {
-			"label": "Parzûn & lêgerîn",
-			"reset": "Jê bibe",
-			"all": "Hemû",
-			"typeLabel": "Format",
-			"searchLabel": "Li vîdyoyan bigere",
-			"searchClear": "Lêgerînê paqij bike",
-			"topicLabel": "Mijar",
-			"topicAll": "Hemû mijar",
-			"collectionLabel": "Koleksiyon",
-			"memoriesLabel": "Albuma bîranînan",
-			"active": "Çalak:",
-			"searchSubmit": "Bigere"
-		},
-		"types": {
-			"FILM": "Fîlm",
-			"VIDEO_CLIP": "Klîp"
-		},
-		"typeBadge": {
-			"FILM": "Fîlm",
-			"VIDEO_CLIP": "Klîp"
-		},
-		"card": {
-			"clipCount": "{formatted} {count, plural, one {klîp} other {klîp}}",
-			"memoriesBadge": "Albuma bîranînan"
-		},
-		"pagination": {
-			"label": "Rûpelbendiya vîdyo",
-			"previous": "Paş",
-			"next": "Pêş"
-		},
-		"detail": {
-			"back": "Vegere vîdyoyan",
-			"lightboxClose": "Bigire",
-			"lightboxOpen": "Wêneyê bergê veke",
-			"director": "Derhêner",
-			"producer": "Hilberîner",
-			"location": "Cih",
-			"topic": "Mijar",
-			"duration": "Dem",
-			"resolution": "Rezolûsyon",
-			"fileFormat": "Format",
-			"publishmentDate": "Hat weşandin",
-			"fileSize": "Mezinahiya pelê",
-			"languagesLabel": "Ziman",
-			"languages": {
-				"CKB": "Soranî",
-				"KMR": "Kurmancî"
-			},
-			"clips": "Klîpên vê rêzê",
-			"playClip": "Klîpê lê bike",
-			"nowPlaying": "Niha tê lîstin",
-			"noSource": "Çavkaniya lîstinê ya vê vîdyoyê hê nehatiye zêdekirin.",
-			"tags": "Etîket",
-			"keywords": "Peyvên sereke",
-			"published": "Hat weşandin",
-			"updated": "Hat nûkirin",
-			"related": "Vîdyo û klîpên din"
-		},
-		"films": {
-			"home": {
-				"eyebrow": "Fîlm",
-				"title": "Fîlm",
-				"description": "Fîlmên dirêj, belgefîlm û performansên tomarkirî — ji arşîva wêneyên livok ya Enstîtuyê.",
-				"viewAll": "Fîlman keşf bike",
-				"programLabel": "Bername",
-				"moreLabel": "Zêdetir fîlm"
-			}
-		},
-		"shortfilms": {
-			"pageTitle": "Kurtefîlm",
-			"metaDescription": "Hilbijartineke kurtefîlmên kurdî ji arşîva Enstîtuya Kelepora Kurdî.",
-			"hero": {
-				"title": "Wêneyên biçûk, cîhanên temam.",
-				"description": "Bernameyeke bijartî ya kurtefîlmên kurdî — nêz, afirîner û bi mebest kurt.",
-				"cta": "Kurtefîlman bibîne"
-			},
-			"allTitle": "Bernameya kurtefîlman.",
-			"watchNow": "Niha temaşe bike",
-			"details": "Hûrgilî",
-			"more": "Bêtir kurtefîlm",
-			"genreLabel": "Cure",
-			"allGenres": "Hemû cure",
-			"seeMore": "Bêtir bibîne",
-			"empty": "Niha tu kurtefîlm tune ye.",
-			"noResults": "Tu kurtefîlm li gorî vê parzûnê nayê.",
-			"promo": {
-				"title": "Kurtefîlm",
-				"cta": "Kurtefîlman bibîne"
-			},
-			"detail": {
-				"back": "Vegere kurtefîlman",
-				"bookmark": "Tomar bike bo lîsteya temaşeyê",
-				"description": "Danasîn",
-				"cast": "Lîstikvan",
-				"selectedClips": "Clipên bijartî",
-				"scenes": "Dîmen",
-				"scene": "Dîmen",
-				"playScene": "Dîmenê lê bike",
-				"nowScreening": "Niha tê nîşandan",
-				"related": "Bêtir kurtefîlm",
-				"duration": "Dem",
-				"releaseDate": "Dîroka weşanê",
-				"genre": "Cure",
-				"director": "Derhêner"
-			}
-		}
-	},
-	"ImageCollection": {
-		"title": "Wêne",
-		"viewAll": "Galeriyê bibîne"
-	},
-	"Hero": {
-		"regionLabel": "Naveroka Hilbijartî",
-		"emptyTitle": "Beşa naveroka hilbijartî dê zû were",
-		"emptyDescription": "Niha tu madeya hilbijartî nehatîye dîtin. Ji kerema xwe paşê dîsa serdan bike.",
-		"previous": "Slide-a berê",
-		"next": "Slide-a paş",
-		"pagination": "Veguhastina slide-an",
-		"play": "Xebitandina guhartina bixweber",
-		"pause": "Rawestandina guhartina bixweber",
-		"slideLabel": "{current} ji {total}",
-		"types": {
-			"book": "Pirtûk",
-			"song": "Stran",
-			"audio": "Deng",
-			"video": "Vîdyo",
-			"article": "Nûçe",
-			"gallery": "Galerî",
-			"archive": "Arşîv",
-			"about": "Derbarê",
-			"service": "Xizmet",
-			"donation": "Hevkari"
-		},
-		"actions": {
-			"book": "Bixwîne",
-			"song": "Bihîse",
-			"audio": "Bihîse",
-			"video": "Temaşe bike",
-			"article": "Bixwîne",
-			"gallery": "Bibîne",
-			"archive": "Lêgerîn bike",
-			"about": "Zêdetir bizane",
-			"service": "Bibîne",
-			"donation": "Hevkarî bike"
-		}
-	},
-	"Ui": {
-		"videoPlayer": {
-			"minimal": "Sade",
-			"full": "Tijî",
-			"withPoster": "Bi poster",
-			"youtube": "YouTube",
-			"sampleTitle": "Wêneyên arşîvê — lêkolîna mewjeyan",
-			"youtubeTitle": "Nimûneya YouTube",
-			"posterAlt": "Çarçoveya posterê ya diyara arşîvê",
-			"youtubePosterAlt": "Wêneya piçûk a vîdyoya YouTube",
-			"speed": "Leza lîstinê",
-			"seekBackward": "10 çirkeyan paş ve biçe",
-			"seekForward": "10 çirkeyan pêş ve biçe",
-			"captions": "Jêrnivîs biguhere",
-			"pip": "Wêne-di-wêne"
-		}
-	},
-	"Common": {
-		"loading": "Tê barkirin…"
-	},
-	"ErrorBoundary": {
-		"title": "Tiştek çewt çû",
-		"description": "Me nekarî vê rûpelê bar bike. Ji kerema xwe dîsa biceribîne.",
-		"retry": "Dîsa biceribîne"
-	},
-	"NotFound": {
-		"title": "Rûpel nehat dîtin",
-		"description": "Rûpela ku tu lê digerî tune ye an hatiye guhertin.",
-		"backHome": "Vegere rûpela sereke"
-	},
-	"About": {
-		"pageTitle": "Derbarê Me",
-		"metaDescription": "Enstîtuya Mîrateya Kurdî — parastin, lêkolîn û belavkirina mîrateya kurdî.",
-		"heroTitle": "Em Kî Ne",
-		"heroPlayLabel": "Vîdyoya nasandinê lê bide",
-		"videoCloseLabel": "Vîdyoyê bigire",
-		"mission": {
-			"p1": "Enstîtuya Mîrateya Kurdî di sala 2003'an de ji aliyê hunermend Mazhər Xalqî ve hate damezrandin. Em li navendên sereke yên Silêmanî û Dihokê, wek navendek zanistî, ji bo parastina çanda devkî û nasnameya neteweyî ya hemû pêkhateyên Kurdistanê kar dikin. Erka me berhevkirin û parastina wê mîrateya dewlemend e ku ji bav û kalên me maye, da ku bi lêkolîna zanistî wek çavkaniyek pêbawer were sazkirin.",
-			"p2": "Baweriya me ya tevahî ev e ku çand tenê vegerina ber bi dema borî nîne, lê bingehek e ji bo avakirina pêşerojê. Ji ber vê yekê em tenê bi arşîvkirinê namînin, lê bi karanîna teknolojiya nûjen û çapkirina berhemên zanistî, em ji bo zindîkirina şopnasiya neteweyî û gihandina wê neslên pêşerojê kar dikin.",
-			"p3": "Têkoşîna enstîtuyê ji pirtûkxane û arşîva deng û wêneyan heta stûdyoyên çêkirin û çapkhaneyê digire. Em her sal projeyên xwe yên lêkolîn, çap û çêkirina hunerî pêk tînin. Herwiha em serpêrştî û rêveberiya van hewldanên zanistî yên hevbeş bi lêkolîner û saziyan re dikin ku ji bo çanda kurdî têne kirin."
-		},
-		"founder": {
-			"name": "Mazhər Xalqî",
-			"role1": "Damezrand û serokê Enstîtuya Mîrateya Kurdî",
-			"role2": "Hunermendek ku çand û dîroka neteweyî di nav deng û arşîvan de parast.",
-			"imageAlt": "Wêneya Mazhər Xalqî"
-		},
-		"team": {
-			"offices": {
-				"sulaymaniyah": "Tîma Ofîsa Silêmaniyê",
-				"duhok": "Tîma Ofîsa Dihokê"
-			},
-			"members": {
-				"ahmed-ali": {
-					"name": "Ehmed Elî",
-					"role": "Lêkolîner"
-				},
-				"sara-osman": {
-					"name": "Sara Osman",
-					"role": "Arşîv"
-				},
-				"karwan-hama": {
-					"name": "Karwan Hema",
-					"role": "Teknîk"
-				},
-				"niaz-jamal": {
-					"name": "Niyaz Cemal",
-					"role": "Rêveberî"
-				},
-				"halkawt-zahir": {
-					"name": "Halkawt Zahir",
-					"role": "Lêkolînerê muzîkê"
-				},
-				"dilnia-rezazi": {
-					"name": "Dilniya Rezazî",
-					"role": "Têkilî"
-				},
-				"laila-fariqi": {
-					"name": "Leyla Ferîqî",
-					"role": "Arşîva dengî"
-				},
-				"adnan-karim": {
-					"name": "Ednan Kerîm",
-					"role": "Şêwirmendê hunerî"
-				},
-				"azad-barwari": {
-					"name": "Dr. Azad Berwarî",
-					"role": "Rêveberê şaxa Dihokê"
-				},
-				"berivan-tahir": {
-					"name": "Berîvan Tahir",
-					"role": "Lêkolînera folklorê"
-				},
-				"heval-zebari": {
-					"name": "Heval Zêbarî",
-					"role": "Beşa medyayê"
-				},
-				"salman-kocher": {
-					"name": "Salman Koçer",
-					"role": "Teknîsyenê vîdyoyê"
-				},
-				"sherzad-sini": {
-					"name": "Şêrzad Sînî",
-					"role": "Arşîvvan"
-				},
-				"newroz-doski": {
-					"name": "Newroz Doskî",
-					"role": "Rêveberî"
-				},
-				"wlat-mazuri": {
-					"name": "Wlat Mazurî",
-					"role": "Têkilî"
-				},
-				"kazhin-farhad": {
-					"name": "Kazhîn Ferhad",
-					"role": "Lêkolînera zaravayan"
-				}
-			}
-		},
-		"partners": {
-			"title": "Beşdar û Piştgir",
-			"items": {
-				"services": {
-					"eyebrow": "Xizmetên Enstîtuyê",
-					"title": "Xizmetên Me",
-					"description": "Salona enstîtuyê, stûdyo, lêkolîn û çap, çapkhanê... em bi hev re ji bo parastina şopnasiya me kar dikin.",
-					"cta": "Bibîne em çi pêşkêş dikin"
-				},
-				"donate": {
-					"eyebrow": "Bexşîn bo Mîrateyê",
-					"title": "Beşdarî parastina dîrokê bibe",
-					"description": "Bexşîna te dibê hêz ji bo nûjenkirina kaset, destnivîs û wêneyên kevnare yên kurdî.",
-					"cta": "Niha piştgirî bike"
-				}
-			}
-		}
-	},
-	"Services": {
-		"pageTitle": "Xizmetên Me",
-		"metaDescription": "Xizmetên Enstîtuya Kevneşopiya Kurdî — salon, stûdyo, lêkolîn, çap, firotin, pirtûkxane û arşîv.",
-		"hero": {
-			"eyebrow": "Xizmetên Me",
-			"title": "Xizmetên Me",
-			"intro": "Em çarçoveyek zanistî û hunerî ava kirine da ku lêkolîner û afirîner bi rêya beşên enstîtuyê projeyên xwe bi encam bigihînin; xizmetên me hewldaneke ne ji bo guhertina fikrên we bo berhemek layîq.",
-			"cta": "Xizmetên me bibîne"
-		},
-		"featured": {
-			"eyebrow": "Hilbijartî",
-			"title": "Xizmetên Hilbijartî"
-		},
-		"nav": {
-			"label": "Xizmet"
-		},
-		"items": {
-			"institute-hall": {
-				"title": "Salona Enstîtuyê",
-				"body": "Ev salon ji bo 300 kesan amade ye û bi pergala endezyariya deng û ronahiyê hatiye sazkirin da ku temaşevan herî baş deng û dîmen werbigirin. Salon ji bo nîşandana fîlm, konser, şano û bûyerên din hatiye rêzkirin; bi rêya odeya kontrola taybet jî dikare karên hunerî bi awayekî profesyonel werin tomarkirin."
-			},
-			"studio": {
-				"title": "Stûdyo",
-				"body": "Amûrên du stûdyoyên tomarkirina deng bi kalîteya herî bilind a dîjîtal û analog, bi gelek cure mikrofonên taybet ji bo qadên cuda hatine amadekirin. Li vir girîngî li hûrgiliyên teknîkî hatiye dayîn da ku bilindtirîn ast di tomarkirina muzîk, dubbing û denga fîlmê de were bidestxistin."
-			},
-			"research-publishing": {
-				"title": "Lêkolîn û Çap",
-				"body": "Platformek zanistî ye ji bo rafînekirina wan projeyan û lêkolînên ku xizmeta ziman, dîrok û nasnameya çandî ya gelê me dikin. Hemû mijarên tê pêşkêşkirin ji aliyê komîteyek jêhatî ve têne vekolandin da ku ji aliyê naverok û kalîteyê ve bi standardên zanistî re li hev bên."
-			},
-			"printing-house": {
-				"title": "Çapkhanê",
-				"body": "Bikaranîna materyalên guncav û çapkirin bi amûrên pêşketî garantî dike ku berhem demdirêj bimînin. Li vir çapkirin tenê qonaxek nine lê temamkirina beşa lêkolînê ye — piştî vekolînê, çapek nimûne tê peydakirin."
-			},
-			"sales": {
-				"title": "Firotin",
-				"body": "Berhemên me li her du navendên Silêmanî û Dihokê hene; hevdemî, kar li ser pêşxistina pergalek pêşketî tê kirin da ku di pêşerojê de ji rêya malpera me ve daxwaz, kirîn û radestkirin bi awayekî bilez û nûjen bêne kirin."
-			},
-			"library": {
-				"title": "Pirtûkxane",
-				"body": "Pirtûkxane ya me çavkaniyek dewlemend e li qadên dîrok, ferheng û kevneşopiya gelê me. Çarçoveya pirtûkxaneyê bi awayekî hatiye rêzkirin ku bibe cihê aram ji bo xwendekaran û lêkolîneran; li vir hezaran çavkaniyên nadîr hene."
-			},
-			"audio-visual-archive": {
-				"title": "Arşîva Deng û Wêne",
-				"body": "Arşîva me xezîneyek deng û wêneyên kurdî ye; xwendekar û lêkolîner dikarin ji vê arşîva dewlemend sûd werbigirin ji bo her projeyek an afirandinê ku xizmeta çanda kurdî dike."
-			},
-			"joint-projects": {
-				"title": "Projeyên Hevbeş",
-				"body": "Ev navendek e ji bo pêşxistina wan projeyan ku li parastina kevneşopiya kurdî ne. Yên arşîv û belgeyên nadîr li cem wan in dikarin li vir karên xwe biguherînin berhemek zanistî û hunerî bi kalîteya cîhanî."
-			}
-		},
-		"bottom": {
-			"donate": {
-				"eyebrow": "Bexşîn bo Mîrateyê",
-				"title": "Bexşîn",
-				"description": "Bexşîna te dibê hêz ji bo nûjenkirina kaset, destnivîs û wêneyên kevnare yên kurdî.",
-				"cta": "Niha piştgirî bike"
-			},
-			"about": {
-				"eyebrow": "Derbarê Me",
-				"title": "Derbarê Me",
-				"description": "Enstîtuya Kevneşopiya Kurdî — parastin, lêkolîn û parvekirina kevneşopiya çandî ya kurdî.",
-				"cta": "Zêdetir bizane"
-			}
-		},
-		"filter": {
-			"active": "Parzûnên çalak",
-			"clear": "Parzûnan paqij bike",
-			"label": "Cureyê xizmetê",
-			"typeAll": "Hemû cure"
-		},
-		"results": {
-			"emptyDescription": "Bi van parzûnan re tu xizmet li hev nayê. Cureyekî din hilbijêre an peyvên lêgerînê biguherîne.",
-			"emptyTitle": "Tu xizmet nehat dîtin"
-		},
-		"search": {
-			"clear": "Nivîsa lêgerînê paqij bike",
-			"label": "Di nav xizmetan de bigere",
-			"submit": "Bigere"
-		}
-	},
-	"Contact": {
-		"pageTitle": "Têkilî",
-		"metaDescription": "Bi Enstîtuya Kevneşopiya Kurdî re têkilî daynin — ofîsên li Silêmanî û Dihokê.",
-		"hero": {
-			"label": "TÊKILÎ · CONTACT",
-			"titleLatin": "Contact",
-			"titleArabic": "پەپوەندی",
-			"tagline": "— KURDISH HERITAGE INSTITUTE —"
-		},
-		"offices": {
-			"eyebrow": "Ofîs",
-			"heading": "Enstîtuya Kevneşopiya Kurdî",
-			"description": "Du bingehên herêmî li Silêmanî û Dihokê. Ofîsek hilbijêrin da ku cihê wê li ser nexşeyê bibînin.",
-			"selectLabel": "Hilbijartî",
-			"badge": {
-				"hq": "Navend",
-				"regional": "Herêmî"
-			},
-			"fields": {
-				"address": "Navnîşan",
-				"phone": "Telefon",
-				"email": "E-posta"
-			},
-			"items": {
-				"sulaymaniyah": {
-					"name": "Silêmanî",
-					"nameLatin": "Sulaymaniyah · Kurdistan",
-					"subtitle": "Ofîsa Silêmanî — Herêma Raparin",
-					"address": "Herêma Raparin, Xanî 02, Kolana 34, Kolana Pîremam 11"
-				},
-				"duhok": {
-					"name": "Dihok",
-					"nameLatin": "Duhok · Kurdistan",
-					"subtitle": "Ofîsa Dihokê — Kolana KRO",
-					"address": "Kolana KRO, Kolana Shamamok, Xanî 8"
-				}
-			}
-		},
-		"map": {
-			"heading": "Li ser nexşeyê me bibînin",
-			"body": "Navenda me ya li Silêmanî xebata lêkolîn û arşîva enstîtuyê rêve dibe. Ofîsek hilbijêrin da ku cihê wê bibînin.",
-			"openInMaps": "Di Google Maps de veke",
-			"iframeTitle": "Nexşeya cihê ofîsê"
-		},
-		"social": {
-			"eyebrow": "Têkilî",
-			"heading": "Bi me re têkilî daynin",
-			"description": "Karên me, berhevok û weşanên me li ser platformên civakî bişopînin.",
-			"platforms": {
-				"facebook": {
-					"name": "Facebook",
-					"handle": "@KurdishHeritage"
-				},
-				"instagram": {
-					"name": "Instagram",
-					"handle": "@KurdishHeritage"
-				},
-				"youtube": {
-					"name": "YouTube",
-					"handle": "@KHI_Kurdistan"
-				},
-				"whatsapp": {
-					"name": "WhatsApp",
-					"handle": "+964 53 320 4232"
-				}
-			}
-		},
-		"form": {
-			"eyebrow": "Forma têkilîyê",
-			"heading": "Peyamek bişînin",
-			"description": "Ji bo pirsên lêkolînê, arşîvê, hevkariyê an serdana enstîtuyê ji me re binivîsin.",
-			"fields": {
-				"fullName": "Navê tevahî",
-				"email": "E-posta",
-				"phone": "Hejmara mobîl",
-				"subject": "Mijar",
-				"message": "Peyam"
-			},
-			"placeholders": {
-				"fullName": "Navê tevahî",
-				"email": "you@example.com",
-				"phone": "+964 …",
-				"subject": "Ev li ser çi ye?",
-				"message": "Peyama xwe li vir binivîsin…"
-			},
-			"submit": "Peyam bişîne",
-			"success": {
-				"title": "Peyam hate wergirtin",
-				"body": "Spas ji bo têkilîya we. Em dê di demek zû de bersiv bidin."
-			},
-			"errors": {
-				"fullNameRequired": "Ji kerema xwe navê tevahî binivîsin.",
-				"emailInvalid": "Ji kerema xwe navnîşanek e-postayê ya derbasdar binivîsin.",
-				"subjectRequired": "Ji kerema xwe mijarek binivîsin (kêm kêm 3 tîp).",
-				"messageRequired": "Ji kerema xwe peyamek binivîsin (kêm kêm 10 tîp).",
-				"submitFailed": "Şandina peyamê bi ser neket. Ji kerema xwe dîsa biceribînin."
-			}
-		}
-	},
-	"Donate": {
-		"pageTitle": "Hevkari û Bexşîn",
-		"metaDescription": "Piştgiriya Enstîtuya Kulturê ya Kurdî — şandina arşîvê, bexşîna darayî û parastina mîrateya kurdî.",
-		"hero": {
-			"eyebrow": "Hevkari û Bexşîn",
-			"title": "Hevkari û Bexşîn",
-			"intro": "Enstîtuya Kulturê ya Kurdî, wek erkek neteweyî, di berhevkirin û parastina mîrateya dewlemend a gelê kurd de ye — mîratek ku di dema dirêj de hewl hatiye jêbirin. Li vir em bangê tevgera neteweyî dikin.",
-			"ctaArchive": "Şandina arşîvê",
-			"ctaFinancial": "Piştgiriya darayî"
-		},
-		"nav": {
-			"label": "Beşên rûpelê",
-			"types": "Çi bide",
-			"participate": "Çawa beşdar bibe",
-			"forms": "Form",
-			"closing": "Piştgiri"
-		},
-		"types": {
-			"heading": "Ez çi dikarim bixebitînim?",
-			"description": "Her cure mîrate — ji wêne û destnivîsan heta piştgiriya darayî — ji bo parastina nasnameya neteweyî giring e.",
-			"items": {
-				"visualArchive": {
-					"title": "Arşîva dîtbarî",
-					"description": "Wêneyên kevn yên kesayetan, cil û cihên dîrokî."
-				},
-				"documents": {
-					"title": "Belge",
-					"description": "Pirtûkên nadiran, name, nexşe, pul û destnivîs."
-				},
-				"oralHeritage": {
-					"title": "Mîrateya zimanî",
-					"description": "Kaset, qefî, an her pelê dengî û vîdyoyê yê kevn."
-				},
-				"financial": {
-					"title": "Piştgiriya darayî",
-					"description": "Ji bo peydakirina mesrefa projeyên girîng û domdariya enstîtuyê."
-				},
-				"scientific": {
-					"title": "Hevkariya zanistî",
-					"description": "Alîkariya nasîna wêne û tiştên kevn."
-				}
-			}
-		},
-		"participate": {
-			"heading": "Ez çawa beşdar dibim?",
-			"paths": {
-				"archive": {
-					"label": "Şandina arşîvê",
-					"body": "Ji bo şandina kaset, destnivîs an wêneyên dîrokî, vê formê dagirin. Tîma me dê ji bo wergirtina tiştê bi we re têkilî daynin.",
-					"cta": "Biçe formê arşîvê"
-				},
-				"financial": {
-					"label": "Piştgiriya darayî",
-					"body": "Bi vê forma ewle, hûn dikarin bi lez û hêsan piştgiriya projeyên me bikin.",
-					"cta": "Biçe formê bexşînê"
-				}
-			},
-			"body": "Hemû tişt û agahiyên ku hûn pêşkêş dikin, bi navê we di arşîva enstîtuyê de tê tomar kirin. Wek rêz, navê hemû piştgir di lîsteya fermî ya \"Dostên Kulturê\" de tê nivîsandin.",
-			"closing": "Spas ji bo ku hûn beşek ji vê tevgera neteweyî dibin."
-		},
-		"forms": {
-			"sectionEyebrow": "Form",
-			"sectionHeading": "Agahiyên xwe bişîne",
-			"sectionDescription": "Yek ji du rêyan hilbijêre — şandina arşîvê an tomar kirina piştgiriya darayî.",
-			"archive": {
-				"heading": "Şandina arşîvê",
-				"description": "Ji bo şandina kaset, destnivîs an wêneyên dîrokî. Tîma me dê ji bo wergirtina tiştê bi we re têkilî dayne.",
-				"stepLabel": "Forma 01",
-				"fields": {
-					"userName": "Navê bikarhêner",
-					"registerName": "Tomar kirin bi navê",
-					"contactNumber": "Hejmara têkilîyê",
-					"materialType": "Cureya tiştê",
-					"fileUpload": "Barkirina pelê",
-					"note": "Not an dîroka kurt"
-				},
-				"placeholders": {
-					"userName": "Bikarhêner",
-					"registerName": "Nav binivîse…",
-					"contactNumber": "07XX XXX XXXX",
-					"materialType": "Kaset û deng",
-					"fileUpload": "Wêne an pelê nimûneyê hilbijêre",
-					"note": "Kurteyek li ser tiştê binivîse…"
-				},
-				"materialOptions": {
-					"cassetteAudio": "Kaset / deng",
-					"photograph": "Wêne",
-					"manuscript": "Destnivîs",
-					"document": "Belge",
-					"video": "Vîdyo",
-					"other": "Yên din"
-				},
-				"submit": "Agahiyan bişîne",
-				"success": {
-					"title": "Agahî hatin wergirtin",
-					"body": "Spas ji bo şandina we. Tîma me dê di demek zû de bi we re têkilî dayne."
-				},
-				"errors": {
-					"userNameRequired": "Ji kerema xwe navê xwe binivîsin.",
-					"contactRequired": "Ji kerema xwe hejmara têkilîyê binivîsin.",
-					"materialTypeRequired": "Ji kerema xwe cureya tiştê hilbijêrin.",
-					"fileTooLarge": "Pelê pir mezin e (herî zêde 10 MB).",
-					"fileInvalidType": "Cureya pelê ne qebûl e.",
-					"submitFailed": "Şandina agahiyan bi ser neket. Ji kerema xwe dîsa biceribînin."
-				}
-			},
-			"financial": {
-				"heading": "Piştgiriya darayî",
-				"description": "Bi lez û hêsan piştgiriya projeyên me bike.",
-				"stepLabel": "Forma 02",
-				"fields": {
-					"amount": "Mîqdar û dirav",
-					"donorName": "Navê bexşker",
-					"suggestedAmounts": "Mîqdarên pêşniyar",
-					"paymentMethod": "Rêbaza dravdanê hilbijêre"
-				},
-				"placeholders": {
-					"amount": "Mîqdar",
-					"donorName": "Navê tevahî an navê kurt"
-				},
-				"currencies": {
-					"iqd": "IQD",
-					"usd": "USD"
-				},
-				"amountPresets": {
-					"large": "100,000",
-					"medium": "50,000",
-					"small": "25,000"
-				},
-				"paymentMethods": {
-					"fib": {
-						"label": "FIB",
-						"hint": "Hejmara hesabê"
-					},
-					"fastpay": {
-						"label": "FastPay",
-						"hint": "Hejmara mobîlê"
-					}
-				},
-				"notice": "Hemû bexşîn bi awayekî zelal ji bo pêşvebirina arşîvê û teknolojiya enstîtuyê têne bikaranîn.",
-				"submit": "Bexşînê tomar bike",
-				"success": {
-					"title": "Bexşîna we hate tomar kirin",
-					"body": "Spas ji bo piştgiriya we. Agahiyên dravdanê li jêr têne nîşandan."
-				},
-				"errors": {
-					"amountRequired": "Ji kerema xwe mîqdar binivîsin.",
-					"amountInvalid": "Ji kerema xwe mîqdarê derbasdar binivîsin.",
-					"donorNameRequired": "Ji kerema xwe navê bexşker binivîsin.",
-					"paymentMethodRequired": "Ji kerema xwe rêbaza dravdanê hilbijêrin.",
-					"submitFailed": "Tomarkirina bexşê bi ser neket. Ji kerema xwe dîsa biceribînin."
-				}
-			}
-		},
-		"closing": {
-			"heading": "Bi hev re ji bo parastina nasnameya neteweyî",
-			"supporters": {
-				"eyebrow": "Dostên Kulturê",
-				"title": "Lîsteya Dostên Kulturê",
-				"description": "Navê te dê wek parêzerek dîrokê bimîne.",
-				"cta": "Beşdar bibe"
-			},
-			"fib": {
-				"label": "FIB ACCOUNT",
-				"copy": "Kopî bike",
-				"copied": "Hat kopîkirin"
-			},
-			"fastpay": {
-				"label": "FASTPAY NUMBER",
-				"copy": "Kopî bike",
-				"copied": "Hat kopîkirin"
-			}
-		}
-	}
+  "Nav": {
+    "brandAlt": "Enstîtuya Mîrateya Kurdî",
+    "brandNameCkb": "ئینستیتووتی کەلەپووری کورد",
+    "brandNameKu": "Enstîtuya Mîrateya Kurdî",
+    "menuNews": "Nûçe",
+    "menuProjects": "Proje",
+    "menuSound": "Deng",
+    "menuVideo": "Deng û Reng",
+    "menuGallery": "Wêne",
+    "menuWritings": "Nivîs",
+    "menuServices": "Xizmet",
+    "menuAbout": "Em",
+    "menuContact": "Têkilî",
+    "menuDonate": "Bexşîn",
+    "menuOpen": "Menûyê veke",
+    "menuClose": "Bigire",
+    "menuTitle": "Menûya malperê",
+    "primary": "Sereke",
+    "services": "Xizmet",
+    "donate": "Bexşîn",
+    "news": "Nûçeyên",
+    "projects": "Proje",
+    "sound": "Deng",
+    "video": "Vîdyo",
+    "gallery": "Galerî",
+    "writings": "Nivîs",
+    "about": "Derbarê",
+    "us": "Em",
+    "publications": "Weşan",
+    "archive": "Arşîv",
+    "library": "Pirtûkxane",
+    "searchOpen": "Lêgerînê veke",
+    "searchBack": "Vegere",
+    "searchLabel": "Lêgerîn",
+    "searchSubmit": "Bigere",
+    "searchErrorMinLength": "Kêm kêm 2 tîp binivîse",
+    "searchResults": "Encam",
+    "searchNoResults": "Tu encam nehatin dîtin",
+    "searchLoading": "Lêgerîn…",
+    "searchNavFallback": "Di menuyê de",
+    "searchTaxonomy": "Tag û kategorî",
+    "searchTaxonomyCategory": "Kategorî",
+    "searchTaxonomyTag": "Tag",
+    "searchTaxonomyTopic": "Mijar",
+    "searchTaxonomyGenre": "Cure",
+    "searchTaxonomyType": "Cure",
+    "searchTaxonomyUnavailable": "Tag û kategorî niha berdest nîn in.",
+    "searchContentUnavailable": "Lêgerîna naveroka arşîvê niha berdest nîne. Hûn dikarin li sernavên menuyê bigerin.",
+    "searchScopeLabel": "Qada lêgerînê",
+    "searchScopeMain": "Malper",
+    "searchScopeArchive": "Arşîv",
+    "searchScopeLibrary": "Pirtûkxane",
+    "searchScopeComingSoon": "Dê di demeke nêz de berdest bibe",
+    "searchScopeNoneSelected": "Ji bo lêgerînê herî kêm çavkaniyekê hilbijêre",
+    "searchFilterLabel": "Cureya naverokê",
+    "searchFilterAll": "Hemû cure",
+    "searchFilterCount": "{count} cure",
+    "secondaryLinkPrefix": "Lêkolîn",
+    "newsDescription": "Nûçeyên lêkolînê li ser çand, dîrok, ziman û civaka Kurd.",
+    "newsSubCulture": "Çand",
+    "newsSubHistory": "Dîrok",
+    "newsSubLanguage": "Ziman",
+    "newsSubSociety": "Civak",
+    "newsSubHeritage": "Mîrat",
+    "projectsDescription": "Bernameyên dirêj-dem ji bo dîjîtalîzekirina destnivîs, dîroka devkî, stran, cil û wêne li hemû herêmên Kurdistanê.",
+    "projectsSubOralHistory": "Arşîva dîroka devkî",
+    "projectsSubManuscripts": "Dîjîtalîzekirina destnivîsan",
+    "projectsSubFolkMusic": "Koleksiyona stranên gelêrî",
+    "projectsSubDress": "Arşîva cilên kevneşopî",
+    "soundDescription": "Tomarên dengî yên dîrokê devkî, hevpeyvîn û arşîva radyoyê.",
+    "soundSubOralHistory": "Dîroka devkî",
+    "soundSubInterviews": "Hevpeyvîn",
+    "soundSubRadio": "Arşîva radyoyê",
+    "videoDescription": "Belgefîlm, performans, ders û tomarên wêneyî yên mîrateya Kurdî.",
+    "videoSubShortFilms": "Kurtefîlm",
+    "videoSubDocumentaries": "Belgefîlm",
+    "videoSubPerformances": "Performans",
+    "videoSubLectures": "Ders û civîn",
+    "videoSubNewsreels": "Nûçeyên wêneyî",
+    "galleryDescription": "Wêne, cil û berhemên hunerî yên mîrateya dîmenî ya Kurdistanê.",
+    "gallerySubPhotography": "Wêne",
+    "gallerySubDress": "Cilên kevneşopî",
+    "gallerySubCrafts": "Kariya destan",
+    "writingsDescription": "Pirtûk, broşûr û weşanên çapkirî û dîjîtal li ser ziman, wêje û dîroka Kurdî.",
+    "writingsSubLiterature": "Wêje",
+    "writingsSubHistory": "Dîrok",
+    "writingsSubPoetry": "Helbest",
+    "writingsSubManuscripts": "Destnivîs",
+    "servicesDescription": "Salon, stûdyo, lêkolîn, çap, firotin, pirtûkxane û xizmetên arşîva Enstîtuyê.",
+    "servicesSubInstituteHall": "Salona enstîtuyê",
+    "servicesSubStudio": "Stûdyo",
+    "servicesSubResearch": "Lêkolîn û weşandin",
+    "servicesSubLibrary": "Pirtûkxane",
+    "aboutDescription": "Enstîtuya Mîrateya Kurdî — parastin, lêkolîn û belavkirina mîrateya Kurdî.",
+    "aboutSubMission": "Armanc û dîtbarî",
+    "aboutSubTeam": "Tîm",
+    "aboutSubContact": "Têkilî",
+    "contactDescription": "Bi enstîtuyê re têkilî daynin — ofîsên Silêmanî û Dihokê, forma têkiliyê û tora civakî.",
+    "donateDescription": "Hevkarî û bexşîn — şandina arşîvê, piştgiriya darayî û parastina mîrateya kurdî."
+  },
+  "Footer": {
+    "donateTitle": "Neteweyek arşîva xwe diparêze",
+    "donateDescription": "Bi bexşînek beşdar bibe di parastina deng, wêne û nivîsên mîrateya kurdî de.",
+    "donateCta": "Niha Bexşîne",
+    "collections": "Koleksiyon",
+    "institute": "Enstîtû",
+    "writings": "Nivîs",
+    "sound": "Deng",
+    "video": "Deng û Reng",
+    "shortFilms": "Fîlm",
+    "gallery": "Wêne",
+    "news": "Nûçe",
+    "projects": "Proje",
+    "services": "Xizmet",
+    "donate": "Bexşîn",
+    "about": "Em",
+    "contact": "Têkilî",
+    "x": "X.com",
+    "instagram": "Instagram",
+    "facebook": "Facebook",
+    "linkedin": "LinkedIn",
+    "youtube": "YouTube",
+    "whatsapp": "WhatsApp",
+    "email": "Email",
+    "copyright": "© 2026 Enstîtuya Mîrateya Kurdî. Maf hemû parastî ne."
+  },
+  "LanguageSwitcher": {
+    "label": "Ziman"
+  },
+  "Home": {
+    "placeholder": "Pirtûkxaneya dîjîtal a çanda, mîrat û rastiya Kurdî."
+  },
+  "LatestUpdates": {
+    "eyebrow": "Nûçe",
+    "title": "Nûvekirina Dawî",
+    "viewAll": "Hemû nûçeyan bibîne",
+    "byAuthor": "Ji aliyê {author}",
+    "categories": {
+      "culture": "Çand",
+      "history": "Dîrok",
+      "language": "Ziman",
+      "heritage": "Mîrat",
+      "society": "Civak"
+    }
+  },
+  "News": {
+    "pageTitle": "Nûçeyên",
+    "metaDescription": "Lêkolîn, nûçe û çîrok li ser çand, dîrok, ziman, mîrat û civaka Kurdî ji Enstîtûya Mîrateya Kurdî.",
+    "hero": {
+      "title": "Nûçe"
+    },
+    "search": {
+      "submit": "Bigere",
+      "label": "Lêgerîna nûçeyan",
+      "clear": "Lêgerînê paqij bike",
+      "noResults": "Ti nûçe bi lêgerîna we re li hev nayên. Peyvek din biceribîne an filtreyan paqij bike."
+    },
+    "filter": {
+      "all": "Hemû",
+      "clear": "Filtreyan paqij bike",
+      "label": "Li gorî mijarê filtir bike",
+      "active": "Tê xuyang kirin",
+      "keywords": "Peyvên sereke",
+      "subcategories": "Mijar",
+      "tags": "Etîket"
+    },
+    "sections": {
+      "spotlight": "Nûçeyên taybet",
+      "allNews": "Hemû nûçe",
+      "filtered": "Nûçeyên {category}",
+      "filteredByKeyword": "Nûçeyên bi peyva sereke ya «{keyword}»",
+      "filteredByTag": "Nûçeyên bi etîketa «{tag}»"
+    },
+    "sidebar": {
+      "latest": "Dawîtirîn"
+    },
+    "categories": {
+      "culture": "Çand",
+      "history": "Dîrok",
+      "language": "Ziman",
+      "heritage": "Mîrat",
+      "society": "Civak",
+      "viewAll": "Hemû mijaran bibîne"
+    },
+    "readTime": "{minutes} xulek xwendin",
+    "post": {
+      "back": "Vegere nûçeyan",
+      "byAuthor": "Ji aliyê {author}",
+      "tags": "Tag",
+      "gallery": "Medya & galerî",
+      "lightbox": {
+        "close": "Bigire",
+        "previous": "Medya berê",
+        "next": "Medya paşê"
+      },
+      "navLabel": "Nûçeyên têkildar",
+      "previous": "Berê",
+      "next": "Piştî",
+      "related": "Nûçeyên din bi heman mijarê"
+    },
+    "pagination": {
+      "label": "Rûpelkirina nûçeyan",
+      "featuredLabel": "Rûpelkirina nûçeyên taybet",
+      "latestLabel": "Rûpelkirina nûçeyên dawîtirîn",
+      "previous": "Berê",
+      "next": "Paş"
+    }
+  },
+  "Projects": {
+    "title": "Proje",
+    "viewAll": "Hemû bibîne"
+  },
+  "ProjectsPage": {
+    "pageTitle": "Projeyên",
+    "metaDescription": "Bernameyên dirêjdem ên Enstîtuya Mîrateya Kurdî ji bo parastin, dîjîtalîzekirin û guncawkirina mîrata kurdî.",
+    "hero": {
+      "eyebrow": "Bernameyên parastinê",
+      "title": "Projeyên",
+      "titleEmphasis": "Xebatên dirêjdem ên ku mîratê diparêzin.",
+      "description": "Ji tomarkirina dengê heta dîjîtalîzekirina destnivîsan — her proje beşek ji arşîveke giştî ye ji bo nifşên pêşerojê.",
+      "cta": "Projeyan bigere",
+      "count": "{count, plural, one {# proje} other {# proje}}"
+    },
+    "search": {
+      "submit": "Bigere",
+      "label": "Lêgerîna projeyan",
+      "clear": "Lêgerînê paqij bike"
+    },
+    "filter": {
+      "all": "Hemû",
+      "clear": "Filtreyan paqij bike",
+      "label": "Li gorî etîketê filtir bike",
+      "active": "Tê xuyang kirin"
+    },
+    "filters": {
+      "years": "Sal",
+      "tags": "Etîket",
+      "allYears": "Hemû"
+    },
+    "grid": {
+      "eyebrow": "Katalog",
+      "title": "Hemû projeyan",
+      "description": "Projeyên bi şêweyekî stûnî hatine rêzkirin — her kartekeke şêwazek cuda ye, lê hemû ji bo hûragahiyan amade ne.",
+      "preview": "Pêşdîtin",
+      "count": "{count, plural, one {# encam} other {# encam}}",
+      "noResults": "Ti proje bi lêgerîn an filtreya we re li hev nayên. Peyvek din biceribîne an filtreyan paqij bike."
+    },
+    "pagination": {
+      "label": "Rûpelkirina projeyan",
+      "previous": "Berê",
+      "next": "Paş"
+    },
+    "detail": {
+      "back": "Vegere projeyan",
+      "lightboxClose": "Bigire",
+      "location": "Cih",
+      "type": "Cure",
+      "status": "Rewş",
+      "date": "Dîrok",
+      "tags": "Etîket",
+      "content": "Naverok",
+      "gallery": "Medya & galerî",
+      "navLabel": "Projeyên din",
+      "previous": "Projeya berê",
+      "next": "Projeya paşê",
+      "statusValues": {
+        "ACTIVE": "Çalak",
+        "ONGOING": "Domdar",
+        "COMPLETED": "Qediya",
+        "ARCHIVED": "Arşîvkirî"
+      }
+    }
+  },
+  "Gallery": {
+    "pageTitle": "Galerî",
+    "metaDescription": "Arşîveke dîmenî ya jiyana Kurdî — wêne, cilên kevneşopî û kariya destan ji seranserê Kurdistanê.",
+    "hero": {
+      "title": "Wêne"
+    },
+    "search": {
+      "submit": "Bigere",
+      "label": "Di berhevokan de bigere",
+      "clear": "Lêgerînê paqij bike",
+      "noResults": "Tu berhevok bi lêgerîn an fîltreya te re li hev nayê. Peyvek din biceribîne an fîltreyan paqij bike."
+    },
+    "filter": {
+      "all": "Hemû",
+      "clear": "Fîltreyan paqij bike",
+      "label": "Li gorî cureyê filtir bike",
+      "active": "Tê xuyang kirin",
+      "heading": "Fîltre",
+      "topicAll": "Hemû mijar",
+      "topicLabel": "Mijar",
+      "typeLabel": "Cureyê berhevokê"
+    },
+    "posts": {
+      "title": "Berhevok",
+      "photosCount": "{count} wêne",
+      "types": {
+        "SINGLE": "Wêneyeke tak",
+        "GALLERY": "Galerî",
+        "PHOTO_STORY": "Çîroka wêneyî"
+      },
+      "pagination": {
+        "label": "Rûpelkirina galerîyê",
+        "previous": "Berê",
+        "next": "Paş"
+      }
+    },
+    "post": {
+      "back": "Pêrista arşîvê",
+      "related": "Wêneyên din",
+      "location": "Cih",
+      "collectedBy": "Berhevkirî ji aliyê",
+      "tags": "Etîket"
+    },
+    "lightbox": {
+      "close": "Bigire",
+      "previous": "Wêneya berê",
+      "next": "Wêneya paşê",
+      "metadata": {
+        "dimensions": "Pîvan",
+        "fileSize": "Mezinahiya pelê",
+        "fileSizeBytes": "Mezinahiya pelê (byte)",
+        "mimeType": "Cureya MIME",
+        "aspectRatio": "Rêjeya alîyan",
+        "sortOrder": "Rêza rêzkirinê",
+        "externalUrl": "Girêdana derve",
+        "embedUrl": "URL-ya embedê"
+      }
+    }
+  },
+  "Sound": {
+    "eyebrow": "Deng & dîroka devkî",
+    "title": "Albûma Bîranînan",
+    "description": "Tomarên dengî yên dîrokê devkî, hevpeyvîn û arşîva radyoyê ji Kurdistanê.",
+    "cta": "Arşîva dengê keşf bike"
+  },
+  "Audio": {
+    "pageTitle": "Arşîva Dengê",
+    "metaDescription": "Tomarên dengî yên dîroka devkî, stranên gelêrî, xwendinên helbestan û arşîva radyoyê ku ji aliyê Enstîtuya Mîrateya Kurdî ve hatine parastin.",
+    "memories": {
+      "title": "Albûma Bîranînan",
+      "description": "Tomarên nûvekirî ji plak, kaset û radyoyê — bîranîneke dengî ji bo dengên berê.",
+      "badge": "Albûma Bîranînan"
+    },
+    "grid": {
+      "allTitle": "Berhevoka dengê.",
+      "empty": "Niha tu tomar tune ne. Ji kerema xwe paşê dîsa serdana me bikin.",
+      "noResults": "Tu tomar bi fîltreyên te re li hev nayê. Wan biguherîne an paqij bike."
+    },
+    "filter": {
+      "label": "Fîltre & lêgerîn",
+      "all": "Hemû cure",
+      "reset": "Ji nû ve dest pê bike",
+      "active": "Aktîf:",
+      "typeLabel": "Cureyê dengê",
+      "stateLabel": "Format",
+      "topicLabel": "Mijar",
+      "topicAll": "Hemû mijar",
+      "searchLabel": "Di tomaran de bigere",
+      "searchClear": "Lêgerînê paqij bike",
+      "tagRemove": "Etîketê rake",
+      "searchSubmit": "Bigere"
+    },
+    "state": {
+      "all": "Hemû format",
+      "single": "Tomara tek",
+      "multi": "Albûm"
+    },
+    "soundTypes": {
+      "poem": "Helbest",
+      "music": "Muzîk",
+      "folk": "Folklor",
+      "religious": "Olî",
+      "speech": "Axaftin",
+      "interview": "Hevpeyvîn",
+      "radio": "Radyo"
+    },
+    "pagination": {
+      "label": "Rûpelkirina dengan",
+      "previous": "Rûpela berê",
+      "next": "Rûpela paş"
+    },
+    "card": {
+      "instituteBadge": "Berhema enstîtuyê",
+      "albumTracks": "{count, plural, one {Albûm — # parçe} other {Albûm — # parçe}}"
+    },
+    "player": {
+      "label": "Lêdana dengê",
+      "play": "Lê bide",
+      "pause": "Rawestîne",
+      "previous": "Parçeya berê",
+      "next": "Parçeya paş",
+      "rewind": "5 çirke şûnde",
+      "forward": "5 çirke pêşde",
+      "seek": "Di parçeyê de bigere",
+      "volume": "Asta dengê",
+      "mute": "Bêdeng bike",
+      "unmute": "Dengê vegerîne",
+      "close": "Bigire"
+    },
+    "post": {
+      "back": "Vegere arşîvê",
+      "playAlbum": "Albûmê lê bide",
+      "playTrack": "Tomarê lê bide",
+      "albumSubtitle": "Albûma «{name}»",
+      "about": "Derbarê",
+      "topic": "Mijar",
+      "terms": "Zarava / têgîn",
+      "genre": "Janr",
+      "locations": "Cih",
+      "reader": "Xwendevan / hunermend",
+      "directors": "Derhêner",
+      "languagesLabel": "Ziman",
+      "languages": {
+        "CKB": "Kurdiya Soranî",
+        "KMR": "Kurdiya Kurmancî"
+      },
+      "tracklist": "Lîsteya parçeyan",
+      "cdNumber": "CD {number}",
+      "fileDetails": "Agahiyên teknîkî",
+      "externalLink": "Girêdana derveyî veke",
+      "tags": "Etîket",
+      "keywords": "Peyvên sereke",
+      "published": "Hat zêdekirin",
+      "updated": "Hat nûvekirin",
+      "navLabel": "Tomarên din",
+      "previous": "Tomara berê",
+      "next": "Tomara paşê",
+      "related": "Tomarên têkildar"
+    },
+    "stats": {
+      "duration": "Dirêjahiya giştî",
+      "size": "Mezinahiya giştî",
+      "tracks": "Parçe",
+      "trackCount": "{count} parçe",
+      "year": "Sal"
+    },
+    "channel": {
+      "STEREO": "Stereo",
+      "MONO": "Mono"
+    },
+    "tech": {
+      "fileFormat": "Format",
+      "bitRate": "Rêjeya bit",
+      "sampleRate": "Rêjeya nimûneyê",
+      "audioChannel": "Kanal",
+      "size": "Mezinahiya dosyayê",
+      "recordingVenue": "Cihê tomarkirinê",
+      "year": "Sal"
+    },
+    "brochures": {
+      "title": "Broşur",
+      "open": "Wêneyê bibîne",
+      "close": "Bigire",
+      "previous": "Wêneya berê",
+      "next": "Wêneya paş",
+      "zoomIn": "Mezin bike",
+      "zoomOut": "Biçûk bike",
+      "fullscreen": "Dîmender tijî",
+      "exitFullscreen": "Ji dîmender tijî derkeve",
+      "pageIndicator": "{current} / {total}",
+      "metadata": {
+        "dimensions": "Pîvan",
+        "fileSize": "Mezinahiya dosyayê",
+        "fileSizeBytes": "Mezinahî (bayt)",
+        "mimeType": "Cureyê MIME",
+        "aspectRatio": "Rêjeya aliyan",
+        "sortOrder": "Rêzkirin",
+        "externalUrl": "Girêdana derveyî",
+        "embedUrl": "Girêdana embedê"
+      }
+    },
+    "video": {
+      "title": "Vîdyo"
+    },
+    "attachments": {
+      "title": "Çavkanî",
+      "filesTitle": "Dosyayên din",
+      "untitled": "Pêveka bê sernav",
+      "types": {
+        "PDF": "Belgeya PDF",
+        "VIDEO": "Vîdyo",
+        "IMAGE": "Wêne",
+        "AUDIO": "Deng",
+        "OTHER": "Dosya"
+      }
+    }
+  },
+  "Writings": {
+    "pageTitle": "Nivîs",
+    "metaDescription": "Nivîsên zanistî û edebî li ser ziman, edebiyat û dîroka Kurdî ji Enstîtuya Kevneşopiya Kurdî.",
+    "eyebrow": "Nivîs",
+    "title": "Lêkolîn û çap",
+    "description": "Nivîsên zanistî û edebî li ser kultura, ziman, dîrok û civaka Kurdî.",
+    "viewAll": "Hemû nivîsan bibîne",
+    "readTime": "{minutes} deq xwendin",
+    "grid": {
+      "allTitle": "Nivîs",
+      "empty": "Ti nivîs bi van filtreyan re nayê hev.",
+      "noResults": "Ti encam nehat dîtin. Filtreyan biguherîne.",
+      "categoryNavLabel": "Li gorî kategoriyê bigere"
+    },
+    "filter": {
+      "label": "Fîltre & rêz",
+      "all": "Hemû janr",
+      "reset": "Ji nû ve dest pê bike",
+      "clear": "Filtreyan paqij bike",
+      "active": "Aktîf:",
+      "genreLabel": "Janr",
+      "searchLabel": "Di nivîsan de bigere",
+      "searchClear": "Lêgerînê paqij bike",
+      "keywordLabel": "Peyva sereke",
+      "tagLabel": "Etîket",
+      "writerAll": "Hemû nivîskar",
+      "writerLabel": "Nivîskar",
+      "searchSubmit": "Bigere"
+    },
+    "sort": {
+      "label": "Rêz bike li gorî",
+      "newest": "Herî nû",
+      "title": "Sernav A–Z"
+    },
+    "pagination": {
+      "label": "Rûpelkirina nivîsan",
+      "previous": "Rûpela berê",
+      "next": "Rûpela paş"
+    },
+    "post": {
+      "back": "Vegere nivîsan",
+      "lightboxClose": "Bigire",
+      "writer": "Nivîskar",
+      "topic": "Mijar",
+      "series": "Rêz",
+      "seriesVolume": "Cild {order} ji {total}",
+      "tags": "Etîket",
+      "keywords": "Peyvên sereke",
+      "downloads": "Daxistin",
+      "published": "Weşandin",
+      "updated": "Rojanekirin",
+      "navLabel": "Nivîsên din",
+      "previous": "Nivîsa berê",
+      "next": "Nivîsa paş",
+      "related": "Pirtûkên din",
+      "languages": {
+        "ckb": "Soranî (CKB)",
+        "kmr": "Kurmancî (KMR)"
+      },
+      "preview": {
+        "title": "Çend rûpelan bixwîne"
+      },
+      "reader": {
+        "previousPage": "Rûpela berê",
+        "nextPage": "Rûpela din",
+        "pageOf": "Rûpel {page} ji {total}",
+        "pageNavLabel": "Navigasyona rûpelan",
+        "goToPage": "Here rûpel {page}",
+        "pagesRemaining": "{count} rûpel mayî",
+        "twoPageSpread": "Du rûpel",
+        "singlePage": "Rûpelek",
+        "zoomIn": "Nêzîk bike",
+        "zoomOut": "Dûr bike",
+        "fitWidth": "Firehî",
+        "fitHeight": "Bilindî",
+        "fullSize": "Mezinahiya tevahî",
+        "exitFullSize": "Ji mezinahiya tevahî derkeve",
+        "readButton": "Bixwîne",
+        "loading": "Belge tê barkirin…",
+        "errorTitle": "Belge nehat barkirin",
+        "errorDescription": "Dibe ku pel ne berdest be an ji hêla geroka te ve were astengkirin. Paşê dîsa biceribîne.",
+        "unavailableTitle": "Pêşdîtin tune",
+        "unavailableDescription": "Ev nivîs PDFek ji bo nîşandanê tune."
+      },
+      "by": "Nivîsîna",
+      "format": "Format",
+      "languagesLabel": "Ziman"
+    },
+    "subcategories": {
+      "literature": {
+        "metaDescription": "Roman, çîroka kurt, şano û nivîsên edebî ji Enstîtuya Kevneşopiya Kurdî."
+      },
+      "history": {
+        "metaDescription": "Nivîsên dîrokî, jiyanname û civakî li ser dîrok û civata Kurdî."
+      },
+      "poetry": {
+        "metaDescription": "Şîir û helbest ji tradîsyonên edebî yên Kurdî."
+      },
+      "manuscripts": {
+        "metaDescription": "Zargotina gelêrî, nivîsên olî, zimanzanî û koleksiyonên destnivîsê."
+      }
+    },
+    "genres": {
+      "POETRY": "Şîir",
+      "NOVEL": "Roman",
+      "SHORT_STORY": "Çîroka kurt",
+      "DRAMA": "Şano",
+      "HISTORY": "Dîrok",
+      "BIOGRAPHY": "Jiyanname",
+      "PHILOSOPHY": "Felsefe",
+      "RELIGION": "Ol",
+      "FOLKLORE": "Zargotina gelêrî",
+      "POLITICS": "Siyaset",
+      "SOCIOLOGY": "Komelezanî",
+      "ECONOMICS": "Aborî",
+      "LAW": "Qanûn",
+      "LINGUISTICS": "Zimanzanî",
+      "ARTS": "Huner",
+      "CULTURAL": "Kultûrî",
+      "SCIENCE": "Zanist",
+      "MEDICINE": "Pizîşkî",
+      "EDUCATIONAL": "Perwerdeyî",
+      "CHILDREN": "Zarokan",
+      "TRAVEL": "Ger û gerr",
+      "OTHER": "Yên din"
+    },
+    "categories": {
+      "culture": "Kultûr",
+      "history": "Dîrok",
+      "language": "Ziman",
+      "heritage": "Mîrat",
+      "society": "Civak"
+    }
+  },
+  "Video": {
+    "title": "Deng û Reng",
+    "description": "Rêzeyên klîp, dersên tomarkirî û tomarên wêneyî yên kurt — li ser bingeha mijaran têne rêzkirin.",
+    "viewAll": "Klîpan keşf bike",
+    "pageTitle": "Arşîva Fîlm û Vîdyo",
+    "metaDescription": "Fîlm, belgefîlm, performans û tomarên wêneyî yên mîrateya kurdî — sînematêka Enstîtuya Kelepora Kurdî.",
+    "categories": {
+      "documentaries": "Belgefîlm",
+      "performances": "Performans",
+      "lectures": "Ders",
+      "newsreels": "Nûçeyên wêneyî"
+    },
+    "grid": {
+      "allTitle": "Koleksiyona wêneyên livok.",
+      "itemCount": "{formatted} {count, plural, one {fîlm} other {fîlm}}",
+      "empty": "Niha tu vîdyo tune ye.",
+      "noResults": "Tu vîdyo li gorî parzûnên te nayê."
+    },
+    "filter": {
+      "label": "Parzûn & lêgerîn",
+      "reset": "Jê bibe",
+      "all": "Hemû",
+      "typeLabel": "Format",
+      "searchLabel": "Li vîdyoyan bigere",
+      "searchClear": "Lêgerînê paqij bike",
+      "topicLabel": "Mijar",
+      "topicAll": "Hemû mijar",
+      "collectionLabel": "Koleksiyon",
+      "memoriesLabel": "Albuma bîranînan",
+      "active": "Çalak:",
+      "searchSubmit": "Bigere"
+    },
+    "types": {
+      "FILM": "Fîlm",
+      "VIDEO_CLIP": "Klîp"
+    },
+    "typeBadge": {
+      "FILM": "Fîlm",
+      "VIDEO_CLIP": "Klîp"
+    },
+    "card": {
+      "clipCount": "{formatted} {count, plural, one {klîp} other {klîp}}",
+      "memoriesBadge": "Albuma bîranînan"
+    },
+    "pagination": {
+      "label": "Rûpelbendiya vîdyo",
+      "previous": "Paş",
+      "next": "Pêş"
+    },
+    "detail": {
+      "back": "Vegere vîdyoyan",
+      "lightboxClose": "Bigire",
+      "lightboxOpen": "Wêneyê bergê veke",
+      "director": "Derhêner",
+      "producer": "Hilberîner",
+      "location": "Cih",
+      "topic": "Mijar",
+      "duration": "Dem",
+      "resolution": "Rezolûsyon",
+      "fileFormat": "Format",
+      "publishmentDate": "Hat weşandin",
+      "fileSize": "Mezinahiya pelê",
+      "languagesLabel": "Ziman",
+      "languages": {
+        "CKB": "Soranî",
+        "KMR": "Kurmancî"
+      },
+      "clips": "Klîpên vê rêzê",
+      "playClip": "Klîpê lê bike",
+      "nowPlaying": "Niha tê lîstin",
+      "noSource": "Çavkaniya lîstinê ya vê vîdyoyê hê nehatiye zêdekirin.",
+      "tags": "Etîket",
+      "keywords": "Peyvên sereke",
+      "published": "Hat weşandin",
+      "updated": "Hat nûkirin",
+      "related": "Vîdyo û klîpên din"
+    },
+    "films": {
+      "home": {
+        "eyebrow": "Fîlm",
+        "title": "Fîlm",
+        "description": "Fîlmên dirêj, belgefîlm û performansên tomarkirî — ji arşîva wêneyên livok ya Enstîtuyê.",
+        "viewAll": "Fîlman keşf bike",
+        "programLabel": "Bername",
+        "moreLabel": "Zêdetir fîlm"
+      }
+    },
+    "shortfilms": {
+      "pageTitle": "Kurtefîlm",
+      "metaDescription": "Hilbijartineke kurtefîlmên kurdî ji arşîva Enstîtuya Kelepora Kurdî.",
+      "hero": {
+        "title": "Wêneyên biçûk, cîhanên temam.",
+        "description": "Bernameyeke bijartî ya kurtefîlmên kurdî — nêz, afirîner û bi mebest kurt.",
+        "cta": "Kurtefîlman bibîne"
+      },
+      "allTitle": "Bernameya kurtefîlman.",
+      "watchNow": "Niha temaşe bike",
+      "details": "Hûrgilî",
+      "more": "Bêtir kurtefîlm",
+      "genreLabel": "Cure",
+      "allGenres": "Hemû cure",
+      "seeMore": "Bêtir bibîne",
+      "empty": "Niha tu kurtefîlm tune ye.",
+      "noResults": "Tu kurtefîlm li gorî vê parzûnê nayê.",
+      "promo": {
+        "title": "Kurtefîlm",
+        "cta": "Kurtefîlman bibîne"
+      },
+      "detail": {
+        "back": "Vegere kurtefîlman",
+        "bookmark": "Tomar bike bo lîsteya temaşeyê",
+        "description": "Danasîn",
+        "cast": "Lîstikvan",
+        "selectedClips": "Clipên bijartî",
+        "scenes": "Dîmen",
+        "scene": "Dîmen",
+        "playScene": "Dîmenê lê bike",
+        "nowScreening": "Niha tê nîşandan",
+        "related": "Bêtir kurtefîlm",
+        "duration": "Dem",
+        "releaseDate": "Dîroka weşanê",
+        "genre": "Cure",
+        "director": "Derhêner"
+      }
+    }
+  },
+  "ImageCollection": {
+    "title": "Wêne",
+    "viewAll": "Galeriyê bibîne"
+  },
+  "Hero": {
+    "regionLabel": "Naveroka Hilbijartî",
+    "emptyTitle": "Beşa naveroka hilbijartî dê zû were",
+    "emptyDescription": "Niha tu madeya hilbijartî nehatîye dîtin. Ji kerema xwe paşê dîsa serdan bike.",
+    "previous": "Slide-a berê",
+    "next": "Slide-a paş",
+    "pagination": "Veguhastina slide-an",
+    "play": "Xebitandina guhartina bixweber",
+    "pause": "Rawestandina guhartina bixweber",
+    "slideLabel": "{current} ji {total}",
+    "types": {
+      "book": "Pirtûk",
+      "song": "Stran",
+      "audio": "Deng",
+      "video": "Vîdyo",
+      "article": "Nûçe",
+      "gallery": "Galerî",
+      "archive": "Arşîv",
+      "about": "Derbarê",
+      "service": "Xizmet",
+      "donation": "Hevkari"
+    },
+    "actions": {
+      "book": "Bixwîne",
+      "song": "Bihîse",
+      "audio": "Bihîse",
+      "video": "Temaşe bike",
+      "article": "Bixwîne",
+      "gallery": "Bibîne",
+      "archive": "Lêgerîn bike",
+      "about": "Zêdetir bizane",
+      "service": "Bibîne",
+      "donation": "Hevkarî bike"
+    }
+  },
+  "Ui": {
+    "videoPlayer": {
+      "minimal": "Sade",
+      "full": "Tijî",
+      "withPoster": "Bi poster",
+      "youtube": "YouTube",
+      "sampleTitle": "Wêneyên arşîvê — lêkolîna mewjeyan",
+      "youtubeTitle": "Nimûneya YouTube",
+      "posterAlt": "Çarçoveya posterê ya diyara arşîvê",
+      "youtubePosterAlt": "Wêneya piçûk a vîdyoya YouTube",
+      "speed": "Leza lîstinê",
+      "seekBackward": "10 çirkeyan paş ve biçe",
+      "seekForward": "10 çirkeyan pêş ve biçe",
+      "captions": "Jêrnivîs biguhere",
+      "pip": "Wêne-di-wêne"
+    }
+  },
+  "Common": {
+    "loading": "Tê barkirin…"
+  },
+  "ErrorBoundary": {
+    "title": "Tiştek çewt çû",
+    "description": "Me nekarî vê rûpelê bar bike. Ji kerema xwe dîsa biceribîne.",
+    "retry": "Dîsa biceribîne"
+  },
+  "NotFound": {
+    "title": "Rûpel nehat dîtin",
+    "description": "Rûpela ku tu lê digerî tune ye an hatiye guhertin.",
+    "backHome": "Vegere rûpela sereke"
+  },
+  "About": {
+    "pageTitle": "Derbarê Me",
+    "metaDescription": "Enstîtuya Mîrateya Kurdî — parastin, lêkolîn û belavkirina mîrateya kurdî.",
+    "heroTitle": "Em Kî Ne",
+    "heroPlayLabel": "Vîdyoya nasandinê lê bide",
+    "videoCloseLabel": "Vîdyoyê bigire",
+    "mission": {
+      "p1": "Enstîtuya Mîrateya Kurdî di sala 2003'an de ji aliyê hunermend Mazhər Xalqî ve hate damezrandin. Em li navendên sereke yên Silêmanî û Dihokê, wek navendek zanistî, ji bo parastina çanda devkî û nasnameya neteweyî ya hemû pêkhateyên Kurdistanê kar dikin. Erka me berhevkirin û parastina wê mîrateya dewlemend e ku ji bav û kalên me maye, da ku bi lêkolîna zanistî wek çavkaniyek pêbawer were sazkirin.",
+      "p2": "Baweriya me ya tevahî ev e ku çand tenê vegerina ber bi dema borî nîne, lê bingehek e ji bo avakirina pêşerojê. Ji ber vê yekê em tenê bi arşîvkirinê namînin, lê bi karanîna teknolojiya nûjen û çapkirina berhemên zanistî, em ji bo zindîkirina şopnasiya neteweyî û gihandina wê neslên pêşerojê kar dikin.",
+      "p3": "Têkoşîna enstîtuyê ji pirtûkxane û arşîva deng û wêneyan heta stûdyoyên çêkirin û çapkhaneyê digire. Em her sal projeyên xwe yên lêkolîn, çap û çêkirina hunerî pêk tînin. Herwiha em serpêrştî û rêveberiya van hewldanên zanistî yên hevbeş bi lêkolîner û saziyan re dikin ku ji bo çanda kurdî têne kirin."
+    },
+    "founder": {
+      "name": "Mazhər Xalqî",
+      "role1": "Damezrand û serokê Enstîtuya Mîrateya Kurdî",
+      "role2": "Hunermendek ku çand û dîroka neteweyî di nav deng û arşîvan de parast.",
+      "imageAlt": "Wêneya Mazhər Xalqî"
+    },
+    "team": {
+      "offices": {
+        "sulaymaniyah": "Tîma Ofîsa Silêmaniyê",
+        "duhok": "Tîma Ofîsa Dihokê"
+      },
+      "members": {
+        "ahmed-ali": {
+          "name": "Ehmed Elî",
+          "role": "Lêkolîner"
+        },
+        "sara-osman": {
+          "name": "Sara Osman",
+          "role": "Arşîv"
+        },
+        "karwan-hama": {
+          "name": "Karwan Hema",
+          "role": "Teknîk"
+        },
+        "niaz-jamal": {
+          "name": "Niyaz Cemal",
+          "role": "Rêveberî"
+        },
+        "halkawt-zahir": {
+          "name": "Halkawt Zahir",
+          "role": "Lêkolînerê muzîkê"
+        },
+        "dilnia-rezazi": {
+          "name": "Dilniya Rezazî",
+          "role": "Têkilî"
+        },
+        "laila-fariqi": {
+          "name": "Leyla Ferîqî",
+          "role": "Arşîva dengî"
+        },
+        "adnan-karim": {
+          "name": "Ednan Kerîm",
+          "role": "Şêwirmendê hunerî"
+        },
+        "azad-barwari": {
+          "name": "Dr. Azad Berwarî",
+          "role": "Rêveberê şaxa Dihokê"
+        },
+        "berivan-tahir": {
+          "name": "Berîvan Tahir",
+          "role": "Lêkolînera folklorê"
+        },
+        "heval-zebari": {
+          "name": "Heval Zêbarî",
+          "role": "Beşa medyayê"
+        },
+        "salman-kocher": {
+          "name": "Salman Koçer",
+          "role": "Teknîsyenê vîdyoyê"
+        },
+        "sherzad-sini": {
+          "name": "Şêrzad Sînî",
+          "role": "Arşîvvan"
+        },
+        "newroz-doski": {
+          "name": "Newroz Doskî",
+          "role": "Rêveberî"
+        },
+        "wlat-mazuri": {
+          "name": "Wlat Mazurî",
+          "role": "Têkilî"
+        },
+        "kazhin-farhad": {
+          "name": "Kazhîn Ferhad",
+          "role": "Lêkolînera zaravayan"
+        }
+      }
+    },
+    "partners": {
+      "title": "Beşdar û Piştgir",
+      "items": {
+        "services": {
+          "eyebrow": "Xizmetên Enstîtuyê",
+          "title": "Xizmetên Me",
+          "description": "Salona enstîtuyê, stûdyo, lêkolîn û çap, çapkhanê... em bi hev re ji bo parastina şopnasiya me kar dikin.",
+          "cta": "Bibîne em çi pêşkêş dikin"
+        },
+        "donate": {
+          "eyebrow": "Bexşîn bo Mîrateyê",
+          "title": "Beşdarî parastina dîrokê bibe",
+          "description": "Bexşîna te dibê hêz ji bo nûjenkirina kaset, destnivîs û wêneyên kevnare yên kurdî.",
+          "cta": "Niha piştgirî bike"
+        }
+      }
+    }
+  },
+  "Services": {
+    "pageTitle": "Xizmetên Me",
+    "metaDescription": "Xizmetên Enstîtuya Kevneşopiya Kurdî — salon, stûdyo, lêkolîn, çap, firotin, pirtûkxane û arşîv.",
+    "hero": {
+      "eyebrow": "Xizmetên Me",
+      "title": "Xizmetên Me",
+      "intro": "Em çarçoveyek zanistî û hunerî ava kirine da ku lêkolîner û afirîner bi rêya beşên enstîtuyê projeyên xwe bi encam bigihînin; xizmetên me hewldaneke ne ji bo guhertina fikrên we bo berhemek layîq.",
+      "cta": "Xizmetên me bibîne"
+    },
+    "featured": {
+      "eyebrow": "Hilbijartî",
+      "title": "Xizmetên Hilbijartî"
+    },
+    "nav": {
+      "label": "Xizmet"
+    },
+    "items": {
+      "institute-hall": {
+        "title": "Salona Enstîtuyê",
+        "body": "Ev salon ji bo 300 kesan amade ye û bi pergala endezyariya deng û ronahiyê hatiye sazkirin da ku temaşevan herî baş deng û dîmen werbigirin. Salon ji bo nîşandana fîlm, konser, şano û bûyerên din hatiye rêzkirin; bi rêya odeya kontrola taybet jî dikare karên hunerî bi awayekî profesyonel werin tomarkirin."
+      },
+      "studio": {
+        "title": "Stûdyo",
+        "body": "Amûrên du stûdyoyên tomarkirina deng bi kalîteya herî bilind a dîjîtal û analog, bi gelek cure mikrofonên taybet ji bo qadên cuda hatine amadekirin. Li vir girîngî li hûrgiliyên teknîkî hatiye dayîn da ku bilindtirîn ast di tomarkirina muzîk, dubbing û denga fîlmê de were bidestxistin."
+      },
+      "research-publishing": {
+        "title": "Lêkolîn û Çap",
+        "body": "Platformek zanistî ye ji bo rafînekirina wan projeyan û lêkolînên ku xizmeta ziman, dîrok û nasnameya çandî ya gelê me dikin. Hemû mijarên tê pêşkêşkirin ji aliyê komîteyek jêhatî ve têne vekolandin da ku ji aliyê naverok û kalîteyê ve bi standardên zanistî re li hev bên."
+      },
+      "printing-house": {
+        "title": "Çapkhanê",
+        "body": "Bikaranîna materyalên guncav û çapkirin bi amûrên pêşketî garantî dike ku berhem demdirêj bimînin. Li vir çapkirin tenê qonaxek nine lê temamkirina beşa lêkolînê ye — piştî vekolînê, çapek nimûne tê peydakirin."
+      },
+      "sales": {
+        "title": "Firotin",
+        "body": "Berhemên me li her du navendên Silêmanî û Dihokê hene; hevdemî, kar li ser pêşxistina pergalek pêşketî tê kirin da ku di pêşerojê de ji rêya malpera me ve daxwaz, kirîn û radestkirin bi awayekî bilez û nûjen bêne kirin."
+      },
+      "library": {
+        "title": "Pirtûkxane",
+        "body": "Pirtûkxane ya me çavkaniyek dewlemend e li qadên dîrok, ferheng û kevneşopiya gelê me. Çarçoveya pirtûkxaneyê bi awayekî hatiye rêzkirin ku bibe cihê aram ji bo xwendekaran û lêkolîneran; li vir hezaran çavkaniyên nadîr hene."
+      },
+      "audio-visual-archive": {
+        "title": "Arşîva Deng û Wêne",
+        "body": "Arşîva me xezîneyek deng û wêneyên kurdî ye; xwendekar û lêkolîner dikarin ji vê arşîva dewlemend sûd werbigirin ji bo her projeyek an afirandinê ku xizmeta çanda kurdî dike."
+      },
+      "joint-projects": {
+        "title": "Projeyên Hevbeş",
+        "body": "Ev navendek e ji bo pêşxistina wan projeyan ku li parastina kevneşopiya kurdî ne. Yên arşîv û belgeyên nadîr li cem wan in dikarin li vir karên xwe biguherînin berhemek zanistî û hunerî bi kalîteya cîhanî."
+      }
+    },
+    "bottom": {
+      "donate": {
+        "eyebrow": "Bexşîn bo Mîrateyê",
+        "title": "Bexşîn",
+        "description": "Bexşîna te dibê hêz ji bo nûjenkirina kaset, destnivîs û wêneyên kevnare yên kurdî.",
+        "cta": "Niha piştgirî bike"
+      },
+      "about": {
+        "eyebrow": "Derbarê Me",
+        "title": "Derbarê Me",
+        "description": "Enstîtuya Kevneşopiya Kurdî — parastin, lêkolîn û parvekirina kevneşopiya çandî ya kurdî.",
+        "cta": "Zêdetir bizane"
+      }
+    },
+    "filter": {
+      "active": "Parzûnên çalak",
+      "clear": "Parzûnan paqij bike",
+      "label": "Cureyê xizmetê",
+      "typeAll": "Hemû cure"
+    },
+    "results": {
+      "emptyDescription": "Bi van parzûnan re tu xizmet li hev nayê. Cureyekî din hilbijêre an peyvên lêgerînê biguherîne.",
+      "emptyTitle": "Tu xizmet nehat dîtin"
+    },
+    "search": {
+      "clear": "Nivîsa lêgerînê paqij bike",
+      "label": "Di nav xizmetan de bigere",
+      "submit": "Bigere"
+    }
+  },
+  "Contact": {
+    "pageTitle": "Têkilî",
+    "metaDescription": "Bi Enstîtuya Kevneşopiya Kurdî re têkilî daynin — ofîsên li Silêmanî û Dihokê.",
+    "hero": {
+      "title": "Têkilî"
+    },
+    "offices": {
+      "heading": "Ofîsên me",
+      "description": "Du bingehên herêmî li Silêmanî û Dihokê.",
+      "fields": {
+        "address": "Navnîşan",
+        "workingHours": "Demjimêrên xebatê",
+        "phone": "Telefon",
+        "email": "E-posta"
+      },
+      "items": {
+        "sulaymaniyah": {
+          "name": "Silêmanî",
+          "nameLatin": "Sulaymaniyah · Kurdistan",
+          "subtitle": "Ofîsa Silêmanî — Herêma Raparin",
+          "address": "Herêma Raparin, Xanî 02, Kolana 34, Kolana Pîremam 11"
+        },
+        "duhok": {
+          "name": "Dihok",
+          "nameLatin": "Duhok · Kurdistan",
+          "subtitle": "Ofîsa Dihokê — Kolana KRO",
+          "address": "Kolana KRO, Kolana Shamamok, Xanî 8"
+        }
+      }
+    },
+    "map": {
+      "heading": "Li ser nexşeyê me bibînin",
+      "body": "Navenda me ya li Silêmanî xebata lêkolîn û arşîva enstîtuyê rêve dibe. Ofîsek hilbijêrin da ku cihê wê bibînin.",
+      "openInMaps": "Di Google Maps de veke",
+      "iframeTitle": "Nexşeya cihê ofîsê",
+      "selectOffice": "Ofîsek hilbijêre"
+    },
+    "form": {
+      "heading": "Peyamek bişînin",
+      "description": "Ji bo pirsên lêkolînê, arşîvê, hevkariyê an serdana enstîtuyê ji me re binivîsin.",
+      "fields": {
+        "fullName": "Navê tevahî",
+        "email": "E-posta",
+        "phone": "Hejmara mobîl",
+        "subject": "Mijar",
+        "message": "Peyam"
+      },
+      "placeholders": {
+        "fullName": "Navê tevahî",
+        "email": "you@example.com",
+        "phone": "+964 …",
+        "subject": "Ev li ser çi ye?",
+        "message": "Peyama xwe li vir binivîsin…"
+      },
+      "submit": "Peyam bişîne",
+      "success": {
+        "title": "Peyam hate wergirtin",
+        "body": "Spas ji bo têkilîya we. Em dê di demek zû de bersiv bidin."
+      },
+      "errors": {
+        "fullNameRequired": "Ji kerema xwe navê tevahî binivîsin.",
+        "emailInvalid": "Ji kerema xwe navnîşanek e-postayê ya derbasdar binivîsin.",
+        "subjectRequired": "Ji kerema xwe mijarek binivîsin (kêm kêm 3 tîp).",
+        "messageRequired": "Ji kerema xwe peyamek binivîsin (kêm kêm 10 tîp).",
+        "submitFailed": "Şandina peyamê bi ser neket. Ji kerema xwe dîsa biceribînin."
+      }
+    }
+  },
+  "Donate": {
+    "pageTitle": "Hevkari û Bexşîn",
+    "metaDescription": "Piştgiriya Enstîtuya Kulturê ya Kurdî — şandina arşîvê, bexşîna darayî û parastina mîrateya kurdî.",
+    "hero": {
+      "title": "Hevkari û Bexşîn",
+      "intro": "Enstîtuya Kulturê ya Kurdî, wek erkek neteweyî, di berhevkirin û parastina mîrateya dewlemend a gelê kurd de ye — mîratek ku di dema dirêj de hewl hatiye jêbirin. Li vir em bangê tevgera neteweyî dikin.",
+      "ctaArchive": "Şandina arşîvê",
+      "ctaFinancial": "Piştgiriya darayî"
+    },
+    "nav": {
+      "label": "Beşên rûpelê",
+      "types": "Çi bide",
+      "participate": "Çawa beşdar bibe",
+      "forms": "Form",
+      "closing": "Piştgiri"
+    },
+    "types": {
+      "heading": "Ez çi dikarim bixebitînim?"
+    },
+    "participate": {
+      "heading": "Ez çawa beşdar dibim?",
+      "paths": {
+        "archive": {
+          "label": "Şandina arşîvê",
+          "body": "Ji bo şandina kaset, destnivîs an wêneyên dîrokî, vê formê dagirin. Tîma me dê ji bo wergirtina tiştê bi we re têkilî daynin.",
+          "cta": "Biçe formê arşîvê"
+        },
+        "financial": {
+          "label": "Piştgiriya darayî",
+          "body": "Bi vê forma ewle, hûn dikarin bi lez û hêsan piştgiriya projeyên me bikin.",
+          "cta": "Biçe formê bexşînê"
+        }
+      },
+      "body": "Hemû tişt û agahiyên ku hûn pêşkêş dikin, bi navê we di arşîva enstîtuyê de tê tomar kirin. Wek rêz, navê hemû piştgir di lîsteya fermî ya \"Dostên Kulturê\" de tê nivîsandin.",
+      "closing": "Spas ji bo ku hûn beşek ji vê tevgera neteweyî dibin."
+    },
+    "forms": {
+      "sectionHeading": "Agahiyên xwe bişîne",
+      "sectionDescription": "Yek ji du rêyan hilbijêre — şandina arşîvê an tomar kirina piştgiriya darayî.",
+      "archive": {
+        "heading": "Şandina arşîvê",
+        "description": "Ji bo şandina kaset, destnivîs an wêneyên dîrokî. Tîma me dê ji bo wergirtina tiştê bi we re têkilî dayne.",
+        "fields": {
+          "userName": "Navê bikarhêner",
+          "registerName": "Tomar kirin bi navê",
+          "contactNumber": "Hejmara têkilîyê",
+          "materialType": "Cureya tiştê",
+          "fileUpload": "Barkirina pelê",
+          "note": "Not an dîroka kurt"
+        },
+        "placeholders": {
+          "userName": "Bikarhêner",
+          "registerName": "Nav binivîse…",
+          "contactNumber": "07XX XXX XXXX",
+          "materialType": "Kaset û deng",
+          "fileUpload": "Wêne an pelê nimûneyê hilbijêre",
+          "note": "Kurteyek li ser tiştê binivîse…"
+        },
+        "materialOptions": {
+          "cassetteAudio": "Kaset / deng",
+          "photograph": "Wêne",
+          "manuscript": "Destnivîs",
+          "document": "Belge",
+          "video": "Vîdyo",
+          "other": "Yên din"
+        },
+        "submit": "Agahiyan bişîne",
+        "success": {
+          "title": "Agahî hatin wergirtin",
+          "body": "Spas ji bo şandina we. Tîma me dê di demek zû de bi we re têkilî dayne."
+        },
+        "errors": {
+          "userNameRequired": "Ji kerema xwe navê xwe binivîsin.",
+          "contactRequired": "Ji kerema xwe hejmara têkilîyê binivîsin.",
+          "materialTypeRequired": "Ji kerema xwe cureya tiştê hilbijêrin.",
+          "fileTooLarge": "Pelê pir mezin e (herî zêde 10 MB).",
+          "fileInvalidType": "Cureya pelê ne qebûl e.",
+          "submitFailed": "Şandina agahiyan bi ser neket. Ji kerema xwe dîsa biceribînin."
+        }
+      },
+      "financial": {
+        "heading": "Piştgiriya darayî",
+        "description": "Bi lez û hêsan piştgiriya projeyên me bike.",
+        "fields": {
+          "amount": "Mîqdar û dirav",
+          "donorName": "Navê bexşker",
+          "suggestedAmounts": "Mîqdarên pêşniyar",
+          "paymentMethod": "Rêbaza dravdanê hilbijêre"
+        },
+        "placeholders": {
+          "amount": "Mîqdar",
+          "donorName": "Navê tevahî an navê kurt"
+        },
+        "currencies": {
+          "iqd": "IQD",
+          "usd": "USD"
+        },
+        "amountPresets": {
+          "large": "100,000",
+          "medium": "50,000",
+          "small": "25,000"
+        },
+        "paymentMethods": {
+          "fib": {
+            "label": "FIB",
+            "hint": "Hejmara hesabê"
+          },
+          "fastpay": {
+            "label": "FastPay",
+            "hint": "Hejmara mobîlê"
+          }
+        },
+        "notice": "Hemû bexşîn bi awayekî zelal ji bo pêşvebirina arşîvê û teknolojiya enstîtuyê têne bikaranîn.",
+        "submit": "Bexşînê tomar bike",
+        "success": {
+          "title": "Bexşîna we hate tomar kirin",
+          "body": "Spas ji bo piştgiriya we. Agahiyên dravdanê li jêr têne nîşandan."
+        },
+        "errors": {
+          "amountRequired": "Ji kerema xwe mîqdar binivîsin.",
+          "amountInvalid": "Ji kerema xwe mîqdarê derbasdar binivîsin.",
+          "donorNameRequired": "Ji kerema xwe navê bexşker binivîsin.",
+          "paymentMethodRequired": "Ji kerema xwe rêbaza dravdanê hilbijêrin.",
+          "submitFailed": "Tomarkirina bexşê bi ser neket. Ji kerema xwe dîsa biceribînin."
+        }
+      }
+    }
+  }
 }

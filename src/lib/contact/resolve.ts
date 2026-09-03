@@ -60,6 +60,8 @@ export type ResolvedContactOffice = ContactOffice & {
 		nameLatin: string;
 		subtitle?: string;
 		address: string;
+		/** From the CMS only — the bundled fallback copy has no opening hours. */
+		workingHours?: string;
 	};
 };
 
@@ -90,6 +92,7 @@ export function resolveContactOffice(
 		index: (index + 1) as ContactOffice["index"],
 		badge: isHeadquarters(page.officeType) ? "hq" : "regional",
 		phone: page.phone ?? "",
+		secondaryPhone: page.secondaryPhone?.trim() || undefined,
 		email: page.email ?? "",
 		mapEmbedUrl: page.mapEmbedUrl ?? "",
 		mapLinkUrl:
@@ -111,6 +114,7 @@ export function resolveContactOffice(
 		localizedCopy: {
 			name: title,
 			nameLatin: oppositeContent?.title?.trim() ?? title,
+			workingHours: content?.workingHours?.trim() || undefined,
 			// `description` is Tiptap HTML and this slot renders as plain text —
 			// using it would print literal <p> tags. `subtitle` is the plain-text
 			// field the card actually wants.

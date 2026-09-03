@@ -3,10 +3,8 @@ import { getTranslations, setRequestLocale } from "next-intl/server";
 import { ContactExperience } from "@/components/contact/contact-experience";
 import { ContactForm } from "@/components/contact/contact-form";
 import { ContactHero } from "@/components/contact/contact-hero";
-import { ContactSocial } from "@/components/contact/contact-social";
 import { VisuallyHidden } from "@/components/ui/visually-hidden";
 import { getContactOffices } from "@/lib/api/contact";
-import { getSocialPlatformsFromApi } from "@/lib/api/social";
 import { localeAlternates } from "@/lib/seo/metadata";
 
 export async function generateMetadata({
@@ -33,35 +31,23 @@ export default async function ContactPage({
 	setRequestLocale(locale);
 
 	const t = await getTranslations("Contact");
-	const [offices, socialPlatforms] = await Promise.all([
-		getContactOffices(locale),
-		getSocialPlatformsFromApi(),
-	]);
+	const offices = await getContactOffices(locale);
 
 	return (
 		<main>
 			<VisuallyHidden as="h1">{t("pageTitle")}</VisuallyHidden>
 
-			<ContactHero
-				label={t("hero.label")}
-				title={locale === "ckb" ? t("hero.titleArabic") : t("hero.titleLatin")}
-				tagline={t("hero.tagline")}
-			/>
+			<ContactHero title={t("hero.title")} />
 
 			<ContactExperience
 				offices={offices}
-				officesEyebrow={t("offices.eyebrow")}
 				officesHeading={t("offices.heading")}
 				officesDescription={t("offices.description")}
-				selectLabel={t("offices.selectLabel")}
 				fieldLabels={{
 					address: t("offices.fields.address"),
+					workingHours: t("offices.fields.workingHours"),
 					phone: t("offices.fields.phone"),
 					email: t("offices.fields.email"),
-				}}
-				badgeLabels={{
-					hq: t("offices.badge.hq"),
-					regional: t("offices.badge.regional"),
 				}}
 				officeCopy={{
 					sulaymaniyah: {
@@ -82,23 +68,13 @@ export default async function ContactPage({
 					body: t("map.body"),
 					openInMaps: t("map.openInMaps"),
 					iframeTitle: t("map.iframeTitle"),
+					selectOffice: t("map.selectOffice"),
 				}}
-			/>
-
-			<ContactSocial
-				eyebrow={t("social.eyebrow")}
-				heading={t("social.heading")}
-				platforms={socialPlatforms}
-				getPlatformCopy={(id) => ({
-					name: t(`social.platforms.${id}.name`),
-					handle: t(`social.platforms.${id}.handle`),
-				})}
 			/>
 
 			<ContactForm
 				locale={locale}
 				copy={{
-					eyebrow: t("form.eyebrow"),
 					heading: t("form.heading"),
 					description: t("form.description"),
 					fields: {

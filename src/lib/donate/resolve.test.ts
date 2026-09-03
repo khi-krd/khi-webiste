@@ -1,9 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { getDonateTypeItems } from "@/lib/donate/content";
-import {
-	filterDonateTypeItems,
-	resolveDonateVisibility,
-} from "@/lib/donate/resolve";
+import { resolveDonateVisibility } from "@/lib/donate/resolve";
 import type { DonationSettings, DonationType } from "@/types/donation";
 
 describe("resolveDonateVisibility", () => {
@@ -36,17 +32,5 @@ describe("resolveDonateVisibility", () => {
 			archive: true,
 			financial: false,
 		});
-	});
-});
-
-describe("filterDonateTypeItems", () => {
-	it("hides archive cards and financial card based on visibility", () => {
-		const items = getDonateTypeItems();
-		const filtered = filterDonateTypeItems(items, {
-			archive: false,
-			financial: true,
-		});
-
-		expect(filtered.map((item) => item.id)).toEqual(["financial"]);
 	});
 });

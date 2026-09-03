@@ -2,25 +2,12 @@ import NextImage from "next/image";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 
-export type DonateTypeCardVariant = "featured" | "small";
-
 type DonateTypeCardProps = {
 	index: string;
 	title: string;
 	description: string;
 	image: { url: string; alt?: string };
-	variant: DonateTypeCardVariant;
 	className?: string;
-};
-
-const variantClass: Record<DonateTypeCardVariant, string> = {
-	featured: "min-h-80 sm:min-h-96 lg:min-h-0",
-	small: "min-h-52 sm:min-h-56 lg:min-h-0",
-};
-
-const titleClass: Record<DonateTypeCardVariant, string> = {
-	featured: "text-h2 lg:text-display",
-	small: "text-small font-semibold sm:text-h3 line-clamp-2",
 };
 
 export function DonateTypeCard({
@@ -28,16 +15,12 @@ export function DonateTypeCard({
 	title,
 	description,
 	image,
-	variant,
 	className,
 }: DonateTypeCardProps) {
-	const isFeatured = variant === "featured";
-
 	return (
 		<article
 			className={cn(
 				"group relative block h-full w-full overflow-hidden border border-border bg-surface",
-				variantClass[variant],
 				className,
 			)}
 		>
@@ -48,11 +31,7 @@ export function DonateTypeCard({
 							src={image.url}
 							alt={image.alt ?? title}
 							fill
-							sizes={
-								isFeatured
-									? "(max-width: 1024px) 100vw, 58vw"
-									: "(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 20vw"
-							}
+							sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
 							className="object-cover brightness-[0.78] contrast-[1.1] saturate-[0.65] transition-[filter] duration-[1.35s] ease-[cubic-bezier(0.25,0.46,0.45,0.94)] group-fine:brightness-[0.88] group-fine:saturate-[0.8] motion-reduce:transition-none"
 						/>
 					</div>
@@ -60,19 +39,13 @@ export function DonateTypeCard({
 
 				<div
 					className={cn(
-						"pointer-events-none absolute inset-0 z-1 transition-opacity duration-500 ease-out motion-reduce:transition-none",
-						isFeatured
-							? "bg-foreground/40 group-fine:bg-foreground/50"
-							: "bg-foreground/30 group-fine:bg-foreground/45",
+						"pointer-events-none absolute inset-0 z-1 bg-foreground/35 transition-opacity duration-500 ease-out group-fine:bg-foreground/48 motion-reduce:transition-none",
 					)}
 					aria-hidden
 				/>
 				<div
 					className={cn(
-						"pointer-events-none absolute inset-0 z-1 bg-linear-to-t from-foreground transition-opacity duration-500 ease-out motion-reduce:transition-none",
-						isFeatured
-							? "from-0% via-foreground/85 via-30% to-transparent to-65% group-fine:via-foreground/90"
-							: "from-0% via-foreground/75 via-35% to-transparent to-70% group-fine:via-foreground/85",
+						"pointer-events-none absolute inset-0 z-1 bg-linear-to-t from-foreground from-0% via-foreground/80 via-32% to-transparent to-68% transition-opacity duration-500 ease-out group-fine:via-foreground/88 motion-reduce:transition-none",
 					)}
 					aria-hidden
 				/>
@@ -86,16 +59,11 @@ export function DonateTypeCard({
 				>
 					{index}
 				</Badge>
-				<h3
-					className={cn(
-						"font-heading font-semibold text-balance text-white",
-						titleClass[variant],
-					)}
-				>
+				<h3 className="font-heading text-h3 font-semibold text-balance text-white sm:text-h2">
 					{title}
 				</h3>
-				{isFeatured ? (
-					<p className="mt-2 line-clamp-2 text-small text-white/85 sm:line-clamp-3 sm:text-body">
+				{description ? (
+					<p className="mt-2 line-clamp-2 text-small text-white/85">
 						{description}
 					</p>
 				) : null}

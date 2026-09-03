@@ -25,7 +25,6 @@ type MaterialOption = {
 type DonateArchiveFormCopy = {
 	heading: string;
 	description?: string;
-	stepLabel?: string;
 	fields: {
 		userName: string;
 		registerName: string;
@@ -110,15 +109,9 @@ export function DonateArchiveForm({ copy, className }: DonateArchiveFormProps) {
 			aria-labelledby="archive-form-heading"
 		>
 			<header className="mb-6 max-w-2xl text-start sm:mb-8">
-				{copy.stepLabel ? (
-					<p className="label font-medium">{copy.stepLabel}</p>
-				) : null}
 				<h3
 					id="archive-form-heading"
-					className={cn(
-						"font-heading text-h2 font-bold leading-[1.12] text-balance",
-						copy.stepLabel ? "mt-2" : undefined,
-					)}
+					className="font-heading text-h2 font-bold leading-[1.12] text-balance"
 				>
 					{copy.heading}
 				</h3>

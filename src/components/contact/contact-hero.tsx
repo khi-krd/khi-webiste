@@ -1,4 +1,4 @@
-import { homeIntroClass } from "@/components/contact/contact-shell";
+import { homeIntroPlainClass } from "@/components/contact/contact-shell";
 import {
 	ScrollReveal,
 	ScrollRevealItem,
@@ -6,39 +6,31 @@ import {
 import { cn } from "@/lib/utils";
 
 type ContactHeroProps = {
-	label: string;
 	title: string;
-	tagline: string;
 	className?: string;
 };
 
-export function ContactHero({
-	label,
-	title,
-	tagline,
-	className,
-}: ContactHeroProps) {
+/**
+ * One word, set large. The eyebrow and the tagline that used to sandwich it
+ * repeated the page title in three scripts and said nothing the heading did not.
+ */
+export function ContactHero({ title, className }: ContactHeroProps) {
 	return (
 		<section
-			className={cn(homeIntroClass, className)}
+			className={cn(homeIntroPlainClass, className)}
 			aria-labelledby="contact-hero-heading"
 		>
-			<ScrollReveal className="max-w-3xl text-start">
+			<ScrollReveal className="mx-auto max-w-5xl text-center">
 				<ScrollRevealItem>
-					<p className="label font-medium">{label}</p>
-				</ScrollRevealItem>
-
-				<ScrollRevealItem>
+					{/* Fluid rather than a fixed step: one short word centered on an
+					    empty band wants to be far larger than the --text-display
+					    ramp, but must still fit a 320px screen. */}
 					<h2
 						id="contact-hero-heading"
-						className="mt-4 font-heading text-display font-bold leading-[1.02] text-balance text-foreground sm:mt-5"
+						className="font-heading text-[clamp(3.25rem,11vw,7.5rem)] font-bold leading-[1.0] text-balance text-foreground"
 					>
 						{title}
 					</h2>
-				</ScrollRevealItem>
-
-				<ScrollRevealItem>
-					<p className="label mt-6 font-medium text-muted sm:mt-8">{tagline}</p>
 				</ScrollRevealItem>
 			</ScrollReveal>
 		</section>

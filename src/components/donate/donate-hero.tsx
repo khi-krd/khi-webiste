@@ -5,7 +5,6 @@ import { cn } from "@/lib/utils";
 
 type DonateHeroProps = {
 	heroMedia: DonateHeroMedia;
-	eyebrow: string;
 	title: string;
 	intro: string;
 	ctaArchive: string;
@@ -17,7 +16,6 @@ type DonateHeroProps = {
 
 export function DonateHero({
 	heroMedia,
-	eyebrow,
 	title,
 	intro,
 	ctaArchive,
@@ -79,7 +77,6 @@ export function DonateHero({
 			    lg:px-14 vs px-8 below; calc equals 3.5rem exactly at 1536px). */}
 			<div className="relative z-10 flex min-h-[68svh] flex-col justify-end px-6 pb-14 sm:min-h-[72svh] sm:px-10 sm:pb-16 lg:px-14 lg:pb-20 2xl:min-h-[min(72svh,52rem)] 2xl:px-[calc((100vw-var(--canvas))/2+3.5rem)] 2xl:pb-24">
 				<DonateHeroContent
-					eyebrow={eyebrow}
 					title={title}
 					intro={intro}
 					ctaArchive={ctaArchive}

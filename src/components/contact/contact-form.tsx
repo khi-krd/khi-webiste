@@ -19,10 +19,8 @@ import {
 	type ContactFormValues,
 	createContactFormSchema,
 } from "@/lib/schemas/contact-form";
-import { cn } from "@/lib/utils";
 
 type ContactFormCopy = {
-	eyebrow: string;
 	heading: string;
 	description: string;
 	fields: {
@@ -100,41 +98,37 @@ export function ContactForm({ locale, copy, className }: ContactFormProps) {
 	});
 
 	return (
-		<HomeSection className={className} aria-labelledby="contact-form-heading">
+		<HomeSection
+			className={className}
+			divider={false}
+			aria-labelledby="contact-form-heading"
+		>
 			<ScrollRevealBlock className={homeSectionHeaderClass}>
-				<header>
-					<div className="max-w-2xl text-start">
-						{copy.eyebrow ? (
-							<p className="label font-medium">{copy.eyebrow}</p>
-						) : null}
-						<h2
-							id="contact-form-heading"
-							className={cn(
-								"font-heading text-h1 font-bold leading-[1.1] text-balance",
-								copy.eyebrow ? "mt-2" : undefined,
-							)}
-						>
-							{copy.heading}
-						</h2>
-						{copy.description ? (
-							<p className="mt-3 text-body leading-relaxed text-muted">
-								{copy.description}
-							</p>
-						) : null}
-					</div>
+				<header className="max-w-2xl text-start">
+					<h2
+						id="contact-form-heading"
+						className="font-heading text-h1 font-bold leading-[1.1] text-balance"
+					>
+						{copy.heading}
+					</h2>
+					{copy.description ? (
+						<p className="mt-3 text-body leading-relaxed text-muted">
+							{copy.description}
+						</p>
+					) : null}
 				</header>
 			</ScrollRevealBlock>
 
 			<div className={homeSectionContentClass}>
 				<ScrollRevealBlock>
-					<div className="border border-border bg-surface p-6 sm:p-8 lg:p-10">
+					<div className="mx-auto max-w-4xl border border-border bg-surface p-6 sm:p-10 lg:p-12">
 						{submitted ? (
 							<div
 								role="status"
-								className="mx-auto flex max-w-3xl items-start gap-4 border border-border bg-background p-6 sm:p-8"
+								className="flex items-start gap-4 border border-border bg-background p-6 sm:p-8"
 							>
 								<CheckCircleIcon
-									className="mt-0.5 size-6 shrink-0 text-foreground"
+									className="mt-0.5 size-7 shrink-0 text-primary"
 									aria-hidden
 								/>
 								<div>
@@ -148,7 +142,7 @@ export function ContactForm({ locale, copy, className }: ContactFormProps) {
 							</div>
 						) : (
 							<form
-								className="mx-auto grid max-w-3xl gap-6 sm:grid-cols-2"
+								className="grid gap-6 sm:grid-cols-2 sm:gap-7"
 								onSubmit={onSubmit}
 								noValidate
 							>
@@ -222,7 +216,7 @@ export function ContactForm({ locale, copy, className }: ContactFormProps) {
 										)}
 									</Field>
 								</div>
-								<div className="sm:col-span-2">
+								<div className="mt-2 border-t border-border pt-6 sm:col-span-2">
 									{submitError ? (
 										<p role="alert" className="mb-4 text-small text-foreground">
 											{submitError}

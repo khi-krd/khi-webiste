@@ -5,6 +5,8 @@ export type ContactOffice = {
 	index: 1 | 2;
 	badge: "hq" | "regional";
 	phone: string;
+	/** Second line the office publishes; omitted when it only has one. */
+	secondaryPhone?: string;
 	email: string;
 	mapEmbedUrl: string;
 	mapLinkUrl: string;

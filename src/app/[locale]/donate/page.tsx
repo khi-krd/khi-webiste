@@ -1,17 +1,12 @@
 import type { Metadata } from "next";
 import { getTranslations, setRequestLocale } from "next-intl/server";
-import { DonateClosing } from "@/components/donate/donate-closing";
 import { DonateFormsSection } from "@/components/donate/donate-forms-section";
 import { DonateHero } from "@/components/donate/donate-hero";
 import { DonateParticipation } from "@/components/donate/donate-participation";
 import { DonateTypesGrid } from "@/components/donate/donate-types-grid";
 import { VisuallyHidden } from "@/components/ui/visually-hidden";
 import { getDonatePageDataFromApi } from "@/lib/api/donations";
-import {
-	getAmountPresets,
-	getSupportersImage,
-	MATERIAL_TYPE_IDS,
-} from "@/lib/donate/content";
+import { getAmountPresets, MATERIAL_TYPE_IDS } from "@/lib/donate/content";
 import { localeAlternates } from "@/lib/seo/metadata";
 
 export async function generateMetadata({
@@ -38,28 +33,8 @@ export default async function DonatePage({
 	setRequestLocale(locale);
 
 	const t = await getTranslations("Donate");
-	const { heroMedia, heroCopy, typeCards, typeItems, payment, visibility } =
+	const { heroMedia, heroCopy, typeCards, visibility } =
 		await getDonatePageDataFromApi(locale);
-
-	// CMS cards are the editor's own set — when any exist they ARE the section.
-	// The hardcoded items + messages/*.json only stand in while the
-	// donation_type_cards table is empty (or the endpoint isn't deployed yet).
-	const typeGridItems =
-		typeCards.length > 0
-			? typeCards
-			: typeItems.map((item) => ({
-					id: item.id,
-					index: item.index,
-					title: t(`types.items.${item.id}.title`),
-					description: t(`types.items.${item.id}.description`),
-					image: item.image,
-				}));
-	const supportersCtaHref = visibility.archive
-		? "#archive-form"
-		: visibility.financial
-			? "#financial-form"
-			: null;
-	const supportersImage = getSupportersImage(supportersCtaHref);
 	const amountPresets = getAmountPresets();
 
 	return (
@@ -68,7 +43,6 @@ export default async function DonatePage({
 
 			<DonateHero
 				heroMedia={heroMedia}
-				eyebrow={t("hero.eyebrow")}
 				title={heroCopy.title ?? t("hero.title")}
 				intro={heroCopy.intro ?? t("hero.intro")}
 				ctaArchive={t("hero.ctaArchive")}
@@ -77,13 +51,11 @@ export default async function DonatePage({
 				showFinancialCta={visibility.financial}
 			/>
 
-			{typeGridItems.length > 0 ? (
-				<DonateTypesGrid
-					eyebrow={t("hero.eyebrow")}
-					heading={t("types.heading")}
-					description={t("types.description")}
-					items={typeGridItems}
-				/>
+			{/* The editor's cards are the only source. No hardcoded stand-in: an
+			    empty donation_type_cards table hides the section rather than showing
+			    placeholder stock photos the institute never chose. */}
+			{typeCards.length > 0 ? (
+				<DonateTypesGrid heading={t("types.heading")} items={typeCards} />
 			) : null}
 
 			<DonateParticipation
@@ -107,13 +79,11 @@ export default async function DonatePage({
 			<DonateFormsSection
 				showArchive={visibility.archive}
 				showFinancial={visibility.financial}
-				eyebrow={t("forms.sectionEyebrow")}
 				heading={t("forms.sectionHeading")}
 				description={t("forms.sectionDescription")}
 				archiveCopy={{
 					heading: t("forms.archive.heading"),
 					description: t("forms.archive.description"),
-					stepLabel: t("forms.archive.stepLabel"),
 					fields: {
 						userName: t("forms.archive.fields.userName"),
 						registerName: t("forms.archive.fields.registerName"),
@@ -153,7 +123,6 @@ export default async function DonatePage({
 				financialCopy={{
 					heading: t("forms.financial.heading"),
 					description: t("forms.financial.description"),
-					stepLabel: t("forms.financial.stepLabel"),
 					fields: {
 						amount: t("forms.financial.fields.amount"),
 						donorName: t("forms.financial.fields.donorName"),
@@ -200,28 +169,6 @@ export default async function DonatePage({
 						),
 						submitFailed: t("forms.financial.errors.submitFailed"),
 					},
-				}}
-			/>
-
-			<DonateClosing
-				heading={t("closing.heading")}
-				supporters={{
-					eyebrow: t("closing.supporters.eyebrow"),
-					title: t("closing.supporters.title"),
-					description: t("closing.supporters.description"),
-					cta: t("closing.supporters.cta"),
-					image: supportersImage,
-				}}
-				payment={payment}
-				fibCopy={{
-					label: t("closing.fib.label"),
-					copy: t("closing.fib.copy"),
-					copied: t("closing.fib.copied"),
-				}}
-				fastpayCopy={{
-					label: t("closing.fastpay.label"),
-					copy: t("closing.fastpay.copy"),
-					copied: t("closing.fastpay.copied"),
 				}}
 			/>
 		</main>

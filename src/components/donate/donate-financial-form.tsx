@@ -31,7 +31,6 @@ type PaymentMethodCopy = {
 type DonateFinancialFormCopy = {
 	heading: string;
 	description?: string;
-	stepLabel?: string;
 	fields: {
 		amount: string;
 		donorName: string;
@@ -125,15 +124,9 @@ export function DonateFinancialForm({
 			aria-labelledby="financial-form-heading"
 		>
 			<header className="mb-6 max-w-2xl text-start sm:mb-8">
-				{copy.stepLabel ? (
-					<p className="label font-medium">{copy.stepLabel}</p>
-				) : null}
 				<h3
 					id="financial-form-heading"
-					className={cn(
-						"font-heading text-h2 font-bold leading-[1.12] text-balance",
-						copy.stepLabel ? "mt-2" : undefined,
-					)}
+					className="font-heading text-h2 font-bold leading-[1.12] text-balance"
 				>
 					{copy.heading}
 				</h3>

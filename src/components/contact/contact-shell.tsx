@@ -9,12 +9,20 @@ import { cn } from "@/lib/utils";
 export const pageXClass =
 	"px-6 sm:px-8 2xl:px-[calc((100vw-var(--canvas))/2+2rem)]";
 
-export const homeIntroClass = cn(
+/** Intro band without its closing rule — see `HomeSection`'s `divider` prop. */
+export const homeIntroPlainClass = cn(
 	pageXClass,
-	"border-b border-border bg-background pt-24 pb-14 sm:pt-28 sm:pb-16 lg:pt-32 lg:pb-20",
+	"bg-background pt-24 pb-14 sm:pt-28 sm:pb-16 lg:pt-32 lg:pb-20",
 );
 
-export const homeSectionClass = "w-full border-t border-border bg-background";
+export const homeIntroClass = cn(homeIntroPlainClass, "border-b border-border");
+
+export const homeSectionPlainClass = "w-full bg-background";
+
+export const homeSectionClass = cn(
+	homeSectionPlainClass,
+	"border-t border-border",
+);
 
 export const homeSectionHeaderClass = cn(
 	pageXClass,
@@ -28,15 +36,28 @@ export const homeSectionContentClass = cn(
 
 export type HomeSectionProps = ComponentPropsWithoutRef<"section"> & {
 	children: ReactNode;
+	/**
+	 * Hairline rule separating this section from the one above. Contact turns it
+	 * off — the sections there are already spaced far enough apart to read as
+	 * separate, and the rules cut the page into stripes. Donate keeps them.
+	 */
+	divider?: boolean;
 };
 
 export function HomeSection({
 	children,
 	className,
+	divider = true,
 	...props
 }: HomeSectionProps) {
 	return (
-		<section className={cn(homeSectionClass, className)} {...props}>
+		<section
+			className={cn(
+				divider ? homeSectionClass : homeSectionPlainClass,
+				className,
+			)}
+			{...props}
+		>
 			{children}
 		</section>
 	);
