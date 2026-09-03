@@ -1,17 +1,9 @@
 import type { Metadata } from "next";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { VisuallyHidden } from "@/components/ui/visually-hidden";
-import { buildGenreLabels } from "@/components/writing/writing-card";
-import { WritingCarousel } from "@/components/writing/writing-carousel";
-import { WritingHeroBackdrop } from "@/components/writing/writing-hero";
 import { WritingsShell } from "@/components/writing/writings-shell";
-import { getWritingsCarousel } from "@/lib/api/writings";
-import { homeInsetClass } from "@/lib/layout";
 import { localeAlternates } from "@/lib/seo/metadata";
-import { cn } from "@/lib/utils";
 import { loadWritingsPageData } from "@/lib/writing/page-data";
-import { WRITINGS_STILL } from "@/lib/writing/still";
-import type { BookGenre } from "@/types/writing";
 
 export async function generateMetadata({
 	params,
@@ -51,30 +43,6 @@ export default async function WritingsPage({
 
 	const t = await getTranslations("Writings");
 	const navT = await getTranslations("Nav");
-	const items = await getWritingsCarousel(locale);
-
-	const translateGenre = (genre: BookGenre) => t(`genres.${genre}`);
-
-	const cards = items.map((item) => ({
-		id: item.id,
-		title: item.title,
-		writer: item.writer,
-		excerpt: item.excerpt,
-		coverUrl: item.coverUrl,
-		hoverCoverUrl: item.hoverCoverUrl,
-		genreLabels: buildGenreLabels(
-			item.genres,
-			item.freeTextGenre,
-			translateGenre,
-		),
-		topicName: item.topicName,
-		fileUrl: item.fileUrl,
-	}));
-
-	const heroTexture =
-		items.find((item) => item.coverUrl)?.coverUrl ?? WRITINGS_STILL;
-
-	const direction = locale === "ckb" ? "rtl" : "ltr";
 
 	const pageData = await loadWritingsPageData(locale, t, navT, {
 		searchParams: resolvedSearchParams,
@@ -83,21 +51,6 @@ export default async function WritingsPage({
 	return (
 		<main className="bg-background">
 			<VisuallyHidden as="h1">{t("pageTitle")}</VisuallyHidden>
-
-			<div className={cn(homeInsetClass, "pb-0")}>
-				<div className="relative isolate overflow-hidden border border-border bg-surface">
-					<WritingHeroBackdrop textureUrl={heroTexture} />
-
-					<div className="relative z-1">
-						<WritingCarousel
-							cards={cards}
-							direction={direction}
-							emptyLabel={t("carousel.empty")}
-							carouselLabel={t("carousel.autoplayLabel")}
-						/>
-					</div>
-				</div>
-			</div>
 
 			<WritingsShell
 				id="writings-content"

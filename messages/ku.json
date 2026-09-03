@@ -497,14 +497,6 @@
 		"description": "Nivîsên zanistî û edebî li ser kultura, ziman, dîrok û civaka Kurdî.",
 		"viewAll": "Hemû nivîsan bibîne",
 		"readTime": "{minutes} deq xwendin",
-		"carousel": {
-			"empty": "Niha ti nivîs tune ne. Ji kerema xwe paşê dîsa serdan bikin.",
-			"paginationLabel": "Rûpelkirina nivîsan",
-			"autoplayLabel": "Bixweber diçe",
-			"previous": "Rûpela berê",
-			"next": "Rûpela paş",
-			"pagesCount": "{count} rûpel"
-		},
 		"grid": {
 			"allTitle": "Nivîs",
 			"empty": "Ti nivîs bi van filtreyan re nayê hev.",
