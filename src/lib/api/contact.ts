@@ -1,5 +1,5 @@
 import "server-only";
-import { apiFetch, apiPost, DEFAULT_REVALIDATE } from "@/lib/api/client";
+import { apiFetchPage, apiPost, DEFAULT_REVALIDATE } from "@/lib/api/client";
 import { getApiBaseUrl } from "@/lib/api/config";
 import {
 	type ResolvedContactOffice,
@@ -7,11 +7,11 @@ import {
 } from "@/lib/contact/resolve";
 import type { ContactOffice } from "@/lib/mock/contact";
 import {
-	ContactActivePageSchema,
 	type ContactMessageResponse,
 	ContactMessageResponseSchema,
 	type ContactMessageSubmission,
 	type ContactPage,
+	ContactPageSchema,
 } from "@/types/contact-page";
 
 const CONTACT_ACTIVE_ENDPOINT = "/api/v1/contact/active";
@@ -23,8 +23,10 @@ export async function getActiveContactPages(): Promise<ContactPage[]> {
 		return [];
 	}
 
-	const page = await apiFetch(CONTACT_ACTIVE_ENDPOINT, {
-		schema: ContactActivePageSchema,
+	// Per-item parsing, not a whole-page schema: a single office the schema
+	// cannot read must cost us that office, not the entire section.
+	const page = await apiFetchPage(CONTACT_ACTIVE_ENDPOINT, {
+		itemSchema: ContactPageSchema,
 		tags: [CONTACT_TAG],
 		revalidate: DEFAULT_REVALIDATE,
 	});

@@ -29,7 +29,7 @@ export type SocialPlatform = {
 	href: string;
 };
 
-const OFFICE_IMAGES = {
+export const OFFICE_IMAGES = {
 	sulaymaniyah: "/about/475203467_1007002848126180_7383496220452921499_n.jpg",
 	duhok: "/about/services-bg.jpg",
 } as const;

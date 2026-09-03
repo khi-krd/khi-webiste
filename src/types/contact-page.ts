@@ -1,6 +1,12 @@
 import { z } from "zod";
 
-export const OfficeTypeSchema = z.enum(["HEADQUARTERS", "REGIONAL", "BRANCH"]);
+/**
+ * `contact_pages.office_type` is a free-text varchar(40) on the backend, not an
+ * enum: it answers "HQ" today, and an editor can type anything. Keep it a plain
+ * string so an unknown value never voids the record — the badge mapping in
+ * `resolveContactOffice` decides what counts as a headquarters.
+ */
+export const OfficeTypeSchema = z.string();
 
 export const ContactContentSchema = z.object({
 	title: z.string().nullish(),
@@ -26,6 +32,7 @@ export const ContactPageSchema = z.object({
 	officeType: OfficeTypeSchema.nullish(),
 	badgeCkb: z.string().nullish(),
 	badgeKmr: z.string().nullish(),
+	displayOrder: z.number().nullish(),
 	active: z.boolean().optional(),
 	createdAt: z.string().nullish(),
 	updatedAt: z.string().nullish(),
@@ -44,11 +51,13 @@ export const ContactActivePageSchema = z.object({
 
 export type ContactActivePage = z.infer<typeof ContactActivePageSchema>;
 
-export const ContactMessageStatusSchema = z.enum([
-	"NEW",
-	"IN_PROGRESS",
-	"RESOLVED",
-]);
+/**
+ * Public submissions are always created as NEW; staff move them through the rest
+ * from the dashboard. Kept permissive for the same reason as `OfficeTypeSchema`:
+ * the column is a varchar(30) and a status we do not know about must not turn a
+ * stored message into a "submit failed" toast.
+ */
+export const ContactMessageStatusSchema = z.string();
 
 export const ContactMessageSubmissionSchema = z.object({
 	name: z.string(),

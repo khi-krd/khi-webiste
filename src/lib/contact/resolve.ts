@@ -1,4 +1,8 @@
-import type { ContactOffice, OfficeId } from "@/lib/mock/contact";
+import {
+	type ContactOffice,
+	OFFICE_IMAGES,
+	type OfficeId,
+} from "@/lib/mock/contact";
 import type { ContactPage } from "@/types/contact-page";
 
 function firstNonBlank(
@@ -14,6 +18,19 @@ function firstNonBlank(
 
 function mapsLinkUrl(lat: number, lng: number): string {
 	return `https://www.google.com/maps?q=${lat},${lng}`;
+}
+
+/**
+ * `officeType` is free text. The CMS writes "HQ", older docs say "HEADQUARTERS",
+ * and an editor may type either — match on a normalised prefix rather than one
+ * exact spelling, and treat everything else as a regional office.
+ */
+function isHeadquarters(officeType: string | null | undefined): boolean {
+	const normalized = officeType?.trim().toUpperCase();
+	if (!normalized) {
+		return false;
+	}
+	return normalized === "HQ" || normalized.startsWith("HEADQUARTER");
 }
 
 const OFFICE_ID_ALIASES: Record<string, OfficeId> = {
@@ -59,10 +76,6 @@ export function resolveContactOffice(
 		locale === "ckb"
 			? (page.kmrContent ?? page.ckbContent)
 			: (page.ckbContent ?? page.kmrContent);
-	const badgeLabel =
-		locale === "ckb"
-			? firstNonBlank(page.badgeCkb, page.badgeKmr)
-			: firstNonBlank(page.badgeKmr, page.badgeCkb);
 	const lat = page.latitude;
 	const lng = page.longitude;
 	const title = content?.title?.trim();
@@ -70,10 +83,12 @@ export function resolveContactOffice(
 		return null;
 	}
 
+	const officeId = resolveOfficeId(page, index);
+
 	return {
-		id: resolveOfficeId(page, index),
+		id: officeId,
 		index: (index + 1) as ContactOffice["index"],
-		badge: page.officeType === "HEADQUARTERS" ? "hq" : "regional",
+		badge: isHeadquarters(page.officeType) ? "hq" : "regional",
 		phone: page.phone ?? "",
 		email: page.email ?? "",
 		mapEmbedUrl: page.mapEmbedUrl ?? "",
@@ -85,14 +100,21 @@ export function resolveContactOffice(
 			lat: lat ?? 0,
 			lng: lng ?? 0,
 		},
+		// The office photo is `heroImageUrl`, uploaded per office in the dashboard.
+		// Until an editor sets one, fall back to that office's bundled photo rather
+		// than to a single shared placeholder — two identical pictures side by side
+		// read as a rendering bug, not as "no photo yet".
 		image: {
-			url: page.heroImageUrl ?? "/about/services-bg.jpg",
-			alt: badgeLabel ?? title,
+			url: page.heroImageUrl?.trim() || OFFICE_IMAGES[officeId],
+			alt: title,
 		},
 		localizedCopy: {
 			name: title,
 			nameLatin: oppositeContent?.title?.trim() ?? title,
-			subtitle: content?.description?.trim() || undefined,
+			// `description` is Tiptap HTML and this slot renders as plain text —
+			// using it would print literal <p> tags. `subtitle` is the plain-text
+			// field the card actually wants.
+			subtitle: content?.subtitle?.trim() || undefined,
 			address: content?.address?.trim() ?? "",
 		},
 	};
