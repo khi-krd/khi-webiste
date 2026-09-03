@@ -1,37 +1,27 @@
 import { z } from "zod";
 
-export const BookGenreSchema = z.enum([
-	"POETRY",
-	"NOVEL",
-	"SHORT_STORY",
-	"DRAMA",
-	"HISTORY",
-	"BIOGRAPHY",
-	"PHILOSOPHY",
-	"RELIGION",
-	"FOLKLORE",
-	"POLITICS",
-	"SOCIOLOGY",
-	"ECONOMICS",
-	"LAW",
-	"LINGUISTICS",
-	"ARTS",
-	"CULTURAL",
-	"SCIENCE",
-	"MEDICINE",
-	"EDUCATIONAL",
-	"CHILDREN",
-	"TRAVEL",
-	"OTHER",
-	"ESSAY",
-	"POLITICAL",
-	"GEOGRAPHY",
-	"ACADEMIC",
-	"REFERENCE",
-	"RELIGIOUS",
-]);
+/**
+ * Genre slug — an open string, not an enum: genres are editor-managed rows in
+ * the CMS (`/api/v1/book-genres`), so new slugs can appear at any time. The
+ * built-in 22 codes in `lib/writing/genres.ts` remain only as the fallback
+ * vocabulary while the CMS table is empty.
+ */
+export type BookGenre = string;
 
-export type BookGenre = z.infer<typeof BookGenreSchema>;
+/** One `book_genres` row from `/api/v1/book-genres`. */
+export const BookGenreRecordSchema = z.object({
+	id: z.number(),
+	slug: z.string(),
+	nameCkb: z.string().nullish(),
+	nameKmr: z.string().nullish(),
+	displayOrder: z.number().nullish(),
+	active: z.boolean().nullish(),
+	bookCount: z.number().nullish(),
+});
+
+export const BookGenreRecordListSchema = z.array(BookGenreRecordSchema);
+
+export type BookGenreRecord = z.infer<typeof BookGenreRecordSchema>;
 
 export const WritingFileFormatSchema = z.enum([
 	"PDF",
@@ -98,7 +88,7 @@ export const WritingSchema = z.object({
 	topicNameCkb: z.string().nullish(),
 	topicNameKmr: z.string().nullish(),
 	topic: TopicInfoSchema.nullish(),
-	bookGenres: z.array(BookGenreSchema),
+	bookGenres: z.array(z.string()),
 	publishedByInstitute: z.boolean(),
 	tags: BilingualSetSchema,
 	keywords: BilingualSetSchema,

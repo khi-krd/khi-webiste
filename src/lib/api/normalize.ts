@@ -1,5 +1,7 @@
 /** Coerce API DTO shapes into forms the website Zod schemas expect. */
 
+import { normalizeGenreSlug } from "@/lib/writing/genres";
+
 type UnknownRecord = Record<string, unknown>;
 
 function asRecord(value: unknown): UnknownRecord | null {
@@ -60,39 +62,16 @@ export function normalizeBilingualTags(record: UnknownRecord): UnknownRecord {
 	};
 }
 
-const KNOWN_BOOK_GENRES = new Set([
-	"POETRY",
-	"NOVEL",
-	"SHORT_STORY",
-	"DRAMA",
-	"HISTORY",
-	"BIOGRAPHY",
-	"PHILOSOPHY",
-	"RELIGION",
-	"FOLKLORE",
-	"POLITICS",
-	"SOCIOLOGY",
-	"ECONOMICS",
-	"LAW",
-	"LINGUISTICS",
-	"ARTS",
-	"CULTURAL",
-	"SCIENCE",
-	"MEDICINE",
-	"EDUCATIONAL",
-	"CHILDREN",
-	"TRAVEL",
-	"OTHER",
-	"ESSAY",
-	"POLITICAL",
-	"GEOGRAPHY",
-	"ACADEMIC",
-	"REFERENCE",
-	"RELIGIOUS",
-]);
-
+/**
+ * Genres are open, editor-managed slugs now — keep anything slug-shaped and
+ * drop only garbage. A slug the site has no label for is skipped at render
+ * time, not here, so a genre created in the dashboard flows straight through.
+ */
 export function normalizeBookGenres(raw: unknown): string[] {
-	return coerceStringArray(raw).filter((genre) => KNOWN_BOOK_GENRES.has(genre));
+	return coerceStringArray(raw).flatMap((genre) => {
+		const slug = normalizeGenreSlug(genre);
+		return slug ? [slug] : [];
+	});
 }
 
 function normalizeSeriesBlock(raw: unknown): unknown {

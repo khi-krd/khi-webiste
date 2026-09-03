@@ -15,9 +15,7 @@ import { useRouter } from "@/i18n/navigation";
 import { useScrollToSection } from "@/lib/use-scroll-to-section";
 import { cn } from "@/lib/utils";
 import type { WritingCategorySlug } from "@/lib/writing/categories";
-import { getGenresForCategory } from "@/lib/writing/categories";
 import type { WritingsSort } from "@/lib/writing/filter";
-import { BOOK_GENRES } from "@/lib/writing/genres";
 import { buildWritingsHref } from "@/lib/writings-url";
 import type { BookGenre } from "@/types/writing";
 
@@ -83,7 +81,9 @@ export function WritingsFilterBar({
 	const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 	const scrollToSection = useScrollToSection();
 
-	const availableGenres = getGenresForCategory(categorySlug) ?? BOOK_GENRES;
+	// The page builds `genreLabels` per surface (CMS chips, or the category's
+	// curated subset) — its insertion order IS the chip order.
+	const availableGenres = Object.keys(genreLabels);
 
 	const hasActiveGenre = Boolean(activeGenre);
 	const hasActiveQuery = Boolean(activeQuery?.trim());
@@ -341,7 +341,7 @@ export function WritingsFilterBar({
 									</span>
 									{activeGenre ? (
 										<Badge variant="outline" size="sm">
-											{genreLabels[activeGenre]}
+											{genreLabels[activeGenre] ?? activeGenre}
 										</Badge>
 									) : null}
 									{hasActiveQuery && activeQuery ? (

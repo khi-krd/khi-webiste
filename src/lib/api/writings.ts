@@ -1,6 +1,7 @@
 import "server-only";
 import { cache } from "react";
 import {
+	apiFetch,
 	apiFetchPage,
 	apiFetchRaw,
 	BULK_FETCH_SIZE,
@@ -21,14 +22,15 @@ import {
 	sortWritings,
 	type WritingsSort,
 } from "@/lib/writing/filter";
-import { isBookGenre } from "@/lib/writing/genres";
+import { normalizeGenreSlug } from "@/lib/writing/genres";
 import {
 	resolveSeriesBooks,
 	resolveWritingCard,
 	resolveWritingDetail,
 } from "@/lib/writing/resolve";
-import type { BookGenre, Writing } from "@/types/writing";
+import type { BookGenre, BookGenreRecord, Writing } from "@/types/writing";
 import {
+	BookGenreRecordListSchema,
 	type ResolvedSeriesBook,
 	type ResolvedWritingCard,
 	type ResolvedWritingDetail,
@@ -37,6 +39,7 @@ import {
 } from "@/types/writing";
 
 const WRITINGS_ENDPOINT = "/api/v1/writings";
+const BOOK_GENRES_ENDPOINT = "/api/v1/book-genres";
 const WRITINGS_TAG = "writings";
 
 /** The search endpoints cap `size` at 100, unlike the plain list. */
@@ -336,10 +339,27 @@ export async function getWritingsPage(
 }
 
 export function parseWritingsGenre(value?: string | null): BookGenre | null {
-	if (value && isBookGenre(value)) {
-		return value;
+	return normalizeGenreSlug(value);
+}
+
+/**
+ * Editor-managed genre rows. The public GET already returns active rows only,
+ * sorted by displayOrder; a missing endpoint (not deployed yet), a failed
+ * request and an empty table all resolve to [] — callers then fall back to
+ * the built-in genre set.
+ */
+export async function getBookGenres(): Promise<BookGenreRecord[]> {
+	if (!getApiBaseUrl()) {
+		return [];
 	}
-	return null;
+
+	const genres = await apiFetch(BOOK_GENRES_ENDPOINT, {
+		schema: BookGenreRecordListSchema,
+		tags: [WRITINGS_TAG, "book-genres"],
+		revalidate: DEFAULT_REVALIDATE,
+	});
+
+	return genres ?? [];
 }
 
 export type WritingDetailLabels = {

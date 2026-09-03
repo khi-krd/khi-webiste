@@ -31,16 +31,26 @@ export function buildWritingGridCards(
 	}));
 }
 
+/**
+ * The chips map for one page. No category → the full chips set as-is (its
+ * insertion order is the chip order). A category page keeps its curated
+ * built-in genre subset, but labels come from `labelLookup` so CMS renames
+ * apply there too; a subset genre with no label anywhere is skipped rather
+ * than drawn blank.
+ */
 export function getCategoryGenreLabels(
 	categorySlug: WritingCategorySlug | null | undefined,
-	allGenreLabels: Record<BookGenre, string>,
+	chipLabels: Record<BookGenre, string>,
+	labelLookup: Record<BookGenre, string> = chipLabels,
 ): Record<BookGenre, string> {
-	const genres =
-		categorySlug != null
-			? WRITING_CATEGORY_GENRES[categorySlug]
-			: (Object.keys(allGenreLabels) as BookGenre[]);
+	if (categorySlug == null) {
+		return chipLabels;
+	}
 
 	return Object.fromEntries(
-		genres.map((genre) => [genre, allGenreLabels[genre]]),
-	) as Record<BookGenre, string>;
+		WRITING_CATEGORY_GENRES[categorySlug].flatMap((genre) => {
+			const label = labelLookup[genre];
+			return label ? [[genre, label] as const] : [];
+		}),
+	);
 }

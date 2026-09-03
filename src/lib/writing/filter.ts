@@ -2,7 +2,6 @@ import {
 	getGenresForCategory,
 	type WritingCategorySlug,
 } from "@/lib/writing/categories";
-import { isBookGenre } from "@/lib/writing/genres";
 import type { BookGenre, ResolvedWritingCard } from "@/types/writing";
 
 export type WritingsSort = "newest" | "title";
@@ -34,7 +33,9 @@ export function filterWritings(
 		);
 	}
 
-	if (genre && isBookGenre(genre)) {
+	// Any slug narrows — genres are editor-managed rows, so validity can't be a
+	// static check. A slug no book carries honestly filters to zero results.
+	if (genre) {
 		result = result.filter((item) => item.genres.includes(genre));
 	}
 

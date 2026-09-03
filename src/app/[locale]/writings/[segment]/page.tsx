@@ -13,10 +13,9 @@ import {
 	WRITING_CATEGORY_NAV_KEYS,
 	type WritingCategorySlug,
 } from "@/lib/writing/categories";
-import { BOOK_GENRES } from "@/lib/writing/genres";
+import { getWritingGenreLabelSets } from "@/lib/writing/genre-labels";
 import { loadWritingsPageData } from "@/lib/writing/page-data";
 import { parseWritingSegment } from "@/lib/writing/segment";
-import type { BookGenre } from "@/types/writing";
 
 type WritingsSegmentPageProps = {
 	params: Promise<{ locale: string; segment: string }>;
@@ -138,9 +137,12 @@ export default async function WritingsSegmentPage({
 
 	const related = await getRelatedWritings(locale, detail);
 
-	const genreLabels = Object.fromEntries(
-		BOOK_GENRES.map((genre) => [genre, t(`genres.${genre}`)]),
-	) as Record<BookGenre, string>;
+	// Every genre a record can carry — CMS names overlaid on the built-in
+	// translations, so editor renames and new genres label correctly here.
+	const { labelLookup: genreLabels } = await getWritingGenreLabelSets(
+		locale,
+		t,
+	);
 
 	return (
 		<main className="bg-background">

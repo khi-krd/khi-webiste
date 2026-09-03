@@ -1,7 +1,6 @@
 import NextImage from "next/image";
 import { Link } from "@/components/ui/link";
 import { formatFileSize } from "@/lib/writing/resolve";
-import type { BookGenre } from "@/types/writing";
 
 export type WritingCardProps = {
 	id: number;
@@ -134,16 +133,4 @@ export function buildFileMetaLabel(
 		parts.push(size);
 	}
 	return parts.length > 0 ? parts.join(" · ") : null;
-}
-
-export function buildGenreLabels(
-	genres: BookGenre[],
-	freeTextGenre: string | null,
-	translateGenre: (genre: BookGenre) => string,
-): string[] {
-	const labels = genres.map(translateGenre);
-	if (freeTextGenre && !labels.includes(freeTextGenre)) {
-		labels.push(freeTextGenre);
-	}
-	return labels;
 }

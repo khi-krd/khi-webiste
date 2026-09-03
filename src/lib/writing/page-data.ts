@@ -13,9 +13,8 @@ import {
 	WRITING_CATEGORY_SLUGS,
 	type WritingCategorySlug,
 } from "@/lib/writing/categories";
-import { BOOK_GENRES } from "@/lib/writing/genres";
+import { getWritingGenreLabelSets } from "@/lib/writing/genre-labels";
 import { parseWritingsSort } from "@/lib/writings-url";
-import type { BookGenre } from "@/types/writing";
 
 type TranslateFn = (
 	key: string,
@@ -53,10 +52,6 @@ export async function loadWritingsPageData(
 	const activeSort = parseWritingsSort(searchParams.sort);
 	const page = Math.max(1, Number.parseInt(searchParams.page ?? "1", 10) || 1);
 
-	const allGenreLabels = Object.fromEntries(
-		BOOK_GENRES.map((genre) => [genre, t(`genres.${genre}`)]),
-	) as Record<BookGenre, string>;
-
 	const categoryLabels = Object.fromEntries(
 		WRITING_CATEGORY_SLUGS.map((slug) => [
 			slug,
@@ -64,7 +59,8 @@ export async function loadWritingsPageData(
 		]),
 	) as Record<WritingCategorySlug, string>;
 
-	const [listing, writers] = await Promise.all([
+	const [genreLabelSets, listing, writers] = await Promise.all([
+		getWritingGenreLabelSets(locale, t),
 		getWritingsListing(locale, {
 			categorySlug,
 			genre: activeGenre,
@@ -106,7 +102,11 @@ export async function loadWritingsPageData(
 		gridCards,
 		categoryCarouselItems,
 		gridTitle,
-		genreLabels: getCategoryGenreLabels(categorySlug, allGenreLabels),
+		genreLabels: getCategoryGenreLabels(
+			categorySlug,
+			genreLabelSets.chipLabels,
+			genreLabelSets.labelLookup,
+		),
 		listing,
 		noResultsMessage: hasFilters ? t("grid.noResults") : t("grid.empty"),
 		direction: (locale === "ckb" ? "rtl" : "ltr") as "ltr" | "rtl",

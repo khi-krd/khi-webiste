@@ -3,7 +3,7 @@ import { buildGalleryHref } from "@/lib/gallery-url";
 import { buildNewsHref } from "@/lib/news-url";
 import { projectsHref } from "@/lib/projects-url";
 import { buildVideoHref } from "@/lib/video-url";
-import { isBookGenre } from "@/lib/writing/genres";
+import { normalizeGenreSlug } from "@/lib/writing/genres";
 import { buildWritingsHref } from "@/lib/writings-url";
 import type { VideoType } from "@/types/video";
 
@@ -62,7 +62,9 @@ export function writingKeywordHref(keyword: string): string {
 }
 
 export function writingGenreHref(genre: string): string {
-	if (isBookGenre(genre)) {
+	// Slug-shaped values (built-in codes and editor-created genres alike) link
+	// to the genre filter; anything else — a free-text genre — becomes a search.
+	if (normalizeGenreSlug(genre)) {
 		return buildWritingsHref({ genre });
 	}
 	return buildWritingsHref({ q: genre });

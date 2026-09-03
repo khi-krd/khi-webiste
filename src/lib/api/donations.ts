@@ -1,6 +1,7 @@
 import "server-only";
 import { apiFetch, apiPost, DEFAULT_REVALIDATE } from "@/lib/api/client";
 import { getApiBaseUrl } from "@/lib/api/config";
+import { preferLocaleText } from "@/lib/api/locale-text";
 import {
 	type DonateHeroMedia,
 	type DonatePaymentDetails,
@@ -41,21 +42,6 @@ export type DonatePageData = {
 	payment: DonatePaymentDetails;
 	visibility: DonateVisibility;
 };
-
-/**
- * Prefer the active language, then the other one — a record written in only
- * one language is still the editor's words, and showing them beats hiding the
- * card or falling back to generic translated copy.
- */
-function preferLocaleText(
-	isCkb: boolean,
-	ckb: string | null | undefined,
-	kmr: string | null | undefined,
-): string | null {
-	return (
-		(isCkb ? ckb?.trim() || kmr?.trim() : kmr?.trim() || ckb?.trim()) || null
-	);
-}
 
 export async function getDonationSettings() {
 	if (!getApiBaseUrl()) {

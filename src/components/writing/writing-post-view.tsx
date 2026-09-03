@@ -87,12 +87,15 @@ export function WritingPostView({
 
 	// Genre chips — the first reads as the record's primary class (solid
 	// brand), the rest as quieter outlined qualifiers, per the house mock.
+	// A slug with no label (a genre deleted from the CMS mid-flight) is
+	// skipped rather than drawn blank.
 	const genreChips = [
-		...detail.genres.map((genre) => ({
-			key: `genre-${genre}`,
-			href: writingGenreHref(genre),
-			label: genreLabels[genre],
-		})),
+		...detail.genres.flatMap((genre) => {
+			const label = genreLabels[genre];
+			return label
+				? [{ key: `genre-${genre}`, href: writingGenreHref(genre), label }]
+				: [];
+		}),
 		...(detail.freeTextGenre
 			? [
 					{

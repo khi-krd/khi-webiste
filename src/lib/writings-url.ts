@@ -3,7 +3,7 @@ import {
 	type WritingCategorySlug,
 } from "@/lib/writing/categories";
 import type { WritingsSort } from "@/lib/writing/filter";
-import { isBookGenre } from "@/lib/writing/genres";
+import { normalizeGenreSlug } from "@/lib/writing/genres";
 import type { BookGenre } from "@/types/writing";
 
 export type WritingsUrlParams = {
@@ -37,8 +37,9 @@ export function buildWritingsHref({
 	const params = new URLSearchParams();
 	const path = basePath(category);
 
-	if (genre && isBookGenre(genre)) {
-		params.set("genre", genre);
+	const genreSlug = normalizeGenreSlug(genre);
+	if (genreSlug) {
+		params.set("genre", genreSlug);
 	}
 	if (q?.trim()) {
 		params.set("q", q.trim());
