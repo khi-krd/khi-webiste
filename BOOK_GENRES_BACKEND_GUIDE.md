@@ -260,11 +260,25 @@ curl -X POST "https://your-website-url/api/revalidate" \
   -d '{"tags":["writings"]}'
 ```
 
-## 10. Website side — pending
+## 10. Website side — done (2026-09-03)
 
-The website still draws its 22 built-in genres with its own translated labels
-(`BOOK_GENRES` in `src/lib/writing/genres.ts` + `messages/*.json`), and its
-parser drops unknown codes — that tolerance is exactly what makes the deploy
-order in §5 safe. Once this endpoint is live and seeded, the website will
-switch the chips row, the card labels and the genre filter to the dynamic list.
-Tell the website side when the endpoint is deployed.
+The website already reads this endpoint: `getBookGenres()` in
+`src/lib/api/writings.ts`, combined into label sets by
+`src/lib/writing/genre-labels.ts`.
+
+- **The moment the table has active rows, the chips row is fully CMS-driven**
+  — set, names, and order all come from `book_genres`; the built-in 22 (and
+  the site's own translations) are the fallback for an empty table only.
+- **Renames win immediately**: CMS names overlay the built-in labels
+  everywhere a genre is written out (chips, active-filter badge, the
+  qualifiers on a book's page).
+- The genre filter and URLs (`?genre=SLUG`) accept any well-formed slug, so
+  editor-created genres filter correctly with no website change.
+- A slug the site can find no name for (in the CMS or built-ins) is skipped
+  rather than drawn blank, and books never break over genres — so the §5
+  deploy order holds with even more slack than described.
+- Category pages (literature / history / poetry / manuscripts) keep their
+  curated built-in genre subsets, with CMS renames applied to their labels.
+
+This makes §5 step 3 already true — seed the table (§6) and the CMS becomes
+the source of truth on the next cache pass.
