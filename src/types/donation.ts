@@ -24,6 +24,20 @@ export const DonationSettingsSchema = z.object({
 	featureImageUrl: z.string().nullish(),
 });
 
+/** One card of the "دەتوانم چی ببەخشم؟" mosaic — editor-managed, any count. */
+export const DonationTypeCardSchema = z.object({
+	id: z.number(),
+	titleCkb: z.string().nullish(),
+	titleKmr: z.string().nullish(),
+	descriptionCkb: z.string().nullish(),
+	descriptionKmr: z.string().nullish(),
+	imageUrl: z.string().nullish(),
+	displayOrder: z.number().nullish(),
+	active: z.boolean().nullish(),
+});
+
+export const DonationTypeCardListSchema = z.array(DonationTypeCardSchema);
+
 export const DonationTypeCodeSchema = z.enum(["FINANCIAL", "ARCHIVE"]);
 
 export const DonationTypeSchema = z.object({
@@ -88,6 +102,7 @@ export const ArchiveDonationResponseSchema =
 
 export type DonationSettings = z.infer<typeof DonationSettingsSchema>;
 export type DonationType = z.infer<typeof DonationTypeSchema>;
+export type DonationTypeCard = z.infer<typeof DonationTypeCardSchema>;
 export type ArchiveMaterialType = z.infer<typeof ArchiveMaterialTypeSchema>;
 export type FinancialDonationSubmission = z.infer<
 	typeof FinancialDonationSubmissionSchema

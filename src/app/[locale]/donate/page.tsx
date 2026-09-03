@@ -38,8 +38,22 @@ export default async function DonatePage({
 	setRequestLocale(locale);
 
 	const t = await getTranslations("Donate");
-	const { heroMedia, heroCopy, typeItems, payment, visibility } =
+	const { heroMedia, heroCopy, typeCards, typeItems, payment, visibility } =
 		await getDonatePageDataFromApi(locale);
+
+	// CMS cards are the editor's own set — when any exist they ARE the section.
+	// The hardcoded items + messages/*.json only stand in while the
+	// donation_type_cards table is empty (or the endpoint isn't deployed yet).
+	const typeGridItems =
+		typeCards.length > 0
+			? typeCards
+			: typeItems.map((item) => ({
+					id: item.id,
+					index: item.index,
+					title: t(`types.items.${item.id}.title`),
+					description: t(`types.items.${item.id}.description`),
+					image: item.image,
+				}));
 	const supportersCtaHref = visibility.archive
 		? "#archive-form"
 		: visibility.financial
@@ -63,16 +77,12 @@ export default async function DonatePage({
 				showFinancialCta={visibility.financial}
 			/>
 
-			{typeItems.length > 0 ? (
+			{typeGridItems.length > 0 ? (
 				<DonateTypesGrid
 					eyebrow={t("hero.eyebrow")}
 					heading={t("types.heading")}
 					description={t("types.description")}
-					items={typeItems}
-					getItemCopy={(id) => ({
-						title: t(`types.items.${id}.title`),
-						description: t(`types.items.${id}.description`),
-					})}
+					items={typeGridItems}
 				/>
 			) : null}
 

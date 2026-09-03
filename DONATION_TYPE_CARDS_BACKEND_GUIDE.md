@@ -218,11 +218,17 @@ curl -X POST "https://your-website-url/api/revalidate" \
   -d '{"tags":["donations"]}'
 ```
 
-## 9. Website side — pending
+## 9. Website side — done (2026-09-03)
 
-The website is **not wired to this endpoint yet**. Today the cards come from
-`src/lib/donate/content.ts` + `messages/*.json` in the website repo. Once this
-endpoint is live and seeded (§6), the website will switch to reading it — with
-the current hardcoded cards as the fallback for an empty table only, the same
-arrangement social links use. Tell the website side when the endpoint is
-deployed so that switch can be made.
+The website already reads this endpoint: `getDonationTypeCards()` in
+`src/lib/api/donations.ts`, fetched alongside the donation settings.
+
+- **The moment the first active card is saved, the CMS set replaces the
+  hardcoded one entirely** — count, order, texts and pictures all come from
+  the table.
+- **The hardcoded cards are the fallback for an empty table only** (and for the
+  time before this endpoint is deployed — a failed request behaves like an
+  empty table). Seed the table (§6) so the CMS is the real source.
+- A row missing its picture, or missing a title in **both** languages, is
+  skipped by the website rather than drawn broken — matching the 400 rules
+  in §4.

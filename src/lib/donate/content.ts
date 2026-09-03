@@ -38,6 +38,23 @@ export type DonateTypeItem = {
 	};
 };
 
+/**
+ * One fully-resolved card for the "دەتوانم چی ببەخشم؟" grid — text already in
+ * the active locale, whether it came from the CMS (`donation_type_cards`) or
+ * from the hardcoded fallback set plus `messages/*.json`.
+ */
+export type DonateTypeCardData = {
+	id: string | number;
+	/** 1-based position — the "01" chip; the first card is the featured one. */
+	index: number;
+	title: string;
+	description: string;
+	image: {
+		url: string;
+		alt?: string;
+	};
+};
+
 export type DonateHeroMedia = {
 	url: string;
 	alt?: string;

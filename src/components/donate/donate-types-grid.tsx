@@ -9,18 +9,15 @@ import {
 	ScrollRevealBlock,
 	ScrollRevealItem,
 } from "@/components/motion/scroll-reveal";
-import type { DonateTypeItem } from "@/lib/donate/content";
+import type { DonateTypeCardData } from "@/lib/donate/content";
 import { cn } from "@/lib/utils";
 
 type DonateTypesGridProps = {
 	eyebrow?: string;
 	heading: string;
 	description?: string;
-	items: DonateTypeItem[];
-	getItemCopy: (id: DonateTypeItem["id"]) => {
-		title: string;
-		description: string;
-	};
+	/** Resolved cards, in draw order — the first one is the big featured card. */
+	items: DonateTypeCardData[];
 };
 
 export function DonateTypesGrid({
@@ -28,7 +25,6 @@ export function DonateTypesGrid({
 	heading,
 	description,
 	items,
-	getItemCopy,
 }: DonateTypesGridProps) {
 	const [featured, ...rail] = items;
 
@@ -60,8 +56,8 @@ export function DonateTypesGrid({
 						<ScrollRevealItem className="sm:col-span-2 lg:col-span-7 lg:row-span-2">
 							<DonateTypeCard
 								index={String(featured.index).padStart(2, "0")}
-								title={getItemCopy(featured.id).title}
-								description={getItemCopy(featured.id).description}
+								title={featured.title}
+								description={featured.description}
 								image={featured.image}
 								variant="featured"
 								className="h-full"
@@ -75,8 +71,8 @@ export function DonateTypesGrid({
 								<ScrollRevealItem key={item.id}>
 									<DonateTypeCard
 										index={String(item.index).padStart(2, "0")}
-										title={getItemCopy(item.id).title}
-										description={getItemCopy(item.id).description}
+										title={item.title}
+										description={item.description}
 										image={item.image}
 										variant="small"
 									/>

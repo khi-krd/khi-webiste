@@ -4,6 +4,7 @@ import { getApiBaseUrl } from "@/lib/api/config";
 import {
 	type DonateHeroMedia,
 	type DonatePaymentDetails,
+	type DonateTypeCardData,
 	type DonateTypeItem,
 	getDonateTypeItems,
 } from "@/lib/donate/content";
@@ -16,6 +17,8 @@ import {
 	ArchiveDonationResponseSchema,
 	type ArchiveDonationSubmission,
 	DonationSettingsSchema,
+	type DonationTypeCard,
+	DonationTypeCardListSchema,
 	DonationTypeListSchema,
 	FinancialDonationResponseSchema,
 	type FinancialDonationSubmission,
@@ -23,6 +26,7 @@ import {
 
 const DONATIONS_SETTINGS_ENDPOINT = "/api/v1/donations/settings";
 const DONATIONS_TYPES_ENDPOINT = "/api/v1/donations/types";
+const DONATIONS_TYPE_CARDS_ENDPOINT = "/api/v1/donations/type-cards";
 const DONATIONS_FINANCIAL_ENDPOINT = "/api/v1/donations/financial";
 const DONATIONS_ARCHIVE_ENDPOINT = "/api/v1/donations/archive";
 const DONATIONS_TAG = "donations";
@@ -30,10 +34,28 @@ const DONATIONS_TAG = "donations";
 export type DonatePageData = {
 	heroMedia: DonateHeroMedia;
 	heroCopy: DonateHeroCopy;
+	/** CMS cards — when non-empty, the page draws these and nothing else. */
+	typeCards: DonateTypeCardData[];
+	/** Hardcoded fallback set, drawn only while `typeCards` is empty. */
 	typeItems: DonateTypeItem[];
 	payment: DonatePaymentDetails;
 	visibility: DonateVisibility;
 };
+
+/**
+ * Prefer the active language, then the other one — a record written in only
+ * one language is still the editor's words, and showing them beats hiding the
+ * card or falling back to generic translated copy.
+ */
+function preferLocaleText(
+	isCkb: boolean,
+	ckb: string | null | undefined,
+	kmr: string | null | undefined,
+): string | null {
+	return (
+		(isCkb ? ckb?.trim() || kmr?.trim() : kmr?.trim() || ckb?.trim()) || null
+	);
+}
 
 export async function getDonationSettings() {
 	if (!getApiBaseUrl()) {
@@ -59,6 +81,60 @@ export async function getDonationTypes() {
 	});
 
 	return types ?? [];
+}
+
+export async function getDonationTypeCards(): Promise<DonationTypeCard[]> {
+	if (!getApiBaseUrl()) {
+		return [];
+	}
+
+	const cards = await apiFetch(DONATIONS_TYPE_CARDS_ENDPOINT, {
+		schema: DonationTypeCardListSchema,
+		tags: [DONATIONS_TAG, "donation-type-cards"],
+		revalidate: DEFAULT_REVALIDATE,
+	});
+
+	// A missing endpoint (not deployed yet), a failed request and an empty table
+	// all resolve to [] — the page then falls back to the hardcoded card set.
+	return cards ?? [];
+}
+
+/**
+ * CMS card records → drawable cards in the active locale, sorted by
+ * displayOrder. A record without a picture or without a title in either
+ * language cannot be drawn and is skipped rather than rendered broken.
+ */
+export function resolveDonateTypeCards(
+	locale: string,
+	records: DonationTypeCard[],
+): DonateTypeCardData[] {
+	const isCkb = locale === "ckb";
+
+	return records
+		.filter((record) => record.active !== false)
+		.map((record) => ({
+			record,
+			title: preferLocaleText(isCkb, record.titleCkb, record.titleKmr),
+			imageUrl: record.imageUrl?.trim() || null,
+		}))
+		.filter(
+			(entry): entry is typeof entry & { title: string; imageUrl: string } =>
+				Boolean(entry.title && entry.imageUrl),
+		)
+		.sort(
+			(a, b) =>
+				(a.record.displayOrder ?? 0) - (b.record.displayOrder ?? 0) ||
+				a.record.id - b.record.id,
+		)
+		.map(({ record, title, imageUrl }, position) => ({
+			id: record.id,
+			index: position + 1,
+			title,
+			description:
+				preferLocaleText(isCkb, record.descriptionCkb, record.descriptionKmr) ??
+				"",
+			image: { url: imageUrl, alt: title },
+		}));
 }
 
 export async function submitFinancialDonation(
@@ -119,18 +195,14 @@ export function resolveDonateHeroCopy(
 	settings: Awaited<ReturnType<typeof getDonationSettings>>,
 ): DonateHeroCopy {
 	const isCkb = locale === "ckb";
-	// Prefer the active language, then the other one — a record written in only
-	// one language is still the editor's words, and showing them beats falling
-	// back to the generic translated copy.
-	const preferred = (
-		ckb: string | null | undefined,
-		kmr: string | null | undefined,
-	) =>
-		(isCkb ? ckb?.trim() || kmr?.trim() : kmr?.trim() || ckb?.trim()) || null;
 
 	return {
-		title: preferred(settings?.titleCkb, settings?.titleKmr),
-		intro: preferred(settings?.descriptionCkb, settings?.descriptionKmr),
+		title: preferLocaleText(isCkb, settings?.titleCkb, settings?.titleKmr),
+		intro: preferLocaleText(
+			isCkb,
+			settings?.descriptionCkb,
+			settings?.descriptionKmr,
+		),
 	};
 }
 
@@ -162,15 +234,17 @@ function resolveTypeItems(
 export async function getDonatePageDataFromApi(
 	locale: string,
 ): Promise<DonatePageData> {
-	const [settings, types] = await Promise.all([
+	const [settings, types, cardRecords] = await Promise.all([
 		getDonationSettings(),
 		getDonationTypes(),
+		getDonationTypeCards(),
 	]);
 	const visibility = resolveDonateVisibility(settings, types);
 
 	return {
 		heroMedia: resolveHeroMedia(settings),
 		heroCopy: resolveDonateHeroCopy(locale, settings),
+		typeCards: resolveDonateTypeCards(locale, cardRecords),
 		typeItems: resolveTypeItems(settings, types, visibility),
 		payment: resolvePaymentDetails(settings),
 		visibility,
