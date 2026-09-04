@@ -13,6 +13,8 @@ import { Button } from "@/components/ui/button";
 import { DirectionalIcon } from "@/components/ui/directional-icon";
 import { Input } from "@/components/ui/input";
 import { Link } from "@/components/ui/link";
+import { useRouter } from "@/i18n/navigation";
+import { buildSearchHref } from "@/lib/platform/search-url";
 import {
 	type ClientSearchItem,
 	type ClientSearchSectionKey,
@@ -290,6 +292,45 @@ function SearchSourcePlaceholder({
 	);
 }
 
+/** The پلاتفۆڕم section: a doorway to the full platform results page. */
+function SearchArchiveSection({
+	label,
+	ctaLabel,
+	href,
+	onNavigate,
+}: {
+	label: string;
+	ctaLabel: string;
+	href: string;
+	onNavigate: () => void;
+}) {
+	return (
+		<section>
+			<SearchSourceHeading label={label} />
+			<Link
+				href={href}
+				variant="nav"
+				onClick={onNavigate}
+				className={cn(
+					"group/archive flex items-center justify-between gap-3 py-2",
+					"text-primary-foreground/80 transition-colors hover:text-primary-foreground",
+					overlayTextShadow,
+				)}
+			>
+				<span className="text-body">{ctaLabel}</span>
+				<DirectionalIcon
+					icon={ArrowRightIcon}
+					className={cn(
+						"size-4 shrink-0 text-primary-foreground opacity-50 transition-opacity duration-300",
+						"group-hover/archive:opacity-100 group-focus-visible/archive:opacity-100",
+						"motion-reduce:transition-none",
+					)}
+				/>
+			</Link>
+		</section>
+	);
+}
+
 /** Real CMS results, grouped by content type. */
 function SearchResultsList({
 	groups,
@@ -358,6 +399,7 @@ function SearchResultsList({
 export function MenuSearch({ onBack, onNavigate }: MenuSearchProps) {
 	const t = useTranslations("Nav");
 	const locale = useLocale();
+	const router = useRouter();
 	const reduceMotion = useReducedMotion();
 	const [isExpanded, setIsExpanded] = useState(false);
 
@@ -473,9 +515,24 @@ export function MenuSearch({ onBack, onNavigate }: MenuSearchProps) {
 		!reduceMotion && "transition-[flex-grow] duration-400 ease-out",
 	);
 
+	// Submitting leaves the overlay for the full results page, aimed at the
+	// highest-priority source still checked (ماڵپەر first — its results already
+	// preview inline here; پلاتفۆڕم gets the dedicated page treatment).
 	function onSubmit(event: FormEvent<HTMLFormElement>) {
 		event.preventDefault();
 		setSubmitted(true);
+		if (trimmedQuery.length < MIN_QUERY_LENGTH) {
+			return;
+		}
+		const source = sources.site
+			? ("main" as const)
+			: sources.archive
+				? ("archive" as const)
+				: sources.library
+					? ("library" as const)
+					: ("main" as const);
+		onNavigate();
+		router.push(buildSearchHref({ q: trimmedQuery, source }));
 	}
 
 	const getSectionLabel = (key: ClientSearchSectionKey) =>
@@ -655,11 +712,32 @@ export function MenuSearch({ onBack, onNavigate }: MenuSearchProps) {
 											) : null}
 
 											{hasApiResults ? (
-												<SearchResultsList
-													groups={filteredGroups}
-													onNavigate={onNavigate}
-													getSectionLabel={getSectionLabel}
-												/>
+												<>
+													<SearchResultsList
+														groups={filteredGroups}
+														onNavigate={onNavigate}
+														getSectionLabel={getSectionLabel}
+													/>
+													<Link
+														href={buildSearchHref({
+															q: trimmedQuery,
+															source: "main",
+														})}
+														variant="nav"
+														onClick={onNavigate}
+														className={cn(
+															"mt-4 inline-flex items-center gap-2 text-small",
+															"text-primary-foreground/70 transition-colors hover:text-primary-foreground",
+															overlayTextShadow,
+														)}
+													>
+														{t("searchViewAll")}
+														<DirectionalIcon
+															icon={ArrowRightIcon}
+															className="size-4 shrink-0"
+														/>
+													</Link>
+												</>
 											) : null}
 
 											{showEmptyState && !contentSearchUnavailable ? (
@@ -683,9 +761,14 @@ export function MenuSearch({ onBack, onNavigate }: MenuSearchProps) {
 									) : null}
 
 									{sources.archive ? (
-										<SearchSourcePlaceholder
+										<SearchArchiveSection
 											label={t("searchScopeArchive")}
-											note={t("searchScopeComingSoon")}
+											ctaLabel={t("searchArchiveCta")}
+											href={buildSearchHref({
+												q: trimmedQuery,
+												source: "archive",
+											})}
+											onNavigate={onNavigate}
 										/>
 									) : null}
 								</div>

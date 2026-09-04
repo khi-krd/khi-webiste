@@ -1,6 +1,10 @@
 const DEMO_PDF_PATH = "/writings/java-foundations.pdf";
 const DEFAULT_S3_MEDIA_HOST = "s3-khiwebsite.s3.us-east-1.amazonaws.com";
 
+/** The archive platform's text proxy also serves PDFs the reader opens. */
+const DEFAULT_PLATFORM_HOST =
+	"khiarchiveplatformbackend-production.up.railway.app";
+
 /** Locale-relative demo PDF used by mock writings (same-origin, no CORS). */
 export const WRITING_DEMO_PDF_URL = DEMO_PDF_PATH;
 
@@ -11,12 +15,18 @@ function getAllowedPdfHosts(): Set<string> {
 		hosts.add(mediaHost);
 	}
 	hosts.add(DEFAULT_S3_MEDIA_HOST);
-	const apiBaseUrl = process.env.API_BASE_URL;
-	if (apiBaseUrl) {
+	hosts.add(DEFAULT_PLATFORM_HOST);
+	for (const envUrl of [
+		process.env.API_BASE_URL,
+		process.env.PLATFORM_API_BASE_URL,
+	]) {
+		if (!envUrl) {
+			continue;
+		}
 		try {
-			hosts.add(new URL(apiBaseUrl).hostname);
+			hosts.add(new URL(envUrl).hostname);
 		} catch {
-			// ignore invalid API_BASE_URL
+			// ignore invalid URL in env
 		}
 	}
 	return hosts;
