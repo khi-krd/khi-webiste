@@ -152,24 +152,41 @@ function parsePage(value: string | null): number {
 }
 
 export function parseSearchPageState(params: RawSearchParams): SearchPageState {
+	const kind = parseKind(first(params.type));
+	const sort = parseSort(first(params.sort));
+	const page = parsePage(first(params.page));
+	const filters: PlatformFilterState = {
+		language: first(params.language),
+		dialect: first(params.dialect),
+		region: first(params.region),
+		decade: first(params.decade),
+		personCode: first(params.personCode),
+		projectCode: first(params.projectCode),
+		subject: many(params.subject),
+		genre: many(params.genre),
+		tag: many(params.tag),
+		keyword: many(params.keyword),
+	};
+
+	// Links minted before sources became a multi-select never named the
+	// platform (it was the default, so `source` was omitted). A kind, sort,
+	// page or refinement only ever belonged to the platform view, so such a
+	// link still means the platform — not the overview, which has none of
+	// those tools and would silently drop them.
+	const platformOnlyParams =
+		kind != null || sort != null || page > 1 || countActiveFilters(filters) > 0;
+	const sources =
+		params.source == null && platformOnlyParams
+			? (["archive"] as SearchScope[])
+			: parseSources(params.source);
+
 	return {
-		sources: parseSources(params.source),
+		sources,
 		q: first(params.q) ?? "",
-		kind: parseKind(first(params.type)),
-		sort: parseSort(first(params.sort)),
-		page: parsePage(first(params.page)),
-		filters: {
-			language: first(params.language),
-			dialect: first(params.dialect),
-			region: first(params.region),
-			decade: first(params.decade),
-			personCode: first(params.personCode),
-			projectCode: first(params.projectCode),
-			subject: many(params.subject),
-			genre: many(params.genre),
-			tag: many(params.tag),
-			keyword: many(params.keyword),
-		},
+		kind,
+		sort,
+		page,
+		filters: { ...filters },
 	};
 }
 

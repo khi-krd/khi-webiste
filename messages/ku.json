@@ -1325,7 +1325,8 @@
 		"sourceSectionEmpty": "Di {source} de tu encam nehat dîtin.",
 		"kindGroupAll": "Hemû {count} {kind}",
 		"siteNeedsQuery": "Ji bo lêgerîna li malperê peyvekê binivîse.",
-		"librarySoonShort": "Di demeke nêz de"
+		"librarySoonShort": "Di demeke nêz de",
+		"sourceJumpLabel": "Bazdan bo çavkaniyê"
 	},
 	"Archive": {
 		"pageTitle": "Platforma Arşîvê",

@@ -1325,7 +1325,8 @@
 		"sourceSectionEmpty": "هیچ ئەنجامێک لە {source} نەدۆزرایەوە.",
 		"kindGroupAll": "هەموو {count} {kind}",
 		"siteNeedsQuery": "بۆ گەڕان لە ماڵپەر وشەیەک بنووسە.",
-		"librarySoonShort": "بەم زووانە"
+		"librarySoonShort": "بەم زووانە",
+		"sourceJumpLabel": "بازدان بۆ سەرچاوە"
 	},
 	"Archive": {
 		"pageTitle": "پلاتفۆڕمی ئەرشیڤ",

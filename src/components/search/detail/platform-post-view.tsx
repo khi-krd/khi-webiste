@@ -404,7 +404,7 @@ export async function PlatformPostView({
 		<article>
 			<div className={cn(homeInsetClass, "pt-6 sm:pt-8")}>
 				<BackToIndexLink
-					href={buildSearchHref({})}
+					href={buildSearchHref({ sources: ["archive"] })}
 					label={t("backToSearch")}
 					ariaLabel={t("backAria")}
 				/>

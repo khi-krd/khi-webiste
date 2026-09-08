@@ -275,12 +275,18 @@ export function FocusRestore({ rootId }: { rootId: string }) {
 		}
 		const selector = `[data-focus-key="${CSS.escape(key)}"]`;
 		const root = document.getElementById(rootId) ?? document;
+		// Some controls exist twice (the source toggles render once per
+		// breakpoint); only the displayed copy can take focus.
+		const rendered = (scope: ParentNode) =>
+			Array.from(scope.querySelectorAll<HTMLElement>(selector)).find(
+				(element) => element.getClientRects().length > 0,
+			);
 		// Inside the fresh results first; then anywhere (the search input lives
 		// above the boundary); else the summary — which is also where a key
 		// that names no control at all (pager, summary sentinel) lands.
 		const target =
-			root.querySelector<HTMLElement>(selector) ??
-			document.querySelector<HTMLElement>(selector) ??
+			rendered(root) ??
+			rendered(document) ??
 			document.getElementById(RESULTS_SUMMARY_ID);
 		target?.focus({ preventScroll: true });
 	}, [rootId, takeFocusKey]);

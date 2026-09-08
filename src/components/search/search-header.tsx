@@ -157,7 +157,7 @@ function SourceToggles({
 							onClick={() => toggle(source)}
 							className={cn(
 								"inline-flex h-11 items-center justify-center gap-2 px-3 font-heading text-small font-semibold",
-								"transition-colors duration-200 focus-visible:outline-offset-[-3px] sm:h-full sm:px-4",
+								"transition-colors duration-200 focus-visible:outline-offset-[-3px] lg:h-full lg:px-4",
 								on ? "text-foreground" : "text-muted",
 								last
 									? "cursor-default"
@@ -182,7 +182,10 @@ function SourceToggles({
 								{t(SOURCE_LABEL_KEYS[source])}
 							</span>
 							{source === "library" ? (
-								<span className="visually-hidden">{t("librarySoonTitle")}</span>
+								<span className="visually-hidden">
+									{" "}
+									{t("librarySoonShort")}
+								</span>
 							) : null}
 						</button>
 					);
@@ -232,6 +235,12 @@ export function SearchHeader({ state }: SearchHeaderProps) {
 
 	useEffect(() => {
 		if (!suggestEnabled) {
+			// The platform was just unchecked: a platform listbox has nothing to
+			// offer a website/library-only search, and the toggle sits inside the
+			// bar, so click-away would never close it.
+			setSuggestions([]);
+			setOpen(false);
+			setActiveIndex(-1);
 			return;
 		}
 		const trimmed = query.trim();
@@ -383,16 +392,16 @@ export function SearchHeader({ state }: SearchHeaderProps) {
 				onSubmit={onSubmit}
 				className={cn(
 					"group/bar flex flex-col border border-border-strong bg-surface transition-colors duration-200",
-					"focus-within:border-foreground sm:h-14 sm:flex-row sm:items-stretch",
+					"focus-within:border-foreground lg:h-14 lg:flex-row lg:items-stretch",
 				)}
 			>
 				{/* Scope segment, sm+ — DOM first so it is focused first. */}
 				<SourceToggles
 					state={state}
-					className="hidden sm:flex sm:border-e sm:border-border"
+					className="hidden lg:flex lg:border-e lg:border-border"
 				/>
 
-				<div className="flex h-12 min-w-0 items-center sm:h-full sm:flex-1">
+				<div className="flex h-12 min-w-0 items-center lg:h-full lg:flex-1">
 					<MagnifyingGlassIcon
 						aria-hidden
 						className="ms-3.5 size-5 shrink-0 text-muted transition-colors group-focus-within/bar:text-foreground sm:ms-4"
@@ -469,7 +478,7 @@ export function SearchHeader({ state }: SearchHeaderProps) {
 				    one <nav> is ever in the accessibility tree. */}
 				<SourceToggles
 					state={state}
-					className="grid grid-cols-3 border-t border-border sm:hidden"
+					className="grid grid-cols-3 border-t border-border lg:hidden"
 				/>
 			</form>
 

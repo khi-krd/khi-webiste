@@ -65,6 +65,8 @@ type KindGroup = {
 
 type PlatformOverview = {
 	groups: KindGroup[];
+	/** Kinds whose request failed — shown as such, never as "no matches". */
+	failedKinds: PlatformMediaKind[];
 	total: number;
 	unavailable: boolean;
 };
@@ -89,14 +91,17 @@ async function loadPlatform(state: SearchPageState): Promise<PlatformOverview> {
 	);
 	const counts = responses.find((response) => response != null)?.counts;
 	if (!counts) {
-		return { groups: [], total: 0, unavailable: true };
+		return { groups: [], failedKinds: [], total: 0, unavailable: true };
 	}
+	const failedKinds = PLATFORM_MEDIA_KINDS.filter(
+		(_, index) => responses[index] == null,
+	);
 	const groups = PLATFORM_MEDIA_KINDS.map((kind, index) => ({
 		kind,
 		hits: responses[index]?.content ?? [],
 		count: responses[index]?.counts[kind] ?? counts[kind],
 	})).filter((group) => group.hits.length > 0);
-	return { groups, total: counts.total, unavailable: false };
+	return { groups, failedKinds, total: counts.total, unavailable: false };
 }
 
 /** A source's block: its heading rule, description and "all N" link. */
@@ -135,9 +140,12 @@ function SourceSection({
 						<Icon className="size-5 shrink-0 text-muted" aria-hidden />
 						{label}
 						{count != null ? (
-							<span className="text-label tabular-nums text-muted">
-								{count}
-							</span>
+							<>
+								{" "}
+								<span className="text-label tabular-nums text-muted">
+									{count}
+								</span>
+							</>
 						) : null}
 					</h3>
 					<p className="mt-1 text-small text-muted">{description}</p>
@@ -221,7 +229,11 @@ export async function SearchOverview({
 	const platformTotal = platform && !platform.unavailable ? platform.total : 0;
 	const total = platformTotal + siteTotal;
 	const count = formatCount(locale, total);
-	const sourceCount = formatCount(locale, state.sources.length);
+	// "across N sources" counts the sources that actually answered — the
+	// library has no search yet and an unreachable source contributed nothing.
+	const searchedSources =
+		(platform && !platform.unavailable ? 1 : 0) + (site ? 1 : 0);
+	const sourceCount = formatCount(locale, Math.max(searchedSources, 1));
 
 	const plainSummary = hasQuery
 		? t("overviewResultsFor", { count, query, sourceCount })
@@ -237,18 +249,24 @@ export async function SearchOverview({
 	// The jump strip — every checked source, with what it holds.
 	const jumps: { scope: SearchScope; label: string; count: string | null }[] =
 		[];
+	// A zero is left off the chips and headings: at label size the
+	// Arabic-Indic "٠" reads as a separator, and the block itself says
+	// "nothing found" in words.
 	if (wantsPlatform) {
 		jumps.push({
 			scope: "archive",
 			label: archiveLabel,
-			count: platform?.unavailable ? null : formatCount(locale, platformTotal),
+			count:
+				platform?.unavailable || platformTotal === 0
+					? null
+					: formatCount(locale, platformTotal),
 		});
 	}
 	if (wantsSite) {
 		jumps.push({
 			scope: "main",
 			label: siteLabel,
-			count: site ? formatCount(locale, siteTotal) : null,
+			count: site && siteTotal > 0 ? formatCount(locale, siteTotal) : null,
 		});
 	}
 	if (wantsLibrary) {
@@ -282,7 +300,7 @@ export async function SearchOverview({
 				) : null}
 			</div>
 
-			<nav aria-label={t("sourcesLabel")} className="mt-4">
+			<nav aria-label={t("sourceJumpLabel")} className="mt-4">
 				<ul className="flex flex-wrap gap-2">
 					{jumps.map((jump) => {
 						const Icon = SOURCE_ICONS[jump.scope];
@@ -295,9 +313,12 @@ export async function SearchOverview({
 									<Icon className="size-4 shrink-0" aria-hidden />
 									<span>{jump.label}</span>
 									{jump.count != null ? (
-										<span className="text-label tabular-nums text-muted">
-											{jump.count}
-										</span>
+										<>
+											{" "}
+											<span className="text-label tabular-nums text-muted">
+												{jump.count}
+											</span>
+										</>
 									) : null}
 								</a>
 							</li>
@@ -315,7 +336,9 @@ export async function SearchOverview({
 							label={archiveLabel}
 							description={t(SOURCE_DESCRIPTION_KEYS.archive)}
 							count={
-								platform.unavailable ? null : formatCount(locale, platformTotal)
+								platform.unavailable || platformTotal === 0
+									? null
+									: formatCount(locale, platformTotal)
 							}
 							allHref={
 								platformTotal > 0
@@ -332,7 +355,8 @@ export async function SearchOverview({
 									text={t("unavailableTitle")}
 									retryLabel={t("retry")}
 								/>
-							) : platform.groups.length === 0 ? (
+							) : platform.groups.length === 0 &&
+								platform.failedKinds.length === 0 ? (
 								<SectionNote>
 									{t("sourceSectionEmpty", { source: archiveLabel })}
 								</SectionNote>
@@ -368,7 +392,7 @@ export async function SearchOverview({
 																kind: group.kind,
 															})}
 															data-focus-key={`kind-all:${group.kind}`}
-															className="shrink-0 text-small text-muted underline decoration-border underline-offset-4 transition-colors fine-hover:text-foreground fine-hover:decoration-current"
+															className="inline-flex min-h-11 shrink-0 items-center text-small text-muted underline decoration-border underline-offset-4 transition-colors fine-hover:text-foreground fine-hover:decoration-current lg:min-h-0"
 														>
 															{t("kindGroupAll", {
 																count: formatCount(locale, group.count),
@@ -377,9 +401,12 @@ export async function SearchOverview({
 														</SearchNavLink>
 													) : null}
 												</div>
+												{/* auto-fit: a full row fills the width, a sparse one
+												    shows cards at their natural size instead of one
+												    card beside three empty columns. */}
 												<ol
 													aria-labelledby={titleId}
-													className="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-4 sm:gap-4 lg:gap-5"
+													className="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-[repeat(auto-fit,minmax(13rem,1fr))] sm:gap-4 sm:[&>li]:max-w-[22rem] lg:gap-5"
 												>
 													{group.hits.map((hit, index) => (
 														<PlatformPlate
@@ -395,6 +422,33 @@ export async function SearchOverview({
 											</section>
 										);
 									})}
+									{platform.failedKinds.map((kind) => {
+										const kindLabel = t(KIND_LABEL_KEYS[kind]);
+										return (
+											<section
+												key={kind}
+												aria-labelledby={`kind-${kind}-title`}
+											>
+												<div className="flex items-center gap-3">
+													<h4
+														id={`kind-${kind}-title`}
+														className="flex items-center gap-2 font-heading text-body font-semibold text-foreground"
+													>
+														<KindIcon
+															kind={kind}
+															className="size-4.5 shrink-0 text-muted"
+														/>
+														{kindLabel}
+													</h4>
+													<span aria-hidden className="h-px flex-1 bg-border" />
+												</div>
+												<SectionUnavailable
+													text={t("unavailableTitle")}
+													retryLabel={t("retry")}
+												/>
+											</section>
+										);
+									})}
 								</div>
 							)}
 						</SourceSection>
@@ -406,7 +460,9 @@ export async function SearchOverview({
 							scope="main"
 							label={siteLabel}
 							description={t(SOURCE_DESCRIPTION_KEYS.main)}
-							count={site ? formatCount(locale, siteTotal) : null}
+							count={
+								site && siteTotal > 0 ? formatCount(locale, siteTotal) : null
+							}
 							allHref={
 								hasQuery && siteTotal > 0
 									? buildSearchHref({ sources: ["main"], q: state.q })

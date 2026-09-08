@@ -133,12 +133,12 @@ export function OverviewSkeleton({ label }: { label: string }) {
 
 				<div className="mt-8 flex flex-col gap-12 sm:mt-10 sm:gap-14">
 					<div>
-						<div className="flex items-end justify-between gap-6 border-b border-foreground pb-3">
+						<div className="flex flex-wrap items-end justify-between gap-x-6 gap-y-3 border-b border-foreground pb-3">
 							<div className="min-w-0 flex-1">
 								<Skeleton className="h-6 w-40" />
 								<Skeleton className="mt-2 h-4 w-72 max-w-full" />
 							</div>
-							<Skeleton className="h-10 w-36 shrink-0" />
+							<Skeleton className="h-10 w-44 shrink-0 basis-full sm:basis-auto" />
 						</div>
 						<div className="mt-6 flex flex-col gap-8 sm:gap-10">
 							{Array.from({ length: 2 }, (_, row) => (
@@ -160,12 +160,12 @@ export function OverviewSkeleton({ label }: { label: string }) {
 					</div>
 
 					<div>
-						<div className="flex items-end justify-between gap-6 border-b border-foreground pb-3">
+						<div className="flex flex-wrap items-end justify-between gap-x-6 gap-y-3 border-b border-foreground pb-3">
 							<div className="min-w-0 flex-1">
 								<Skeleton className="h-6 w-32" />
 								<Skeleton className="mt-2 h-4 w-64 max-w-full" />
 							</div>
-							<Skeleton className="h-10 w-36 shrink-0" />
+							<Skeleton className="h-10 w-44 shrink-0 basis-full sm:basis-auto" />
 						</div>
 						<div className="mt-6 grid gap-10 md:grid-cols-2 md:gap-x-14">
 							{Array.from({ length: 2 }, (_, column) => (

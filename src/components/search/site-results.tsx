@@ -115,13 +115,17 @@ function SiteRow({
 	index,
 	sectionKey,
 	icon: Icon,
+	titleLevel,
 }: {
 	item: ResolvedSearchItem;
 	index: number;
 	sectionKey: SectionDef["key"];
 	icon: SectionDef["icon"];
+	/** One step under the catalogue heading it sits in. */
+	titleLevel: 4 | 5;
 }) {
 	const id = `site-${sectionKey}-${item.id}`;
+	const TitleTag = `h${titleLevel}` as const;
 	const description = stripHtml(item.description);
 
 	return (
@@ -158,7 +162,7 @@ function SiteRow({
 				</div>
 
 				<div className="min-w-0 flex-1">
-					<h4
+					<TitleTag
 						id={`${id}-title`}
 						className={cn(
 							"line-clamp-1 text-start text-body font-medium text-foreground [overflow-wrap:anywhere]",
@@ -171,7 +175,7 @@ function SiteRow({
 						>
 							<bdi>{item.title}</bdi>
 						</SearchNavLink>
-					</h4>
+					</TitleTag>
 					{description ? (
 						<p className="mt-0.5 line-clamp-1 text-start text-small text-muted [overflow-wrap:anywhere]">
 							<bdi>{description}</bdi>
@@ -255,6 +259,7 @@ export function SiteSection({
 						index={index}
 						sectionKey={def.key}
 						icon={Icon}
+						titleLevel={headingLevel === 4 ? 5 : 4}
 					/>
 				))}
 			</ul>
