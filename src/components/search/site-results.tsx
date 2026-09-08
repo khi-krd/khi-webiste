@@ -183,13 +183,38 @@ function SiteRow({
 	);
 }
 
-function SiteSection({
+export type SiteSectionEntry = {
+	def: SectionDef;
+	section: ResolvedSearchSection;
+};
+
+/** The catalogues that actually matched, in display order. */
+export function siteSectionsOf(
+	response: ResolvedGlobalSearchResponse,
+): SiteSectionEntry[] {
+	return SECTIONS.map((def) => ({
+		def,
+		section: response[def.key],
+	})).filter(
+		(entry): entry is SiteSectionEntry =>
+			entry.section != null && entry.section.items.length > 0,
+	);
+}
+
+/**
+ * One catalogue's matches under its own heading. Also used by the mixed
+ * overview, which shows fewer rows per catalogue and sits one heading level
+ * deeper (under the ماڵپەر source heading).
+ */
+export function SiteSection({
 	def,
 	section,
 	label,
 	viewAllLabel,
 	locale,
 	q,
+	limit = SECTION_SIZE,
+	headingLevel = 3,
 }: {
 	def: SectionDef;
 	section: ResolvedSearchSection;
@@ -197,21 +222,25 @@ function SiteSection({
 	viewAllLabel: string;
 	locale: string;
 	q: string;
+	/** Rows shown before the "view all" link. */
+	limit?: number;
+	headingLevel?: 3 | 4;
 }) {
 	const Icon = def.icon;
-	const shown = section.items.slice(0, SECTION_SIZE);
+	const Heading = headingLevel === 4 ? "h4" : "h3";
+	const shown = section.items.slice(0, limit);
 	const hasMore = section.totalElements > shown.length;
 
 	return (
 		<section aria-labelledby={`site-${def.key}-heading`}>
 			<div className="flex items-center gap-3">
-				<h3
+				<Heading
 					id={`site-${def.key}-heading`}
 					className="flex items-center gap-2 font-heading text-body font-semibold text-foreground"
 				>
 					<Icon className="size-4.5 shrink-0 text-muted" aria-hidden />
 					{label}
-				</h3>
+				</Heading>
 				<span className="text-label tabular-nums text-muted">
 					{formatCount(locale, section.totalElements)}
 				</span>
@@ -287,13 +316,7 @@ export async function SiteResults({
 		);
 	}
 
-	const sections = SECTIONS.map((def) => ({
-		def,
-		section: response[def.key],
-	})).filter(
-		(entry): entry is { def: SectionDef; section: ResolvedSearchSection } =>
-			entry.section != null && entry.section.items.length > 0,
-	);
+	const sections = siteSectionsOf(response);
 
 	if (sections.length === 0) {
 		return (

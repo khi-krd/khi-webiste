@@ -524,15 +524,20 @@ export function MenuSearch({ onBack, onNavigate }: MenuSearchProps) {
 		if (trimmedQuery.length < MIN_QUERY_LENGTH) {
 			return;
 		}
-		const source = sources.site
-			? ("main" as const)
-			: sources.archive
-				? ("archive" as const)
-				: sources.library
-					? ("library" as const)
-					: ("main" as const);
+		// The checked boxes travel as the results page's own source toggles;
+		// none checked falls back to the page's default of all three.
+		const checked = [
+			sources.archive ? ("archive" as const) : null,
+			sources.site ? ("main" as const) : null,
+			sources.library ? ("library" as const) : null,
+		].filter((scope): scope is "archive" | "main" | "library" => scope != null);
 		onNavigate();
-		router.push(buildSearchHref({ q: trimmedQuery, source }));
+		router.push(
+			buildSearchHref({
+				q: trimmedQuery,
+				sources: checked.length > 0 ? checked : undefined,
+			}),
+		);
 	}
 
 	const getSectionLabel = (key: ClientSearchSectionKey) =>
@@ -721,7 +726,7 @@ export function MenuSearch({ onBack, onNavigate }: MenuSearchProps) {
 													<Link
 														href={buildSearchHref({
 															q: trimmedQuery,
-															source: "main",
+															sources: ["main"],
 														})}
 														variant="nav"
 														onClick={onNavigate}
@@ -766,7 +771,7 @@ export function MenuSearch({ onBack, onNavigate }: MenuSearchProps) {
 											ctaLabel={t("searchArchiveCta")}
 											href={buildSearchHref({
 												q: trimmedQuery,
-												source: "archive",
+												sources: ["archive"],
 											})}
 											onNavigate={onNavigate}
 										/>

@@ -93,3 +93,104 @@ export function ResultsSkeleton({ label }: { label: string }) {
 		</div>
 	);
 }
+
+function PlateGhost({ index }: { index: number }) {
+	return (
+		<div
+			className="search-rise border border-border bg-surface"
+			style={{ "--i": index } as CSSProperties}
+		>
+			<Skeleton aspectRatio="4/3" className="w-full" />
+			<div className="flex flex-col gap-2.5 p-3 sm:p-4 2xl:px-5">
+				<Skeleton className="h-3 w-2/5" />
+				<Skeleton className="h-4 w-full" />
+				<Skeleton className="h-4 w-3/4" />
+			</div>
+			<Skeleton className="h-7 w-full" />
+		</div>
+	);
+}
+
+/**
+ * Placeholder for the mixed overview: summary line, the source jump strip,
+ * then a platform block (two kind rows of four plates) and a website block
+ * (two catalogues of three rows) — the geometry the real thing lands in.
+ */
+export function OverviewSkeleton({ label }: { label: string }) {
+	return (
+		<div role="status" aria-label={label}>
+			<AnnounceLoading />
+			<div aria-hidden>
+				<div className="border-b border-border pb-3">
+					<Skeleton className="h-7 w-80 max-w-[70%]" />
+				</div>
+				<div className="mt-4 flex flex-wrap gap-2">
+					{Array.from({ length: 3 }, (_, i) => (
+						// biome-ignore lint/suspicious/noArrayIndexKey: static decorative slots
+						<Skeleton key={i} className="h-11 w-32 lg:h-10" />
+					))}
+				</div>
+
+				<div className="mt-8 flex flex-col gap-12 sm:mt-10 sm:gap-14">
+					<div>
+						<div className="flex items-end justify-between gap-6 border-b border-foreground pb-3">
+							<div className="min-w-0 flex-1">
+								<Skeleton className="h-6 w-40" />
+								<Skeleton className="mt-2 h-4 w-72 max-w-full" />
+							</div>
+							<Skeleton className="h-10 w-36 shrink-0" />
+						</div>
+						<div className="mt-6 flex flex-col gap-8 sm:gap-10">
+							{Array.from({ length: 2 }, (_, row) => (
+								// biome-ignore lint/suspicious/noArrayIndexKey: static decorative slots
+								<div key={row}>
+									<Skeleton className="h-5 w-32" />
+									<div className="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-4 sm:gap-4 lg:gap-5">
+										{Array.from({ length: 4 }, (_, i) => (
+											<PlateGhost
+												// biome-ignore lint/suspicious/noArrayIndexKey: static decorative slots
+												key={i}
+												index={row * 4 + i}
+											/>
+										))}
+									</div>
+								</div>
+							))}
+						</div>
+					</div>
+
+					<div>
+						<div className="flex items-end justify-between gap-6 border-b border-foreground pb-3">
+							<div className="min-w-0 flex-1">
+								<Skeleton className="h-6 w-32" />
+								<Skeleton className="mt-2 h-4 w-64 max-w-full" />
+							</div>
+							<Skeleton className="h-10 w-36 shrink-0" />
+						</div>
+						<div className="mt-6 grid gap-10 md:grid-cols-2 md:gap-x-14">
+							{Array.from({ length: 2 }, (_, column) => (
+								// biome-ignore lint/suspicious/noArrayIndexKey: static decorative slots
+								<div key={column}>
+									<Skeleton className="h-5 w-40" />
+									{Array.from({ length: 3 }, (_, i) => (
+										<div
+											// biome-ignore lint/suspicious/noArrayIndexKey: static decorative slots
+											key={i}
+											className="mt-3 flex items-center gap-4 border-b border-border pb-3"
+										>
+											<Skeleton className="h-15 w-20 shrink-0" />
+											<div className="min-w-0 flex-1">
+												<Skeleton className="h-4 w-4/5" />
+												<Skeleton className="mt-2 h-3.5 w-3/5" />
+											</div>
+										</div>
+									))}
+								</div>
+							))}
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	);
+}

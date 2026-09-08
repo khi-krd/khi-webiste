@@ -68,11 +68,11 @@ type SearchTransition = {
 const SearchTransitionContext = createContext<SearchTransition | null>(null);
 
 export function SearchTransitionProvider({
-	source,
+	sourcesKey,
 	children,
 }: {
-	/** Active search source — a new source has different facets. */
-	source: string;
+	/** The checked sources, joined — a new selection has different facets. */
+	sourcesKey: string;
 	children: ReactNode;
 }) {
 	const t = useTranslations("Search");
@@ -89,9 +89,9 @@ export function SearchTransitionProvider({
 
 	// Switching source forgets the panel state (React's adjust-during-render
 	// pattern: no effect, no extra commit).
-	const [seenSource, setSeenSource] = useState(source);
-	if (seenSource !== source) {
-		setSeenSource(source);
+	const [seenSources, setSeenSources] = useState(sourcesKey);
+	if (seenSources !== sourcesKey) {
+		setSeenSources(sourcesKey);
 		setRefineOpen(false);
 		setOpenGroups(new Map());
 	}

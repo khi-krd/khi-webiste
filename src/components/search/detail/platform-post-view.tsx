@@ -130,7 +130,7 @@ function ChipGroup({
 				<TaxonomyBadgeLink
 					key={`${param}-${value}`}
 					href={buildSearchHref({
-						source: "archive",
+						sources: ["archive"],
 						filters: { ...EMPTY_FILTERS, [param]: [value] },
 					})}
 				>
@@ -728,7 +728,7 @@ export async function PlatformPostView({
 									{person.personCode ? (
 										<Link
 											href={buildSearchHref({
-												source: "archive",
+												sources: ["archive"],
 												filters: {
 													...EMPTY_FILTERS,
 													personCode: person.personCode,
@@ -746,7 +746,7 @@ export async function PlatformPostView({
 						{projectCode && projectName ? (
 							<Link
 								href={buildSearchHref({
-									source: "archive",
+									sources: ["archive"],
 									filters: { ...EMPTY_FILTERS, projectCode },
 								})}
 								className={viewAllCtaClass}

@@ -1,5 +1,6 @@
 "use client";
 
+import { CheckIcon } from "@heroicons/react/20/solid";
 import {
 	MagnifyingGlassIcon,
 	RectangleStackIcon,
@@ -17,15 +18,12 @@ import {
 	useState,
 } from "react";
 import { KindIcon } from "@/components/search/kind-icon";
-import {
-	SearchNavLink,
-	useSearchTransition,
-} from "@/components/search/search-transition";
+import { useSearchTransition } from "@/components/search/search-transition";
 import {
 	SOURCE_LABEL_KEYS,
 	SOURCE_ORDER,
 } from "@/components/search/source-links";
-import { SEARCH_SCOPES } from "@/config/site";
+import { SEARCH_SCOPES, type SearchScope } from "@/config/site";
 import { useRouter } from "@/i18n/navigation";
 import {
 	PLATFORM_MEDIA_KINDS,
@@ -38,6 +36,9 @@ import {
 	EMPTY_FILTERS,
 	platformDetailHref,
 	type SearchPageState,
+	searchMode,
+	singleSource,
+	withToggledSource,
 } from "@/lib/platform/search-url";
 import { cn } from "@/lib/utils";
 import type { PlatformSuggestion } from "@/types/platform";
@@ -67,9 +68,13 @@ function suggestionHref(suggestion: PlatformSuggestion): string {
 	}
 	// Categories have no dedicated facet on this page; fall back to the name.
 	if (suggestion.kind === "category") {
-		return buildSearchHref({ source: "archive", q: suggestion.value, filters });
+		return buildSearchHref({
+			sources: ["archive"],
+			q: suggestion.value,
+			filters,
+		});
 	}
-	return buildSearchHref({ source: "archive", filters });
+	return buildSearchHref({ sources: ["archive"], filters });
 }
 
 /** Project suggestions arrive as folder slugs; readers get the spaced form. */
@@ -97,14 +102,15 @@ function SuggestionTileIcon({ kind }: { kind: string }) {
 }
 
 /**
- * The source switcher — ماڵپەر / پلاتفۆڕم / کتێبخانە — living INSIDE the
- * command bar. Rendered twice by the bar (a row of cells beside the input on
- * `sm+`, a three-column strip under it on phones) and never reordered with
- * flex order: only one instance is displayed, so only one is in the
- * accessibility tree. Switching keeps the query and drops everything that
- * described the previous source's result set (kind, sort, refinements, page).
+ * The three source toggles — پلاتفۆڕم / ماڵپەر / کتێبخانە — living INSIDE the
+ * command bar. Every checked source is searched: all three are checked by
+ * default and the last one cannot be unchecked. Rendered twice by the bar (a
+ * row of cells beside the input on `sm+`, a three-column strip under it on
+ * phones) and never reordered with flex order: only one instance is
+ * displayed, so only one is in the accessibility tree. Toggling keeps the
+ * query and drops what described the previous selection's result set.
  */
-function ScopeSegment({
+function SourceToggles({
 	state,
 	className,
 }: {
@@ -112,48 +118,77 @@ function ScopeSegment({
 	className?: string;
 }) {
 	const t = useTranslations("Search");
+	const router = useRouter();
+	const transition = useSearchTransition();
+
+	function toggle(source: SearchScope) {
+		const next = withToggledSource(state, source);
+		if (next === state) {
+			return;
+		}
+		const href = buildSearchHref(next);
+		if (transition) {
+			transition.navigate(href, { focusKey: `source:${source}` });
+		} else {
+			router.push(href, { scroll: false });
+		}
+	}
 
 	return (
-		<nav aria-label={t("sourceLabel")} className={cn(className)}>
-			<ul className="contents sm:flex">
-				{SOURCE_ORDER.filter((source) => SEARCH_SCOPES.includes(source)).map(
-					(source) => {
-						const active = state.source === source;
-						return (
-							<li
-								key={source}
-								className="contents sm:[&:not(:last-child)>a]:border-e sm:[&:not(:last-child)>a]:border-border"
+		<fieldset
+			className={cn(
+				"m-0 min-w-0 border-0 p-0 [&>button:not(:last-child)]:border-e [&>button:not(:last-child)]:border-border",
+				className,
+			)}
+		>
+			<legend className="visually-hidden">{t("sourcesLabel")}</legend>
+			{SOURCE_ORDER.filter((source) => SEARCH_SCOPES.includes(source)).map(
+				(source) => {
+					const on = state.sources.includes(source);
+					const last = on && state.sources.length === 1;
+					return (
+						<button
+							key={source}
+							type="button"
+							aria-pressed={on}
+							aria-disabled={last || undefined}
+							title={last ? t("sourceAtLeastOne") : undefined}
+							data-focus-key={`source:${source}`}
+							onClick={() => toggle(source)}
+							className={cn(
+								"inline-flex h-11 items-center justify-center gap-2 px-3 font-heading text-small font-semibold",
+								"transition-colors duration-200 focus-visible:outline-offset-[-3px] sm:h-full sm:px-4",
+								on ? "text-foreground" : "text-muted",
+								last
+									? "cursor-default"
+									: "fine-hover:bg-sunken fine-hover:text-foreground",
+							)}
+						>
+							<span
+								aria-hidden
+								className={cn(
+									"flex size-4 shrink-0 items-center justify-center border transition-[background-color,border-color] duration-200",
+									on ? "border-primary bg-primary" : "border-border-strong",
+								)}
 							>
-								<SearchNavLink
-									href={buildSearchHref({
-										source,
-										q: state.q,
-										filters: EMPTY_FILTERS,
-									})}
-									aria-current={active ? "page" : undefined}
+								<CheckIcon
 									className={cn(
-										"inline-flex h-11 items-center justify-center gap-1.5 px-3 font-heading text-small font-semibold",
-										"transition-colors duration-200 focus-visible:outline-offset-[-3px] sm:h-full sm:px-4",
-										active
-											? "bg-primary text-primary-foreground"
-											: "text-muted fine-hover:bg-sunken fine-hover:text-foreground",
+										"size-3 text-primary-foreground transition-transform duration-200 ease-[cubic-bezier(0.34,1.56,0.64,1)]",
+										on ? "scale-100" : "scale-0",
 									)}
-								>
-									<span className="line-clamp-1 [overflow-wrap:anywhere]">
-										{t(SOURCE_LABEL_KEYS[source])}
-									</span>
-									{source === "library" ? (
-										<span className="visually-hidden">
-											{t("librarySoonTitle")}
-										</span>
-									) : null}
-								</SearchNavLink>
-							</li>
-						);
-					},
-				)}
-			</ul>
-		</nav>
+								/>
+							</span>
+							<span className="line-clamp-1 [overflow-wrap:anywhere]">
+								{t(SOURCE_LABEL_KEYS[source])}
+							</span>
+							{source === "library" ? (
+								<span className="visually-hidden">{t("librarySoonTitle")}</span>
+							) : null}
+						</button>
+					);
+				},
+			)}
+		</fieldset>
 	);
 }
 
@@ -192,8 +227,8 @@ export function SearchHeader({ state }: SearchHeaderProps) {
 		openRef.current = open;
 	}, [open]);
 
-	// Platform autocomplete only makes sense against the platform.
-	const suggestEnabled = state.source === "archive";
+	// Platform autocomplete only makes sense while the platform is searched.
+	const suggestEnabled = state.sources.includes("archive");
 
 	useEffect(() => {
 		if (!suggestEnabled) {
@@ -264,9 +299,10 @@ export function SearchHeader({ state }: SearchHeaderProps) {
 	function submitQuery(value: string) {
 		setOpen(false);
 		const href = buildSearchHref({
-			source: state.source,
+			sources: state.sources,
 			q: value.trim(),
-			kind: state.kind,
+			// The kind tab only exists on the single-platform view.
+			kind: singleSource(state) === "archive" ? state.kind : null,
 			filters: EMPTY_FILTERS,
 		});
 		// Through the shared transition when the page provides one, so the
@@ -351,7 +387,7 @@ export function SearchHeader({ state }: SearchHeaderProps) {
 				)}
 			>
 				{/* Scope segment, sm+ — DOM first so it is focused first. */}
-				<ScopeSegment
+				<SourceToggles
 					state={state}
 					className="hidden sm:flex sm:border-e sm:border-border"
 				/>
@@ -375,7 +411,7 @@ export function SearchHeader({ state }: SearchHeaderProps) {
 						enterKeyHint="search"
 						value={query}
 						placeholder={
-							state.source === "main"
+							searchMode(state) === "site"
 								? t("inputPlaceholderMain")
 								: t("inputPlaceholder")
 						}
@@ -431,7 +467,7 @@ export function SearchHeader({ state }: SearchHeaderProps) {
 				{/* Scope segment, <640 — rendered a second time under the input
 				    row; the sm+ instance above is display:none here, so only
 				    one <nav> is ever in the accessibility tree. */}
-				<ScopeSegment
+				<SourceToggles
 					state={state}
 					className="grid grid-cols-3 border-t border-border sm:hidden"
 				/>

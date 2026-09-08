@@ -49,7 +49,7 @@ export async function EmptyResults({
 				<p className="mb-4 text-body">
 					<SearchNavLink
 						href={buildSearchHref({
-							source: "archive",
+							sources: ["archive"],
 							q: didYouMean,
 							kind: state.kind,
 							filters: EMPTY_FILTERS,
@@ -80,7 +80,7 @@ export async function EmptyResults({
 				) : null}
 				{hasQuery ? (
 					<SearchNavLink
-						href={buildSearchHref({ source: "main", q: query })}
+						href={buildSearchHref({ sources: ["main"], q: query })}
 						className={kindChipClass(false)}
 					>
 						<span>{t.rich("emptySearchSite", { query, bdi })}</span>

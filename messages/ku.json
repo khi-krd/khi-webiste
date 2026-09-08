@@ -1313,7 +1313,19 @@
 		"emptyAllKinds": "Li hemû cureyan bigere",
 		"emptyDidYouMean": "Mebesta te «<bdi>{suggestion}</bdi>» bû?",
 		"emptySearchSite": "Li malperê bigere ji bo «<bdi>{query}</bdi>»",
-		"untitledKind": "{kind} {number}"
+		"untitledKind": "{kind} {number}",
+		"sourcesLabel": "Çavkaniyên lêgerînê",
+		"sourceAtLeastOne": "Divê herî kêm çavkaniyek hilbijartî be",
+		"sourcesDescriptionMixed": "Lêgerîn bi hev re di {sources} de",
+		"overviewResultsFor": "{count} encam ji bo «{query}» ji {sourceCount} çavkaniyan",
+		"overviewResultsForRich": "{count} encam ji bo «<bdi>{query}</bdi>» ji {sourceCount} çavkaniyan",
+		"overviewBrowseTitle": "Yên herî nû ji hemû çavkaniyan",
+		"overviewBrowseDescription": "Peyvekê binivîse ji bo lêgerînê li hemû çavkaniyan, an di van tomarên nû yên platformê de bigere.",
+		"sourceSectionAll": "Hemû {count} encamên {source}",
+		"sourceSectionEmpty": "Di {source} de tu encam nehat dîtin.",
+		"kindGroupAll": "Hemû {count} {kind}",
+		"siteNeedsQuery": "Ji bo lêgerîna li malperê peyvekê binivîse.",
+		"librarySoonShort": "Di demeke nêz de"
 	},
 	"Archive": {
 		"pageTitle": "Platforma Arşîvê",

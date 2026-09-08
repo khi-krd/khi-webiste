@@ -14,8 +14,19 @@ import {
 
 export const SEARCH_PAGE_PATH = "/search";
 
-/** Default source when `?source=` is absent — the platform is the flagship. */
-export const DEFAULT_SEARCH_SOURCE: SearchScope = "archive";
+/**
+ * The three sources in display order — the platform leads, it is this page's
+ * flagship. A search runs against every CHECKED source; all three are checked
+ * by default and at least one always stays on.
+ */
+export const SEARCH_SOURCE_ORDER: readonly SearchScope[] = [
+	"archive",
+	"main",
+	"library",
+];
+
+/** What the page renders for a given selection of sources. */
+export type SearchMode = "platform" | "site" | "library" | "mixed";
 
 export type PlatformFilterState = {
 	language: string | null;
@@ -31,7 +42,8 @@ export type PlatformFilterState = {
 };
 
 export type SearchPageState = {
-	source: SearchScope;
+	/** Checked sources, in display order; never empty. */
+	sources: SearchScope[];
 	q: string;
 	/** Active kind tab; null = هەموو (all four). */
 	kind: PlatformMediaKind | null;
@@ -77,11 +89,49 @@ function many(value: string | string[] | undefined): string[] {
 	return result;
 }
 
-function parseSource(value: string | null): SearchScope {
-	if (value === "main" || value === "archive" || value === "library") {
-		return value;
+function isSearchScope(value: string): value is SearchScope {
+	return value === "main" || value === "archive" || value === "library";
+}
+
+/**
+ * `?source=` may be absent (all three), comma-joined (`archive,main`) or
+ * repeated; unknown values are dropped and an empty selection means all.
+ * The result is always in display order, whatever the URL said.
+ */
+function parseSources(value: string | string[] | undefined): SearchScope[] {
+	const raw = many(value).flatMap((entry) => entry.split(","));
+	const chosen = new Set(
+		raw.map((entry) => entry.trim()).filter(isSearchScope),
+	);
+	const ordered = SEARCH_SOURCE_ORDER.filter((scope) => chosen.has(scope));
+	return ordered.length > 0 ? ordered : [...SEARCH_SOURCE_ORDER];
+}
+
+/** The one checked source, or null when several are. */
+export function singleSource(
+	state: Pick<SearchPageState, "sources">,
+): SearchScope | null {
+	return state.sources.length === 1 ? state.sources[0] : null;
+}
+
+export function searchMode(
+	state: Pick<SearchPageState, "sources">,
+): SearchMode {
+	const single = singleSource(state);
+	if (single === "archive") {
+		return "platform";
 	}
-	return DEFAULT_SEARCH_SOURCE;
+	if (single === "main") {
+		return "site";
+	}
+	if (single === "library") {
+		return "library";
+	}
+	return "mixed";
+}
+
+export function isAllSources(sources: readonly SearchScope[]): boolean {
+	return SEARCH_SOURCE_ORDER.every((scope) => sources.includes(scope));
 }
 
 function parseKind(value: string | null): PlatformMediaKind | null {
@@ -103,7 +153,7 @@ function parsePage(value: string | null): number {
 
 export function parseSearchPageState(params: RawSearchParams): SearchPageState {
 	return {
-		source: parseSource(first(params.source)),
+		sources: parseSources(params.source),
 		q: first(params.q) ?? "",
 		kind: parseKind(first(params.type)),
 		sort: parseSort(first(params.sort)),
@@ -143,8 +193,18 @@ export function buildSearchHref(state: Partial<SearchPageState>): string {
 	if (state.q?.trim()) {
 		params.set("q", state.q.trim());
 	}
-	if (state.source && state.source !== DEFAULT_SEARCH_SOURCE) {
-		params.set("source", state.source);
+	// Absent = every source; a partial selection travels comma-joined.
+	if (
+		state.sources &&
+		state.sources.length > 0 &&
+		!isAllSources(state.sources)
+	) {
+		params.set(
+			"source",
+			SEARCH_SOURCE_ORDER.filter((scope) =>
+				state.sources?.includes(scope),
+			).join(","),
+		);
 	}
 	if (state.kind) {
 		params.set("type", state.kind);
@@ -222,6 +282,35 @@ export function withToggledFilter(
 
 export function withClearedFilters(state: SearchPageState): SearchPageState {
 	return { ...state, page: 1, filters: EMPTY_FILTERS };
+}
+
+/**
+ * Check or uncheck one source. The last checked source cannot be removed —
+ * the call is then a no-op. A different selection describes a different
+ * result set, so everything but the query starts over (kind, sort,
+ * refinements, page all belong to the single-platform view).
+ */
+export function withToggledSource(
+	state: SearchPageState,
+	scope: SearchScope,
+): SearchPageState {
+	const on = state.sources.includes(scope);
+	if (on && state.sources.length === 1) {
+		return state;
+	}
+	const next = on
+		? state.sources.filter((entry) => entry !== scope)
+		: SEARCH_SOURCE_ORDER.filter(
+				(entry) => entry === scope || state.sources.includes(entry),
+			);
+	return {
+		...state,
+		sources: next,
+		kind: null,
+		sort: null,
+		page: 1,
+		filters: EMPTY_FILTERS,
+	};
 }
 
 /** Website detail route for one platform item. */

@@ -4,14 +4,19 @@ import { Suspense } from "react";
 import { HeadingRow } from "@/components/search/heading-row";
 import { LibrarySoon } from "@/components/search/library-soon";
 import { PlatformResults } from "@/components/search/platform-results";
-import { ResultsSkeleton } from "@/components/search/results-skeleton";
+import {
+	OverviewSkeleton,
+	ResultsSkeleton,
+} from "@/components/search/results-skeleton";
 import { SearchHeader } from "@/components/search/search-header";
+import { SearchOverview } from "@/components/search/search-overview";
 import { SearchTransitionProvider } from "@/components/search/search-transition";
 import { SiteResults } from "@/components/search/site-results";
 import { homeInsetClass } from "@/lib/layout";
 import {
 	parseSearchPageState,
 	type RawSearchParams,
+	searchMode,
 } from "@/lib/platform/search-url";
 import { localeAlternates } from "@/lib/seo/metadata";
 import { cn } from "@/lib/utils";
@@ -63,6 +68,7 @@ export default async function SearchPage({
 
 	const t = await getTranslations("Search");
 	const state = parseSearchPageState(resolvedSearchParams);
+	const mode = searchMode(state);
 
 	// Suspense identity: a NEW key per query/source/filter combination streams a
 	// fresh skeleton on hard loads, while client transitions keep the previous
@@ -72,7 +78,7 @@ export default async function SearchPage({
 	return (
 		<main className="bg-background">
 			<div className={cn(homeInsetClass, "pb-16 pt-6 sm:pb-24 sm:pt-8")}>
-				<SearchTransitionProvider source={state.source}>
+				<SearchTransitionProvider sourcesKey={state.sources.join(",")}>
 					{/* The provider renders the live region here, ABOVE the
 					    Suspense boundary, so announcements survive remounts. */}
 					<search aria-label={t("heading")}>
@@ -81,22 +87,31 @@ export default async function SearchPage({
 					</search>
 
 					<div className="mt-6 sm:mt-7">
-						{state.source === "archive" ? (
+						{mode === "platform" ? (
 							<Suspense
 								key={resultsKey}
 								fallback={<ResultsSkeleton label={t("skeletonLabel")} />}
 							>
 								<PlatformResults state={state} locale={locale} />
 							</Suspense>
-						) : state.source === "main" ? (
+						) : mode === "site" ? (
 							<Suspense
 								key={resultsKey}
 								fallback={<ResultsSkeleton label={t("skeletonLabel")} />}
 							>
 								<SiteResults q={state.q} locale={locale} />
 							</Suspense>
-						) : (
+						) : mode === "library" ? (
 							<LibrarySoon />
+						) : (
+							// Several sources checked (the default): one classified
+							// overview — by source, and inside the platform by kind.
+							<Suspense
+								key={resultsKey}
+								fallback={<OverviewSkeleton label={t("skeletonLabel")} />}
+							>
+								<SearchOverview state={state} locale={locale} />
+							</Suspense>
 						)}
 					</div>
 				</SearchTransitionProvider>

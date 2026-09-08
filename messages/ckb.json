@@ -1313,7 +1313,19 @@
 		"emptyAllKinds": "گەڕان لە هەموو جۆرەکان",
 		"emptyDidYouMean": "مەبەستت «<bdi>{suggestion}</bdi>» بوو؟",
 		"emptySearchSite": "لە ماڵپەر بگەڕێ بۆ «<bdi>{query}</bdi>»",
-		"untitledKind": "{kind} {number}"
+		"untitledKind": "{kind} {number}",
+		"sourcesLabel": "سەرچاوەکانی گەڕان",
+		"sourceAtLeastOne": "لانیکەم یەک سەرچاوە دەبێت هەڵبژێردرابێت",
+		"sourcesDescriptionMixed": "گەڕان پێکەوە لە {sources}",
+		"overviewResultsFor": "{count} ئەنجام بۆ «{query}» لە {sourceCount} سەرچاوە",
+		"overviewResultsForRich": "{count} ئەنجام بۆ «<bdi>{query}</bdi>» لە {sourceCount} سەرچاوە",
+		"overviewBrowseTitle": "نوێترینەکان لە هەموو سەرچاوەکان",
+		"overviewBrowseDescription": "وشەیەک بنووسە بۆ گەڕان لە هەموو سەرچاوەکان، یان لەم نوێترینانەی پلاتفۆڕم بگەڕێ.",
+		"sourceSectionAll": "هەموو {count} ئەنجامی {source}",
+		"sourceSectionEmpty": "هیچ ئەنجامێک لە {source} نەدۆزرایەوە.",
+		"kindGroupAll": "هەموو {count} {kind}",
+		"siteNeedsQuery": "بۆ گەڕان لە ماڵپەر وشەیەک بنووسە.",
+		"librarySoonShort": "بەم زووانە"
 	},
 	"Archive": {
 		"pageTitle": "پلاتفۆڕمی ئەرشیڤ",

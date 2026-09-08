@@ -30,6 +30,8 @@ type PlatformPlateProps = {
 	locale: string;
 	/** Whether a keyword ran — the "found in" badges only mean something then. */
 	hasQuery: boolean;
+	/** h3 under the results summary; deeper when nested under a kind heading. */
+	titleLevel?: 3 | 4 | 5;
 };
 
 /**
@@ -47,8 +49,10 @@ export async function PlatformPlate({
 	index,
 	locale,
 	hasQuery,
+	titleLevel = 3,
 }: PlatformPlateProps) {
 	const t = await getTranslations("Search");
+	const TitleTag = `h${titleLevel}` as const;
 
 	const kindLabel = t(KIND_LABEL_KEYS[hit.type]);
 	const display = platformDisplayTitle(hit, { locale, kindLabel });
@@ -128,7 +132,7 @@ export async function PlatformPlate({
 						</p>
 					) : null}
 
-					<h3
+					<TitleTag
 						id={titleId}
 						className="text-start font-heading text-body font-semibold leading-snug text-foreground line-clamp-2 [overflow-wrap:anywhere] transition-colors duration-200 group-fine:text-brand sm:text-lead"
 					>
@@ -139,7 +143,7 @@ export async function PlatformPlate({
 						>
 							<bdi>{display.title}</bdi>
 						</SearchNavLink>
-					</h3>
+					</TitleTag>
 
 					{subtitle ? (
 						<p className="line-clamp-1 text-start text-small text-muted [overflow-wrap:anywhere]">
