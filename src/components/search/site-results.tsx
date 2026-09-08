@@ -8,17 +8,19 @@ import {
 	Squares2X2Icon,
 } from "@heroicons/react/24/outline";
 import { getTranslations } from "next-intl/server";
-import type { ComponentProps, ComponentType } from "react";
+import type { ComponentProps, ComponentType, CSSProperties } from "react";
 import { RetryButton } from "@/components/search/retry-button";
 import {
 	SearchNavLink,
 	SearchPendingRegion,
 } from "@/components/search/search-transition";
+import { viewAllCtaClass } from "@/components/ui/cta-styles";
 import { EmptyState } from "@/components/ui/empty-state";
 import { ErrorState } from "@/components/ui/error-state";
 import { Image } from "@/components/ui/image";
 import type {
 	ResolvedGlobalSearchResponse,
+	ResolvedSearchItem,
 	ResolvedSearchSection,
 } from "@/lib/api/search";
 import { buildAudioHref } from "@/lib/audio-url";
@@ -89,6 +91,85 @@ const SECTIONS: SectionDef[] = [
 	},
 ];
 
+/**
+ * One CMS hit in the plate's language: a stretched title link over the row
+ * (`after:` overlay, one tab stop), the article named by its visible title, a
+ * small 4:3 media box at the start, and the focus ring drawn around the whole
+ * row through `has-[a:focus-visible]` so nothing clips it.
+ */
+function SiteRow({
+	item,
+	index,
+	sectionKey,
+	icon: Icon,
+}: {
+	item: ResolvedSearchItem;
+	index: number;
+	sectionKey: SectionDef["key"];
+	icon: SectionDef["icon"];
+}) {
+	const id = `site-${sectionKey}-${item.id}`;
+	const description = stripHtml(item.description);
+
+	return (
+		<li
+			className="search-rise border-b border-border last:border-b-0"
+			style={{ "--i": index } as CSSProperties}
+		>
+			<article
+				aria-labelledby={`${id}-title`}
+				className={cn(
+					"group relative -mx-3 flex items-center gap-4 px-3 py-3",
+					"transition-colors duration-200 fine-hover:bg-surface",
+					"has-[a:focus-visible]:outline-2 has-[a:focus-visible]:outline-ring has-[a:focus-visible]:outline-offset-2",
+				)}
+			>
+				<div className="relative aspect-4/3 w-20 shrink-0 overflow-hidden border border-border bg-sunken">
+					{item.coverUrl?.trim() ? (
+						<Image
+							src={item.coverUrl}
+							alt=""
+							aspectRatio="4/3"
+							sizes="80px"
+							className="absolute inset-0 size-full"
+							imageClassName="object-cover transition-transform duration-500 ease-out group-fine:scale-[1.04] motion-reduce:transition-none motion-reduce:group-fine:scale-100"
+						/>
+					) : (
+						<span
+							aria-hidden
+							className="absolute inset-0 flex items-center justify-center"
+						>
+							<Icon className="size-5 text-muted/60" />
+						</span>
+					)}
+				</div>
+
+				<div className="min-w-0 flex-1">
+					<h4
+						id={`${id}-title`}
+						className={cn(
+							"line-clamp-1 text-start text-body font-medium text-foreground [overflow-wrap:anywhere]",
+							"transition-colors duration-200 group-fine:text-brand",
+						)}
+					>
+						<SearchNavLink
+							href={item.href}
+							className="text-inherit no-underline focus-visible:outline-none after:absolute after:inset-0 after:z-1 after:content-['']"
+						>
+							<bdi>{item.title}</bdi>
+						</SearchNavLink>
+					</h4>
+					{description ? (
+						<p className="mt-0.5 line-clamp-1 text-start text-small text-muted [overflow-wrap:anywhere]">
+							<bdi>{description}</bdi>
+						</p>
+					) : null}
+				</div>
+			</article>
+		</li>
+	);
+}
+
 function SiteSection({
 	def,
 	section,
@@ -109,72 +190,39 @@ function SiteSection({
 	const hasMore = section.totalElements > shown.length;
 
 	return (
-		<section>
-			<div className="flex items-baseline gap-3 border-b border-border pb-2.5">
-				<h3 className="flex items-center gap-2 font-heading text-body font-semibold text-foreground">
+		<section aria-labelledby={`site-${def.key}-heading`}>
+			<div className="flex items-center gap-3">
+				<h3
+					id={`site-${def.key}-heading`}
+					className="flex items-center gap-2 font-heading text-body font-semibold text-foreground"
+				>
 					<Icon className="size-4.5 shrink-0 text-muted" aria-hidden />
 					{label}
 				</h3>
 				<span className="text-label tabular-nums text-muted">
 					{formatCount(locale, section.totalElements)}
 				</span>
+				<span aria-hidden className="h-px flex-1 bg-border" />
 			</div>
 
-			<ul>
-				{shown.map((item) => {
-					const description = stripHtml(item.description);
-					return (
-						<li
-							key={item.id}
-							className="border-b border-border last:border-b-0"
-						>
-							<SearchNavLink
-								href={item.href}
-								className="group flex items-center gap-4 py-3.5"
-							>
-								<div className="relative size-12 shrink-0 overflow-hidden border border-border bg-sunken sm:size-14">
-									{item.coverUrl?.trim() ? (
-										<Image
-											src={item.coverUrl}
-											alt=""
-											aspectRatio="square"
-											sizes="56px"
-											className="absolute inset-0 size-full"
-										/>
-									) : (
-										<span className="absolute inset-0 flex items-center justify-center">
-											<Icon className="size-5 text-muted/60" aria-hidden />
-										</span>
-									)}
-								</div>
-								<span className="min-w-0 flex-1">
-									<span
-										className={cn(
-											"line-clamp-1 text-start text-body font-medium text-foreground",
-											"[overflow-wrap:anywhere] transition-colors group-fine-hover:text-brand",
-										)}
-									>
-										<bdi>{item.title}</bdi>
-									</span>
-									{description ? (
-										<span className="mt-0.5 line-clamp-1 text-start text-small text-muted [overflow-wrap:anywhere]">
-											<bdi>{description}</bdi>
-										</span>
-									) : null}
-								</span>
-							</SearchNavLink>
-						</li>
-					);
-				})}
+			<ul className="mt-1">
+				{shown.map((item, index) => (
+					<SiteRow
+						key={item.id}
+						item={item}
+						index={index}
+						sectionKey={def.key}
+						icon={Icon}
+					/>
+				))}
 			</ul>
 
 			{hasMore ? (
-				<SearchNavLink
-					href={def.viewAllHref(q)}
-					className="mt-3 inline-flex text-small text-muted underline decoration-border underline-offset-4 transition-colors fine-hover:text-foreground fine-hover:decoration-current"
-				>
-					{viewAllLabel}
-				</SearchNavLink>
+				<div className="mt-5">
+					<SearchNavLink href={def.viewAllHref(q)} className={viewAllCtaClass}>
+						<span className="relative z-1">{viewAllLabel}</span>
+					</SearchNavLink>
+				</div>
 			) : null}
 		</section>
 	);

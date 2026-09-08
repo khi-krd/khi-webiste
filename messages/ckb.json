@@ -1291,7 +1291,29 @@
 		"suggestKindPerson": "کەس",
 		"suggestKindProject": "پڕۆژە",
 		"suggestKindCategory": "پۆل",
-		"siteViewAll": "هەموو ئەنجامەکان لە «{section}»"
+		"siteViewAll": "هەموو ئەنجامەکان لە «{section}»",
+		"resultsForRich": "{count} ئەنجام بۆ «<bdi>{query}</bdi>»",
+		"resultsForApproxRich": "زیاتر لە {count} ئەنجام بۆ «<bdi>{query}</bdi>»",
+		"inputPlaceholderMain": "بە هەواڵ، پڕۆژە، ڤیدیۆ، دەنگ، وێنە…",
+		"suggestCount": "{count} پێشنیار بەردەستە",
+		"kindCountLabel": "{label}، {count} ئەنجام",
+		"kindEmptyHint": "لەم ئەنجامانەدا {kind} نییە",
+		"announceResults": "ئەنجامەکان نوێ کرانەوە: {summary}",
+		"skeletonLabel": "ئەنجامەکان بار دەبن",
+		"filtersHide": "شاردنەوەی فلتەرەکان",
+		"filtersClearShort": "لابردن",
+		"refineDone": "پیشاندانی {count} ئەنجام",
+		"refineDoneEmpty": "هیچ ئەنجامێک نییە — داخستن",
+		"facetExpand": "کردنەوەی {group}",
+		"facetCollapse": "داخستنی {group}",
+		"facetSelected": "هەڵبژێردراو",
+		"pageOf": "لاپەڕەی {page} لە {total}",
+		"emptyFilteredTitle": "هیچ ئەنجامێک بەم فلتەرانە نییە",
+		"emptyClearFilters": "لابردنی فلتەرەکان و دووبارە گەڕان",
+		"emptyAllKinds": "گەڕان لە هەموو جۆرەکان",
+		"emptyDidYouMean": "مەبەستت «<bdi>{suggestion}</bdi>» بوو؟",
+		"emptySearchSite": "لە ماڵپەر بگەڕێ بۆ «<bdi>{query}</bdi>»",
+		"untitledKind": "{kind} {number}"
 	},
 	"Archive": {
 		"pageTitle": "پلاتفۆڕمی ئەرشیڤ",
@@ -1375,6 +1397,14 @@
 		"metaDirector": "دەرهێنەر",
 		"metaPhotographer": "وێنەگر",
 		"metaContributors": "بەشداربووان",
-		"metaPersonShown": "کەسی نیشاندراو"
+		"metaPersonShown": "کەسی نیشاندراو",
+		"fileNotPreviewable": "ئەم فایلە لە وێبگەڕدا پیشان نادرێت. بۆ خوێندنەوە، دایبەزێنە و بیکەرەوە.",
+		"downloadFile": "داگرتنی فایل",
+		"fileKindWord": "بەڵگەنامەی Word",
+		"fileKindSpreadsheet": "خشتەی Excel",
+		"fileKindPresentation": "پێشکەشکردنی PowerPoint",
+		"fileKindImage": "وێنە",
+		"fileKindText": "دەقی سادە",
+		"fileKindUnknown": "فایل"
 	}
 }

@@ -28,6 +28,11 @@ export const archivo = localFont({
 	weight: "100 900",
 	variable: "--font-archivo",
 	display: "swap",
+	// No synthesized Arial-based fallback face: Arial ships Arabic glyphs, so
+	// it would swallow every Sorani run on the Kurmanji site before the chain
+	// ever reached Vazirmatn (see --font-sans in globals.css). The woff2 is
+	// local and preloaded, so the swap window this guarded against is tiny.
+	adjustFontFallback: false,
 });
 
 /**
@@ -38,4 +43,6 @@ export const clashDisplay = localFont({
 	weight: "200 700",
 	variable: "--font-clash-display",
 	display: "swap",
+	// Same reasoning as Archivo above.
+	adjustFontFallback: false,
 });

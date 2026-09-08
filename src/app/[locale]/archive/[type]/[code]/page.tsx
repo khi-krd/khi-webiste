@@ -6,6 +6,8 @@ import { PlatformPostView } from "@/components/search/detail/platform-post-view"
 import { RetryButton } from "@/components/search/retry-button";
 import { ErrorState } from "@/components/ui/error-state";
 import { getPlatformMediaDetail } from "@/lib/api/platform";
+import { platformDisplayTitle } from "@/lib/platform/display";
+import { KIND_LABEL_KEYS } from "@/lib/platform/kind-labels";
 import { localeAlternates } from "@/lib/seo/metadata";
 import { PLATFORM_MEDIA_KINDS, type PlatformMediaKind } from "@/types/platform";
 
@@ -29,7 +31,10 @@ export async function generateMetadata({
 	params,
 }: ArchiveItemPageProps): Promise<Metadata> {
 	const { locale, type, code } = await params;
-	const t = await getTranslations({ locale, namespace: "Archive" });
+	const [t, tSearch] = await Promise.all([
+		getTranslations({ locale, namespace: "Archive" }),
+		getTranslations({ locale, namespace: "Search" }),
+	]);
 
 	const kind = parseKind(type);
 	const detail = kind ? await loadDetail(kind, code) : null;
@@ -43,7 +48,12 @@ export async function generateMetadata({
 		};
 	}
 
-	const title = detail.item.title?.trim() || detail.item.code;
+	// Never the raw code: an untitled record gets the same composed label the
+	// page's h1 prints («غوڵام عەلی ڕۆمی · ڤیدیۆ ١»).
+	const { title } = platformDisplayTitle(detail.item, {
+		locale,
+		kindLabel: tSearch(KIND_LABEL_KEYS[detail.type]),
+	});
 	const description = detail.item.description?.trim() || t("metaDescription");
 
 	return {

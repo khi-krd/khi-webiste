@@ -1,5 +1,6 @@
 import { type NextRequest, NextResponse } from "next/server";
 import { getPlatformSuggestions } from "@/lib/api/platform";
+import { isPlatformCode } from "@/lib/platform/display";
 
 export const dynamic = "force-dynamic";
 
@@ -34,7 +35,11 @@ export async function GET(request: NextRequest) {
 		);
 	}
 
-	const data = await getPlatformSuggestions(q, limit);
+	// Untitled records suggest their own code (`…_VID_RAW_V1_Copy(1)_000001`);
+	// a code is a routing key, never something to offer a reader.
+	const data = (await getPlatformSuggestions(q, limit)).filter(
+		(suggestion) => !isPlatformCode(suggestion.value, suggestion.code),
+	);
 
 	return NextResponse.json(
 		{ success: true, data },

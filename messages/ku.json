@@ -1291,7 +1291,29 @@
 		"suggestKindPerson": "Kes",
 		"suggestKindProject": "Proje",
 		"suggestKindCategory": "Kategorî",
-		"siteViewAll": "Hemû encam di «{section}» de"
+		"siteViewAll": "Hemû encam di «{section}» de",
+		"resultsForRich": "{count} encam ji bo «<bdi>{query}</bdi>»",
+		"resultsForApproxRich": "Zêdetirî {count} encam ji bo «<bdi>{query}</bdi>»",
+		"inputPlaceholderMain": "Bi nûçe, proje, vîdyo, deng, wêne…",
+		"suggestCount": "{count} pêşniyar berdest in",
+		"kindCountLabel": "{label}, {count} encam",
+		"kindEmptyHint": "Di van encaman de {kind} tune",
+		"announceResults": "Encam hatin nûkirin: {summary}",
+		"skeletonLabel": "Encam tên barkirin",
+		"filtersHide": "Fîltreyan veşêre",
+		"filtersClearShort": "Rake",
+		"refineDone": "{count} encaman nîşan bide",
+		"refineDoneEmpty": "Tu encam nînin — bigire",
+		"facetExpand": "{group} veke",
+		"facetCollapse": "{group} bigire",
+		"facetSelected": "hilbijartî",
+		"pageOf": "Rûpela {page} ji {total}",
+		"emptyFilteredTitle": "Bi van fîltreyan tu encam nîne",
+		"emptyClearFilters": "Fîltreyan rake û dîsa bigere",
+		"emptyAllKinds": "Li hemû cureyan bigere",
+		"emptyDidYouMean": "Mebesta te «<bdi>{suggestion}</bdi>» bû?",
+		"emptySearchSite": "Li malperê bigere ji bo «<bdi>{query}</bdi>»",
+		"untitledKind": "{kind} {number}"
 	},
 	"Archive": {
 		"pageTitle": "Platforma Arşîvê",
@@ -1375,6 +1397,14 @@
 		"metaDirector": "Derhêner",
 		"metaPhotographer": "Wênegir",
 		"metaContributors": "Beşdar",
-		"metaPersonShown": "Kesê tê nîşandan"
+		"metaPersonShown": "Kesê tê nîşandan",
+		"fileNotPreviewable": "Ev pel di gerokê de nayê pêşandan. Ji bo xwendinê, dakêşe û veke.",
+		"downloadFile": "Pelê dakêşe",
+		"fileKindWord": "Belgenameya Word",
+		"fileKindSpreadsheet": "Tabloya Excel",
+		"fileKindPresentation": "Pêşkêşiya PowerPoint",
+		"fileKindImage": "Wêne",
+		"fileKindText": "Nivîsa sade",
+		"fileKindUnknown": "Pel"
 	}
 }

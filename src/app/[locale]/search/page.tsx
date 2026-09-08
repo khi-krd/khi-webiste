@@ -1,13 +1,13 @@
 import type { Metadata } from "next";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { Suspense } from "react";
+import { HeadingRow } from "@/components/search/heading-row";
 import { LibrarySoon } from "@/components/search/library-soon";
 import { PlatformResults } from "@/components/search/platform-results";
 import { ResultsSkeleton } from "@/components/search/results-skeleton";
 import { SearchHeader } from "@/components/search/search-header";
 import { SearchTransitionProvider } from "@/components/search/search-transition";
 import { SiteResults } from "@/components/search/site-results";
-import { SourceTabs } from "@/components/search/source-tabs";
 import { homeInsetClass } from "@/lib/layout";
 import {
 	parseSearchPageState,
@@ -46,6 +46,10 @@ export async function generateMetadata({
  * The unified results page: one query, three sources — ماڵپەر (this site's
  * CMS), پلاتفۆڕم (the archive platform) and کتێبخانە (coming). The URL carries
  * the whole search state, so every view is shareable and survives refresh.
+ *
+ * Two rows of chrome before the results: the heading line (h1 + source
+ * description) and the command bar (scope segment · input · submit). Kind
+ * chips, toolbar and refinements belong to the results tree itself.
  */
 export default async function SearchPage({
 	params,
@@ -67,26 +71,28 @@ export default async function SearchPage({
 
 	return (
 		<main className="bg-background">
-			<div className={cn(homeInsetClass, "pb-16 pt-8 sm:pb-24 sm:pt-12")}>
-				<SearchTransitionProvider>
-					<header className="max-w-3xl">
-						<h1 className="mb-5 font-heading text-h2 font-bold text-foreground sm:mb-7 sm:text-h1">
-							{t("heading")}
-						</h1>
+			<div className={cn(homeInsetClass, "pb-16 pt-6 sm:pb-24 sm:pt-8")}>
+				<SearchTransitionProvider source={state.source}>
+					{/* The provider renders the live region here, ABOVE the
+					    Suspense boundary, so announcements survive remounts. */}
+					<search aria-label={t("heading")}>
+						<HeadingRow state={state} />
 						<SearchHeader state={state} />
-					</header>
+					</search>
 
-					<div className="mt-8 sm:mt-10">
-						<SourceTabs state={state} />
-					</div>
-
-					<div className="mt-6 sm:mt-8">
+					<div className="mt-6 sm:mt-7">
 						{state.source === "archive" ? (
-							<Suspense key={resultsKey} fallback={<ResultsSkeleton />}>
+							<Suspense
+								key={resultsKey}
+								fallback={<ResultsSkeleton label={t("skeletonLabel")} />}
+							>
 								<PlatformResults state={state} locale={locale} />
 							</Suspense>
 						) : state.source === "main" ? (
-							<Suspense key={resultsKey} fallback={<ResultsSkeleton />}>
+							<Suspense
+								key={resultsKey}
+								fallback={<ResultsSkeleton label={t("skeletonLabel")} />}
+							>
 								<SiteResults q={state.q} locale={locale} />
 							</Suspense>
 						) : (

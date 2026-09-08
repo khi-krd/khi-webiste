@@ -22,6 +22,10 @@ type PaginationProps = {
 	siblingCount?: number;
 	/** Client-side navigation — keeps href for SEO while avoiding full scroll reset. */
 	onPageChange?: (page: number) => void;
+	/** Visible label for a page number (e.g. locale digits). Default `String`. */
+	formatPage?: (page: number) => string;
+	/** "lg" = 44px targets for touch-first pages. Default "md" (36px). */
+	size?: "md" | "lg";
 	className?: string;
 };
 
@@ -58,8 +62,13 @@ function buildPages(
 	];
 }
 
-const itemBase =
-	"inline-flex h-9 min-w-9 items-center justify-center rounded-md px-2 text-small";
+const itemSizes = {
+	md: "h-9 min-w-9 px-2",
+	lg: "h-11 min-w-11 px-3",
+} as const;
+
+const itemStatic =
+	"inline-flex items-center justify-center rounded-md text-small";
 
 /**
  * Accessible pager: <nav aria-label> + previous/next controls and numbered
@@ -80,8 +89,11 @@ export function Pagination({
 	nextLabel = "Next",
 	siblingCount = 1,
 	onPageChange,
+	formatPage = String,
+	size = "md",
 	className,
 }: PaginationProps) {
+	const itemBase = cn(itemStatic, itemSizes[size]);
 	const handlePageClick =
 		(page: number) => (event: MouseEvent<HTMLAnchorElement>) => {
 			if (!onPageChange) return;
@@ -143,7 +155,7 @@ export function Pagination({
 										"bg-primary font-medium text-primary-foreground",
 									)}
 								>
-									{page}
+									{formatPage(page)}
 								</span>
 							) : (
 								<Link
@@ -152,7 +164,7 @@ export function Pagination({
 									onClick={handlePageClick(page)}
 									className={cn(itemBase, "text-foreground hover:bg-sunken")}
 								>
-									{page}
+									{formatPage(page)}
 								</Link>
 							)}
 						</li>

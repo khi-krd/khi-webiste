@@ -1,9 +1,14 @@
-import { getTranslations } from "next-intl/server";
+import { getLocale, getTranslations } from "next-intl/server";
 import { KindIcon } from "@/components/search/kind-icon";
-import { KIND_LABEL_KEYS } from "@/components/search/platform-hit-row";
 import { Heading } from "@/components/ui/heading";
 import { Image } from "@/components/ui/image";
 import { Link } from "@/i18n/navigation";
+import {
+	humanizePlatformName,
+	platformDisplaySubtitle,
+	platformDisplayTitle,
+} from "@/lib/platform/display";
+import { KIND_LABEL_KEYS } from "@/lib/platform/kind-labels";
 import { platformDetailHref } from "@/lib/platform/search-url";
 import { cn } from "@/lib/utils";
 import type { PlatformHit } from "@/types/platform";
@@ -13,12 +18,23 @@ import type { PlatformHit } from "@/types/platform";
  * video, one photo, one document, then round again), so the rail always shows
  * the collection's breadth rather than thirty photographs from one shoot.
  */
-export async function PlatformRelatedRail({ items }: { items: PlatformHit[] }) {
+export async function PlatformRelatedRail({
+	items,
+	/** The page's own collection — an item from the same one prints no project line. */
+	projectName,
+}: {
+	items: PlatformHit[];
+	projectName?: string | null;
+}) {
 	if (items.length === 0) {
 		return null;
 	}
-	const t = await getTranslations("Archive");
-	const tSearch = await getTranslations("Search");
+	const [locale, t, tSearch] = await Promise.all([
+		getLocale(),
+		getTranslations("Archive"),
+		getTranslations("Search"),
+	]);
+	const pageProject = humanizePlatformName(projectName);
 
 	return (
 		<section aria-labelledby="platform-related-title">
@@ -31,7 +47,13 @@ export async function PlatformRelatedRail({ items }: { items: PlatformHit[] }) {
 
 			<ul className="grid grid-cols-2 gap-x-4 gap-y-6 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6">
 				{items.map((hit) => {
-					const title = hit.title?.trim() || hit.code;
+					const kindLabel = tSearch(KIND_LABEL_KEYS[hit.type]);
+					const display = platformDisplayTitle(hit, { locale, kindLabel });
+					const title = display.title;
+					const subtitle = platformDisplaySubtitle(hit, display);
+					const itemProject = humanizePlatformName(hit.projectName);
+					const projectLine =
+						itemProject && itemProject !== pageProject ? itemProject : null;
 					return (
 						<li key={`${hit.type}:${hit.code}`}>
 							<Link
@@ -46,7 +68,7 @@ export async function PlatformRelatedRail({ items }: { items: PlatformHit[] }) {
 											aspectRatio="square"
 											sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 16vw"
 											className="absolute inset-0 size-full"
-											imageClassName="transition-transform duration-500 ease-out group-fine-hover:scale-[1.04] motion-reduce:transition-none motion-reduce:group-fine-hover:scale-100"
+											imageClassName="transition-transform duration-500 ease-out group-fine:scale-[1.04] motion-reduce:transition-none motion-reduce:group-fine:scale-100"
 										/>
 									) : (
 										<span className="absolute inset-0 flex items-center justify-center">
@@ -66,18 +88,36 @@ export async function PlatformRelatedRail({ items }: { items: PlatformHit[] }) {
 									) : null}
 								</div>
 
-								<p className="label mt-2 flex items-center gap-1 font-medium">
-									<KindIcon kind={hit.type} className="size-3.5 shrink-0" />
-									{tSearch(KIND_LABEL_KEYS[hit.type])}
+								<p className="label mt-2 flex min-w-0 items-center gap-x-2 font-medium">
+									<span className="inline-flex shrink-0 items-center gap-1">
+										<KindIcon kind={hit.type} className="size-3.5 shrink-0" />
+										{kindLabel}
+									</span>
+									{projectLine ? (
+										<>
+											<span aria-hidden>·</span>
+											<span
+												dir="auto"
+												className="min-w-0 line-clamp-1 normal-case tracking-normal [overflow-wrap:anywhere]"
+											>
+												{projectLine}
+											</span>
+										</>
+									) : null}
 								</p>
 								<p
 									className={cn(
-										"mt-1 line-clamp-2 text-start text-small font-medium leading-snug text-foreground",
-										"transition-colors group-fine-hover:text-brand",
+										"mt-1 line-clamp-2 text-start text-small font-medium leading-snug text-foreground [overflow-wrap:anywhere]",
+										"transition-colors group-fine:text-brand",
 									)}
 								>
 									<bdi>{title}</bdi>
 								</p>
+								{subtitle ? (
+									<p className="mt-0.5 line-clamp-1 text-start text-label text-muted [overflow-wrap:anywhere]">
+										<bdi>{subtitle}</bdi>
+									</p>
+								) : null}
 							</Link>
 						</li>
 					);

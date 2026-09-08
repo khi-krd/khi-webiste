@@ -1,6 +1,6 @@
 "use client";
 
-import { MediaPlayer } from "@vidstack/react";
+import { MediaPlayer, type VideoMimeType } from "@vidstack/react";
 import "@vidstack/react/player/styles/base.css";
 import "@vidstack/react/player/styles/default/controls.css";
 import "@vidstack/react/player/styles/default/poster.css";
@@ -19,6 +19,14 @@ export type VideoPlayerVariant = "minimal" | "full";
 export type VideoPlayerProps = {
 	/** MP4/HLS path or YouTube URL / ID / `youtube/VIDEO_ID`. */
 	src: string;
+	/**
+	 * MIME type of a file `src` whose URL carries no extension (a streaming
+	 * endpoint such as the archive platform's `/stream`). Vidstack picks its
+	 * provider from the extension or the declared type; with neither it falls
+	 * back to a cross-origin HEAD request, which the platform's CORS policy
+	 * refuses — and the player never loads. Ignored for YouTube sources.
+	 */
+	mimeType?: VideoMimeType;
 	title: string;
 	poster?: string;
 	posterAlt?: string;
@@ -30,6 +38,7 @@ export type VideoPlayerProps = {
 
 export function VideoPlayer({
 	src,
+	mimeType,
 	title,
 	poster,
 	posterAlt,
@@ -43,7 +52,10 @@ export function VideoPlayer({
 	}
 
 	const youTubeId = parseYouTubeVideoId(trimmedSrc);
-	const resolvedSrc = toVidstackSrc(trimmedSrc);
+	const resolvedSrc =
+		!youTubeId && mimeType
+			? { src: trimmedSrc, type: mimeType }
+			: toVidstackSrc(trimmedSrc);
 	const embed = youTubeId ? "youtube" : "file";
 	const Layout = youTubeId
 		? KhiVideoPlayerLayoutYouTube

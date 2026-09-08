@@ -1,10 +1,11 @@
-import {
-	AdjustmentsHorizontalIcon,
-	CheckIcon,
-	ChevronDownIcon,
-} from "@heroicons/react/24/outline";
+import { CheckIcon } from "@heroicons/react/20/solid";
 import { getTranslations } from "next-intl/server";
+import { RefineDone } from "@/components/search/refine-done";
+import { RefineGroup } from "@/components/search/refine-group";
+import { RefineInlineShell } from "@/components/search/refine-inline-shell";
 import { SearchNavLink } from "@/components/search/search-transition";
+import { Badge } from "@/components/ui/badge";
+import { humanizePlatformName } from "@/lib/platform/display";
 import { formatCount, formatDecadeLabel } from "@/lib/platform/format";
 import {
 	buildSearchHref,
@@ -19,8 +20,13 @@ import {
 import { cn } from "@/lib/utils";
 import type { PlatformFacetBucket, PlatformFacets } from "@/types/platform";
 
-/** Buckets shown before the group folds the rest behind "زیاتر". */
-const VISIBLE_BUCKETS = 8;
+/**
+ * Buckets shown before the group folds the rest behind "زیاتر". Keywords and
+ * tags are mostly spelling variants; persons and projects rarely exceed five.
+ */
+const VISIBLE_BUCKETS = 5;
+
+type RefineVariant = "sidebar" | "inline";
 
 type FacetLabelKey =
 	| "facetPerson"
@@ -94,6 +100,17 @@ const GROUPS: GroupDef[] = [
 	},
 ];
 
+/** Groups that start open in the sidebar; the inline panel starts folded. */
+const SIDEBAR_DEFAULT_OPEN = new Set<keyof PlatformFacets>([
+	"persons",
+	"projects",
+	"decades",
+]);
+
+/**
+ * The filter VALUE — for persons/projects the code (never shown; it lives in
+ * the URL only), for everything else the label itself.
+ */
 function bucketValue(bucket: PlatformFacetBucket, useCode?: boolean): string {
 	return (useCode ? bucket.code : bucket.label) ?? bucket.label;
 }
@@ -102,7 +119,7 @@ function bucketState(
 	state: SearchPageState,
 	def: GroupDef,
 	bucket: PlatformFacetBucket,
-): { active: boolean; href: string } {
+): { active: boolean; href: string; value: string } {
 	const value = bucketValue(
 		bucket,
 		def.mode.kind === "single" ? def.mode.useCode : false,
@@ -111,6 +128,7 @@ function bucketState(
 		const active = state.filters[def.mode.param] === value;
 		return {
 			active,
+			value,
 			href: buildSearchHref(
 				withSingleFilter(state, def.mode.param, active ? null : value),
 			),
@@ -119,147 +137,194 @@ function bucketState(
 	const active = state.filters[def.mode.param].includes(value);
 	return {
 		active,
+		value,
 		href: buildSearchHref(withToggledFilter(state, def.mode.param, value)),
 	};
 }
 
+/** How many of this group's filters are set — decides its default fold. */
+function activeInGroup(state: SearchPageState, def: GroupDef): number {
+	if (def.mode.kind === "single") {
+		return state.filters[def.mode.param] ? 1 : 0;
+	}
+	return state.filters[def.mode.param].length;
+}
+
+/**
+ * A facet row: a real link with a radio (single-select) or check
+ * (multi-select) square. The full row is the hit area.
+ */
 function FacetRow({
 	active,
 	href,
+	focusKey,
 	label,
 	count,
 	locale,
+	single,
+	selectedLabel,
 }: {
 	active: boolean;
 	href: string;
+	focusKey: string;
 	label: string;
 	count: number;
 	locale: string;
+	single: boolean;
+	selectedLabel: string;
 }) {
+	const glyphClass = cn(
+		"transition-transform duration-200 ease-[cubic-bezier(0.34,1.56,0.64,1)]",
+		active ? "scale-100" : "scale-0",
+	);
+
 	return (
 		<li>
 			<SearchNavLink
 				href={href}
-				aria-pressed={active}
+				aria-current={active ? "true" : undefined}
+				data-focus-key={focusKey}
 				className={cn(
-					"group/facet flex w-full items-center gap-2.5 py-1.5 text-small transition-colors",
+					"group/facet flex min-h-11 w-full items-center gap-2.5 py-1 text-small transition-colors lg:min-h-9",
 					active ? "text-foreground" : "text-muted fine-hover:text-foreground",
 				)}
 			>
 				<span
 					aria-hidden
 					className={cn(
-						"flex size-4 shrink-0 items-center justify-center border transition-colors",
+						"flex size-4 shrink-0 items-center justify-center border transition-[background-color,border-color] duration-200",
 						active
 							? "border-primary bg-primary"
-							: "border-border-strong bg-transparent group-fine-hover/facet:border-foreground/50",
+							: "border-border-strong group-fine-hover/facet:border-foreground/50",
 					)}
 				>
-					<CheckIcon
-						className={cn(
-							"size-3 text-primary-foreground transition-opacity",
-							active ? "opacity-100" : "opacity-0",
-						)}
-					/>
+					{single ? (
+						<span
+							className={cn("block size-2 bg-primary-foreground", glyphClass)}
+						/>
+					) : (
+						<CheckIcon
+							className={cn("size-3 text-primary-foreground", glyphClass)}
+						/>
+					)}
 				</span>
-				<span className="min-w-0 flex-1 truncate text-start">
-					<bdi>{label}</bdi>
+				<span className="min-w-0 flex-1 line-clamp-1 text-start [overflow-wrap:anywhere]">
+					<bdi dir="auto">{label}</bdi>
 				</span>
-				<span className="shrink-0 text-label tabular-nums text-muted/80">
+				<span
+					className={cn(
+						"shrink-0 text-label tabular-nums",
+						active ? "text-foreground" : "text-muted",
+					)}
+				>
 					{formatCount(locale, count)}
 				</span>
+				{active ? (
+					<span className="visually-hidden">{selectedLabel}</span>
+				) : null}
 			</SearchNavLink>
 		</li>
 	);
 }
 
+/** One list facet group: visible rows, folded rows, client fold shell. */
 function FacetGroup({
-	title,
-	moreLabel,
 	def,
 	buckets,
 	state,
 	locale,
+	variant,
+	title,
+	moreLabel,
+	selectedLabel,
 }: {
-	title: string;
-	moreLabel: string;
 	def: GroupDef;
 	buckets: PlatformFacetBucket[];
 	state: SearchPageState;
 	locale: string;
+	variant: RefineVariant;
+	title: string;
+	moreLabel: string;
+	selectedLabel: string;
 }) {
+	const single = def.mode.kind === "single";
+	const param = def.mode.param;
 	const visible = buckets.slice(0, VISIBLE_BUCKETS);
 	const folded = buckets.slice(VISIBLE_BUCKETS);
 
+	const renderRows = (list: PlatformFacetBucket[]) =>
+		list.map((bucket) => {
+			const { active, href, value } = bucketState(state, def, bucket);
+			return (
+				<FacetRow
+					key={`${bucket.code ?? ""}:${bucket.label}`}
+					active={active}
+					href={href}
+					focusKey={`facet:${variant}:${param}:${value}`}
+					label={
+						def.facet === "projects"
+							? (humanizePlatformName(bucket.label) ?? bucket.label)
+							: bucket.label
+					}
+					count={bucket.count}
+					locale={locale}
+					single={single}
+					selectedLabel={selectedLabel}
+				/>
+			);
+		});
+
 	return (
-		<section className="border-t border-border pt-4 first:border-t-0 first:pt-0">
-			<h4 className="label mb-2 font-medium">{title}</h4>
-			<ul>
-				{visible.map((bucket) => {
-					const { active, href } = bucketState(state, def, bucket);
-					return (
-						<FacetRow
-							key={`${bucket.code ?? ""}${bucket.label}`}
-							active={active}
-							href={href}
-							label={bucket.label}
-							count={bucket.count}
-							locale={locale}
-						/>
-					);
-				})}
+		<RefineGroup
+			groupKey={`${variant}:${def.facet}`}
+			title={title}
+			defaultOpen={variant === "sidebar" && SIDEBAR_DEFAULT_OPEN.has(def.facet)}
+			activeInGroup={activeInGroup(state, def)}
+			bucketCount={buckets.length}
+			locale={locale}
+			moreLabel={moreLabel}
+			folded={
+				folded.length > 0 ? (
+					<ul className="pb-2">{renderRows(folded)}</ul>
+				) : undefined
+			}
+		>
+			<ul className={cn(folded.length > 0 ? "pb-0" : "pb-2")}>
+				{renderRows(visible)}
 			</ul>
-			{folded.length > 0 ? (
-				<details className="group/more mt-1">
-					<summary
-						className={cn(
-							"flex cursor-pointer list-none items-center gap-1.5 py-1 text-label text-muted",
-							"transition-colors fine-hover:text-foreground [&::-webkit-details-marker]:hidden",
-						)}
-					>
-						{moreLabel}
-						<ChevronDownIcon
-							className="size-3.5 transition-transform group-open/more:rotate-180"
-							aria-hidden
-						/>
-					</summary>
-					<ul>
-						{folded.map((bucket) => {
-							const { active, href } = bucketState(state, def, bucket);
-							return (
-								<FacetRow
-									key={`${bucket.code ?? ""}${bucket.label}`}
-									active={active}
-									href={href}
-									label={bucket.label}
-									count={bucket.count}
-									locale={locale}
-								/>
-							);
-						})}
-					</ul>
-				</details>
-			) : null}
-		</section>
+		</RefineGroup>
 	);
 }
 
 /** The decades read as a timeline — chips in chronological order. */
 function DecadeGroup({
-	title,
 	buckets,
 	state,
 	locale,
+	variant,
+	title,
+	moreLabel,
+	selectedLabel,
 }: {
-	title: string;
 	buckets: PlatformFacetBucket[];
 	state: SearchPageState;
 	locale: string;
+	variant: RefineVariant;
+	title: string;
+	moreLabel: string;
+	selectedLabel: string;
 }) {
 	return (
-		<section className="border-t border-border pt-4">
-			<h4 className="label mb-2.5 font-medium">{title}</h4>
-			<ul className="flex flex-wrap gap-1.5">
+		<RefineGroup
+			groupKey={`${variant}:decades`}
+			title={title}
+			defaultOpen={variant === "sidebar"}
+			activeInGroup={state.filters.decade ? 1 : 0}
+			bucketCount={buckets.length}
+			locale={locale}
+			moreLabel={moreLabel}
+		>
+			<ul className="flex flex-wrap gap-1.5 pb-3">
 				{buckets.map((bucket) => {
 					const active = state.filters.decade === bucket.label;
 					const href = buildSearchHref(
@@ -269,15 +334,13 @@ function DecadeGroup({
 						<li key={bucket.label}>
 							<SearchNavLink
 								href={href}
-								aria-pressed={active}
+								aria-current={active ? "true" : undefined}
+								data-focus-key={`facet:${variant}:decade:${bucket.label}`}
 								className={cn(
-									"inline-flex items-center gap-1.5 border px-2.5 py-1 text-label transition-colors",
+									"inline-flex h-10 items-center gap-1.5 border px-2.5 text-label transition-colors lg:h-8",
 									active
 										? "border-primary bg-primary text-primary-foreground"
-										: cn(
-												"border-border-strong text-muted",
-												"fine-hover:border-foreground/50 fine-hover:text-foreground",
-											),
+										: "border-border-strong text-muted fine-hover:border-foreground/50 fine-hover:text-foreground",
 								)}
 							>
 								<span dir="ltr" className="tabular-nums">
@@ -286,17 +349,20 @@ function DecadeGroup({
 								<span
 									className={cn(
 										"tabular-nums",
-										active ? "text-primary-foreground/70" : "text-muted/70",
+										active ? "text-primary-foreground/80" : "text-muted",
 									)}
 								>
 									{formatCount(locale, bucket.count)}
 								</span>
+								{active ? (
+									<span className="visually-hidden">{selectedLabel}</span>
+								) : null}
 							</SearchNavLink>
 						</li>
 					);
 				})}
 			</ul>
-		</section>
+		</RefineGroup>
 	);
 }
 
@@ -304,8 +370,10 @@ type RefinePanelProps = {
 	state: SearchPageState;
 	facets: PlatformFacets | null | undefined;
 	locale: string;
-	/** "sidebar" = always-open desktop column; "disclosure" = mobile fold. */
-	variant: "sidebar" | "disclosure";
+	/** "sidebar" = desktop paper column (≥lg); "inline" = mobile fold (<lg). */
+	variant: RefineVariant;
+	/** Matched total of the current page — the live count on the done button. */
+	totalElements: number;
 };
 
 /** True when there is anything to refine by at all. */
@@ -323,12 +391,15 @@ export function hasRefinements(
 /**
  * The refine panel — facet counts computed over the matched set, so every
  * number is a promise: click it and that is exactly how many results remain.
+ * Rendered twice (sidebar ≥lg, inline <lg); the fold state of each copy lives
+ * in the transition context under its own `${variant}:${facet}` key.
  */
 export async function RefinePanel({
 	state,
 	facets,
 	locale,
 	variant,
+	totalElements,
 }: RefinePanelProps) {
 	const t = await getTranslations("Search");
 	if (!facets || !hasRefinements(facets)) {
@@ -336,9 +407,12 @@ export async function RefinePanel({
 	}
 
 	const activeCount = countActiveFilters(state.filters);
+	const clearedHref = buildSearchHref(withClearedFilters(state));
+	const moreLabel = t("facetMore");
+	const selectedLabel = t("facetSelected");
 
-	const body = (
-		<div className="flex flex-col gap-4">
+	const groups = (
+		<>
 			{GROUPS.map((def) => {
 				const buckets = facets[def.facet] ?? [];
 				if (buckets.length === 0) {
@@ -347,72 +421,87 @@ export async function RefinePanel({
 				return (
 					<FacetGroup
 						key={def.facet}
-						title={t(def.labelKey)}
-						moreLabel={t("facetMore")}
 						def={def}
 						buckets={buckets}
 						state={state}
 						locale={locale}
+						variant={variant}
+						title={t(def.labelKey)}
+						moreLabel={moreLabel}
+						selectedLabel={selectedLabel}
 					/>
 				);
 			})}
 			{(facets.decades?.length ?? 0) > 0 ? (
 				<DecadeGroup
-					title={t("facetDecade")}
 					buckets={facets.decades ?? []}
 					state={state}
 					locale={locale}
+					variant={variant}
+					title={t("facetDecade")}
+					moreLabel={moreLabel}
+					selectedLabel={selectedLabel}
 				/>
 			) : null}
-			{activeCount > 0 ? (
-				<div className="border-t border-border pt-4">
-					<SearchNavLink
-						href={buildSearchHref(withClearedFilters(state))}
-						className="text-small text-muted underline decoration-border underline-offset-4 transition-colors fine-hover:text-foreground fine-hover:decoration-current"
-					>
-						{t("filtersClear")}
-					</SearchNavLink>
-				</div>
-			) : null}
-		</div>
+		</>
 	);
 
-	if (variant === "disclosure") {
+	if (variant === "inline") {
 		return (
-			<details className="group/refine border border-border bg-surface">
-				<summary
-					className={cn(
-						"flex cursor-pointer list-none items-center gap-2.5 px-4 py-3",
-						"font-heading text-small font-semibold text-foreground",
-						"[&::-webkit-details-marker]:hidden",
-					)}
-				>
-					<AdjustmentsHorizontalIcon
-						className="size-4.5 shrink-0"
-						aria-hidden
-					/>
-					{t("filtersShow")}
-					{activeCount > 0 ? (
-						<span className="inline-flex min-w-5 items-center justify-center bg-primary px-1.5 py-0.5 text-label tabular-nums text-primary-foreground">
-							{formatCount(locale, activeCount)}
-						</span>
-					) : null}
-					<ChevronDownIcon
-						className="ms-auto size-4 shrink-0 text-muted transition-transform group-open/refine:rotate-180"
-						aria-hidden
-					/>
-				</summary>
-				<div className="border-t border-border px-4 py-4">{body}</div>
-			</details>
+			<RefineInlineShell>
+				<div className="mt-4 border border-border bg-surface">
+					<div className="px-4 [&>section:last-child]:border-b-0">{groups}</div>
+					{/* No max-height and no inner scroll on the panel, so this footer
+					    sticks to the VIEWPORT edge while any part of it is on screen. */}
+					<div className="sticky bottom-0 z-10 flex items-center gap-3 border-t border-border bg-surface px-4 py-3 pb-[max(0.75rem,env(safe-area-inset-bottom))]">
+						<RefineDone count={totalElements} locale={locale} />
+						{activeCount > 0 ? (
+							<SearchNavLink
+								href={clearedHref}
+								data-focus-key="refine:clear"
+								className="text-small text-muted underline decoration-border underline-offset-4 transition-colors fine-hover:text-foreground fine-hover:decoration-current"
+							>
+								{t("filtersClearShort")}
+							</SearchNavLink>
+						) : null}
+					</div>
+				</div>
+			</RefineInlineShell>
 		);
 	}
 
 	return (
-		<aside aria-label={t("filtersTitle")}>
-			<h3 className="mb-4 font-heading text-body font-semibold text-foreground">
-				{t("filtersTitle")}
-			</h3>
-			{body}
+		<aside
+			aria-labelledby="refine-title"
+			className={cn(
+				"hidden lg:col-start-1 lg:row-start-1 lg:block",
+				"lg:sticky lg:top-[calc(var(--header-h)+1.5rem)] lg:max-h-[calc(100dvh-var(--header-h)-3rem)]",
+				"lg:overflow-y-auto lg:overscroll-contain lg:pe-2 [scrollbar-width:thin]",
+			)}
+		>
+			<div className="flex items-baseline gap-2 border-b border-foreground pb-2.5">
+				<h3
+					id="refine-title"
+					className="font-heading text-body font-semibold text-foreground"
+				>
+					{t("filtersTitle")}
+				</h3>
+				{activeCount > 0 ? (
+					<Badge variant="solid" size="sm" className="tabular-nums">
+						{formatCount(locale, activeCount)}
+					</Badge>
+				) : null}
+				{activeCount > 0 ? (
+					<SearchNavLink
+						href={clearedHref}
+						data-focus-key="chip:clear"
+						className="ms-auto text-label text-muted underline decoration-border underline-offset-4 transition-colors fine-hover:text-foreground fine-hover:decoration-current"
+					>
+						{t("filtersClearShort")}
+					</SearchNavLink>
+				) : null}
+			</div>
+			{groups}
 		</aside>
 	);
 }

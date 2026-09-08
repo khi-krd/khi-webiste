@@ -101,8 +101,12 @@
 	   The script-aware family switch happens in base via --font-app-* variables:
 	   - ckb: Vazirmatn for body + headings
 	   - ku/en: Archivo body + Clash Display headings */
-	--font-sans: var(--font-app-body), ui-sans-serif, system-ui, "Segoe UI",
-		sans-serif;
+	/* Vazirmatn sits behind the Latin faces on purpose: Archivo and Clash carry
+	   no Arabic glyphs, so Sorani-script content on the Kurmanji site (platform
+	   titles, names, CMS excerpts) would otherwise drop to a random system Arabic
+	   face. Per-glyph fallback picks it up only where the primary face is silent. */
+	--font-sans: var(--font-app-body), var(--font-vazirmatn), ui-sans-serif,
+		system-ui, "Segoe UI", sans-serif;
 	--font-heading: var(--font-app-heading), var(--font-sans);
 
 	--text-display: 3rem; /* 48px — hero / section openers        */
@@ -303,7 +307,8 @@ html[data-corners="rounded"]
 	}
 
 	html[data-script="latin"] :is(h1, h2, h3, h4) {
-		font-family: var(--font-clash-display), var(--font-archivo), sans-serif;
+		font-family: var(--font-clash-display), var(--font-archivo),
+			var(--font-vazirmatn), sans-serif;
 		line-height: var(--leading-heading-latin);
 	}
 
@@ -812,6 +817,60 @@ dialog[open]::backdrop {
 	/* Token-driven pill/circle — square when border radius is disabled. */
 	.rounded-pill {
 		border-radius: var(--radius-full);
+	}
+}
+
+/* --- /search motion catalogue --------------------------------------------
+   Everything the results page animates, in one place. The keyframes are
+   `from`-only on purpose: under the global reduced-motion rule (animation:
+   none) an element simply sits in its final, visible state — nothing on the
+   page depends on an animation to become visible. */
+@keyframes khi-rise {
+	from {
+		opacity: 0;
+		transform: translateY(8px);
+	}
+}
+@keyframes khi-scan {
+	from {
+		translate: -300% 0;
+	}
+	to {
+		translate: 300% 0;
+	}
+}
+
+@layer components {
+	/* Result plates, active chips and skeleton cards rise in on mount; the
+	   stagger is budgeted so a full page settles in well under a second. */
+	.search-rise {
+		animation: khi-rise 0.4s cubic-bezier(0.22, 1, 0.36, 1) both;
+		animation-delay: calc(min(var(--i, 0), 11) * 35ms);
+	}
+
+	/* The pending hairline: a short brand-green segment sweeping the top of
+	   the results region while a navigation is in flight. Reading direction
+	   decides where it sets off from. */
+	.search-scan {
+		animation: khi-scan 1.1s cubic-bezier(0.22, 1, 0.36, 1) infinite;
+	}
+	:where([dir="rtl"]) .search-scan {
+		animation-direction: reverse;
+	}
+
+	/* The autocomplete listbox eases open; closing is an unmount (instant). */
+	.search-pop {
+		opacity: 1;
+		transform: none;
+		transition:
+			opacity 0.16s ease-out,
+			transform 0.16s cubic-bezier(0.22, 1, 0.36, 1);
+	}
+	@starting-style {
+		.search-pop {
+			opacity: 0;
+			transform: translateY(-4px);
+		}
 	}
 }
 

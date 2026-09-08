@@ -96,12 +96,11 @@ export default async function LocaleLayout({ children, params }: Props) {
 				isLatin && `${archivo.variable} ${clashDisplay.variable}`,
 			)}
 		>
-			<body
-				className={cn(
-					isLatin ? archivo.className : vazirmatn.className,
-					"antialiased",
-				)}
-			>
+			{/* `font-sans` resolves through the --font-app-body token (set per
+			    script in globals.css) and carries Vazirmatn as the Arabic-glyph
+			    fallback behind Archivo. A next/font className here would pin the
+			    body to one family with no such chain. */}
+			<body className="font-sans antialiased">
 				<NextIntlClientProvider messages={messages}>
 					<NativeScroll>
 						<RouteProgress />

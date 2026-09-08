@@ -1,12 +1,16 @@
-import { ArrowTopRightOnSquareIcon } from "@heroicons/react/24/outline";
+import {
+	ArrowDownTrayIcon,
+	ArrowTopRightOnSquareIcon,
+	DocumentTextIcon,
+} from "@heroicons/react/24/outline";
 import { getLocale, getTranslations } from "next-intl/server";
 import type { ReactNode } from "react";
 import { PlatformAudioPlayer } from "@/components/search/detail/platform-audio-player";
 import { PlatformRelatedRail } from "@/components/search/detail/platform-related-rail";
 import { PlatformVideoPlayer } from "@/components/search/detail/platform-video-player";
 import { KindIcon } from "@/components/search/kind-icon";
-import { KIND_LABEL_KEYS } from "@/components/search/platform-hit-row";
 import { BackToIndexLink } from "@/components/ui/back-to-index";
+import { Badge } from "@/components/ui/badge";
 import { CoverLightbox } from "@/components/ui/cover-lightbox";
 import { viewAllCtaClass } from "@/components/ui/cta-styles";
 import { Heading } from "@/components/ui/heading";
@@ -14,8 +18,17 @@ import { Image } from "@/components/ui/image";
 import { TaxonomyBadgeLink } from "@/components/ui/taxonomy-badge-link";
 import { WritingPdfPreview } from "@/components/writing/writing-pdf-preview";
 import { Link } from "@/i18n/navigation";
+import { type PlatformFileKind, probePlatformFile } from "@/lib/api/platform";
 import { homeInsetClass } from "@/lib/layout";
+import {
+	humanizePlatformName,
+	isPlatformCode,
+	platformDisplaySubtitle,
+	platformDisplayTitle,
+	platformPersonName,
+} from "@/lib/platform/display";
 import { formatCount, formatFullDate, formatYear } from "@/lib/platform/format";
+import { creatorRoleLabel, KIND_LABEL_KEYS } from "@/lib/platform/kind-labels";
 import {
 	buildSearchHref,
 	EMPTY_FILTERS,
@@ -179,7 +192,11 @@ function buildDetailRows(
 ): MetaRow[] {
 	const rows: MetaRow[] = [];
 
-	pushRow(rows, t("metaProject"), full.projectName ?? hit.projectName);
+	pushRow(
+		rows,
+		t("metaProject"),
+		humanizePlatformName(full.projectName ?? hit.projectName),
+	);
 	pushRow(
 		rows,
 		t("metaCategories"),
@@ -278,6 +295,24 @@ function buildRightsRows(
 	return rows;
 }
 
+/** Archive message key naming what a non-PDF text file is. */
+function fileKindLabelKey(kind: PlatformFileKind): string {
+	switch (kind) {
+		case "word":
+			return "fileKindWord";
+		case "spreadsheet":
+			return "fileKindSpreadsheet";
+		case "presentation":
+			return "fileKindPresentation";
+		case "image":
+			return "fileKindImage";
+		case "text":
+			return "fileKindText";
+		default:
+			return "fileKindUnknown";
+	}
+}
+
 /**
  * One platform item, whatever its kind: title block, the right playback or
  * reading surface for the medium, the complete public record as liner notes,
@@ -298,19 +333,24 @@ export async function PlatformPostView({
 	const full =
 		detail.audio ?? detail.video ?? detail.image ?? detail.text ?? {};
 
-	const title = hit.title?.trim() || hit.code;
-	const subtitle =
-		hit.subtitle?.trim() && hit.subtitle.trim() !== title
-			? hit.subtitle.trim()
-			: null;
+	const kindLabel = tSearch(KIND_LABEL_KEYS[detail.type]);
+
+	// Never the raw code: an untitled record gets a label composed from its
+	// person / collection and kind («غوڵام عەلی ڕۆمی · ڤیدیۆ ١»), and then no
+	// secondary lines — the context is already in the label.
+	const display = platformDisplayTitle(hit, { locale, kindLabel });
+	const title = display.title;
+	const subtitle = platformDisplaySubtitle(hit, display);
+	const romanizedRaw = hit.romanizedTitle?.trim() || null;
 	const romanized =
-		hit.romanizedTitle?.trim() &&
-		hit.romanizedTitle.trim() !== title &&
-		hit.romanizedTitle.trim() !== subtitle
-			? hit.romanizedTitle.trim()
+		!display.untitled &&
+		romanizedRaw &&
+		romanizedRaw !== title &&
+		romanizedRaw !== subtitle &&
+		!isPlatformCode(romanizedRaw, hit.code)
+			? romanizedRaw
 			: null;
 
-	const kindLabel = tSearch(KIND_LABEL_KEYS[detail.type]);
 	const year = formatYear(locale, hit.dateCreated ?? hit.datePublished);
 
 	const credits = buildCreditRows(t, locale, full);
@@ -323,9 +363,8 @@ export async function PlatformPostView({
 	const transcription = full.transcription?.trim();
 
 	const person = full.person ?? hit.person;
-	const personName =
-		person?.fullName?.trim() || person?.romanizedName?.trim() || null;
-	const projectName = (full.projectName ?? hit.projectName)?.trim() || null;
+	const personName = platformPersonName(person, locale);
+	const projectName = humanizePlatformName(full.projectName ?? hit.projectName);
 	const projectCode = (full.projectCode ?? hit.projectCode)?.trim() || null;
 
 	const mediaUrl =
@@ -352,6 +391,15 @@ export async function PlatformPostView({
 				]
 			: [];
 
+	// The record never says what the stored file is; ask the platform before
+	// mounting a reader that can only open PDFs (a Word file used to 415 here).
+	const textFile =
+		detail.type === "text" && mediaUrl
+			? await probePlatformFile(mediaUrl)
+			: null;
+	const showPdfReader = textFile?.kind === "pdf" && textOffers.length > 0;
+	const textPageCount = full.pageCount ?? hit.pageCount ?? null;
+
 	return (
 		<article>
 			<div className={cn(homeInsetClass, "pt-6 sm:pt-8")}>
@@ -364,23 +412,21 @@ export async function PlatformPostView({
 				{/* ---- Title block ------------------------------------------------ */}
 				<header className="mt-8 max-w-4xl sm:mt-10">
 					<p className="label flex flex-wrap items-center gap-x-2 gap-y-1 font-medium">
-						<span className="inline-flex items-center gap-1.5 text-foreground/75">
+						<span className="inline-flex items-center gap-1.5 text-foreground">
 							<KindIcon kind={detail.type} className="size-4" />
 							{kindLabel}
 						</span>
 						{projectName ? (
 							<>
-								<span aria-hidden className="text-muted/50">
-									·
+								<span aria-hidden>·</span>
+								<span dir="auto" className="normal-case tracking-normal">
+									{projectName}
 								</span>
-								<span dir="auto">{projectName}</span>
 							</>
 						) : null}
 						{year ? (
 							<>
-								<span aria-hidden className="text-muted/50">
-									·
-								</span>
+								<span aria-hidden>·</span>
 								<span className="tabular-nums">{year}</span>
 							</>
 						) : null}
@@ -416,22 +462,7 @@ export async function PlatformPostView({
 					{hit.creator?.trim() ? (
 						<p className="mt-4 text-body text-foreground">
 							<span className="text-muted">
-								{(() => {
-									switch (hit.creatorRole) {
-										case "singer":
-											return tSearch("roleSinger");
-										case "speaker":
-											return tSearch("roleSpeaker");
-										case "director":
-											return tSearch("roleDirector");
-										case "photographer":
-											return tSearch("rolePhotographer");
-										case "author":
-											return tSearch("roleAuthor");
-										default:
-											return tSearch("roleCreator");
-									}
-								})()}
+								{creatorRoleLabel(tSearch, hit.creatorRole)}
 								{": "}
 							</span>
 							<span dir="auto" className="font-semibold">
@@ -451,6 +482,7 @@ export async function PlatformPostView({
 									alt={personName ? t("portraitAlt", { name: personName }) : ""}
 									aspectRatio="square"
 									framed
+									priority
 									sizes="(max-width: 1024px) 60vw, 288px"
 									className="w-full max-w-72"
 								/>
@@ -491,6 +523,7 @@ export async function PlatformPostView({
 									alt={title}
 									aspectRatio="3/2"
 									objectFit="contain"
+									priority
 									sizes="(max-width: 1536px) 100vw, 1536px"
 									className="absolute inset-0 size-full"
 								/>
@@ -500,7 +533,7 @@ export async function PlatformPostView({
 
 					{detail.type === "text" ? (
 						<div className="flex flex-col gap-6">
-							{textOffers.length > 0 ? (
+							{showPdfReader ? (
 								<WritingPdfPreview
 									fileOffers={textOffers}
 									locale={locale}
@@ -508,7 +541,79 @@ export async function PlatformPostView({
 									coverUrl={full.coverImageUrl ?? hit.thumbnailUrl}
 								/>
 							) : null}
-							{mediaUrl ? (
+
+							{/* A scanned page stored as an image reads inline. */}
+							{!showPdfReader && mediaUrl && textFile?.kind === "image" ? (
+								<div className="relative aspect-3/2 w-full overflow-hidden border border-border bg-sunken">
+									<Image
+										src={mediaUrl}
+										alt={title}
+										aspectRatio="3/2"
+										objectFit="contain"
+										priority
+										sizes="(max-width: 1536px) 100vw, 1536px"
+										className="absolute inset-0 size-full"
+									/>
+								</div>
+							) : null}
+
+							{/* Anything the browser cannot show in place: say what it is,
+							    then hand it over. */}
+							{!showPdfReader &&
+							mediaUrl &&
+							textFile &&
+							textFile.kind !== "image" ? (
+								<div className="flex flex-col gap-5 border border-border bg-surface p-5 sm:flex-row sm:items-center sm:justify-between sm:gap-8 sm:p-6">
+									<div className="flex min-w-0 items-start gap-4">
+										<span
+											aria-hidden
+											className="flex size-14 shrink-0 items-center justify-center border border-border bg-sunken text-muted"
+										>
+											<DocumentTextIcon className="size-7" />
+										</span>
+										<div className="min-w-0">
+											<p className="font-heading text-body font-semibold text-foreground">
+												{t(fileKindLabelKey(textFile.kind))}
+											</p>
+											<p className="mt-1 text-small text-muted">
+												{t("fileNotPreviewable")}
+											</p>
+											<p className="mt-2.5 flex flex-wrap items-center gap-2">
+												{textFile.extension ? (
+													<Badge variant="outline" size="sm">
+														<span dir="ltr">
+															{textFile.extension.toUpperCase()}
+														</span>
+													</Badge>
+												) : null}
+												{textPageCount ? (
+													<Badge variant="subtle" size="sm">
+														{tSearch("cardPages", {
+															count: formatCount(locale, textPageCount),
+														})}
+													</Badge>
+												) : null}
+											</p>
+										</div>
+									</div>
+									<a
+										href={mediaUrl}
+										target="_blank"
+										rel="noopener noreferrer"
+										className={viewAllCtaClass}
+									>
+										<span className="relative z-1 flex items-center gap-2.5">
+											{t("downloadFile")}
+											<ArrowDownTrayIcon
+												className="size-4 shrink-0"
+												aria-hidden
+											/>
+										</span>
+									</a>
+								</div>
+							) : null}
+
+							{mediaUrl && (showPdfReader || textFile?.kind === "image") ? (
 								<a
 									href={mediaUrl}
 									target="_blank"
@@ -661,7 +766,10 @@ export async function PlatformPostView({
 						"mt-14 border-t border-border pt-10 sm:mt-16 sm:pt-12",
 					)}
 				>
-					<PlatformRelatedRail items={detail.related} />
+					<PlatformRelatedRail
+						items={detail.related}
+						projectName={projectName}
+					/>
 				</div>
 			) : null}
 		</article>

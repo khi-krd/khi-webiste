@@ -1,6 +1,12 @@
 import { XMarkIcon } from "@heroicons/react/24/outline";
 import { getTranslations } from "next-intl/server";
+import type { CSSProperties } from "react";
 import { SearchNavLink } from "@/components/search/search-transition";
+import {
+	humanizePlatformName,
+	isPlatformCode,
+	platformPersonName,
+} from "@/lib/platform/display";
 import { formatDecadeLabel } from "@/lib/platform/format";
 import {
 	buildSearchHref,
@@ -12,23 +18,52 @@ import {
 	withSingleFilter,
 	withToggledFilter,
 } from "@/lib/platform/search-url";
-import type { PlatformFacets } from "@/types/platform";
+import { cn } from "@/lib/utils";
+import type { PlatformFacets, PlatformHit } from "@/types/platform";
 
 type Chip = {
 	key: string;
+	focusKey: string;
 	group: string;
-	label: string;
+	/** Null when no human name could be found — the group name stands alone. */
+	label: string | null;
 	href: string;
 };
 
-/** Resolve a person/project code to its display name via the facet buckets. */
-function bucketLabel(
+/**
+ * A person code → the person's name. The facet bucket is the first source;
+ * when the bucket is gone (the filter emptied the matched set) a hit on the
+ * page that carries the same person still knows the name. The raw code is
+ * never an answer.
+ */
+function personLabel(
 	facets: PlatformFacets | null | undefined,
-	list: "persons" | "projects",
+	hits: PlatformHit[],
 	code: string,
-): string {
-	const bucket = facets?.[list]?.find((entry) => entry.code === code);
-	return bucket?.label ?? code;
+	locale: string,
+): string | null {
+	const bucket = facets?.persons?.find((entry) => entry.code === code);
+	if (bucket?.label && !isPlatformCode(bucket.label, code)) {
+		return bucket.label;
+	}
+	const hit = hits.find((entry) => entry.person?.personCode === code);
+	const name = hit ? platformPersonName(hit.person, locale) : null;
+	return name && !isPlatformCode(name, code) ? name : null;
+}
+
+/** A project code → its readable name (slugs → spaces), same fallback chain. */
+function projectLabel(
+	facets: PlatformFacets | null | undefined,
+	hits: PlatformHit[],
+	code: string,
+): string | null {
+	const bucket = facets?.projects?.find((entry) => entry.code === code);
+	if (bucket?.label && !isPlatformCode(bucket.label, code)) {
+		return humanizePlatformName(bucket.label);
+	}
+	const hit = hits.find((entry) => entry.projectCode === code);
+	const name = hit ? humanizePlatformName(hit.projectName) : null;
+	return name && !isPlatformCode(name, code) ? name : null;
 }
 
 /**
@@ -38,10 +73,12 @@ function bucketLabel(
 export async function ActiveFilterChips({
 	state,
 	facets,
+	hits,
 	locale,
 }: {
 	state: SearchPageState;
 	facets: PlatformFacets | null | undefined;
+	hits: PlatformHit[];
 	locale: string;
 }) {
 	const t = await getTranslations("Search");
@@ -52,41 +89,46 @@ export async function ActiveFilterChips({
 
 	const chips: Chip[] = [];
 
-	const singles: { param: SingleFilterParam; group: string; label?: string }[] =
-		[
-			{
-				param: "personCode",
-				group: t("facetPerson"),
-				label: state.filters.personCode
-					? bucketLabel(facets, "persons", state.filters.personCode)
-					: undefined,
-			},
-			{
-				param: "projectCode",
-				group: t("facetProject"),
-				label: state.filters.projectCode
-					? bucketLabel(facets, "projects", state.filters.projectCode)
-					: undefined,
-			},
-			{ param: "language", group: t("facetLanguage") },
-			{ param: "dialect", group: t("facetDialect") },
-			{ param: "region", group: t("facetRegion") },
-			{
-				param: "decade",
-				group: t("facetDecade"),
-				label: state.filters.decade
-					? formatDecadeLabel(locale, state.filters.decade)
-					: undefined,
-			},
-		];
+	const singles: {
+		param: SingleFilterParam;
+		group: string;
+		label?: string | null;
+	}[] = [
+		{
+			param: "personCode",
+			group: t("facetPerson"),
+			label: state.filters.personCode
+				? personLabel(facets, hits, state.filters.personCode, locale)
+				: undefined,
+		},
+		{
+			param: "projectCode",
+			group: t("facetProject"),
+			label: state.filters.projectCode
+				? projectLabel(facets, hits, state.filters.projectCode)
+				: undefined,
+		},
+		{ param: "language", group: t("facetLanguage") },
+		{ param: "dialect", group: t("facetDialect") },
+		{ param: "region", group: t("facetRegion") },
+		{
+			param: "decade",
+			group: t("facetDecade"),
+			label: state.filters.decade
+				? formatDecadeLabel(locale, state.filters.decade)
+				: undefined,
+		},
+	];
 
 	for (const single of singles) {
 		const value = state.filters[single.param];
 		if (value) {
 			chips.push({
-				key: `${single.param}`,
+				key: single.param,
+				focusKey: `chip:${single.param}:${value}`,
 				group: single.group,
-				label: single.label ?? value,
+				// `undefined` = the value is its own label; `null` = nothing found.
+				label: single.label === undefined ? value : single.label,
 				href: buildSearchHref(withSingleFilter(state, single.param, null)),
 			});
 		}
@@ -103,6 +145,7 @@ export async function ActiveFilterChips({
 		for (const value of state.filters[entry.param]) {
 			chips.push({
 				key: `${entry.param}-${value}`,
+				focusKey: `chip:${entry.param}:${value}`,
 				group: entry.group,
 				label: value,
 				href: buildSearchHref(withToggledFilter(state, entry.param, value)),
@@ -111,31 +154,51 @@ export async function ActiveFilterChips({
 	}
 
 	return (
-		<div className="flex flex-wrap items-center gap-2">
-			{chips.map((chip) => (
-				<SearchNavLink
-					key={chip.key}
-					href={chip.href}
-					aria-label={t("filterRemove", { label: chip.label })}
-					className={
-						"group/chip inline-flex items-center gap-1.5 bg-primary py-1.5 ps-3 pe-2 " +
-						"text-small font-medium text-primary-foreground transition-opacity fine-hover:opacity-85"
-					}
-				>
-					<span className="text-primary-foreground/65">{chip.group}:</span>
-					<span dir="auto">{chip.label}</span>
-					<XMarkIcon className="size-3.5 shrink-0" aria-hidden />
-				</SearchNavLink>
+		<ul
+			aria-label={t("filtersActiveCount", { count: activeCount })}
+			className="flex flex-wrap items-center gap-2"
+		>
+			{chips.map((chip, index) => (
+				<li key={chip.key} className="contents">
+					<SearchNavLink
+						href={chip.href}
+						aria-label={t("filterRemove", { label: chip.label ?? chip.group })}
+						data-focus-key={chip.focusKey}
+						className={cn(
+							"search-rise inline-flex h-10 items-center gap-1.5 bg-primary ps-3 pe-2",
+							"text-small font-medium text-primary-foreground transition-opacity fine-hover:opacity-85 lg:h-8",
+						)}
+						style={{ "--i": index } as CSSProperties}
+					>
+						{chip.label ? (
+							<>
+								<span className="text-primary-foreground/80">
+									{chip.group}:
+								</span>
+								<bdi dir="auto">{chip.label}</bdi>
+							</>
+						) : (
+							<span>{chip.group}</span>
+						)}
+						<XMarkIcon className="size-3.5 shrink-0" aria-hidden />
+					</SearchNavLink>
+				</li>
 			))}
 
 			{chips.length > 1 ? (
-				<SearchNavLink
-					href={buildSearchHref(withClearedFilters(state))}
-					className="inline-flex items-center py-1.5 px-2 text-small text-muted underline decoration-border underline-offset-4 transition-colors fine-hover:text-foreground fine-hover:decoration-current"
-				>
-					{t("filtersClear")}
-				</SearchNavLink>
+				<li className="contents">
+					<SearchNavLink
+						href={buildSearchHref(withClearedFilters(state))}
+						data-focus-key="chip:clear"
+						className={cn(
+							"inline-flex h-10 items-center px-2 text-small text-muted underline decoration-border underline-offset-4",
+							"transition-colors fine-hover:text-foreground fine-hover:decoration-current lg:h-8",
+						)}
+					>
+						{t("filtersClear")}
+					</SearchNavLink>
+				</li>
 			) : null}
-		</div>
+		</ul>
 	);
 }

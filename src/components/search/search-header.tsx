@@ -1,7 +1,13 @@
 "use client";
 
-import { MagnifyingGlassIcon, XMarkIcon } from "@heroicons/react/24/outline";
-import { useTranslations } from "next-intl";
+import {
+	MagnifyingGlassIcon,
+	RectangleStackIcon,
+	TagIcon,
+	UserIcon,
+	XMarkIcon,
+} from "@heroicons/react/24/outline";
+import { useLocale, useTranslations } from "next-intl";
 import {
 	type FormEvent,
 	type KeyboardEvent,
@@ -11,11 +17,22 @@ import {
 	useState,
 } from "react";
 import { KindIcon } from "@/components/search/kind-icon";
+import {
+	SearchNavLink,
+	useSearchTransition,
+} from "@/components/search/search-transition";
+import {
+	SOURCE_LABEL_KEYS,
+	SOURCE_ORDER,
+} from "@/components/search/source-links";
+import { SEARCH_SCOPES } from "@/config/site";
 import { useRouter } from "@/i18n/navigation";
 import {
 	PLATFORM_MEDIA_KINDS,
 	type PlatformMediaKind,
 } from "@/lib/platform/constants";
+import { humanizePlatformName, isPlatformCode } from "@/lib/platform/display";
+import { formatCount } from "@/lib/platform/format";
 import {
 	buildSearchHref,
 	EMPTY_FILTERS,
@@ -55,29 +72,125 @@ function suggestionHref(suggestion: PlatformSuggestion): string {
 	return buildSearchHref({ source: "archive", filters });
 }
 
+/** Project suggestions arrive as folder slugs; readers get the spaced form. */
+function suggestionLabel(suggestion: PlatformSuggestion): string {
+	return suggestion.kind === "project"
+		? (humanizePlatformName(suggestion.value) ?? suggestion.value)
+		: suggestion.value;
+}
+
+/** The glyph in a suggestion's tile: the media kind, else what the row is. */
+function SuggestionTileIcon({ kind }: { kind: string }) {
+	if (isMediaKind(kind)) {
+		return <KindIcon kind={kind} />;
+	}
+	switch (kind) {
+		case "person":
+			return <UserIcon aria-hidden />;
+		case "project":
+			return <RectangleStackIcon aria-hidden />;
+		case "category":
+			return <TagIcon aria-hidden />;
+		default:
+			return <MagnifyingGlassIcon aria-hidden />;
+	}
+}
+
 /**
- * The page's oversized search field — an editorial underline rather than a
- * boxed control — with platform autocomplete beneath it. A submitted query
- * keeps the source and kind tab but resets sort, page and refinements: they
- * described the previous result set.
+ * The source switcher — ماڵپەر / پلاتفۆڕم / کتێبخانە — living INSIDE the
+ * command bar. Rendered twice by the bar (a row of cells beside the input on
+ * `sm+`, a three-column strip under it on phones) and never reordered with
+ * flex order: only one instance is displayed, so only one is in the
+ * accessibility tree. Switching keeps the query and drops everything that
+ * described the previous source's result set (kind, sort, refinements, page).
+ */
+function ScopeSegment({
+	state,
+	className,
+}: {
+	state: SearchPageState;
+	className?: string;
+}) {
+	const t = useTranslations("Search");
+
+	return (
+		<nav aria-label={t("sourceLabel")} className={cn(className)}>
+			<ul className="contents sm:flex">
+				{SOURCE_ORDER.filter((source) => SEARCH_SCOPES.includes(source)).map(
+					(source) => {
+						const active = state.source === source;
+						return (
+							<li
+								key={source}
+								className="contents sm:[&:not(:last-child)>a]:border-e sm:[&:not(:last-child)>a]:border-border"
+							>
+								<SearchNavLink
+									href={buildSearchHref({
+										source,
+										q: state.q,
+										filters: EMPTY_FILTERS,
+									})}
+									aria-current={active ? "page" : undefined}
+									className={cn(
+										"inline-flex h-11 items-center justify-center gap-1.5 px-3 font-heading text-small font-semibold",
+										"transition-colors duration-200 focus-visible:outline-offset-[-3px] sm:h-full sm:px-4",
+										active
+											? "bg-primary text-primary-foreground"
+											: "text-muted fine-hover:bg-sunken fine-hover:text-foreground",
+									)}
+								>
+									<span className="line-clamp-1 [overflow-wrap:anywhere]">
+										{t(SOURCE_LABEL_KEYS[source])}
+									</span>
+									{source === "library" ? (
+										<span className="visually-hidden">
+											{t("librarySoonTitle")}
+										</span>
+									) : null}
+								</SearchNavLink>
+							</li>
+						);
+					},
+				)}
+			</ul>
+		</nav>
+	);
+}
+
+/**
+ * The page's command bar: one crisp bordered box on the paper holding the
+ * scope segment, the query field, its clear control and the green submit —
+ * with platform autocomplete floating beneath it (the page's only floating
+ * element). A submitted query keeps the source and kind tab but resets sort,
+ * page and refinements: they described the previous result set.
  */
 export function SearchHeader({ state }: SearchHeaderProps) {
 	const t = useTranslations("Search");
+	const locale = useLocale();
 	const router = useRouter();
+	const transition = useSearchTransition();
 	const listboxId = useId();
 	const inputRef = useRef<HTMLInputElement>(null);
 	const wrapRef = useRef<HTMLDivElement>(null);
 	const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+	const openRef = useRef(false);
 
 	const [query, setQuery] = useState(state.q);
 	const [suggestions, setSuggestions] = useState<PlatformSuggestion[]>([]);
 	const [open, setOpen] = useState(false);
 	const [activeIndex, setActiveIndex] = useState(-1);
+	// How many suggestions the list held when it last OPENED — the status
+	// line speaks that once, not on every keystroke while it stays open.
+	const [openedCount, setOpenedCount] = useState(0);
 
 	// The URL is the source of truth — a back/forward navigation resyncs the field.
 	useEffect(() => {
 		setQuery(state.q);
 	}, [state.q]);
+
+	useEffect(() => {
+		openRef.current = open;
+	}, [open]);
 
 	// Platform autocomplete only makes sense against the platform.
 	const suggestEnabled = state.source === "archive";
@@ -110,9 +223,16 @@ export function SearchHeader({ state }: SearchHeaderProps) {
 				if (controller.signal.aborted) {
 					return;
 				}
-				const items = payload.data ?? [];
+				// Item codes are routing keys, never copy — a suggestion that
+				// is only its code has nothing to show.
+				const items = (payload.data ?? []).filter(
+					(suggestion) => !isPlatformCode(suggestion.value, suggestion.code),
+				);
 				setSuggestions(items);
 				setActiveIndex(-1);
+				if (items.length > 0 && !openRef.current) {
+					setOpenedCount(items.length);
+				}
 				setOpen(items.length > 0);
 			} catch {
 				// Autocomplete is a convenience — a failed fetch just stays quiet.
@@ -143,20 +263,24 @@ export function SearchHeader({ state }: SearchHeaderProps) {
 
 	function submitQuery(value: string) {
 		setOpen(false);
-		router.push(
-			buildSearchHref({
-				source: state.source,
-				q: value.trim(),
-				kind: state.kind,
-				filters: EMPTY_FILTERS,
-			}),
-			{ scroll: false },
-		);
+		const href = buildSearchHref({
+			source: state.source,
+			q: value.trim(),
+			kind: state.kind,
+			filters: EMPTY_FILTERS,
+		});
+		// Through the shared transition when the page provides one, so the
+		// results dim and the new summary is announced like every other change.
+		if (transition) {
+			transition.navigate(href);
+		} else {
+			router.push(href, { scroll: false });
+		}
 	}
 
 	function acceptSuggestion(suggestion: PlatformSuggestion) {
 		setOpen(false);
-		setQuery(suggestion.value);
+		setQuery(suggestionLabel(suggestion));
 		router.push(suggestionHref(suggestion));
 	}
 
@@ -181,6 +305,12 @@ export function SearchHeader({ state }: SearchHeaderProps) {
 			setActiveIndex(
 				(index) => (index - 1 + suggestions.length) % suggestions.length,
 			);
+		} else if (event.key === "Home") {
+			event.preventDefault();
+			setActiveIndex(0);
+		} else if (event.key === "End") {
+			event.preventDefault();
+			setActiveIndex(suggestions.length - 1);
 		} else if (event.key === "Escape") {
 			setOpen(false);
 			setActiveIndex(-1);
@@ -211,70 +341,111 @@ export function SearchHeader({ state }: SearchHeaderProps) {
 	const showClear = query.trim().length > 0;
 
 	return (
-		<div ref={wrapRef} className="relative">
+		<div ref={wrapRef} className="relative mt-3 sm:mt-4">
 			<form
 				onSubmit={onSubmit}
-				className="flex items-end gap-3 border-b-2 border-foreground pb-3 sm:gap-4"
+				className={cn(
+					"group/bar flex flex-col border border-border-strong bg-surface transition-colors duration-200",
+					"focus-within:border-foreground sm:h-14 sm:flex-row sm:items-stretch",
+				)}
 			>
-				<label htmlFor="search-page-input" className="visually-hidden">
-					{t("inputLabel")}
-				</label>
-				<input
-					ref={inputRef}
-					id="search-page-input"
-					name="q"
-					type="search"
-					autoComplete="off"
-					spellCheck={false}
-					enterKeyHint="search"
-					value={query}
-					placeholder={t("inputPlaceholder")}
-					onChange={(event) => setQuery(event.target.value)}
-					onKeyDown={onKeyDown}
-					role="combobox"
-					aria-expanded={open}
-					aria-controls={open ? listboxId : undefined}
-					aria-activedescendant={
-						activeIndex >= 0 ? `${listboxId}-${activeIndex}` : undefined
-					}
-					className={cn(
-						"min-w-0 flex-1 bg-transparent font-heading font-semibold text-foreground",
-						"text-[clamp(1.375rem,2.2vw+0.5rem,2rem)] leading-tight",
-						"placeholder:font-normal placeholder:text-muted/70 focus-visible:outline-none",
-						"[&::-webkit-search-cancel-button]:hidden [&::-webkit-search-decoration]:hidden",
-					)}
+				{/* Scope segment, sm+ — DOM first so it is focused first. */}
+				<ScopeSegment
+					state={state}
+					className="hidden sm:flex sm:border-e sm:border-border"
 				/>
 
-				{showClear ? (
-					<button
-						type="button"
-						onClick={() => {
-							setQuery("");
-							setOpen(false);
-							inputRef.current?.focus();
-							if (state.q.trim()) {
-								submitQuery("");
-							}
-						}}
-						aria-label={t("clearQuery")}
-						className="mb-1 inline-flex size-9 shrink-0 items-center justify-center text-muted transition-colors fine-hover:text-foreground"
-					>
-						<XMarkIcon className="size-5" aria-hidden />
-					</button>
-				) : null}
+				<div className="flex h-12 min-w-0 flex-1 items-center sm:h-full">
+					<MagnifyingGlassIcon
+						aria-hidden
+						className="ms-3.5 size-5 shrink-0 text-muted transition-colors group-focus-within/bar:text-foreground sm:ms-4"
+					/>
+					<label htmlFor="search-page-input" className="visually-hidden">
+						{t("inputLabel")}
+					</label>
+					<input
+						ref={inputRef}
+						id="search-page-input"
+						name="q"
+						type="search"
+						autoComplete="off"
+						spellCheck={false}
+						enterKeyHint="search"
+						value={query}
+						placeholder={
+							state.source === "main"
+								? t("inputPlaceholderMain")
+								: t("inputPlaceholder")
+						}
+						onChange={(event) => setQuery(event.target.value)}
+						onKeyDown={onKeyDown}
+						role="combobox"
+						aria-expanded={open}
+						aria-controls={open ? listboxId : undefined}
+						aria-activedescendant={
+							activeIndex >= 0 ? `${listboxId}-${activeIndex}` : undefined
+						}
+						className={cn(
+							"h-full min-w-0 flex-1 bg-transparent px-3 font-heading text-lead font-semibold text-foreground",
+							"placeholder:font-normal placeholder:text-muted focus-visible:outline-none sm:text-h3",
+							"[&::-webkit-search-cancel-button]:hidden [&::-webkit-search-decoration]:hidden",
+						)}
+					/>
 
-				<button
-					type="submit"
-					className={cn(
-						"inline-flex h-12 shrink-0 items-center gap-2.5 bg-primary px-4 text-primary-foreground",
-						"font-heading text-small font-semibold transition-opacity fine-hover:opacity-90 sm:px-6",
-					)}
-				>
-					<MagnifyingGlassIcon className="size-5" aria-hidden />
-					<span className="hidden sm:inline">{t("submit")}</span>
-					<span className="visually-hidden sm:hidden">{t("submit")}</span>
-				</button>
+					{showClear ? (
+						<button
+							type="button"
+							onClick={() => {
+								setQuery("");
+								setOpen(false);
+								inputRef.current?.focus();
+								if (state.q.trim()) {
+									submitQuery("");
+								}
+							}}
+							aria-label={t("clearQuery")}
+							className={cn(
+								"inline-flex h-full w-11 shrink-0 items-center justify-center text-muted transition-colors",
+								"fine-hover:text-foreground focus-visible:outline-offset-[-3px]",
+							)}
+						>
+							<XMarkIcon className="size-5" aria-hidden />
+						</button>
+					) : null}
+
+					<button
+						type="submit"
+						className={cn(
+							"inline-flex h-full w-12 shrink-0 items-center justify-center gap-2.5 bg-primary font-heading text-small font-semibold",
+							"text-primary-foreground transition-opacity fine-hover:opacity-90 focus-visible:outline-offset-[-3px] sm:w-auto sm:px-6",
+						)}
+					>
+						<MagnifyingGlassIcon className="size-5 sm:hidden" aria-hidden />
+						<span className="hidden sm:inline">{t("submit")}</span>
+						<span className="visually-hidden sm:hidden">{t("submit")}</span>
+					</button>
+				</div>
+
+				{/* Scope segment, <640 — rendered a second time under the input
+				    row; the sm+ instance above is display:none here, so only
+				    one <nav> is ever in the accessibility tree. */}
+				<ScopeSegment
+					state={state}
+					className="grid grid-cols-3 border-t border-border sm:hidden"
+				/>
 			</form>
+
+			{/* Spoken once per opening of the list — silent while it stays open. */}
+			<div
+				role="status"
+				aria-live="polite"
+				aria-atomic="true"
+				className="visually-hidden"
+			>
+				{open
+					? t("suggestCount", { count: formatCount(locale, openedCount) })
+					: null}
+			</div>
 
 			{open ? (
 				<div
@@ -282,7 +453,8 @@ export function SearchHeader({ state }: SearchHeaderProps) {
 					role="listbox"
 					aria-label={t("suggestLabel")}
 					className={cn(
-						"absolute inset-x-0 top-[calc(100%+0.5rem)] z-30 border border-border bg-surface py-1",
+						"search-pop absolute inset-x-0 top-[calc(100%+0.25rem)] z-30 max-h-[50dvh] overflow-y-auto overscroll-contain",
+						"border border-border-strong bg-surface py-1",
 						"shadow-[0_16px_40px_-16px_color-mix(in_oklch,var(--color-foreground)_35%,transparent)]",
 					)}
 				>
@@ -298,25 +470,18 @@ export function SearchHeader({ state }: SearchHeaderProps) {
 							onClick={() => acceptSuggestion(suggestion)}
 							onMouseEnter={() => setActiveIndex(index)}
 							className={cn(
-								"flex w-full cursor-pointer items-center gap-3 px-4 py-2.5 text-start transition-colors",
-								index === activeIndex ? "bg-sunken" : "fine-hover:bg-sunken",
+								"relative flex min-h-11 w-full items-center gap-3 px-3 py-2 text-start transition-colors sm:min-h-10",
+								"before:absolute before:inset-y-1 before:start-0 before:w-0.5 before:bg-primary before:opacity-0 before:transition-opacity",
+								"aria-selected:bg-sunken aria-selected:before:opacity-100 fine-hover:bg-sunken",
 							)}
 						>
-							{isMediaKind(suggestion.kind) ? (
-								<KindIcon
-									kind={suggestion.kind}
-									className="size-4 shrink-0 text-muted"
-								/>
-							) : (
-								<MagnifyingGlassIcon
-									className="size-4 shrink-0 text-muted"
-									aria-hidden
-								/>
-							)}
-							<span className="min-w-0 flex-1 line-clamp-1 text-start text-body text-foreground [overflow-wrap:anywhere]">
-								<bdi>{suggestion.value}</bdi>
+							<span className="flex size-8 shrink-0 items-center justify-center bg-sunken text-muted [&_svg]:size-4">
+								<SuggestionTileIcon kind={suggestion.kind} />
 							</span>
-							<span className="shrink-0 text-label text-muted">
+							<span className="min-w-0 flex-1 line-clamp-1 text-start text-body text-foreground [overflow-wrap:anywhere]">
+								<bdi>{suggestionLabel(suggestion)}</bdi>
+							</span>
+							<span className="label shrink-0">
 								{suggestionKindLabel(suggestion.kind)}
 							</span>
 						</button>

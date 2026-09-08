@@ -322,3 +322,134 @@ export async function getPlatformSuggestions(
 	const parsed = PlatformSuggestionsSchema.safeParse(payload);
 	return parsed.success ? parsed.data : [];
 }
+
+/** What a platform text file turned out to be, from its response headers. */
+export type PlatformFileKind =
+	| "pdf"
+	| "word"
+	| "spreadsheet"
+	| "presentation"
+	| "image"
+	| "text"
+	| "unknown";
+
+export type PlatformFileInfo = {
+	kind: PlatformFileKind;
+	/** Lower-case extension from the served filename or the URL, if any. */
+	extension: string | null;
+};
+
+const PROBE_TIMEOUT_MS = 6_000;
+
+/** The extension of the filename a Content-Disposition header carries. */
+function extensionFromDisposition(disposition: string): string | null {
+	const star = /filename\*=(?:UTF-8|utf-8)''([^;]+)/.exec(disposition);
+	const plain = /filename="?([^";]+)"?/.exec(disposition);
+	let name: string | null = null;
+	if (star?.[1]) {
+		try {
+			name = decodeURIComponent(star[1]);
+		} catch {
+			name = star[1];
+		}
+	} else if (plain?.[1]) {
+		name = plain[1];
+	}
+	const match = name ? /\.([A-Za-z0-9]{1,8})$/.exec(name.trim()) : null;
+	return match ? match[1].toLowerCase() : null;
+}
+
+function extensionFromUrl(url: string): string | null {
+	try {
+		const match = /\.([A-Za-z0-9]{1,8})$/.exec(new URL(url).pathname);
+		return match ? match[1].toLowerCase() : null;
+	} catch {
+		return null;
+	}
+}
+
+function classifyFile(
+	contentType: string | null,
+	extension: string | null,
+): PlatformFileKind {
+	const type = contentType ?? "";
+	if (type === "application/pdf" || extension === "pdf") {
+		return "pdf";
+	}
+	if (
+		type.includes("wordprocessingml") ||
+		type === "application/msword" ||
+		type.includes("opendocument.text") ||
+		type === "application/rtf" ||
+		["doc", "docx", "odt", "rtf"].includes(extension ?? "")
+	) {
+		return "word";
+	}
+	if (
+		type.includes("spreadsheetml") ||
+		type === "application/vnd.ms-excel" ||
+		type.includes("opendocument.spreadsheet") ||
+		type === "text/csv" ||
+		["xls", "xlsx", "ods", "csv"].includes(extension ?? "")
+	) {
+		return "spreadsheet";
+	}
+	if (
+		type.includes("presentationml") ||
+		type === "application/vnd.ms-powerpoint" ||
+		type.includes("opendocument.presentation") ||
+		["ppt", "pptx", "odp"].includes(extension ?? "")
+	) {
+		return "presentation";
+	}
+	if (type.startsWith("image/")) {
+		return "image";
+	}
+	if (type.startsWith("text/") || ["txt", "md"].includes(extension ?? "")) {
+		return "text";
+	}
+	return "unknown";
+}
+
+/**
+ * Ask the platform what a `/read` file actually is before deciding how to
+ * show it. The route serves whatever was uploaded — a PDF one day, a Word
+ * document the next — with no hint in the JSON record, and the in-page PDF
+ * reader can only ever open a real PDF. One HEAD request, best effort:
+ * anything that fails is reported as unknown and the page offers a download.
+ */
+export async function probePlatformFile(
+	url: string | null | undefined,
+): Promise<PlatformFileInfo> {
+	const target = resolvePlatformMediaUrl(url);
+	if (!target) {
+		return { kind: "unknown", extension: null };
+	}
+	try {
+		const response = await fetch(target, {
+			method: "HEAD",
+			cache: "no-store",
+			redirect: "manual",
+			signal: AbortSignal.timeout(PROBE_TIMEOUT_MS),
+		});
+		if (!response.ok) {
+			return { kind: "unknown", extension: extensionFromUrl(target) };
+		}
+		const contentType =
+			response.headers
+				.get("content-type")
+				?.split(";")[0]
+				?.trim()
+				.toLowerCase() ?? null;
+		const extension =
+			extensionFromDisposition(
+				response.headers.get("content-disposition") ?? "",
+			) ?? extensionFromUrl(target);
+		return { kind: classifyFile(contentType, extension), extension };
+	} catch (error) {
+		if (process.env.NODE_ENV === "development") {
+			console.error("[platform] file probe failed", target, error);
+		}
+		return { kind: "unknown", extension: extensionFromUrl(target) };
+	}
+}
