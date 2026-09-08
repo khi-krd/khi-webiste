@@ -155,12 +155,21 @@ export async function searchGlobal(
 	endpoint.searchParams.set("page", String(page));
 	endpoint.searchParams.set("size", String(size));
 
+	// Upstream trouble is reported as a WARNING, not an error: the CMS's
+	// search endpoint is known to answer 500 for type=ALL, NEWS and IMAGE
+	// (see site-search.ts), the caller already falls back, and console.error
+	// would surface every expected refusal as a "Console Error" in the Next
+	// dev overlay. Contract violations below stay errors — those are ours.
 	let response: Response;
 	try {
 		response = await fetch(endpoint, { cache: "no-store" });
 	} catch (error) {
 		if (process.env.NODE_ENV === "development") {
-			console.error("[searchGlobal] fetch failed", error);
+			console.warn(
+				"[searchGlobal] fetch failed",
+				`type=${normalizedType}`,
+				error,
+			);
 		}
 		return null;
 	}
@@ -168,10 +177,9 @@ export async function searchGlobal(
 	if (!response.ok) {
 		if (process.env.NODE_ENV === "development") {
 			const body = await response.text();
-			console.error(
-				"[searchGlobal] upstream error",
-				response.status,
-				body.slice(0, 300),
+			const traceId = /"traceId"\s*:\s*"([^"]+)"/.exec(body)?.[1];
+			console.warn(
+				`[searchGlobal] upstream ${response.status} for type=${normalizedType}${traceId ? ` (traceId ${traceId})` : ""}`,
 			);
 		}
 		return null;

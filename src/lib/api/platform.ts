@@ -105,8 +105,10 @@ async function fetchPlatformJson(endpoint: URL): Promise<unknown | null> {
 			signal: AbortSignal.timeout(TIMEOUT_MS),
 		});
 	} catch (error) {
+		// Transport and upstream failures are warnings: the page has an error
+		// state for them and they are the platform's weather, not our bug.
 		if (process.env.NODE_ENV === "development") {
-			console.error("[platform] fetch failed", endpoint.pathname, error);
+			console.warn("[platform] fetch failed", endpoint.pathname, error);
 		}
 		return null;
 	}
@@ -114,7 +116,7 @@ async function fetchPlatformJson(endpoint: URL): Promise<unknown | null> {
 	if (!response.ok) {
 		if (process.env.NODE_ENV === "development") {
 			const body = await response.text();
-			console.error(
+			console.warn(
 				"[platform] upstream error",
 				response.status,
 				endpoint.pathname,
@@ -258,7 +260,7 @@ export async function getPlatformMediaDetail(
 		});
 	} catch (error) {
 		if (process.env.NODE_ENV === "development") {
-			console.error("[platform] detail fetch failed", endpoint.pathname, error);
+			console.warn("[platform] detail fetch failed", endpoint.pathname, error);
 		}
 		return null;
 	}
@@ -448,7 +450,7 @@ export async function probePlatformFile(
 		return { kind: classifyFile(contentType, extension), extension };
 	} catch (error) {
 		if (process.env.NODE_ENV === "development") {
-			console.error("[platform] file probe failed", target, error);
+			console.warn("[platform] file probe failed", target, error);
 		}
 		return { kind: "unknown", extension: extensionFromUrl(target) };
 	}
