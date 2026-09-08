@@ -25,11 +25,14 @@ export async function EmptyResults({
 	hasQuery,
 	activeFilterCount,
 	didYouMean,
+	titleLevel = 3,
 }: {
 	state: SearchPageState;
 	hasQuery: boolean;
 	activeFilterCount: number;
 	didYouMean: string | null;
+	/** h3 under the results summary; h2 when no summary heading is shown. */
+	titleLevel?: 2 | 3;
 }) {
 	const t = await getTranslations("Search");
 	const query = state.q.trim();
@@ -38,7 +41,7 @@ export async function EmptyResults({
 		<EmptyState
 			icon={<MagnifyingGlassIcon />}
 			title={activeFilterCount > 0 ? t("emptyFilteredTitle") : t("emptyTitle")}
-			titleLevel={3}
+			titleLevel={titleLevel}
 			description={t("emptyDescription")}
 			className="search-rise py-16 sm:py-20"
 		>

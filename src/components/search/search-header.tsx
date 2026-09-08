@@ -272,7 +272,8 @@ export function SearchHeader({ state }: SearchHeaderProps) {
 		// Through the shared transition when the page provides one, so the
 		// results dim and the new summary is announced like every other change.
 		if (transition) {
-			transition.navigate(href);
+			// Keep the caret where it is: the input survives the results remount.
+			transition.navigate(href, { focusKey: "search-input" });
 		} else {
 			router.push(href, { scroll: false });
 		}
@@ -355,7 +356,7 @@ export function SearchHeader({ state }: SearchHeaderProps) {
 					className="hidden sm:flex sm:border-e sm:border-border"
 				/>
 
-				<div className="flex h-12 min-w-0 flex-1 items-center sm:h-full">
+				<div className="flex h-12 min-w-0 items-center sm:h-full sm:flex-1">
 					<MagnifyingGlassIcon
 						aria-hidden
 						className="ms-3.5 size-5 shrink-0 text-muted transition-colors group-focus-within/bar:text-foreground sm:ms-4"
@@ -366,6 +367,7 @@ export function SearchHeader({ state }: SearchHeaderProps) {
 					<input
 						ref={inputRef}
 						id="search-page-input"
+						data-focus-key="search-input"
 						name="q"
 						type="search"
 						autoComplete="off"

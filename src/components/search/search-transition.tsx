@@ -37,6 +37,9 @@ const LOADING_ANNOUNCE_DELAY_MS = 400;
 /** The results summary heading — the focus fallback after a navigation. */
 export const RESULTS_SUMMARY_ID = "search-results-summary";
 
+/** Stored when a navigation names no control: "land on the summary". */
+const SUMMARY_FOCUS_KEY = "summary";
+
 type NavigateOptions = {
 	/** Scroll this section id into view alongside the navigation. */
 	scrollTo?: string;
@@ -133,7 +136,7 @@ export function SearchTransitionProvider({
 	const navigate = useCallback(
 		(href: string, options?: NavigateOptions) => {
 			navigatedRef.current = true;
-			focusKeyRef.current = options?.focusKey ?? null;
+			focusKeyRef.current = options?.focusKey ?? SUMMARY_FOCUS_KEY;
 			startTransition(() => {
 				router.push(href, { scroll: false });
 			});
@@ -270,13 +273,42 @@ export function FocusRestore({ rootId }: { rootId: string }) {
 		if (!key) {
 			return;
 		}
+		const selector = `[data-focus-key="${CSS.escape(key)}"]`;
 		const root = document.getElementById(rootId) ?? document;
+		// Inside the fresh results first; then anywhere (the search input lives
+		// above the boundary); else the summary — which is also where a key
+		// that names no control at all (pager, summary sentinel) lands.
 		const target =
-			root.querySelector<HTMLElement>(
-				`[data-focus-key="${CSS.escape(key)}"]`,
-			) ?? document.getElementById(RESULTS_SUMMARY_ID);
+			root.querySelector<HTMLElement>(selector) ??
+			document.querySelector<HTMLElement>(selector) ??
+			document.getElementById(RESULTS_SUMMARY_ID);
 		target?.focus({ preventScroll: true });
 	}, [rootId, takeFocusKey]);
+
+	return null;
+}
+
+/**
+ * Renders nothing. Mounted inside the results skeleton: with the keyed
+ * Suspense boundary the fallback commits almost at once and `pending` ends
+ * with it, so "loading" is timed from the skeleton's own life instead — it
+ * speaks only when the wait has become noticeable, and never on a hard load.
+ */
+export function AnnounceLoading() {
+	const t = useTranslations("Search");
+	const transition = useSearchTransition();
+	const announce = transition?.announce;
+
+	useEffect(() => {
+		if (!announce) {
+			return;
+		}
+		const id = window.setTimeout(
+			() => announce(t("loading")),
+			LOADING_ANNOUNCE_DELAY_MS,
+		);
+		return () => window.clearTimeout(id);
+	}, [announce, t]);
 
 	return null;
 }

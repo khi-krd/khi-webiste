@@ -4,7 +4,6 @@ import { ActiveFilterChips } from "@/components/search/active-filter-chips";
 import { EmptyResults } from "@/components/search/empty-results";
 import { KindTabs } from "@/components/search/kind-tabs";
 import { PlatformPlate } from "@/components/search/platform-plate";
-import { RefineInlineShell } from "@/components/search/refine-inline-shell";
 import { hasRefinements, RefinePanel } from "@/components/search/refine-panel";
 import { RefineToggle } from "@/components/search/refine-toggle";
 import { RESULTS_ANCHOR_ID } from "@/components/search/results-anchor";
@@ -91,14 +90,22 @@ export async function PlatformResults({
 	});
 
 	if (!response) {
+		// Same anchor + focus/announce wiring as a result tree, so a failure
+		// after a client transition is neither silent nor a focus dead end.
 		return (
-			<ErrorState
-				framed
-				title={t("unavailableTitle")}
-				description={t("unavailableDescription")}
-				action={<RetryButton label={t("retry")} />}
-				className="my-10"
-			/>
+			<div id={RESULTS_ANCHOR_ID} className="scroll-mt-26 sm:scroll-mt-30">
+				<FocusRestore rootId={RESULTS_ANCHOR_ID} />
+				<div id={RESULTS_SUMMARY_ID} tabIndex={-1} className="outline-none">
+					<ErrorState
+						framed
+						title={t("unavailableTitle")}
+						description={t("unavailableDescription")}
+						action={<RetryButton label={t("retry")} />}
+						className="my-10"
+					/>
+				</div>
+				<AnnounceResults text={t("unavailableTitle")} />
+			</div>
 		);
 	}
 
@@ -201,18 +208,15 @@ export async function PlatformResults({
 							</div>
 						) : null}
 
+						{/* The inline panel owns its collapsible shell (id="search-refine"). */}
 						{showSidebar ? (
-							<div className="lg:hidden">
-								<RefineInlineShell>
-									<RefinePanel
-										state={state}
-										facets={response.facets}
-										locale={locale}
-										variant="inline"
-										totalElements={response.totalElements}
-									/>
-								</RefineInlineShell>
-							</div>
+							<RefinePanel
+								state={state}
+								facets={response.facets}
+								locale={locale}
+								variant="inline"
+								totalElements={response.totalElements}
+							/>
 						) : null}
 
 						{isEmpty ? (
@@ -221,6 +225,7 @@ export async function PlatformResults({
 								hasQuery={hasQuery}
 								activeFilterCount={activeFilterCount}
 								didYouMean={didYouMean}
+								titleLevel={showSummary ? 3 : 2}
 							/>
 						) : (
 							<ol
@@ -256,15 +261,13 @@ export async function PlatformResults({
 
 					{/* Refine sidebar — second in the DOM, first grid column on lg+. */}
 					{showSidebar ? (
-						<div className="hidden lg:col-start-1 lg:row-start-1 lg:block">
-							<RefinePanel
-								state={state}
-								facets={response.facets}
-								locale={locale}
-								variant="sidebar"
-								totalElements={response.totalElements}
-							/>
-						</div>
+						<RefinePanel
+							state={state}
+							facets={response.facets}
+							locale={locale}
+							variant="sidebar"
+							totalElements={response.totalElements}
+						/>
 					) : null}
 				</div>
 			</SearchPendingRegion>

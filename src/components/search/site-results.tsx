@@ -8,9 +8,17 @@ import {
 	Squares2X2Icon,
 } from "@heroicons/react/24/outline";
 import { getTranslations } from "next-intl/server";
-import type { ComponentProps, ComponentType, CSSProperties } from "react";
+import type {
+	ComponentProps,
+	ComponentType,
+	CSSProperties,
+	ReactNode,
+} from "react";
 import { RetryButton } from "@/components/search/retry-button";
 import {
+	AnnounceResults,
+	FocusRestore,
+	RESULTS_SUMMARY_ID,
 	SearchNavLink,
 	SearchPendingRegion,
 } from "@/components/search/search-transition";
@@ -35,6 +43,11 @@ import { buildVideoHref } from "@/lib/video-url";
 import { buildWritingsHref } from "@/lib/writings-url";
 
 const SECTION_SIZE = 8;
+
+/** Focus-restore root for the ماڵپەر tree (it lives outside #search-results). */
+const SITE_RESULTS_ANCHOR_ID = "site-results";
+
+const bdi = (chunks: ReactNode) => <bdi dir="auto">{chunks}</bdi>;
 
 type SectionDef = {
 	key: keyof Pick<
@@ -284,29 +297,61 @@ export async function SiteResults({
 
 	if (sections.length === 0) {
 		return (
-			<EmptyState
-				icon={<MagnifyingGlassIcon />}
-				title={t("emptyTitle")}
-				description={t("emptyDescription")}
-				className="py-20"
-			/>
+			<div id={SITE_RESULTS_ANCHOR_ID}>
+				<FocusRestore rootId={SITE_RESULTS_ANCHOR_ID} />
+				<div id={RESULTS_SUMMARY_ID} tabIndex={-1} className="outline-none">
+					<EmptyState
+						icon={<MagnifyingGlassIcon />}
+						title={t("emptyTitle")}
+						description={t("emptyDescription")}
+						className="py-20"
+					/>
+				</div>
+				<AnnounceResults text={t("emptyTitle")} />
+			</div>
 		);
 	}
 
+	const total = sections.reduce(
+		(sum, entry) => sum + entry.section.totalElements,
+		0,
+	);
+	const summary = t("resultsFor", {
+		count: formatCount(locale, total),
+		query: trimmed,
+	});
+
 	return (
 		<SearchPendingRegion>
-			<div className="grid gap-10 md:grid-cols-2 md:gap-x-14">
-				{sections.map(({ def, section }) => (
-					<SiteSection
-						key={def.key}
-						def={def}
-						section={section}
-						label={tNav(def.navLabelKey)}
-						viewAllLabel={t("siteViewAll", { section: tNav(def.navLabelKey) })}
-						locale={locale}
-						q={trimmed}
-					/>
-				))}
+			<div id={SITE_RESULTS_ANCHOR_ID}>
+				<FocusRestore rootId={SITE_RESULTS_ANCHOR_ID} />
+				<h2
+					id={RESULTS_SUMMARY_ID}
+					tabIndex={-1}
+					className="mb-6 border-b border-border pb-3 font-heading text-lead font-semibold text-foreground focus-visible:outline-none sm:mb-8 sm:text-h3"
+				>
+					{t.rich("resultsForRich", {
+						count: formatCount(locale, total),
+						query: trimmed,
+						bdi,
+					})}
+				</h2>
+				<AnnounceResults text={t("announceResults", { summary })} />
+				<div className="grid gap-10 md:grid-cols-2 md:gap-x-14">
+					{sections.map(({ def, section }) => (
+						<SiteSection
+							key={def.key}
+							def={def}
+							section={section}
+							label={tNav(def.navLabelKey)}
+							viewAllLabel={t("siteViewAll", {
+								section: tNav(def.navLabelKey),
+							})}
+							locale={locale}
+							q={trimmed}
+						/>
+					))}
+				</div>
 			</div>
 		</SearchPendingRegion>
 	);

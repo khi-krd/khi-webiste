@@ -1,4 +1,5 @@
 import type { CSSProperties } from "react";
+import { AnnounceLoading } from "@/components/search/search-transition";
 import { Skeleton } from "@/components/ui/skeleton";
 import { cn } from "@/lib/utils";
 
@@ -24,6 +25,7 @@ function plateVisibility(index: number): string | undefined {
 export function ResultsSkeleton({ label }: { label: string }) {
 	return (
 		<div role="status" aria-label={label}>
+			<AnnounceLoading />
 			<div aria-hidden>
 				{/* Row C — kind chips */}
 				<div className="flex items-center gap-2 overflow-hidden">
@@ -36,10 +38,14 @@ export function ResultsSkeleton({ label }: { label: string }) {
 				<div className="mt-5 sm:mt-6 lg:grid lg:grid-cols-[15rem_minmax(0,1fr)] lg:gap-10 xl:grid-cols-[16.5rem_minmax(0,1fr)] xl:gap-12">
 					{/* Results column (first in the DOM, second in the grid) */}
 					<div className="min-w-0 lg:col-start-2 lg:row-start-1">
-						{/* Row D — toolbar */}
-						<div className="flex items-end justify-between gap-4 border-b border-border pb-3">
+						{/* Row D — toolbar: summary line, then (below sm) its own row of
+						    refine toggle + sort, exactly like the real thing stacks. */}
+						<div className="flex flex-col gap-3 border-b border-border pb-3 sm:flex-row sm:items-end sm:justify-between sm:gap-4">
 							<Skeleton className="h-7 w-56 max-w-[60%]" />
-							<Skeleton className="h-11 w-32 shrink-0 lg:h-10" />
+							<div className="flex items-center gap-2 sm:gap-3">
+								<Skeleton className="h-11 flex-1 sm:w-28 sm:flex-none lg:hidden" />
+								<Skeleton className="h-11 w-32 shrink-0 lg:h-10" />
+							</div>
 						</div>
 
 						{/* Plate grid */}

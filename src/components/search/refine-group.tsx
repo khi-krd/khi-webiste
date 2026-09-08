@@ -85,11 +85,6 @@ export function RefineGroup({
 				type="button"
 				aria-expanded={open}
 				aria-controls={bodyId}
-				aria-label={
-					open
-						? t("facetCollapse", { group: title })
-						: t("facetExpand", { group: title })
-				}
 				data-focus-key={`group:${groupKey}`}
 				onClick={() => setOpen(!open)}
 				className={cn(
@@ -144,7 +139,7 @@ export function RefineGroup({
 								aria-controls={foldedId}
 								data-focus-key={`more:${groupKey}`}
 								onClick={() => setMore(!more)}
-								className="mb-1 flex min-h-9 items-center gap-1.5 text-label text-muted transition-colors fine-hover:text-foreground"
+								className="mb-1 flex min-h-11 items-center gap-1.5 text-label text-muted transition-colors fine-hover:text-foreground lg:min-h-9"
 							>
 								{moreLabel}
 								<ChevronDownIcon

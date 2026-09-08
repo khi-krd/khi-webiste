@@ -164,9 +164,17 @@ export async function PlatformPlate({
 				{hasFooter ? (
 					<footer className="label flex items-center gap-2 border-t border-border bg-sunken px-3 py-2 sm:px-4 2xl:px-5">
 						<span className="min-w-0 line-clamp-1 [overflow-wrap:anywhere]">
-							{language ? <span>{language}</span> : null}
+							{language ? (
+								<bdi dir="auto" className="normal-case tracking-normal">
+									{language}
+								</bdi>
+							) : null}
 							{language && region ? <span aria-hidden> · </span> : null}
-							{region ? <bdi dir="auto">{region}</bdi> : null}
+							{region ? (
+								<bdi dir="auto" className="normal-case tracking-normal">
+									{region}
+								</bdi>
+							) : null}
 						</span>
 						{foundIn.length > 0 ? (
 							<span className="ms-auto inline-flex shrink-0 items-center gap-1">

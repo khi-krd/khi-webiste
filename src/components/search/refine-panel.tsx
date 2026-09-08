@@ -185,17 +185,18 @@ function FacetRow({
 				aria-current={active ? "true" : undefined}
 				data-focus-key={focusKey}
 				className={cn(
-					"group/facet flex min-h-11 w-full items-center gap-2.5 py-1 text-small transition-colors lg:min-h-9",
-					active ? "text-foreground" : "text-muted fine-hover:text-foreground",
+					"flex min-h-11 w-full items-center gap-2.5 py-1 text-small transition-colors lg:min-h-9",
+					active
+						? "text-foreground"
+						: "text-muted fine-hover:text-foreground fine-hover:[&_[data-square]]:border-foreground/50",
 				)}
 			>
 				<span
 					aria-hidden
+					data-square
 					className={cn(
 						"flex size-4 shrink-0 items-center justify-center border transition-[background-color,border-color] duration-200",
-						active
-							? "border-primary bg-primary"
-							: "border-border-strong group-fine-hover/facet:border-foreground/50",
+						active ? "border-primary bg-primary" : "border-border-strong",
 					)}
 				>
 					{single ? (
@@ -337,7 +338,7 @@ function DecadeGroup({
 								aria-current={active ? "true" : undefined}
 								data-focus-key={`facet:${variant}:decade:${bucket.label}`}
 								className={cn(
-									"inline-flex h-10 items-center gap-1.5 border px-2.5 text-label transition-colors lg:h-8",
+									"inline-flex h-11 items-center gap-1.5 border px-2.5 text-label transition-colors lg:h-8",
 									active
 										? "border-primary bg-primary text-primary-foreground"
 										: "border-border-strong text-muted fine-hover:border-foreground/50 fine-hover:text-foreground",
@@ -459,7 +460,7 @@ export async function RefinePanel({
 							<SearchNavLink
 								href={clearedHref}
 								data-focus-key="refine:clear"
-								className="text-small text-muted underline decoration-border underline-offset-4 transition-colors fine-hover:text-foreground fine-hover:decoration-current"
+								className="inline-flex min-h-11 items-center px-2 text-small text-muted underline decoration-border underline-offset-4 transition-colors fine-hover:text-foreground fine-hover:decoration-current"
 							>
 								{t("filtersClearShort")}
 							</SearchNavLink>

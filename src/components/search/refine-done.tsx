@@ -26,6 +26,12 @@ export function RefineDone({
 			type="button"
 			data-focus-key="refine-done"
 			onClick={() => {
+				// This button is inside the panel that is about to go inert — hand
+				// focus to the toggle that opened it before folding, or focus
+				// falls to <body>.
+				document
+					.querySelector<HTMLElement>('[data-focus-key="refine-toggle"]')
+					?.focus({ preventScroll: true });
 				transition?.setRefineOpen(false);
 				scrollToSection(RESULTS_ANCHOR_ID);
 			}}

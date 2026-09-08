@@ -100,11 +100,17 @@ export async function KindTabs({
 									{tab.kind ? (
 										<KindIcon kind={tab.kind} className="size-4 shrink-0" />
 									) : null}
-									<span>{label}</span>
-									<span className="text-label tabular-nums text-muted">
+									{/* Spoken once, from the hidden sentence below. */}
+									<span aria-hidden>{label}</span>
+									<span
+										aria-hidden
+										className="text-label tabular-nums text-muted"
+									>
 										{formatCount(locale, 0)}
 									</span>
-									<span className="visually-hidden">{countLabel}</span>
+									<span className="visually-hidden">
+										{countLabel} — {t("kindEmptyHint", { kind: label })}
+									</span>
 								</span>
 							)}
 						</li>

@@ -165,7 +165,7 @@ export async function ActiveFilterChips({
 						aria-label={t("filterRemove", { label: chip.label ?? chip.group })}
 						data-focus-key={chip.focusKey}
 						className={cn(
-							"search-rise inline-flex h-10 items-center gap-1.5 bg-primary ps-3 pe-2",
+							"search-rise inline-flex h-11 items-center gap-1.5 bg-primary ps-3 pe-2",
 							"text-small font-medium text-primary-foreground transition-opacity fine-hover:opacity-85 lg:h-8",
 						)}
 						style={{ "--i": index } as CSSProperties}
@@ -191,7 +191,7 @@ export async function ActiveFilterChips({
 						href={buildSearchHref(withClearedFilters(state))}
 						data-focus-key="chip:clear"
 						className={cn(
-							"inline-flex h-10 items-center px-2 text-small text-muted underline decoration-border underline-offset-4",
+							"inline-flex h-11 items-center px-2 text-small text-muted underline decoration-border underline-offset-4",
 							"transition-colors fine-hover:text-foreground fine-hover:decoration-current lg:h-8",
 						)}
 					>
