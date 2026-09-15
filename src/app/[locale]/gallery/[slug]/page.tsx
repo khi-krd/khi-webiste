@@ -76,6 +76,8 @@ export default async function GalleryPostPage({
 				closeLabel={t("lightbox.close")}
 				lightboxPreviousLabel={t("lightbox.previous")}
 				lightboxNextLabel={t("lightbox.next")}
+				lightboxZoomInLabel={t("lightbox.zoomIn")}
+				lightboxZoomOutLabel={t("lightbox.zoomOut")}
 				metadataLabels={{
 					dimensions: t("lightbox.metadata.dimensions"),
 					fileSize: t("lightbox.metadata.fileSize"),

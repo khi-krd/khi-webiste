@@ -50,6 +50,8 @@ type GalleryPostViewProps = {
 	closeLabel: string;
 	lightboxPreviousLabel: string;
 	lightboxNextLabel: string;
+	lightboxZoomInLabel: string;
+	lightboxZoomOutLabel: string;
 	metadataLabels: GalleryAlbumMetadataLabels;
 };
 
@@ -120,6 +122,8 @@ export function GalleryPostView({
 	closeLabel,
 	lightboxPreviousLabel,
 	lightboxNextLabel,
+	lightboxZoomInLabel,
+	lightboxZoomOutLabel,
 	metadataLabels,
 }: GalleryPostViewProps) {
 	const { post } = detail;
@@ -232,6 +236,8 @@ export function GalleryPostView({
 					closeLabel={closeLabel}
 					previousLabel={lightboxPreviousLabel}
 					nextLabel={lightboxNextLabel}
+					zoomInLabel={lightboxZoomInLabel}
+					zoomOutLabel={lightboxZoomOutLabel}
 					metadataLabels={metadataLabels}
 				/>
 			</ScrollRevealBlock>

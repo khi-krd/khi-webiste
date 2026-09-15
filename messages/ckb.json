@@ -321,6 +321,8 @@
 			"close": "داخستن",
 			"previous": "وێنەی پێشوو",
 			"next": "وێنەی دواتر",
+			"zoomIn": "گەورەکردن",
+			"zoomOut": "بچووککردنەوە",
 			"metadata": {
 				"dimensions": "قەبارە",
 				"fileSize": "قەبارەی فایل",

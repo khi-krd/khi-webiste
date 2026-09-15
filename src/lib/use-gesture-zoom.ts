@@ -26,6 +26,8 @@ import { prefersReducedMotion } from "@/components/motion/scroll-reveal";
  * MIN 1 keeps the fitted size — shrinking below fit is pointless here.
  */
 const MIN_ZOOM = 1;
+/** Multiplicative step for the zoom-in/out buttons. */
+const ZOOM_STEP = 1.5;
 /** Divisor for wheel deltaY — higher means a gentler wheel zoom. */
 const WHEEL_ZOOM_EASE = 200;
 /**
@@ -296,6 +298,32 @@ export function useGestureZoom({
 		[animateZoomTo, doubleClickZoom],
 	);
 
+	// Button zoom glides around the viewport's centre — same tween and anchor
+	// machinery as the double-click, so it feels identical.
+	const zoomBy = useCallback(
+		(factor: number) => {
+			const viewport = viewportRef.current;
+			const rect = viewport?.getBoundingClientRect();
+			const target = Math.min(
+				maxZoom,
+				Math.max(MIN_ZOOM, zoomLevelRef.current * factor),
+			);
+			if (rect) {
+				animateZoomTo(
+					target,
+					rect.left + rect.width / 2,
+					rect.top + rect.height / 2,
+				);
+			} else {
+				zoomLevelRef.current = target;
+				setZoomLevel(target);
+			}
+		},
+		[animateZoomTo, maxZoom],
+	);
+	const zoomIn = useCallback(() => zoomBy(ZOOM_STEP), [zoomBy]);
+	const zoomOut = useCallback(() => zoomBy(1 / ZOOM_STEP), [zoomBy]);
+
 	const viewportProps = {
 		onDoubleClick,
 		onPointerDown,
@@ -313,5 +341,14 @@ export function useGestureZoom({
 				: "cursor-grab"
 			: "cursor-zoom-in";
 
-	return { zoomLevel, viewportRef, viewportProps, cursorClass };
+	return {
+		zoomLevel,
+		viewportRef,
+		viewportProps,
+		cursorClass,
+		zoomIn,
+		zoomOut,
+		canZoomIn: zoomLevel < maxZoom - 0.001,
+		canZoomOut: zoomLevel > MIN_ZOOM + 0.001,
+	};
 }

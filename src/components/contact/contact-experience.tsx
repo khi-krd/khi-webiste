@@ -82,12 +82,12 @@ export function ContactExperience({
 	return (
 		<HomeSection divider={false} aria-labelledby="contact-offices-heading">
 			<ScrollRevealBlock
-				className={cn(homeSectionHeaderClass, "pt-24 sm:pt-28 lg:pt-32")}
+				className={cn(homeSectionHeaderClass, "pt-10 sm:pt-12 lg:pt-14")}
 			>
 				<header className="max-w-2xl text-start">
 					<h1
 						id="contact-offices-heading"
-						className="font-heading text-h2 font-semibold leading-[1.12] text-balance"
+						className="font-heading text-h1 font-bold leading-[1.1] text-balance"
 					>
 						{officesHeading}
 					</h1>

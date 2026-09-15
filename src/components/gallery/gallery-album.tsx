@@ -29,6 +29,8 @@ type GalleryAlbumProps = {
 	closeLabel: string;
 	previousLabel: string;
 	nextLabel: string;
+	zoomInLabel: string;
+	zoomOutLabel: string;
 	metadataLabels: GalleryAlbumMetadataLabels;
 };
 
@@ -45,6 +47,8 @@ export function GalleryAlbum({
 	closeLabel,
 	previousLabel,
 	nextLabel,
+	zoomInLabel,
+	zoomOutLabel,
 	metadataLabels,
 }: GalleryAlbumProps) {
 	const { items: lightboxItems, albumIndexOffset } = buildGalleryLightboxItems(
@@ -118,6 +122,8 @@ export function GalleryAlbum({
 				closeLabel={closeLabel}
 				previousLabel={previousLabel}
 				nextLabel={nextLabel}
+				zoomInLabel={zoomInLabel}
+				zoomOutLabel={zoomOutLabel}
 				metadataLabels={metadataLabels}
 				fallbackTitle={postTitle}
 			/>

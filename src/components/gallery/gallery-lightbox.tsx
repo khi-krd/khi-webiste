@@ -3,6 +3,8 @@
 import {
 	ChevronLeftIcon,
 	ChevronRightIcon,
+	MagnifyingGlassMinusIcon,
+	MagnifyingGlassPlusIcon,
 	XMarkIcon,
 } from "@heroicons/react/24/outline";
 import NextImage from "next/image";
@@ -30,6 +32,8 @@ type GalleryLightboxProps = {
 	closeLabel: string;
 	previousLabel: string;
 	nextLabel: string;
+	zoomInLabel: string;
+	zoomOutLabel: string;
 	metadataLabels: GalleryAlbumMetadataLabels;
 	fallbackTitle?: string;
 };
@@ -101,6 +105,8 @@ export function GalleryLightbox({
 	closeLabel,
 	previousLabel,
 	nextLabel,
+	zoomInLabel,
+	zoomOutLabel,
 	metadataLabels,
 	fallbackTitle,
 }: GalleryLightboxProps) {
@@ -115,15 +121,20 @@ export function GalleryLightbox({
 		[activeIndex, items.length, onActiveIndexChange],
 	);
 
-	// Zoom feel — gesture-driven, no buttons: plain wheel (and trackpad pinch)
-	// zooms up to 3× (brochure text becomes readable), double-click glides
-	// fitted ↔ 2×, and a mouse drag pans while zoomed. Shared with the audio
-	// booklet reader so both viewers feel identical.
+	// Zoom feel: plain wheel (and trackpad pinch) zooms up to 3× (brochure
+	// text becomes readable), double-click glides fitted ↔ 2×, a mouse drag
+	// pans while zoomed, and the ± buttons step the same glide for keyboards
+	// and touchpads without a wheel. Shared with the audio booklet reader so
+	// both viewers feel identical.
 	const {
 		zoomLevel,
 		viewportRef: zoomViewportRef,
 		viewportProps: zoomViewportProps,
 		cursorClass: zoomCursorClass,
+		zoomIn,
+		zoomOut,
+		canZoomIn,
+		canZoomOut,
 	} = useGestureZoom({ resetKey: activeIndex });
 
 	// The thumbnail rail follows the arrows/keys: whichever page becomes
@@ -145,6 +156,8 @@ export function GalleryLightbox({
 		const rtl = document.documentElement.dir === "rtl";
 		if (event.key === (rtl ? "ArrowLeft" : "ArrowRight")) step(1);
 		if (event.key === (rtl ? "ArrowRight" : "ArrowLeft")) step(-1);
+		if (event.key === "+" || event.key === "=") zoomIn();
+		if (event.key === "-") zoomOut();
 	};
 
 	// Backdrop clicks dispatch with the <dialog> itself as target; clicks on the
@@ -171,6 +184,36 @@ export function GalleryLightbox({
 		item && (hasMetadataRows(item) || showDescription || showContext),
 	);
 	const showNav = items.length > 1;
+	// Iframe/external items have nothing to zoom.
+	const showZoomControls = Boolean(item?.imageUrl);
+	const zoomButtons = showZoomControls ? (
+		<>
+			<button
+				type="button"
+				onClick={zoomOut}
+				disabled={!canZoomOut}
+				aria-label={zoomOutLabel}
+				className={cn(
+					navButtonClass,
+					"disabled:cursor-not-allowed disabled:opacity-40",
+				)}
+			>
+				<MagnifyingGlassMinusIcon aria-hidden="true" className="size-4" />
+			</button>
+			<button
+				type="button"
+				onClick={zoomIn}
+				disabled={!canZoomIn}
+				aria-label={zoomInLabel}
+				className={cn(
+					navButtonClass,
+					"disabled:cursor-not-allowed disabled:opacity-40",
+				)}
+			>
+				<MagnifyingGlassPlusIcon aria-hidden="true" className="size-4" />
+			</button>
+		</>
+	) : null;
 
 	return (
 		<dialog
@@ -213,15 +256,15 @@ export function GalleryLightbox({
 										draggable={false}
 									/>
 									{/* Zoom scroll box: its child grows with the zoom level and
-									    `fill` re-anchors to that child, so the picture and its
-									    watermark scale together while every edge stays reachable
-									    by scrolling — the ambient blur behind them stays outside
-									    at 1×. Sized rather than transform-scaled so the scroll
-									    range is real and already settled when the re-center
-									    effect runs; the double-click glide re-runs that effect
-									    every frame, which is what keeps it anchored. Its wheel /
-								    double-click / drag gestures are pointer-only enhancements
-								    — every page stays fully reachable without them. */}
+									    `fill` re-anchors to that child, so every edge of the
+									    picture stays reachable by scrolling — the ambient blur
+									    behind it stays outside at 1×. Sized rather than
+									    transform-scaled so the scroll range is real and already
+									    settled when the re-center effect runs; the double-click
+									    glide re-runs that effect every frame, which is what
+									    keeps it anchored. Its wheel / double-click / drag
+								    gestures are pointer-only enhancements — every page stays
+								    fully reachable without them. */}
 									<div
 										ref={zoomViewportRef}
 										{...zoomViewportProps}
@@ -246,15 +289,19 @@ export function GalleryLightbox({
 												className="object-contain"
 												draggable={false}
 											/>
-											{/* Lifted clear of the caption strip when that strip is
-											    the one rendered over the media. */}
-											<ImageWatermark
-												contain={item.imageUrl}
-												clearance={showPanel ? 0 : 40}
-												zoom={zoomLevel}
-											/>
 										</div>
 									</div>
+									{/* A child of the frame, not of the scrolled child, so the
+									    mark can clamp to the VISIBLE corner of the picture —
+									    zooming or panning can never scroll it out of view.
+									    Lifted clear of the caption strip when that strip is the
+									    one rendered over the media. */}
+									<ImageWatermark
+										contain={item.imageUrl}
+										clearance={showPanel ? 0 : 40}
+										zoom={zoomLevel}
+										viewportRef={zoomViewportRef}
+									/>
 								</>
 							) : item.embedUrl ? (
 								<iframe
@@ -280,6 +327,11 @@ export function GalleryLightbox({
 
 							{!showPanel && (
 								<>
+									{zoomButtons ? (
+										<div className="absolute top-3 start-3 z-10 flex gap-2">
+											{zoomButtons}
+										</div>
+									) : null}
 									<button
 										type="button"
 										onClick={() => dialogRef.current?.close()}
@@ -487,6 +539,15 @@ export function GalleryLightbox({
 								>
 									<DirectionalIcon icon={ChevronRightIcon} className="size-4" />
 								</button>
+								{zoomButtons ? (
+									<>
+										<span
+											aria-hidden
+											className="mx-1 h-5 w-px bg-background/20"
+										/>
+										{zoomButtons}
+									</>
+								) : null}
 							</div>
 						</div>
 					)}

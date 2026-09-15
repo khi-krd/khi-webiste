@@ -22,6 +22,8 @@ type AudioAttachmentSliderProps = {
 	closeLabel: string;
 	previousLabel: string;
 	nextLabel: string;
+	zoomInLabel: string;
+	zoomOutLabel: string;
 	metadataLabels: GalleryAlbumMetadataLabels;
 };
 
@@ -42,6 +44,8 @@ export function AudioAttachmentSlider({
 	closeLabel,
 	previousLabel,
 	nextLabel,
+	zoomInLabel,
+	zoomOutLabel,
 	metadataLabels,
 }: AudioAttachmentSliderProps) {
 	const locale = useLocale();
@@ -202,6 +206,8 @@ export function AudioAttachmentSlider({
 				closeLabel={closeLabel}
 				previousLabel={previousLabel}
 				nextLabel={nextLabel}
+				zoomInLabel={zoomInLabel}
+				zoomOutLabel={zoomOutLabel}
 				metadataLabels={metadataLabels}
 				fallbackTitle={title}
 			/>

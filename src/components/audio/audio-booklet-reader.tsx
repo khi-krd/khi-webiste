@@ -211,9 +211,9 @@ export function AudioBookletReader({
 										<div className="absolute inset-0 p-4 sm:p-6">
 											{/* Zoom scroll box (selected slide only): the child
 											    grows with the zoom level and `fill` re-anchors to
-											    it, so the page and its watermark scale together
-											    while every corner stays reachable by scrolling or
-											    dragging — same pattern as the gallery lightbox. */}
+											    it, so every corner stays reachable by scrolling
+											    or dragging — same pattern as the gallery
+											    lightbox. */}
 											<div
 												ref={
 													index === selectedIndex ? zoomViewportRef : undefined
@@ -254,12 +254,18 @@ export function AudioBookletReader({
 														priority={index === 0}
 														draggable={false}
 													/>
-													<ImageWatermark
-														contain={item.imageUrl}
-														zoom={zoomLevel}
-													/>
 												</div>
 											</div>
+											{/* Sibling of the scroll box so the mark clamps to
+											    the VISIBLE corner of the page — panning a zoomed
+											    page can never carry it off-screen. */}
+											<ImageWatermark
+												contain={item.imageUrl}
+												zoom={index === selectedIndex ? zoomLevel : 1}
+												viewportRef={
+													index === selectedIndex ? zoomViewportRef : undefined
+												}
+											/>
 										</div>
 										<span className="pointer-events-none absolute inset-x-0 bottom-3 text-center text-label text-muted/60">
 											{index + 1}

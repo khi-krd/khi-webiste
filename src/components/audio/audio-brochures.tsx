@@ -16,6 +16,8 @@ type AudioBrochuresProps = {
 	closeLabel: string;
 	previousLabel: string;
 	nextLabel: string;
+	zoomInLabel: string;
+	zoomOutLabel: string;
 	metadataLabels: GalleryAlbumMetadataLabels;
 };
 
@@ -30,6 +32,8 @@ export function AudioBrochures({
 	closeLabel,
 	previousLabel,
 	nextLabel,
+	zoomInLabel,
+	zoomOutLabel,
 	metadataLabels,
 }: AudioBrochuresProps) {
 	const { dialogRef, activeIndex, setActiveIndex, open } = useGalleryLightbox();
@@ -84,6 +88,8 @@ export function AudioBrochures({
 				closeLabel={closeLabel}
 				previousLabel={previousLabel}
 				nextLabel={nextLabel}
+				zoomInLabel={zoomInLabel}
+				zoomOutLabel={zoomOutLabel}
 				metadataLabels={metadataLabels}
 				fallbackTitle={title}
 			/>
