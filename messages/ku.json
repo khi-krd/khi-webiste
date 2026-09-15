@@ -1010,12 +1010,7 @@
 	"Contact": {
 		"pageTitle": "Têkilî",
 		"metaDescription": "Bi Enstîtuya Kevneşopiya Kurdî re têkilî daynin — ofîsên li Silêmanî û Dihokê.",
-		"hero": {
-			"title": "Têkilî"
-		},
 		"offices": {
-			"heading": "Ofîsên me",
-			"description": "Du bingehên herêmî li Silêmanî û Dihokê.",
 			"fields": {
 				"address": "Navnîşan",
 				"workingHours": "Demjimêrên xebatê",
@@ -1025,13 +1020,11 @@
 			"items": {
 				"sulaymaniyah": {
 					"name": "Silêmanî",
-					"nameLatin": "Sulaymaniyah · Kurdistan",
 					"subtitle": "Ofîsa Silêmanî — Herêma Raparin",
 					"address": "Herêma Raparin, Xanî 02, Kolana 34, Kolana Pîremam 11"
 				},
 				"duhok": {
 					"name": "Dihok",
-					"nameLatin": "Duhok · Kurdistan",
 					"subtitle": "Ofîsa Dihokê — Kolana KRO",
 					"address": "Kolana KRO, Kolana Shamamok, Xanî 8"
 				}

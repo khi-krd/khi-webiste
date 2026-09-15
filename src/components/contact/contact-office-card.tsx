@@ -1,10 +1,9 @@
 import NextImage from "next/image";
-import type { ContactOffice } from "@/lib/mock/contact";
+import type { ContactOffice } from "@/lib/contact/office";
 import { cn } from "@/lib/utils";
 
 export type OfficeCardCopy = {
 	name: string;
-	nameLatin: string;
 	subtitle?: string;
 	address: string;
 	workingHours?: string;
@@ -81,7 +80,6 @@ export function ContactOfficeCard({
 				<h3 className="font-heading text-h2 font-bold leading-[1.12] text-balance text-foreground transition-colors duration-300 group-fine:text-brand">
 					{copy.name}
 				</h3>
-				<p className="label mt-2 font-medium text-muted">{copy.nameLatin}</p>
 				{copy.subtitle ? (
 					<p className="mt-4 max-w-prose text-body leading-relaxed text-foreground/80">
 						{copy.subtitle}

@@ -1,9 +1,12 @@
 "use client";
 
-import { ArrowTopRightOnSquareIcon } from "@heroicons/react/24/outline";
+import {
+	ArrowTopRightOnSquareIcon,
+	MapPinIcon,
+} from "@heroicons/react/24/outline";
 import { VisuallyHidden } from "@/components/ui/visually-hidden";
-import type { ContactOffice, OfficeId } from "@/lib/mock/contact";
-import { formatCoordinates } from "@/lib/mock/contact";
+import type { ContactOffice, OfficeId } from "@/lib/contact/office";
+import { formatCoordinates } from "@/lib/contact/office";
 import { cn } from "@/lib/utils";
 
 export type MapOfficeOption = {
@@ -35,10 +38,9 @@ export function ContactMap({
 	onSelect,
 	className,
 }: ContactMapProps) {
-	const coordinates = formatCoordinates(
-		office.coordinates.lat,
-		office.coordinates.lng,
-	);
+	const coordinates = office.hasCoordinates
+		? formatCoordinates(office.coordinates.lat, office.coordinates.lng)
+		: null;
 
 	return (
 		<div
@@ -49,15 +51,21 @@ export function ContactMap({
 		>
 			<div className="relative min-h-72 overflow-hidden sm:min-h-96 lg:min-h-[28rem]">
 				<div className="absolute inset-0 grayscale contrast-[1.04]">
-					<iframe
-						key={office.id}
-						title={iframeTitle}
-						src={office.mapEmbedUrl}
-						loading="lazy"
-						referrerPolicy="no-referrer-when-downgrade"
-						className="h-full w-full border-0"
-						allowFullScreen
-					/>
+					{office.mapEmbedUrl ? (
+						<iframe
+							key={office.id}
+							title={iframeTitle}
+							src={office.mapEmbedUrl}
+							loading="lazy"
+							referrerPolicy="strict-origin-when-cross-origin"
+							className="h-full w-full border-0"
+							allowFullScreen
+						/>
+					) : (
+						<div className="flex h-full w-full items-center justify-center bg-sunken">
+							<MapPinIcon className="size-10 text-muted" aria-hidden />
+						</div>
+					)}
 				</div>
 			</div>
 
@@ -96,26 +104,30 @@ export function ContactMap({
 					<p className="mt-4 max-w-sm text-body leading-relaxed text-primary-foreground/75">
 						{body}
 					</p>
-					<p
-						className="mt-8 font-mono text-lead tabular-nums text-primary-foreground"
-						dir="ltr"
-					>
-						{coordinates}
-					</p>
+					{coordinates ? (
+						<p
+							className="mt-8 font-mono text-lead tabular-nums text-primary-foreground"
+							dir="ltr"
+						>
+							{coordinates}
+						</p>
+					) : null}
 				</div>
 
-				<a
-					href={office.mapLinkUrl}
-					target="_blank"
-					rel="noreferrer"
-					className="group/maps mt-10 inline-flex w-fit items-center gap-2.5 border border-primary-foreground/35 px-5 py-3 text-small font-medium text-primary-foreground no-underline transition-colors fine-hover:border-primary-foreground fine-hover:bg-primary-foreground/10"
-				>
-					{openInMapsLabel}
-					<ArrowTopRightOnSquareIcon
-						className="size-4 shrink-0 transition-transform fine-hover:-translate-y-0.5 fine-hover:translate-x-0.5"
-						aria-hidden
-					/>
-				</a>
+				{office.mapLinkUrl ? (
+					<a
+						href={office.mapLinkUrl}
+						target="_blank"
+						rel="noreferrer"
+						className="group/maps mt-10 inline-flex w-fit items-center gap-2.5 border border-primary-foreground/35 px-5 py-3 text-small font-medium text-primary-foreground no-underline transition-colors fine-hover:border-primary-foreground fine-hover:bg-primary-foreground/10"
+					>
+						{openInMapsLabel}
+						<ArrowTopRightOnSquareIcon
+							className="size-4 shrink-0 transition-transform fine-hover:-translate-y-0.5 fine-hover:translate-x-0.5"
+							aria-hidden
+						/>
+					</a>
+				) : null}
 			</div>
 		</div>
 	);

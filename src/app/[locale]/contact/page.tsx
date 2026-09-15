@@ -2,8 +2,6 @@ import type { Metadata } from "next";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { ContactExperience } from "@/components/contact/contact-experience";
 import { ContactForm } from "@/components/contact/contact-form";
-import { ContactHero } from "@/components/contact/contact-hero";
-import { VisuallyHidden } from "@/components/ui/visually-hidden";
 import { getContactOffices } from "@/lib/api/contact";
 import { localeAlternates } from "@/lib/seo/metadata";
 
@@ -35,14 +33,9 @@ export default async function ContactPage({
 
 	return (
 		<main>
-			<VisuallyHidden as="h1">{t("pageTitle")}</VisuallyHidden>
-
-			<ContactHero title={t("hero.title")} />
-
 			<ContactExperience
 				offices={offices}
-				officesHeading={t("offices.heading")}
-				officesDescription={t("offices.description")}
+				officesHeading={t("pageTitle")}
 				fieldLabels={{
 					address: t("offices.fields.address"),
 					workingHours: t("offices.fields.workingHours"),
@@ -52,13 +45,11 @@ export default async function ContactPage({
 				officeCopy={{
 					sulaymaniyah: {
 						name: t("offices.items.sulaymaniyah.name"),
-						nameLatin: t("offices.items.sulaymaniyah.nameLatin"),
 						subtitle: t("offices.items.sulaymaniyah.subtitle"),
 						address: t("offices.items.sulaymaniyah.address"),
 					},
 					duhok: {
 						name: t("offices.items.duhok.name"),
-						nameLatin: t("offices.items.duhok.nameLatin"),
 						subtitle: t("offices.items.duhok.subtitle"),
 						address: t("offices.items.duhok.address"),
 					},

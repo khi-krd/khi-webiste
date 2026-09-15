@@ -1,8 +1,9 @@
+import { resolveMapUrl } from "@/lib/contact/map-url";
 import {
 	type ContactOffice,
 	OFFICE_IMAGES,
 	type OfficeId,
-} from "@/lib/mock/contact";
+} from "@/lib/contact/office";
 import type { ContactPage } from "@/types/contact-page";
 
 function firstNonBlank(
@@ -16,21 +17,22 @@ function firstNonBlank(
 	return null;
 }
 
-function mapsLinkUrl(lat: number, lng: number): string {
-	return `https://www.google.com/maps?q=${lat},${lng}`;
-}
-
 /**
  * `officeType` is free text. The CMS writes "HQ", older docs say "HEADQUARTERS",
- * and an editor may type either — match on a normalised prefix rather than one
- * exact spelling, and treat everything else as a regional office.
+ * and the live record holds the Kurdish word "سەرەکی" — match on a normalised
+ * prefix rather than one exact spelling, and treat everything else as a
+ * regional office.
  */
 function isHeadquarters(officeType: string | null | undefined): boolean {
 	const normalized = officeType?.trim().toUpperCase();
 	if (!normalized) {
 		return false;
 	}
-	return normalized === "HQ" || normalized.startsWith("HEADQUARTER");
+	return (
+		normalized === "HQ" ||
+		normalized.startsWith("HEADQUARTER") ||
+		normalized.includes("سەرەکی")
+	);
 }
 
 const OFFICE_ID_ALIASES: Record<string, OfficeId> = {
@@ -57,7 +59,6 @@ function resolveOfficeId(page: ContactPage, index: number): OfficeId {
 export type ResolvedContactOffice = ContactOffice & {
 	localizedCopy?: {
 		name: string;
-		nameLatin: string;
 		subtitle?: string;
 		address: string;
 		/** From the CMS only — the bundled fallback copy has no opening hours. */
@@ -74,18 +75,16 @@ export function resolveContactOffice(
 		locale === "ckb"
 			? (page.ckbContent ?? page.kmrContent)
 			: (page.kmrContent ?? page.ckbContent);
-	const oppositeContent =
-		locale === "ckb"
-			? (page.kmrContent ?? page.ckbContent)
-			: (page.ckbContent ?? page.kmrContent);
-	const lat = page.latitude;
-	const lng = page.longitude;
 	const title = content?.title?.trim();
 	if (!title) {
 		return null;
 	}
 
 	const officeId = resolveOfficeId(page, index);
+	const map = resolveMapUrl(page.mapEmbedUrl, {
+		lat: page.latitude,
+		lng: page.longitude,
+	});
 
 	return {
 		id: officeId,
@@ -94,15 +93,10 @@ export function resolveContactOffice(
 		phone: page.phone ?? "",
 		secondaryPhone: page.secondaryPhone?.trim() || undefined,
 		email: page.email ?? "",
-		mapEmbedUrl: page.mapEmbedUrl ?? "",
-		mapLinkUrl:
-			lat != null && lng != null
-				? mapsLinkUrl(lat, lng)
-				: (page.mapEmbedUrl ?? ""),
-		coordinates: {
-			lat: lat ?? 0,
-			lng: lng ?? 0,
-		},
+		mapEmbedUrl: map.embedUrl ?? "",
+		mapLinkUrl: map.linkUrl ?? "",
+		coordinates: map.coordinates ?? { lat: 0, lng: 0 },
+		hasCoordinates: map.coordinates != null,
 		// The office photo is `heroImageUrl`, uploaded per office in the dashboard.
 		// Until an editor sets one, fall back to that office's bundled photo rather
 		// than to a single shared placeholder — two identical pictures side by side
@@ -113,7 +107,6 @@ export function resolveContactOffice(
 		},
 		localizedCopy: {
 			name: title,
-			nameLatin: oppositeContent?.title?.trim() ?? title,
 			workingHours: content?.workingHours?.trim() || undefined,
 			// `description` is Tiptap HTML and this slot renders as plain text —
 			// using it would print literal <p> tags. `subtitle` is the plain-text

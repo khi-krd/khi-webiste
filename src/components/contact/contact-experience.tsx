@@ -9,14 +9,14 @@ import {
 	homeSectionHeaderClass,
 } from "@/components/contact/contact-shell";
 import { ScrollRevealBlock } from "@/components/motion/scroll-reveal";
+import type { OfficeId } from "@/lib/contact/office";
 import type { ResolvedContactOffice } from "@/lib/contact/resolve";
-import type { OfficeId } from "@/lib/mock/contact";
+import { cn } from "@/lib/utils";
 
 type OfficeCopyBundle = Record<
 	OfficeId,
 	{
 		name: string;
-		nameLatin: string;
 		subtitle?: string;
 		address: string;
 	}
@@ -26,7 +26,6 @@ type ContactExperienceProps = {
 	offices: ResolvedContactOffice[];
 	officeCopy: OfficeCopyBundle;
 	officesHeading: string;
-	officesDescription: string;
 	fieldLabels: {
 		address: string;
 		workingHours: string;
@@ -46,7 +45,6 @@ export function ContactExperience({
 	offices,
 	officeCopy,
 	officesHeading,
-	officesDescription,
 	fieldLabels,
 	mapCopy,
 }: ContactExperienceProps) {
@@ -74,7 +72,6 @@ export function ContactExperience({
 			{
 				office,
 				name: copy.name,
-				nameLatin: copy.nameLatin,
 				subtitle: copy.subtitle,
 				address: copy.address,
 				workingHours: localized?.address ? localized.workingHours : undefined,
@@ -84,19 +81,16 @@ export function ContactExperience({
 
 	return (
 		<HomeSection divider={false} aria-labelledby="contact-offices-heading">
-			<ScrollRevealBlock className={homeSectionHeaderClass}>
+			<ScrollRevealBlock
+				className={cn(homeSectionHeaderClass, "pt-24 sm:pt-28 lg:pt-32")}
+			>
 				<header className="max-w-2xl text-start">
-					<h2
+					<h1
 						id="contact-offices-heading"
-						className="font-heading text-h1 font-bold leading-[1.1] text-balance"
+						className="font-heading text-h2 font-semibold leading-[1.12] text-balance"
 					>
 						{officesHeading}
-					</h2>
-					{officesDescription ? (
-						<p className="mt-3 text-body leading-relaxed text-muted">
-							{officesDescription}
-						</p>
-					) : null}
+					</h1>
 				</header>
 			</ScrollRevealBlock>
 
@@ -115,7 +109,6 @@ export function ContactExperience({
 									}
 									copy={{
 										name: entry.name,
-										nameLatin: entry.nameLatin,
 										subtitle: entry.subtitle,
 										address: entry.address,
 										workingHours: entry.workingHours,

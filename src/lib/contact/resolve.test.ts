@@ -113,6 +113,58 @@ describe("officeType", () => {
 	});
 });
 
+describe("mapEmbedUrl", () => {
+	// The live CMS record stores a whole <iframe> snippet, not a bare URL —
+	// feeding that to <iframe src> renders nothing, so the resolver extracts.
+	it("extracts the src from a pasted iframe snippet", () => {
+		const office = resolveContactOffice(
+			"ckb",
+			page({
+				mapEmbedUrl:
+					'<iframe src="https://maps.google.com/maps?q=35.5,45.4&output=embed" width="600"></iframe>',
+			}),
+			0,
+		);
+
+		expect(office?.mapEmbedUrl).toBe(
+			"https://maps.google.com/maps?q=35.5,45.4&output=embed",
+		);
+	});
+
+	it("passes a bare URL through unchanged", () => {
+		const url = "https://maps.google.com/maps?q=35.5,45.4&output=embed";
+		const office = resolveContactOffice(
+			"ckb",
+			page({ mapEmbedUrl: url, latitude: null, longitude: null }),
+			0,
+		);
+
+		expect(office?.mapEmbedUrl).toBe(url);
+		// An embed URL is not a share link — the link is rebuilt from coords.
+		expect(office?.mapLinkUrl).toBe("https://www.google.com/maps?q=35.5,45.4");
+	});
+
+	it.each([
+		undefined,
+		null,
+		"",
+		"   ",
+		"javascript:alert(1)",
+	])("rejects %p", (mapEmbedUrl) => {
+		const office = resolveContactOffice(
+			"ckb",
+			page({
+				mapEmbedUrl,
+				latitude: null,
+				longitude: null,
+			} as Partial<ContactPage>),
+			0,
+		);
+
+		expect(office?.mapEmbedUrl).toBe("");
+	});
+});
+
 describe("card copy", () => {
 	// `description` is Tiptap HTML and the subtitle slot renders as plain text.
 	it("takes the subtitle from subtitle, never from the HTML description", () => {

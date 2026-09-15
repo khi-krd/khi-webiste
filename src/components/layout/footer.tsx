@@ -1,6 +1,6 @@
 import { ArrowRightIcon, ArrowUpRightIcon } from "@heroicons/react/24/outline";
 import NextImage from "next/image";
-import { getTranslations } from "next-intl/server";
+import { getLocale, getTranslations } from "next-intl/server";
 import type { ComponentProps, ComponentType } from "react";
 import { Logo } from "@/components/layout/logo";
 import {
@@ -12,9 +12,12 @@ import { viewAllCtaOnBrandClass } from "@/components/ui/cta-styles";
 import { DirectionalIcon } from "@/components/ui/directional-icon";
 import { Link } from "@/components/ui/link";
 import { DONATE_HREF, FOOTER_COLUMNS, type FooterLink } from "@/config/site";
+import { getContactOffices } from "@/lib/api/contact";
 import { getDonateBandImageUrl, getSiteLogoUrl } from "@/lib/api/site-settings";
-import { getSocialPlatformsFromApi } from "@/lib/api/social";
-import { getContactOffices, type SocialPlatformId } from "@/lib/mock/contact";
+import {
+	getSocialPlatformsFromApi,
+	type SocialPlatformId,
+} from "@/lib/api/social";
 import { cn } from "@/lib/utils";
 
 function YoutubeIcon(props: ComponentProps<"svg">) {
@@ -290,9 +293,11 @@ export async function Footer() {
 	// in the CMS's own order, and a platform with no glyph is skipped rather
 	// than rendered as a placeholder "#" (a bare icon reads as broken).
 	const socialPlatforms = await getSocialPlatformsFromApi();
-	const hqEmail = getContactOffices().find(
-		(office) => office.badge === "hq",
-	)?.email;
+	const offices = await getContactOffices(await getLocale());
+	const hqEmail =
+		offices.find((office) => office.badge === "hq")?.email ||
+		offices[0]?.email ||
+		undefined;
 
 	const socialLinks: FooterSocialLink[] = [
 		...socialPlatforms.flatMap((platform) => {

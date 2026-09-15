@@ -1010,12 +1010,7 @@
 	"Contact": {
 		"pageTitle": "پەیوەندی",
 		"metaDescription": "پەیوەندی بە ئنستیتیوتی کەلەپووری کورد — ئۆفیسەکان لە سلێمانی و دهۆک.",
-		"hero": {
-			"title": "پەیوەندی"
-		},
 		"offices": {
-			"heading": "ئۆفیسەکانمان",
-			"description": "",
 			"fields": {
 				"address": "ناونیشان",
 				"workingHours": "کاتی کارکردن",
@@ -1025,13 +1020,11 @@
 			"items": {
 				"sulaymaniyah": {
 					"name": "سلێمانی",
-					"nameLatin": "Sulaymaniyah · Kurdistan",
 					"subtitle": "ئۆفیسی سلێمانی — گەڕەکی ڕاپەڕین",
 					"address": "گەڕەکی ڕاپەڕین، خانووی ٠٢، كۆڵانی ٣٤، شەقامی پیرەمەگرون ١١"
 				},
 				"duhok": {
 					"name": "دهۆک",
-					"nameLatin": "Duhok · Kurdistan",
 					"subtitle": "ئۆفیسی دهۆک — جادەی KRO",
 					"address": "جادەیا KRO، کۆڵانا شەمامۆک، خانییێ ٨"
 				}

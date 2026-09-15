@@ -1,11 +1,11 @@
 import "server-only";
 import { apiFetchPage, apiPost, DEFAULT_REVALIDATE } from "@/lib/api/client";
 import { getApiBaseUrl } from "@/lib/api/config";
+import type { ContactOffice } from "@/lib/contact/office";
 import {
 	type ResolvedContactOffice,
 	resolveContactOffices,
 } from "@/lib/contact/resolve";
-import type { ContactOffice } from "@/lib/mock/contact";
 import {
 	type ContactMessageResponse,
 	ContactMessageResponseSchema,
