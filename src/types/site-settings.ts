@@ -23,6 +23,15 @@ export const SiteSettingsSchema = z.object({
 	ckbFontName: z.string().nullish(),
 	kmrFontUrl: z.string().nullish(),
 	kmrFontName: z.string().nullish(),
+	/**
+	 * Admin-picked surface colors, hex strings. Sanitized again before they
+	 * reach the injected stylesheet — a non-hex value is dropped, never
+	 * emitted into CSS.
+	 */
+	bodyColor: z.string().nullish(),
+	navbarColor: z.string().nullish(),
+	footerColor: z.string().nullish(),
+	collectionColor: z.string().nullish(),
 	maxFeaturedSlides: z.number().nullish(),
 	updatedAt: z.string().nullish(),
 });

@@ -77,7 +77,9 @@ export function HeaderShell({ children }: Props) {
 
 	return (
 		<motion.header
-			className="sticky top-0 z-50 border-b border-border/40 bg-background/35 backdrop-blur-[48px]"
+			// bg comes from .site-header-bg (35% of --site-header-bg) so the
+			// dashboard can recolor the navbar independently of the page canvas.
+			className="site-header-bg sticky top-0 z-50 border-b border-border/40 backdrop-blur-[48px]"
 			initial={reduceMotion ? false : { y: "-100%" }}
 			animate={{ y: isVisible || reduceMotion ? 0 : "-100%" }}
 			transition={

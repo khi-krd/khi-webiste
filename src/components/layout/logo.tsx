@@ -64,10 +64,11 @@ export async function Logo({
 				dir={isSorani ? "rtl" : "ltr"}
 				className={cn(
 					"hidden min-w-0 whitespace-nowrap text-small font-bold leading-[1.2] sm:block lg:text-body",
-					// ckb is pinned to Vazirmatn rather than font-heading: on ku that
-					// token resolves to Clash Display, which has no Arabic glyphs.
+					// --font-app-heading on ckb resolves to the dashboard-picked
+					// face when one is active, else Vazirmatn — Arabic-capable in
+					// both cases, unlike font-heading on ku (Clash Display).
 					isSorani
-						? "font-[family-name:var(--font-vazirmatn)]"
+						? "font-[family-name:var(--font-app-heading)]"
 						: "font-heading",
 					reverse && "order-1",
 				)}

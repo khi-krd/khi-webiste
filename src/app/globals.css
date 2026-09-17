@@ -127,6 +127,20 @@
 }
 
 /* ----------------------------------------------------------------------------
+   Admin-overridable surface colors (dashboard → site_settings → injected CSS).
+   Defaults reproduce the current design exactly; the locale layout emits
+   `:root{--…: <hex>}` overrides, which win by source order over these.
+   -------------------------------------------------------------------------- */
+:root {
+	/* Sticky navbar — translucent like today (35% over the page canvas). */
+	--site-header-bg: var(--color-background);
+	/* Footer gradient base — the lightest of the three authored stops. */
+	--site-footer-bg: #0f2a1c;
+	/* Home image-collection tray — the dark band behind the photo tiles. */
+	--site-collection-bg: var(--color-foreground);
+}
+
+/* ----------------------------------------------------------------------------
    Per-script typographic metrics + tracking. Not exposed as utilities — these
    tune the base reading experience and must differ by script/direction.
    -------------------------------------------------------------------------- */
@@ -1068,7 +1082,27 @@ dialog[open]::backdrop {
 			color-mix(in oklch, var(--green-700) 55%, transparent),
 			transparent 65%
 		),
-		linear-gradient(172deg, #0a1410 0%, #08110d 45%, #0f2a1c 100%);
+		/* Dark stops are derived from --site-footer-bg so a dashboard color
+		   change re-shades the whole gradient (≈ #0a1410/#08110d/#0f2a1c at
+		   the default). */
+		linear-gradient(
+			172deg,
+			color-mix(in oklch, var(--site-footer-bg) 40%, black) 0%,
+			color-mix(in oklch, var(--site-footer-bg) 50%, black) 45%,
+			var(--site-footer-bg) 100%
+		);
+}
+
+/* --- Admin-overridable surfaces ---------------------------------------------
+   The translucent navbar veil and the home collection tray read their color
+   from --site-* tokens (defaults = the current design), so the dashboard can
+   recolor them without a redeploy. */
+.site-header-bg {
+	background-color: color-mix(in oklch, var(--site-header-bg) 35%, transparent);
+}
+
+.home-collection-tray {
+	background-color: var(--site-collection-bg);
 }
 
 /* --- Gallery وێنە page: lit paper print board ------------------------------
