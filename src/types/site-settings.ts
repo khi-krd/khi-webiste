@@ -14,6 +14,15 @@ export const SiteSettingsSchema = z.object({
 	logoUrl: z.string().nullish(),
 	/** Photograph for the donate band above the footer. */
 	donateImageUrl: z.string().nullish(),
+	/**
+	 * Uploaded typefaces picked in the dashboard. `null`/absent → the bundled
+	 * faces keep rendering. `*FontName` is a dashboard display label; the
+	 * website always declares fixed @font-face families.
+	 */
+	ckbFontUrl: z.string().nullish(),
+	ckbFontName: z.string().nullish(),
+	kmrFontUrl: z.string().nullish(),
+	kmrFontName: z.string().nullish(),
 	maxFeaturedSlides: z.number().nullish(),
 	updatedAt: z.string().nullish(),
 });
