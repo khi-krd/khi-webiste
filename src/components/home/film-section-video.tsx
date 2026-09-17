@@ -39,7 +39,7 @@ export function FilmSectionVideo({ src }: FilmSectionVideoProps) {
 		// The dark ground lives on the wrapper: the scrims above are translucent,
 		// so until the first frame decodes (or if the file 404s) the section would
 		// otherwise flash the cream page background through them.
-		<div className="absolute inset-0 isolate bg-foreground" aria-hidden>
+		<div className="home-band absolute inset-0 isolate" aria-hidden>
 			{showVideo ? (
 				<video
 					autoPlay

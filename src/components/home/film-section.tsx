@@ -71,7 +71,9 @@ export async function FilmSection() {
 		<section
 			// `min-h-svh` + centred content: the section owns a whole viewport, which
 			// is what the home page's section snap scrolls between.
-			className="cv-auto relative flex min-h-svh w-full flex-col justify-center overflow-hidden border-t border-primary-foreground/15 bg-foreground text-primary-foreground [--cv-intrinsic:100svh]"
+			// .home-band reads --site-band-bg (admin-overridable; default
+			// --color-foreground) — one token drives every dark home band.
+			className="cv-auto home-band relative flex min-h-svh w-full flex-col justify-center overflow-hidden border-t border-primary-foreground/15 text-primary-foreground [--cv-intrinsic:100svh]"
 			aria-labelledby="film-heading"
 		>
 			<FilmSectionVideo src={reklam?.videoUrl ?? null} />

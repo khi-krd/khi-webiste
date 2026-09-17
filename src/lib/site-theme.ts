@@ -36,7 +36,7 @@ export function buildSiteColorCss(settings: SiteSettings | null): string {
 		body && `--color-background:${body}`,
 		navbar && `--site-header-bg:${navbar}`,
 		footer && `--site-footer-bg:${footer}`,
-		collection && `--site-collection-bg:${collection}`,
+		collection && `--site-band-bg:${collection}`,
 	]
 		.filter(Boolean)
 		.join(";");

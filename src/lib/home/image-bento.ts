@@ -36,9 +36,9 @@ export const HOME_IMAGE_BENTO_GRID_WRAPPER_CLASS = "w-full";
  * band, tiles at full size (user request).
  */
 export const HOME_IMAGE_BENTO_TRAY_CLASS =
-	// .home-collection-tray reads --site-collection-bg (default: --color-foreground)
-	// so the dashboard can recolor the band without a redeploy.
-	"home-collection-tray h-full min-h-0 w-full overflow-hidden p-2 sm:p-3 lg:p-4";
+	// .home-band reads --site-band-bg (default: --color-foreground) so the
+	// dashboard can recolor every dark home band without a redeploy.
+	"home-band h-full min-h-0 w-full overflow-hidden p-2 sm:p-3 lg:p-4";
 
 /** Same deliberate fixed radius for each gallery tile inside the tray. */
 export const HOME_IMAGE_BENTO_TILE_RADIUS_CLASS = "rounded-[0.5rem]";

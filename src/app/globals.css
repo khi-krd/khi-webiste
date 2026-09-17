@@ -136,8 +136,10 @@
 	--site-header-bg: var(--color-background);
 	/* Footer gradient base — the lightest of the three authored stops. */
 	--site-footer-bg: #0f2a1c;
-	/* Home image-collection tray — the dark band behind the photo tiles. */
-	--site-collection-bg: var(--color-foreground);
+	/* Dark home bands — film + sound sections, image-collection tray. The
+	   translucent legibility scrims keep --color-foreground on purpose: they
+	   sit over video, so they stay ink-dark whatever the band color is. */
+	--site-band-bg: var(--color-foreground);
 }
 
 /* ----------------------------------------------------------------------------
@@ -1094,15 +1096,15 @@ dialog[open]::backdrop {
 }
 
 /* --- Admin-overridable surfaces ---------------------------------------------
-   The translucent navbar veil and the home collection tray read their color
-   from --site-* tokens (defaults = the current design), so the dashboard can
+   The translucent navbar veil and the dark home bands read their color from
+   --site-* tokens (defaults = the current design), so the dashboard can
    recolor them without a redeploy. */
 .site-header-bg {
 	background-color: color-mix(in oklch, var(--site-header-bg) 35%, transparent);
 }
 
-.home-collection-tray {
-	background-color: var(--site-collection-bg);
+.home-band {
+	background-color: var(--site-band-bg);
 }
 
 /* --- Gallery وێنە page: lit paper print board ------------------------------
