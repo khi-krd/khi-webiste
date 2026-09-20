@@ -456,6 +456,16 @@ html[data-corners="rounded"]
 	--draw-border-gap: 3px; /* breathing room between stroke and button edge */
 	--draw-border-stroke: 1.5px;
 }
+/* Dashboard "navigation" size: custom properties resolve var() at the use
+   site, so remapping the scale vars inside the header makes every text-*
+   utility in the bar (links, dropdown triggers, wordmark, tray labels)
+   follow --site-scale-nav without touching the page scale. */
+.header-scale {
+	--site-scale-title: var(--site-scale-nav, 1);
+	--site-scale-body: var(--site-scale-nav, 1);
+	--site-scale-caption: var(--site-scale-nav, 1);
+}
+
 .draw-border {
 	position: absolute;
 	inset: 0;

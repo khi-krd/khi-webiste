@@ -40,6 +40,7 @@ export const SiteSettingsSchema = z.object({
 	titleFontScale: z.string().nullish(),
 	bodyFontScale: z.string().nullish(),
 	captionFontScale: z.string().nullish(),
+	navFontScale: z.string().nullish(),
 	maxFeaturedSlides: z.number().nullish(),
 	updatedAt: z.string().nullish(),
 });

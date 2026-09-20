@@ -333,7 +333,7 @@ export function NavDrawer({
 								aria-modal="true"
 								aria-label={t("menuTitle")}
 								onKeyDown={onKeyDown}
-								className="fixed inset-0 z-[100] flex flex-col text-primary-foreground"
+								className="header-scale fixed inset-0 z-[100] flex flex-col text-primary-foreground"
 								{...overlayMotion}
 								transition={overlayTransition}
 							>

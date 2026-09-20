@@ -80,7 +80,8 @@ export function buildSiteSizeCss(settings: SiteSettings | null): string {
 	const title = sanitizeScale(settings.titleFontScale);
 	const body = sanitizeScale(settings.bodyFontScale);
 	const caption = sanitizeScale(settings.captionFontScale);
-	if (!title && !body && !caption) {
+	const nav = sanitizeScale(settings.navFontScale);
+	if (!title && !body && !caption && !nav) {
 		return "";
 	}
 
@@ -88,6 +89,7 @@ export function buildSiteSizeCss(settings: SiteSettings | null): string {
 		title && `--site-scale-title:${title}`,
 		body && `--site-scale-body:${body}`,
 		caption && `--site-scale-caption:${caption}`,
+		nav && `--site-scale-nav:${nav}`,
 	]
 		.filter(Boolean)
 		.join(";");
