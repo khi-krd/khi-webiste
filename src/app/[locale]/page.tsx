@@ -38,7 +38,9 @@ export default async function Home({
 	return (
 		// `data-snap-sections` opts this page into section-by-section snap
 		// scrolling (see globals.css) — one gesture lands on one whole section.
-		<main data-snap-sections>
+		// `type-defaults` keeps the authored type scale here: the dashboard
+		// title/body/caption sizes are for detail pages, not the home layout.
+		<main data-snap-sections className="type-defaults">
 			<SectionScroll />
 			<VisuallyHidden as="h1">{t("regionLabel")}</VisuallyHidden>
 			<FeaturedHero />

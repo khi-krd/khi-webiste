@@ -7,12 +7,10 @@ import { RichText } from "@/components/ui/rich-text";
 import { cn } from "@/lib/utils";
 
 const missionTextClass = cn(
-	// aboutProseClass minus its max-w-4xl: cn is a plain joiner, so two
-	// max-width utilities would collide and the stylesheet order wins —
-	// spell the class out instead of layering an override. Fixed rem
-	// measure, not ch: a ch-based cap changes width with the active
-	// typeface, which is what made the column jump between fonts.
-	"mx-auto max-w-3xl text-start text-pretty",
+	// No width cap: the block fills the AboutShell container so its start
+	// edge sits on the same line as the founder section below (the image's
+	// edge in RTL), instead of floating in a narrower centered column.
+	"text-start text-pretty",
 	"text-body text-foreground",
 	"[&>p:first-child]:text-lead",
 	"[&>p+p]:mt-6 sm:[&>p+p]:mt-7",

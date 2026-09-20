@@ -109,17 +109,30 @@
 		system-ui, "Segoe UI", sans-serif;
 	--font-heading: var(--font-app-heading), var(--font-sans);
 
-	/* Every step is calc(base × scale) — the dashboard font-size settings set
-	   --site-scale-* on :root, so one percent multiplies the whole group at
-	   every breakpoint instead of needing a per-size override table. */
-	--text-display: calc(3rem * var(--site-scale-title, 1)); /* 48px — hero / section openers */
-	--text-h1: calc(2.25rem * var(--site-scale-title, 1)); /* 36px */
-	--text-h2: calc(1.75rem * var(--site-scale-title, 1)); /* 28px */
-	--text-h3: calc(1.375rem * var(--site-scale-title, 1)); /* 22px */
-	--text-body: calc(1.0625rem * var(--site-scale-body, 1)); /* 17px — editorial body */
-	--text-lead: calc(1.125rem * var(--site-scale-body, 1)); /* 18px — list excerpts */
-	--text-small: calc(0.875rem * var(--site-scale-caption, 1)); /* 14px — captions, meta */
-	--text-label: calc(0.75rem * var(--site-scale-caption, 1)); /* 12px — quiet labels */
+	/* Type scale, split into -base vars and the scaled tokens. The split is
+	   REQUIRED for scoping: var() inside a custom property resolves on the
+	   element where the property is declared (:root here), so a descendant
+	   can never re-parameterize --text-* just by setting --site-scale-* —
+	   it must re-declare the token. Base vars keep that re-declaration a
+	   one-liner (see .header-scale and .type-defaults below) while the media
+	   queries only need to move the bases. */
+	--text-display-base: 3rem; /* 48px — hero / section openers */
+	--text-h1-base: 2.25rem; /* 36px */
+	--text-h2-base: 1.75rem; /* 28px */
+	--text-h3-base: 1.375rem; /* 22px */
+	--text-body-base: 1.0625rem; /* 17px — editorial body */
+	--text-lead-base: 1.125rem; /* 18px — list excerpts */
+	--text-small-base: 0.875rem; /* 14px — captions, meta */
+	--text-label-base: 0.75rem; /* 12px — quiet labels */
+
+	--text-display: calc(var(--text-display-base) * var(--site-scale-title, 1));
+	--text-h1: calc(var(--text-h1-base) * var(--site-scale-title, 1));
+	--text-h2: calc(var(--text-h2-base) * var(--site-scale-title, 1));
+	--text-h3: calc(var(--text-h3-base) * var(--site-scale-title, 1));
+	--text-body: calc(var(--text-body-base) * var(--site-scale-body, 1));
+	--text-lead: calc(var(--text-lead-base) * var(--site-scale-body, 1));
+	--text-small: calc(var(--text-small-base) * var(--site-scale-caption, 1));
+	--text-label: calc(var(--text-label-base) * var(--site-scale-caption, 1));
 
 	/* Radius — default square. Toggle via NEXT_PUBLIC_ENABLE_BORDER_RADIUS on
 	   <html data-corners> + NEXT_PUBLIC_BORDER_RADIUS size preset. */
@@ -195,13 +208,13 @@
 		/* Type steps up with the canvas. A 27" is not just a wider 15" laptop:
 		   it is also sat further back, so the whole scale needs the extra size
 		   to hold the same apparent reading weight. */
-		--text-display: calc(3.5rem * var(--site-scale-title, 1));
-		--text-h1: calc(2.5rem * var(--site-scale-title, 1));
-		--text-h2: calc(2rem * var(--site-scale-title, 1));
-		--text-h3: calc(1.5rem * var(--site-scale-title, 1));
-		--text-body: calc(1.125rem * var(--site-scale-body, 1));
-		--text-lead: calc(1.1875rem * var(--site-scale-body, 1));
-		--text-small: calc(0.9375rem * var(--site-scale-caption, 1));
+		--text-display-base: 3.5rem;
+		--text-h1-base: 2.5rem;
+		--text-h2-base: 2rem;
+		--text-h3-base: 1.5rem;
+		--text-body-base: 1.125rem;
+		--text-lead-base: 1.1875rem;
+		--text-small-base: 0.9375rem;
 	}
 }
 
@@ -210,10 +223,10 @@
 	:root {
 		--canvas: 120rem;
 
-		--text-display: calc(3.75rem * var(--site-scale-title, 1));
-		--text-h1: calc(2.625rem * var(--site-scale-title, 1));
-		--text-h2: calc(2.125rem * var(--site-scale-title, 1));
-		--text-h3: calc(1.5625rem * var(--site-scale-title, 1));
+		--text-display-base: 3.75rem;
+		--text-h1-base: 2.625rem;
+		--text-h2-base: 2.125rem;
+		--text-h3-base: 1.5625rem;
 	}
 }
 
@@ -456,14 +469,39 @@ html[data-corners="rounded"]
 	--draw-border-gap: 3px; /* breathing room between stroke and button edge */
 	--draw-border-stroke: 1.5px;
 }
-/* Dashboard "navigation" size: custom properties resolve var() at the use
-   site, so remapping the scale vars inside the header makes every text-*
-   utility in the bar (links, dropdown triggers, wordmark, tray labels)
-   follow --site-scale-nav without touching the page scale. */
+/* Scoped token re-declarations. var() inside a custom property resolves at
+   the DECLARATION site, so :root's --text-* are already frozen with the page
+   scale — remapping --site-scale-* on a descendant alone does nothing. Each
+   scope below re-declares the tokens so their calc() re-substitutes against
+   the inherited *-base vars (which still step up responsively at :root). */
+
+/* Dashboard "navigation" size — every text-* in the bar (links, dropdown
+   triggers, wordmark, tray labels, drawer) follows --site-scale-nav without
+   touching the page scale. */
 .header-scale {
-	--site-scale-title: var(--site-scale-nav, 1);
-	--site-scale-body: var(--site-scale-nav, 1);
-	--site-scale-caption: var(--site-scale-nav, 1);
+	--text-display: calc(var(--text-display-base) * var(--site-scale-nav, 1));
+	--text-h1: calc(var(--text-h1-base) * var(--site-scale-nav, 1));
+	--text-h2: calc(var(--text-h2-base) * var(--site-scale-nav, 1));
+	--text-h3: calc(var(--text-h3-base) * var(--site-scale-nav, 1));
+	--text-body: calc(var(--text-body-base) * var(--site-scale-nav, 1));
+	--text-lead: calc(var(--text-lead-base) * var(--site-scale-nav, 1));
+	--text-small: calc(var(--text-small-base) * var(--site-scale-nav, 1));
+	--text-label: calc(var(--text-label-base) * var(--site-scale-nav, 1));
+}
+
+/* Homepage opt-out — the dashboard title/body/caption scales are meant for
+   article and detail pages; the home composition keeps the authored scale.
+   Re-declaring the tokens to their bases neutralizes the :root multiplier
+   inside the home <main> only. */
+.type-defaults {
+	--text-display: var(--text-display-base);
+	--text-h1: var(--text-h1-base);
+	--text-h2: var(--text-h2-base);
+	--text-h3: var(--text-h3-base);
+	--text-body: var(--text-body-base);
+	--text-lead: var(--text-lead-base);
+	--text-small: var(--text-small-base);
+	--text-label: var(--text-label-base);
 }
 
 .draw-border {
