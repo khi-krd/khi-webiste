@@ -31,6 +31,12 @@ export function generateStaticParams() {
 	return routing.locales.map((locale) => ({ locale }));
 }
 
+// Renders hit the CMS live (no-store policy), so a slow backend burns real
+// render time. 60s is the Hobby ceiling — it covers the worst-case chain of
+// timeout+retry upstream calls (~48s) without letting a hung fetch get the
+// function killed at the 15s default.
+export const maxDuration = 60;
+
 export async function generateMetadata({
 	params,
 }: {

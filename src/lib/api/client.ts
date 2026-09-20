@@ -45,6 +45,43 @@ export const BULK_FETCH_SIZE = 200;
 
 const isDevelopment = process.env.NODE_ENV === "development";
 
+/** Ceiling for one upstream CMS call. Renders fetch Railway live (the CMS is
+   no-store by default), so a sleeping or hung backend must never stall a page
+   render until Vercel kills the function — that was the intermittent 500:
+   warm hits render in ~1.5s, but an idle-cold Railway held fetch() past the
+   function's maxDuration. Aborting degrades to null (sections drop gracefully)
+   instead of erroring the whole route. */
+const UPSTREAM_TIMEOUT_MS = 8_000;
+
+/**
+ * fetch() with a hard timeout and one immediate retry. The retry exists for
+ * cold starts: the first request wakes Railway but may still beat its boot,
+ * and the second usually lands on a warm process — the visitor then waits a
+ * few seconds and gets the real page instead of the error boundary.
+ *
+ * GETs only: retrying a timed-out POST could land a duplicate submission on
+ * a backend that actually received the first attempt.
+ */
+async function fetchUpstream(
+	endpoint: URL,
+	init: RequestInit,
+): Promise<Response | null> {
+	const method = init.method?.toUpperCase() ?? "GET";
+	const attempts = method === "GET" || method === "HEAD" ? 2 : 1;
+
+	for (let attempt = 0; attempt < attempts; attempt++) {
+		try {
+			return await fetch(endpoint, {
+				...init,
+				signal: AbortSignal.timeout(UPSTREAM_TIMEOUT_MS),
+			});
+		} catch {
+			// Network failure or timeout — fall through to the retry.
+		}
+	}
+	return null;
+}
+
 function logApiParseFailure(path: string, error: z.ZodError): void {
 	if (!isDevelopment) {
 		return;
@@ -171,13 +208,13 @@ export async function apiFetchPage<T extends ZodType>(
 			}
 		}
 
-		const response = await fetch(
+		const response = await fetchUpstream(
 			endpoint,
 			buildFetchCacheOptions({ tags, revalidate, noStore }),
 		);
 
-		if (!response.ok) {
-			if (isDevelopment) {
+		if (!response?.ok) {
+			if (isDevelopment && response) {
 				console.warn(`[api] HTTP ${response.status} for ${path}`);
 			}
 			return null;
@@ -267,12 +304,12 @@ export async function apiFetch<T extends z.ZodType>(
 			}
 		}
 
-		const response = await fetch(
+		const response = await fetchUpstream(
 			endpoint,
 			buildFetchCacheOptions({ tags, revalidate, noStore }),
 		);
 
-		if (!response.ok) {
+		if (!response?.ok) {
 			return null;
 		}
 
@@ -328,14 +365,14 @@ async function apiMutate<T extends z.ZodType>(
 	try {
 		const endpoint = new URL(path, apiBaseUrl);
 		const cacheOptions = buildFetchCacheOptions({ tags, revalidate, noStore });
-		const response = await fetch(endpoint, {
+		const response = await fetchUpstream(endpoint, {
 			method,
 			headers: { "Content-Type": "application/json" },
 			body: JSON.stringify(body),
 			...cacheOptions,
 		});
 
-		if (!response.ok) {
+		if (!response?.ok) {
 			return null;
 		}
 
@@ -397,12 +434,12 @@ export async function apiFetchRaw(
 			}
 		}
 
-		const response = await fetch(
+		const response = await fetchUpstream(
 			endpoint,
 			buildFetchCacheOptions({ tags, revalidate, noStore }),
 		);
 
-		if (!response.ok) {
+		if (!response?.ok) {
 			return null;
 		}
 
