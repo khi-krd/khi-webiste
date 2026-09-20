@@ -19,6 +19,6 @@ export function kindChipClass(active: boolean, zero = false): string {
 			? "border-border bg-background text-muted"
 			: active
 				? "border-primary bg-primary text-primary-foreground"
-				: "border-border-strong bg-background text-foreground fine-hover:border-foreground/40 fine-hover:bg-sunken",
+				: "border-primary bg-background text-foreground fine-hover:bg-sunken",
 	);
 }

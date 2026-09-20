@@ -34,7 +34,7 @@ export function RefineToggle({
 				"transition-colors sm:flex-none lg:hidden",
 				open
 					? "border-primary bg-primary text-primary-foreground"
-					: "border-border-strong bg-surface text-foreground fine-hover:bg-sunken",
+					: "border-primary bg-surface text-foreground fine-hover:bg-sunken",
 			)}
 		>
 			<AdjustmentsHorizontalIcon className="size-4 shrink-0" aria-hidden />

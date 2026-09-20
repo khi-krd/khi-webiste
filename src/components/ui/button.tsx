@@ -28,8 +28,7 @@ const base =
 
 const variants: Record<Variant, string> = {
 	primary: "bg-primary text-primary-foreground hover:opacity-90",
-	secondary:
-		"border border-border-strong bg-surface text-foreground hover:bg-sunken",
+	secondary: "border border-primary bg-surface text-foreground hover:bg-sunken",
 	ghost: "text-foreground hover:bg-sunken",
 };
 
