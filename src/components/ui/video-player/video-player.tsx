@@ -1,6 +1,11 @@
 "use client";
 
-import { MediaPlayer, type VideoMimeType } from "@vidstack/react";
+import {
+	MediaPlayer,
+	type MediaPlayerInstance,
+	type VideoMimeType,
+} from "@vidstack/react";
+import { useRef } from "react";
 import "@vidstack/react/player/styles/base.css";
 import "@vidstack/react/player/styles/default/controls.css";
 import "@vidstack/react/player/styles/default/poster.css";
@@ -46,6 +51,7 @@ export function VideoPlayer({
 	autoPlay = false,
 	className,
 }: VideoPlayerProps) {
+	const playerRef = useRef<MediaPlayerInstance>(null);
 	const trimmedSrc = src.trim();
 	if (!trimmedSrc) {
 		return null;
@@ -66,6 +72,7 @@ export function VideoPlayer({
 	return (
 		<VideoPlayerErrorBoundary fallback={null}>
 			<MediaPlayer
+				ref={playerRef}
 				className={cn(
 					"khi-player",
 					youTubeId && "khi-player--youtube",
@@ -79,6 +86,24 @@ export function VideoPlayer({
 				autoPlay={autoPlay}
 				streamType="on-demand"
 				load={autoPlay ? "eager" : "idle"}
+				// The `autoPlay` attribute alone is unreliable when the player
+				// mounts asynchronously after the user's gesture (the about-hero
+				// modal loads this chunk via dynamic()): some browsers drop the
+				// queued autoplay and leave the poster up. Re-issuing play() once
+				// the media can play — retrying muted if unmuted is refused —
+				// keeps "press play" a single gesture.
+				onCanPlay={
+					autoPlay
+						? () => {
+								const player = playerRef.current;
+								if (!player) return;
+								void player.play().catch(() => {
+									player.muted = true;
+									void player.play().catch(() => {});
+								});
+							}
+						: undefined
+				}
 			>
 				<Layout embed={embed} poster={poster} posterAlt={posterAlt} />
 			</MediaPlayer>

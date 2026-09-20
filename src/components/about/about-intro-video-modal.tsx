@@ -33,7 +33,6 @@ type AboutIntroVideoModalProps = {
 	open: boolean;
 	onClose: () => void;
 	videoSrc: string;
-	poster: string;
 	title: string;
 	closeLabel: string;
 	dialogLabel: string;
@@ -43,7 +42,6 @@ export function AboutIntroVideoModal({
 	open,
 	onClose,
 	videoSrc,
-	poster,
 	title,
 	closeLabel,
 	dialogLabel,
@@ -141,11 +139,10 @@ export function AboutIntroVideoModal({
 							<VideoPlayer
 								src={videoSrc}
 								title={title}
-								poster={poster}
-								posterAlt={title}
 								variant="full"
 								// Opening the modal is already the user's play gesture —
-								// don't make them click a second time on the poster.
+								// autoplay on can-play, and no poster: the thumbnail lives
+								// on the hero, showing it again here reads as "not playing".
 								autoPlay
 								className="w-full"
 							/>
