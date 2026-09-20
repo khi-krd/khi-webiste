@@ -16,7 +16,19 @@ import { useScrollLock } from "@/lib/use-scroll-lock";
 
 const VideoPlayer = dynamic(
 	() => import("@/components/ui/video-player").then((mod) => mod.VideoPlayer),
-	{ ssr: false },
+	{
+		ssr: false,
+		// Spinner instead of a dark void while the player chunk loads —
+		// keeps the 16:9 box stable so the modal doesn't jump on mount.
+		loading: () => (
+			<div className="flex aspect-video w-full items-center justify-center bg-foreground/40">
+				<span
+					className="size-10 animate-spin rounded-full border-2 border-primary-foreground/30 border-t-primary-foreground"
+					aria-hidden
+				/>
+			</div>
+		),
+	},
 );
 
 const FOCUSABLE =

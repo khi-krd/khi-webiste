@@ -2,7 +2,7 @@
 
 import { PlayIcon } from "@heroicons/react/24/solid";
 import NextImage from "next/image";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { AboutIntroVideoModal } from "@/components/about/about-intro-video-modal";
 import { ScrollRevealBlock } from "@/components/motion/scroll-reveal";
 import { cn } from "@/lib/utils";
@@ -36,6 +36,13 @@ export function AboutHero({
 		? heroHeightClass.compact
 		: heroHeightClass.default;
 	const [videoOpen, setVideoOpen] = useState(false);
+
+	useEffect(() => {
+		// Warm the video-player chunk while the hero is on screen so the
+		// intro modal mounts an already-loaded player — the click feels
+		// instant instead of waiting on a cold dynamic import.
+		void import("@/components/ui/video-player");
+	}, []);
 
 	return (
 		<>
