@@ -109,14 +109,17 @@
 		system-ui, "Segoe UI", sans-serif;
 	--font-heading: var(--font-app-heading), var(--font-sans);
 
-	--text-display: 3rem; /* 48px — hero / section openers        */
-	--text-h1: 2.25rem; /* 36px                                  */
-	--text-h2: 1.75rem; /* 28px                                  */
-	--text-h3: 1.375rem; /* 22px                                  */
-	--text-body: 1.0625rem; /* 17px — editorial body, a touch large  */
-	--text-lead: 1.125rem; /* 18px — list excerpts, bridge to h3    */
-	--text-small: 0.875rem; /* 14px — captions, meta                 */
-	--text-label: 0.75rem; /* 12px — quiet labels / eyebrows        */
+	/* Every step is calc(base × scale) — the dashboard font-size settings set
+	   --site-scale-* on :root, so one percent multiplies the whole group at
+	   every breakpoint instead of needing a per-size override table. */
+	--text-display: calc(3rem * var(--site-scale-title, 1)); /* 48px — hero / section openers */
+	--text-h1: calc(2.25rem * var(--site-scale-title, 1)); /* 36px */
+	--text-h2: calc(1.75rem * var(--site-scale-title, 1)); /* 28px */
+	--text-h3: calc(1.375rem * var(--site-scale-title, 1)); /* 22px */
+	--text-body: calc(1.0625rem * var(--site-scale-body, 1)); /* 17px — editorial body */
+	--text-lead: calc(1.125rem * var(--site-scale-body, 1)); /* 18px — list excerpts */
+	--text-small: calc(0.875rem * var(--site-scale-caption, 1)); /* 14px — captions, meta */
+	--text-label: calc(0.75rem * var(--site-scale-caption, 1)); /* 12px — quiet labels */
 
 	/* Radius — default square. Toggle via NEXT_PUBLIC_ENABLE_BORDER_RADIUS on
 	   <html data-corners> + NEXT_PUBLIC_BORDER_RADIUS size preset. */
@@ -192,13 +195,13 @@
 		/* Type steps up with the canvas. A 27" is not just a wider 15" laptop:
 		   it is also sat further back, so the whole scale needs the extra size
 		   to hold the same apparent reading weight. */
-		--text-display: 3.5rem;
-		--text-h1: 2.5rem;
-		--text-h2: 2rem;
-		--text-h3: 1.5rem;
-		--text-body: 1.125rem;
-		--text-lead: 1.1875rem;
-		--text-small: 0.9375rem;
+		--text-display: calc(3.5rem * var(--site-scale-title, 1));
+		--text-h1: calc(2.5rem * var(--site-scale-title, 1));
+		--text-h2: calc(2rem * var(--site-scale-title, 1));
+		--text-h3: calc(1.5rem * var(--site-scale-title, 1));
+		--text-body: calc(1.125rem * var(--site-scale-body, 1));
+		--text-lead: calc(1.1875rem * var(--site-scale-body, 1));
+		--text-small: calc(0.9375rem * var(--site-scale-caption, 1));
 	}
 }
 
@@ -207,10 +210,10 @@
 	:root {
 		--canvas: 120rem;
 
-		--text-display: 3.75rem;
-		--text-h1: 2.625rem;
-		--text-h2: 2.125rem;
-		--text-h3: 1.5625rem;
+		--text-display: calc(3.75rem * var(--site-scale-title, 1));
+		--text-h1: calc(2.625rem * var(--site-scale-title, 1));
+		--text-h2: calc(2.125rem * var(--site-scale-title, 1));
+		--text-h3: calc(1.5625rem * var(--site-scale-title, 1));
 	}
 }
 

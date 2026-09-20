@@ -1,8 +1,4 @@
-import {
-	AboutSection,
-	AboutShell,
-	aboutProseClass,
-} from "@/components/about/about-shell";
+import { AboutSection, AboutShell } from "@/components/about/about-shell";
 import {
 	ScrollReveal,
 	ScrollRevealItem,
@@ -11,7 +7,12 @@ import { RichText } from "@/components/ui/rich-text";
 import { cn } from "@/lib/utils";
 
 const missionTextClass = cn(
-	aboutProseClass,
+	// aboutProseClass minus its max-w-4xl: cn is a plain joiner, so two
+	// max-width utilities would collide and the stylesheet order wins —
+	// spell the class out instead of layering an override. Fixed rem
+	// measure, not ch: a ch-based cap changes width with the active
+	// typeface, which is what made the column jump between fonts.
+	"mx-auto max-w-3xl text-start text-pretty",
 	"text-body text-foreground",
 	"[&>p:first-child]:text-lead",
 	"[&>p+p]:mt-6 sm:[&>p+p]:mt-7",
@@ -39,15 +40,7 @@ export function AboutMission({
 				<ScrollReveal>
 					<ScrollRevealItem>
 						{body ? (
-							<RichText
-								content={body}
-								className={cn(
-									missionTextClass,
-									// Capped rather than unbounded: justified Arabic with no
-									// measure opens huge word gaps on wide displays.
-									"max-w-none [max-inline-size:78ch]",
-								)}
-							/>
+							<RichText content={body} className={missionTextClass} />
 						) : (
 							<div className={missionTextClass}>
 								{(paragraphs ?? []).map((text, index) => (

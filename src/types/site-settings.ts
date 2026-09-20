@@ -32,6 +32,14 @@ export const SiteSettingsSchema = z.object({
 	navbarColor: z.string().nullish(),
 	footerColor: z.string().nullish(),
 	collectionColor: z.string().nullish(),
+	/**
+	 * Type scales as percent strings ("115" = 115% of the bundled size).
+	 * Parsed and range-clamped before they reach the injected stylesheet;
+	 * `null`/absent keeps the bundled scale — the reset path.
+	 */
+	titleFontScale: z.string().nullish(),
+	bodyFontScale: z.string().nullish(),
+	captionFontScale: z.string().nullish(),
 	maxFeaturedSlides: z.number().nullish(),
 	updatedAt: z.string().nullish(),
 });

@@ -43,3 +43,48 @@ export function buildSiteColorCss(settings: SiteSettings | null): string {
 
 	return `:root{${declarations}}`;
 }
+
+const SCALE_MIN = 50;
+const SCALE_MAX = 200;
+
+/**
+ * Percent string ("115") → CSS multiplier ("1.15"), clamped to a sane band so
+ * a stray value cannot make text unreadably small or enormous. Non-numeric
+ * input is dropped, never emitted.
+ */
+function sanitizeScale(value: string | null | undefined): string | null {
+	const percent = Number(value?.trim() ?? "");
+	if (!Number.isFinite(percent)) {
+		return null;
+	}
+	const clamped = Math.min(SCALE_MAX, Math.max(SCALE_MIN, Math.round(percent)));
+	return (clamped / 100).toString();
+}
+
+/**
+ * Dashboard-picked type scales → :root multiplier overrides. globals.css
+ * defines every --text-* token as `calc(base * var(--site-scale-*, 1))`, so
+ * the multiplier flows through the responsive breakpoints unchanged.
+ */
+export function buildSiteSizeCss(settings: SiteSettings | null): string {
+	if (!settings) {
+		return "";
+	}
+
+	const title = sanitizeScale(settings.titleFontScale);
+	const body = sanitizeScale(settings.bodyFontScale);
+	const caption = sanitizeScale(settings.captionFontScale);
+	if (!title && !body && !caption) {
+		return "";
+	}
+
+	const declarations = [
+		title && `--site-scale-title:${title}`,
+		body && `--site-scale-body:${body}`,
+		caption && `--site-scale-caption:${caption}`,
+	]
+		.filter(Boolean)
+		.join(";");
+
+	return `:root{${declarations}}`;
+}

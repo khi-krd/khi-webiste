@@ -17,7 +17,7 @@ import { getSiteSettings } from "@/lib/api/site-settings";
 import { assertServerEnv } from "@/lib/env";
 import { archivo, clashDisplay, vazirmatn } from "@/lib/fonts";
 import { buildSiteFontCss } from "@/lib/site-font";
-import { buildSiteColorCss } from "@/lib/site-theme";
+import { buildSiteColorCss, buildSiteSizeCss } from "@/lib/site-theme";
 import { getBorderRadiusHtmlAttrs } from "@/lib/theme/border-radius";
 import { cn } from "@/lib/utils";
 import "../globals.css";
@@ -105,6 +105,7 @@ export default async function LocaleLayout({ children, params }: Props) {
 	const siteThemeCss = [
 		buildSiteFontCss(siteSettings),
 		buildSiteColorCss(siteSettings),
+		buildSiteSizeCss(siteSettings),
 	]
 		.filter(Boolean)
 		.join("\n");
