@@ -53,7 +53,13 @@ const SCALE_MAX = 200;
  * input is dropped, never emitted.
  */
 function sanitizeScale(value: string | null | undefined): string | null {
-	const percent = Number(value?.trim() ?? "");
+	const trimmed = value?.trim() ?? "";
+	// Blank must bail out before Number(): Number("") is 0, not NaN, and a
+	// 0 would clamp to 50% — shrinking every unset group to half size.
+	if (!trimmed) {
+		return null;
+	}
+	const percent = Number(trimmed);
 	if (!Number.isFinite(percent)) {
 		return null;
 	}
