@@ -144,6 +144,9 @@ export function AboutIntroVideoModal({
 								poster={poster}
 								posterAlt={title}
 								variant="full"
+								// Opening the modal is already the user's play gesture —
+								// don't make them click a second time on the poster.
+								autoPlay
 								className="w-full"
 							/>
 						</div>

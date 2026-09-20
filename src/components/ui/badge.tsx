@@ -20,7 +20,7 @@ const base =
 
 const variants: Record<Variant, string> = {
 	solid: "bg-primary text-primary-foreground",
-	outline: "border border-border-strong text-foreground",
+	outline: "border border-primary text-foreground",
 	// muted on sunken = 4.87:1 → clears AA for small text.
 	subtle: "bg-sunken text-muted",
 };

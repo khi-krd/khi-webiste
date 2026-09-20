@@ -50,7 +50,8 @@ export function ContactMap({
 			)}
 		>
 			<div className="relative min-h-72 overflow-hidden sm:min-h-96 lg:min-h-[28rem]">
-				<div className="absolute inset-0 grayscale contrast-[1.04]">
+				{/* Full color — the earlier grayscale wash hid map detail. */}
+				<div className="absolute inset-0">
 					{office.mapEmbedUrl ? (
 						<iframe
 							key={office.id}

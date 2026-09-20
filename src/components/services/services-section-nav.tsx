@@ -60,8 +60,8 @@ function ServicesNavDots({
 							className={cn(
 								"h-0.5 w-full max-w-8 transition-[background-color,transform] duration-300 ease-out",
 								isActive
-									? "scale-x-110 bg-foreground"
-									: "bg-border fine-hover:bg-border-strong",
+									? "scale-x-110 bg-primary"
+									: "bg-border fine-hover:bg-primary/40",
 							)}
 						/>
 						<span className="sr-only">{item.title}</span>
@@ -207,9 +207,9 @@ function ServicesMobileNav({
 								className={cn(
 									"h-1 w-full transition-colors duration-300",
 									isActive
-										? "bg-foreground"
+										? "bg-primary"
 										: isPassed
-											? "bg-foreground/30"
+											? "bg-primary/30"
 											: "bg-border",
 								)}
 							/>
@@ -248,7 +248,7 @@ function ServicesMobileNav({
 												className={cn(
 													"font-heading text-body leading-snug text-balance sm:text-lead",
 													isActive
-														? "font-semibold text-foreground"
+														? "font-semibold text-primary"
 														: "font-medium text-muted",
 												)}
 											>
@@ -352,8 +352,8 @@ export function ServicesSectionNav({
 											className={cn(
 												"font-heading text-lead leading-snug text-balance transition-colors duration-300 xl:text-h3",
 												isActive
-													? "font-semibold text-foreground"
-													: "font-medium text-muted group-fine:group-hover:text-foreground",
+													? "font-semibold text-primary"
+													: "font-medium text-muted group-fine:group-hover:text-primary",
 											)}
 										>
 											{item.title}

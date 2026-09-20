@@ -192,7 +192,7 @@ export function NewsFilterBar({
 						"focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring",
 						expanded
 							? "border-primary bg-primary text-primary-foreground"
-							: "border-border-strong bg-surface text-foreground fine-hover:border-foreground/40 fine-hover:bg-sunken",
+							: "border-primary bg-surface text-foreground fine-hover:bg-sunken",
 					)}
 				>
 					<AdjustmentsHorizontalIcon className="size-5" aria-hidden />
@@ -401,7 +401,7 @@ function CategoryPill({ active, onClick, children }: CategoryPillProps) {
 				"shrink-0 border px-3.5 py-2 font-heading text-small font-medium transition-colors sm:px-4",
 				active
 					? "border-primary bg-primary text-primary-foreground"
-					: "border-border-strong bg-background text-foreground fine-hover:border-foreground/40 fine-hover:bg-sunken",
+					: "border-primary bg-background text-foreground fine-hover:bg-sunken",
 			)}
 		>
 			{children}

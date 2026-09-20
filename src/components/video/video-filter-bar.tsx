@@ -57,7 +57,7 @@ function CellPill({
 				"shrink-0 border px-4 py-2 font-heading text-small font-medium transition-[background-color,color,border-color] duration-200",
 				active
 					? "border-primary bg-primary text-primary-foreground"
-					: "border-border bg-background text-foreground fine-hover:border-foreground/40 fine-hover:bg-sunken",
+					: "border-primary bg-background text-foreground fine-hover:bg-sunken",
 			)}
 		>
 			{children}
@@ -194,7 +194,7 @@ export function VideoFilterBar({
 							"focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring",
 							expanded
 								? "border-primary bg-primary text-primary-foreground"
-								: "border-border-strong bg-surface text-foreground fine-hover:border-foreground/40 fine-hover:bg-sunken",
+								: "border-primary bg-surface text-foreground fine-hover:bg-sunken",
 						)}
 					>
 						<AdjustmentsHorizontalIcon className="size-5" aria-hidden />

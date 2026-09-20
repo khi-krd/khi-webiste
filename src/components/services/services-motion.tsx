@@ -99,7 +99,7 @@ export function ServicesNavIndicator({
 			{active && !reduceMotion ? (
 				<motion.span
 					layoutId="services-nav-indicator"
-					className="absolute inset-0 bg-foreground"
+					className="absolute inset-0 bg-primary"
 					transition={{ duration: 0.35, ease: revealEase }}
 				/>
 			) : (
@@ -107,8 +107,8 @@ export function ServicesNavIndicator({
 					className={cn(
 						"absolute inset-0 transition-colors duration-300",
 						active
-							? "bg-foreground"
-							: "bg-border group-fine:group-hover:bg-border-strong",
+							? "bg-primary"
+							: "bg-border group-fine:group-hover:bg-primary/40",
 					)}
 				/>
 			)}

@@ -43,7 +43,7 @@ function Pill({
 						: "border-primary-foreground/20 bg-transparent text-primary-foreground/75 fine-hover:border-primary-foreground/50 fine-hover:bg-primary-foreground/10 fine-hover:text-primary-foreground"
 					: active
 						? "border-primary bg-primary text-primary-foreground"
-						: "border-border-strong bg-background text-foreground fine-hover:border-foreground/40 fine-hover:bg-sunken",
+						: "border-primary bg-background text-foreground fine-hover:bg-sunken",
 			)}
 		>
 			{children}

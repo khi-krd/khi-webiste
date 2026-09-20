@@ -267,8 +267,8 @@ export function DonateFinancialForm({
 													className={cn(
 														"border p-4 text-start transition-colors duration-300",
 														selected
-															? "border-border-strong bg-sunken"
-															: "border-border bg-background fine-hover:bg-sunken/20",
+															? "border-primary bg-primary/5"
+															: "border-primary/40 bg-background fine-hover:border-primary fine-hover:bg-sunken/20",
 													)}
 												>
 													<p className="font-heading text-h3 font-semibold text-foreground">
