@@ -9,7 +9,10 @@ import { cn } from "@/lib/utils";
 const missionTextClass = cn(
 	// No width cap: the block fills the AboutShell container so its start
 	// edge sits on the same line as the founder section below (the image's
-	// edge in RTL), instead of floating in a narrower centered column.
+	// edge in RTL), instead of floating in a narrower centered column. The
+	// CMS body renders through `.prose`, whose `max-inline-size: 68ch`
+	// measure would still cap it — logical size needs a logical override.
+	"[max-inline-size:none]",
 	"text-start text-pretty",
 	"text-body text-foreground",
 	"[&>p:first-child]:text-lead",
