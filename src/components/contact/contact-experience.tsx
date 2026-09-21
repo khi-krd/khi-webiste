@@ -127,7 +127,11 @@ export function ContactExperience({
 					<ContactMap
 						office={selectedOffice}
 						heading={mapCopy.heading}
-						body={mapCopy.body}
+						// CMS description per selected office; bundled copy only when the
+						// record has none.
+						body={
+							selectedOffice.localizedCopy?.description?.trim() || mapCopy.body
+						}
 						openInMapsLabel={mapCopy.openInMaps}
 						iframeTitle={mapCopy.iframeTitle}
 						selectOfficeLabel={mapCopy.selectOffice}

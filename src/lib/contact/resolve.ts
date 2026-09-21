@@ -4,6 +4,7 @@ import {
 	OFFICE_IMAGES,
 	type OfficeId,
 } from "@/lib/contact/office";
+import { plainTextFromRichContent } from "@/lib/rich-text/plain-text";
 import type { ContactPage } from "@/types/contact-page";
 
 function firstNonBlank(
@@ -63,6 +64,11 @@ export type ResolvedContactOffice = ContactOffice & {
 		address: string;
 		/** From the CMS only — the bundled fallback copy has no opening hours. */
 		workingHours?: string;
+		/**
+		 * Plain-text render of the Tiptap `description` — used by the map panel,
+		 * which wants real CMS copy instead of the bundled static paragraph.
+		 */
+		description?: string;
 	};
 };
 
@@ -108,11 +114,13 @@ export function resolveContactOffice(
 		localizedCopy: {
 			name: title,
 			workingHours: content?.workingHours?.trim() || undefined,
-			// `description` is Tiptap HTML and this slot renders as plain text —
-			// using it would print literal <p> tags. `subtitle` is the plain-text
-			// field the card actually wants.
+			// `description` is Tiptap HTML — the office card renders the plain
+			// `subtitle` instead, so raw HTML never reaches a <p> slot.
 			subtitle: content?.subtitle?.trim() || undefined,
 			address: content?.address?.trim() ?? "",
+			description:
+				plainTextFromRichContent(content?.description ?? "").trim() ||
+				undefined,
 		},
 	};
 }
