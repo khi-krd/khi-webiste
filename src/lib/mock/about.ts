@@ -7,6 +7,8 @@ export type TeamMember = {
 	/** Populated when sourced from the API. */
 	name?: string;
 	role?: string;
+	/** Localized biography from the CMS; rendered under the role. */
+	bio?: string;
 };
 
 export type OfficeTeam = {

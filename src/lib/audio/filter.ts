@@ -60,7 +60,12 @@ export function filterAudioTracks(
 export function sortAudioTracks(
 	items: ResolvedAudioCard[],
 ): ResolvedAudioCard[] {
-	return [...items].sort((a, b) => b.createdAt.localeCompare(a.createdAt));
+	return [...items].sort((a, b) => {
+		const orderDiff =
+			(a.sortOrder ?? Number.MAX_SAFE_INTEGER) -
+			(b.sortOrder ?? Number.MAX_SAFE_INTEGER);
+		return orderDiff !== 0 ? orderDiff : b.createdAt.localeCompare(a.createdAt);
+	});
 }
 
 export function paginateAudioTracks(

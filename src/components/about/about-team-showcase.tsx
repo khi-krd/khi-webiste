@@ -11,6 +11,7 @@ import type { OfficeTeam } from "@/lib/mock/about";
 export type TeamMemberWithCopy = OfficeTeam["members"][number] & {
 	name: string;
 	role: string;
+	bio?: string;
 };
 
 type OfficeTeamWithCopy = Omit<OfficeTeam, "members"> & {
@@ -32,6 +33,7 @@ function TeamGrid({ members }: { members: OfficeTeamWithCopy["members"] }) {
 						member={member}
 						name={member.name}
 						role={member.role}
+						bio={member.bio}
 					/>
 				</ScrollRevealItem>
 			))}

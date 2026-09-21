@@ -111,6 +111,10 @@ function resolveTeamMember(locale: string, member: ApiTeamMember): TeamMember {
 		locale === "ckb"
 			? firstNonBlank(member.roleCkb, member.roleKmr)
 			: firstNonBlank(member.roleKmr, member.roleCkb);
+	const bio =
+		locale === "ckb"
+			? firstNonBlank(member.bioCkb, member.bioKmr)
+			: firstNonBlank(member.bioKmr, member.bioCkb);
 
 	return {
 		id: String(member.id),
@@ -120,6 +124,7 @@ function resolveTeamMember(locale: string, member: ApiTeamMember): TeamMember {
 		},
 		name: name ?? undefined,
 		role: role ?? undefined,
+		bio: bio ?? undefined,
 	};
 }
 

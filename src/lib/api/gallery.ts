@@ -93,7 +93,20 @@ async function fetchAllCollections(options: GalleryListingOptions = {}) {
 		page = await fetchCollectionsPage(buildCollectionParams({}));
 	}
 
-	return page?.content.length ? page.content : null;
+	// The API already answers `sortOrder` order; re-sorting here keeps the
+	// order intact for cached pages that predate the field.
+	const content = page?.content.length
+		? [...page.content].sort((a, b) => {
+				const orderDiff =
+					(a.sortOrder ?? Number.MAX_SAFE_INTEGER) -
+					(b.sortOrder ?? Number.MAX_SAFE_INTEGER);
+				return orderDiff !== 0
+					? orderDiff
+					: (b.publishmentDate ?? "").localeCompare(a.publishmentDate ?? "");
+			})
+		: null;
+
+	return content;
 }
 
 /**

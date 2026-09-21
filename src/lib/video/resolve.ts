@@ -328,6 +328,7 @@ export function resolveVideoCard(
 		id: video.id,
 		featured: video.featured ?? false,
 		featuredOrder: video.featuredOrder ?? null,
+		sortOrder: video.sortOrder ?? null,
 		title: content.title,
 		subtitle: firstNonBlank(content.director),
 		excerpt: description

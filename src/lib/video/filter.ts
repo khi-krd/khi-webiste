@@ -55,7 +55,7 @@ function featuredSortKey(order: number | null): number {
 	return order ?? Number.MAX_SAFE_INTEGER;
 }
 
-/** Featured items first (lower `featuredOrder` wins), then newest. */
+/** Featured items first (lower `featuredOrder` wins), then CMS order, then newest. */
 export function sortVideos(items: ResolvedVideoCard[]): ResolvedVideoCard[] {
 	return [...items].sort((a, b) => {
 		if (a.featured !== b.featured) {
@@ -68,7 +68,10 @@ export function sortVideos(items: ResolvedVideoCard[]): ResolvedVideoCard[] {
 				return orderDiff;
 			}
 		}
-		return b.createdAt.localeCompare(a.createdAt);
+		const sortDiff =
+			(a.sortOrder ?? Number.MAX_SAFE_INTEGER) -
+			(b.sortOrder ?? Number.MAX_SAFE_INTEGER);
+		return sortDiff !== 0 ? sortDiff : b.createdAt.localeCompare(a.createdAt);
 	});
 }
 

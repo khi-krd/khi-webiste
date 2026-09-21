@@ -78,6 +78,7 @@ export const VideoSchema = z.object({
 	id: z.number(),
 	featured: z.boolean().optional().default(false),
 	featuredOrder: z.number().int().nullable().optional(),
+	sortOrder: z.number().int().nullable().optional(),
 	videoType: VideoTypeSchema,
 	albumOfMemories: z.boolean(),
 	ckbCoverUrl: z.string().nullish(),
@@ -141,6 +142,7 @@ export type ResolvedVideoCard = {
 	id: number;
 	featured: boolean;
 	featuredOrder: number | null;
+	sortOrder: number | null;
 	title: string;
 	/** Director — the card's quiet sub-line. */
 	subtitle: string | null;

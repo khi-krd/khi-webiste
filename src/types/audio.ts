@@ -47,6 +47,7 @@ export const SoundTrackFileSchema = z.object({
 	form: z.string().nullish(),
 	genre: z.string().nullish(),
 	recordingVenue: z.string().nullish(),
+	sortOrder: z.number().int().nullish(),
 	brochures: z.array(BrochureSchema).default([]),
 });
 
@@ -100,6 +101,7 @@ export const SoundTrackSchema = z.object({
 	cdNumber: z.number().int().nullish(),
 	totalTracks: z.number().int().nullish(),
 	attachments: z.array(SoundAttachmentSchema).default([]),
+	sortOrder: z.number().int().nullish(),
 	createdAt: z.string().optional(),
 	updatedAt: z.string().optional(),
 });
@@ -177,6 +179,7 @@ export type ResolvedAudioCard = {
 	tags: string[];
 	keywords: string[];
 	queue: PlayerTrackPayload[];
+	sortOrder: number | null;
 	createdAt: string;
 };
 

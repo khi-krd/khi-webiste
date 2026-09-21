@@ -6,6 +6,7 @@ type AboutTeamPhotoProps = {
 	member: TeamMember;
 	name: string;
 	role: string;
+	bio?: string;
 	className?: string;
 };
 
@@ -16,6 +17,7 @@ export function AboutTeamPhoto({
 	member,
 	name,
 	role,
+	bio,
 	className,
 }: AboutTeamPhotoProps) {
 	const imageAlt = member.image.alt ?? name;
@@ -36,6 +38,9 @@ export function AboutTeamPhoto({
 					{name}
 				</p>
 				<p className="mt-0.5 text-label leading-normal text-muted">{role}</p>
+				{bio ? (
+					<p className="mt-1.5 text-small leading-relaxed text-muted">{bio}</p>
+				) : null}
 			</figcaption>
 		</figure>
 	);

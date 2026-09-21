@@ -54,6 +54,7 @@ export const ImageCollectionSchema = z.object({
 	tags: BilingualSetSchema.optional(),
 	keywords: BilingualSetSchema.optional(),
 	imageAlbum: z.array(ImageAlbumItemSchema),
+	sortOrder: z.number().int().nullish(),
 	createdAt: z.string().optional(),
 	updatedAt: z.string().optional(),
 });

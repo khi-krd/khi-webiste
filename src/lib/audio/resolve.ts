@@ -93,6 +93,15 @@ export function audioDetailHref(id: number): string {
 	return `/audio/${id}`;
 }
 
+/** Files ride the entity's `sortOrder`; unsorted rows fall back to API order. */
+function sortedTrackFiles(track: SoundTrack): SoundTrack["files"] {
+	return [...track.files].sort(
+		(a, b) =>
+			(a.sortOrder ?? Number.MAX_SAFE_INTEGER) -
+			(b.sortOrder ?? Number.MAX_SAFE_INTEGER),
+	);
+}
+
 export function buildPlayerQueue(
 	locale: string,
 	track: SoundTrack,
@@ -101,13 +110,14 @@ export function buildPlayerQueue(
 	const trackTitle = content?.title?.trim() || String(track.id);
 	const coverUrl = resolveAudioCoverUrl(locale, track);
 	const artist = firstNonBlank(track.reader, track.albumName);
+	const files = sortedTrackFiles(track);
 
-	return track.files.filter(isPlayable).map((file, index) => ({
+	return files.filter(isPlayable).map((file, index) => ({
 		fileId: file.id,
 		trackId: track.id,
 		title:
 			firstNonBlank(file.title) ??
-			(track.files.length > 1 ? `${trackTitle} — ${index + 1}` : trackTitle),
+			(files.length > 1 ? `${trackTitle} — ${index + 1}` : trackTitle),
 		artist,
 		coverUrl,
 		// biome-ignore lint/style/noNonNullAssertion: isPlayable guarantees a source URL
@@ -149,7 +159,9 @@ export function resolveAudioCard(
 			track.totalTracks ??
 			(track.trackState === "MULTI" ? track.files.length : null),
 		publishmentYear:
-			track.publishmentYear ?? track.files[0]?.publishmentYear ?? null,
+			track.publishmentYear ??
+			sortedTrackFiles(track)[0]?.publishmentYear ??
+			null,
 		thisProjectOfInstitute: track.thisProjectOfInstitute,
 		tags: resolveBilingualStrings(locale, track.tags.ckb, track.tags.kmr),
 		keywords: resolveBilingualStrings(
@@ -158,6 +170,7 @@ export function resolveAudioCard(
 			track.keywords.kmr,
 		),
 		queue: buildPlayerQueue(locale, track),
+		sortOrder: track.sortOrder ?? null,
 		createdAt: track.createdAt ?? "",
 	};
 }
@@ -211,7 +224,7 @@ function resolvePosterUrl(track: SoundTrack): string | null {
 function resolveAlbumVideo(track: SoundTrack): ResolvedAlbumVideo | null {
 	const posterUrl = resolvePosterUrl(track);
 
-	const videoFile = track.files.find(
+	const videoFile = sortedTrackFiles(track).find(
 		(file) =>
 			file.fileType === "VIDEO" &&
 			Boolean(file.fileUrl?.trim() || file.externalUrl?.trim()),
@@ -247,8 +260,9 @@ export function resolveAudioDetail(
 
 	const trackTitle = content.title;
 	const coverUrl = resolveAudioCoverUrl(locale, track);
+	const files = sortedTrackFiles(track);
 
-	const brochures: ResolvedBrochureItem[] = track.files
+	const brochures: ResolvedBrochureItem[] = files
 		.flatMap((file) => file.brochures)
 		.map((brochure, index) => {
 			const imageUrl = brochure.imageUrl?.trim();
@@ -286,18 +300,16 @@ export function resolveAudioDetail(
 		terms: track.terms ?? null,
 		thisProjectOfInstitute: track.thisProjectOfInstitute,
 		contentLanguages: track.contentLanguages,
-		genre: firstNonBlank(...track.files.map((file) => file.genre)),
+		genre: firstNonBlank(...files.map((file) => file.genre)),
 		albumName: track.albumName ?? null,
-		publishmentYear:
-			track.publishmentYear ?? track.files[0]?.publishmentYear ?? null,
+		publishmentYear: track.publishmentYear ?? files[0]?.publishmentYear ?? null,
 		cdNumber: track.cdNumber ?? null,
 		totalTracks:
-			track.totalTracks ??
-			(track.trackState === "MULTI" ? track.files.length : null),
+			track.totalTracks ?? (track.trackState === "MULTI" ? files.length : null),
 		totalDurationSeconds: track.totalDurationSeconds ?? null,
 		totalSizeBytes: track.totalSizeBytes ?? null,
-		fileRows: track.files.map((file, index) =>
-			resolveFileRow(file, trackTitle, index, track.files.length, coverUrl),
+		fileRows: files.map((file, index) =>
+			resolveFileRow(file, trackTitle, index, files.length, coverUrl),
 		),
 		brochures,
 		video: resolveAlbumVideo(track),
