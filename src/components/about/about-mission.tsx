@@ -37,9 +37,7 @@ export function AboutMission({
 		<AboutSection
 			className={cn("pt-10 pb-8 sm:pt-12 sm:pb-10 lg:pt-14", className)}
 		>
-			{/* prose → centered max-w-4xl column: the text narrows in from
-			    both edges instead of spanning the full shell. */}
-			<AboutShell prose>
+			<AboutShell>
 				<ScrollReveal>
 					<ScrollRevealItem>
 						{body ? (
