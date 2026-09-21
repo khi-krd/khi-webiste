@@ -37,28 +37,33 @@ export function AboutMission({
 		<AboutSection
 			className={cn("pt-10 pb-8 sm:pt-12 sm:pb-10 lg:pt-14", className)}
 		>
-			<AboutShell>
-				<ScrollReveal>
-					<ScrollRevealItem>
-						{body ? (
-							<RichText content={body} className={missionTextClass} />
-						) : (
-							<div className={missionTextClass}>
-								{(paragraphs ?? []).map((text, index) => (
-									<p
-										key={text.slice(0, 40)}
-										className={cn(
-											index > 0 && "mt-6 sm:mt-7",
-											index === 0 ? "text-lead" : "text-body",
-										)}
-									>
-										{text}
-									</p>
-								))}
-							</div>
-						)}
-					</ScrollRevealItem>
-				</ScrollReveal>
+			{/* Same grid as the founder section below — the text sits in the
+			    1fr column so its right edge ends at the image column's
+			    boundary, matching the bio's measure exactly. */}
+			<AboutShell className="lg:grid lg:grid-cols-[minmax(0,0.42fr)_minmax(0,1fr)] lg:gap-12 xl:gap-16">
+				<div className="lg:col-start-2">
+					<ScrollReveal>
+						<ScrollRevealItem>
+							{body ? (
+								<RichText content={body} className={missionTextClass} />
+							) : (
+								<div className={missionTextClass}>
+									{(paragraphs ?? []).map((text, index) => (
+										<p
+											key={text.slice(0, 40)}
+											className={cn(
+												index > 0 && "mt-6 sm:mt-7",
+												index === 0 ? "text-lead" : "text-body",
+											)}
+										>
+											{text}
+										</p>
+									))}
+								</div>
+							)}
+						</ScrollRevealItem>
+					</ScrollReveal>
+				</div>
 			</AboutShell>
 		</AboutSection>
 	);
