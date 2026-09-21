@@ -24,54 +24,6 @@ type ServicesSectionNavProps = {
 	className?: string;
 };
 
-type ServicesNavDotsProps = {
-	items: NavItem[];
-	activeId: string;
-	onSelect: (event: MouseEvent<HTMLAnchorElement>, id: string) => void;
-	className?: string;
-};
-
-function ServicesNavDots({
-	items,
-	activeId,
-	onSelect,
-	className,
-}: ServicesNavDotsProps) {
-	return (
-		<div className={cn("grid grid-cols-8 gap-1", className)} role="tablist">
-			{items.map((item) => {
-				const isActive = activeId === item.id;
-
-				return (
-					<a
-						key={`dot-${item.id}`}
-						href={`#${item.id}`}
-						role="tab"
-						aria-selected={isActive}
-						aria-label={item.title}
-						onClick={(event) => onSelect(event, item.id)}
-						className={cn(
-							"flex h-6 items-center justify-center transition-colors duration-300",
-							"focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-foreground",
-						)}
-					>
-						<span
-							aria-hidden
-							className={cn(
-								"h-0.5 w-full max-w-8 transition-[background-color,transform] duration-300 ease-out",
-								isActive
-									? "scale-x-110 bg-primary"
-									: "bg-border fine-hover:bg-primary/40",
-							)}
-						/>
-						<span className="sr-only">{item.title}</span>
-					</a>
-				);
-			})}
-		</div>
-	);
-}
-
 const navControlClass =
 	"inline-flex size-11 shrink-0 items-center justify-center border border-border bg-surface text-foreground transition-colors duration-200 fine-hover:border-border-strong fine-hover:bg-sunken disabled:pointer-events-none disabled:opacity-35 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-foreground";
 
@@ -364,14 +316,6 @@ export function ServicesSectionNav({
 						})}
 					</ul>
 				</LayoutGroup>
-
-				<div className="mt-10">
-					<ServicesNavDots
-						items={items}
-						activeId={activeId}
-						onSelect={handleNavClick}
-					/>
-				</div>
 			</nav>
 		</>
 	);
