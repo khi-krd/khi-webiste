@@ -1,10 +1,5 @@
 "use client";
 
-import {
-	AdjustmentsHorizontalIcon,
-	MagnifyingGlassIcon,
-	XMarkIcon,
-} from "@heroicons/react/24/outline";
 import { useSearchParams } from "next/navigation";
 import { useTranslations } from "next-intl";
 import {
@@ -16,13 +11,18 @@ import {
 	useTransition,
 } from "react";
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
+import {
+	FilterBar,
+	FilterDivider,
+	FilterGroupLabel,
+	FilterPill,
+	FilterSearchBox,
+} from "@/components/ui/filter-bar";
 import { useRouter } from "@/i18n/navigation";
 import type { NewsCategoryOption } from "@/lib/mock/news";
 import { isKnownCategory } from "@/lib/mock/news";
 import { buildNewsHref, type NewsUrlParams } from "@/lib/news-url";
 import { useScrollToSection } from "@/lib/use-scroll-to-section";
-import { cn } from "@/lib/utils";
 
 type NewsFilterBarProps = {
 	categories: NewsCategoryOption[];
@@ -48,6 +48,11 @@ function withActiveTerm(terms: string[], active?: string | null): string[] {
 		: [value, ...terms];
 }
 
+/**
+ * All controls on ONE continuous line: category pills, subcategory and tag
+ * groups and the search box flow in a single `flex-wrap` row — no expand
+ * panel, no stacked sections. Active-filter chips trail at the row's tail.
+ */
 export function NewsFilterBar({
 	categories,
 	subCategories,
@@ -62,7 +67,6 @@ export function NewsFilterBar({
 	const router = useRouter();
 	const searchParams = useSearchParams();
 	const [isPending, startTransition] = useTransition();
-	const [expanded, setExpanded] = useState(true);
 	const [query, setQuery] = useState(activeQuery ?? "");
 	const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 	const scrollToSection = useScrollToSection();
@@ -139,8 +143,7 @@ export function NewsFilterBar({
 		pushFilters({ tag, q: query });
 	};
 
-	const handleSearchSubmit = (event: React.FormEvent) => {
-		event.preventDefault();
+	const handleSearchSubmit = () => {
 		if (debounceRef.current) clearTimeout(debounceRef.current);
 		pushFilters({ q: query });
 	};
@@ -173,238 +176,112 @@ export function NewsFilterBar({
 	);
 
 	return (
-		<div
-			className={cn("transition-opacity", isPending && "opacity-80", className)}
+		<FilterBar
+			label={t("filter.label")}
+			pending={isPending}
+			className={className}
 		>
-			<div
-				className="flex flex-wrap items-center gap-2"
-				role="group"
-				aria-label={t("filter.label")}
-			>
-				<button
-					type="button"
-					onClick={() => setExpanded((open) => !open)}
-					aria-expanded={expanded}
-					aria-label={t("filter.label")}
-					title={t("filter.label")}
-					className={cn(
-						"inline-flex size-11 shrink-0 items-center justify-center border transition-colors",
-						"focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring",
-						expanded
-							? "border-primary bg-primary text-primary-foreground"
-							: "border-primary bg-surface text-foreground fine-hover:bg-sunken",
-					)}
+			{/* primary browse axis — the news categories */}
+			<FilterPill active={!activeCategory} onClick={() => handleCategory(null)}>
+				{t("filter.all")}
+			</FilterPill>
+			{categories.map((category) => (
+				<FilterPill
+					key={category.key}
+					active={activeCategory === category.key}
+					onClick={() => handleCategory(category.key)}
 				>
-					<AdjustmentsHorizontalIcon className="size-5" aria-hidden />
-				</button>
-				<CategoryPill
-					active={!activeCategory}
-					onClick={() => handleCategory(null)}
-				>
-					{t("filter.all")}
-				</CategoryPill>
-				{categories.map((category) => (
-					<CategoryPill
-						key={category.key}
-						active={activeCategory === category.key}
-						onClick={() => handleCategory(category.key)}
-					>
-						{category.label}
-					</CategoryPill>
-				))}
-			</div>
+					{category.label}
+				</FilterPill>
+			))}
 
-			{/* Collapsible panel — the 0fr↔1fr grid-row tween animates height
-			    without measuring; `inert` parks the hidden controls out of the
-			    tab order and the accessibility tree while collapsed. */}
-			<div
-				className={cn(
-					"grid transition-[grid-template-rows,opacity] duration-300 ease-out",
-					expanded
-						? "grid-rows-[1fr] opacity-100"
-						: "grid-rows-[0fr] opacity-0",
-				)}
-				inert={!expanded}
-			>
-				<div className="min-h-0 overflow-hidden">
-					<div className="mt-6 border border-border bg-surface">
-						<div className="border-b border-border bg-background px-4 py-4 sm:px-5 sm:py-5">
-							<form
-								onSubmit={handleSearchSubmit}
-								className="flex flex-col gap-3 sm:flex-row sm:items-stretch"
-								role="search"
+			{subCategoryOptions.length > 0 ? (
+				<>
+					<FilterDivider />
+					<FilterGroupLabel>{t("filter.subcategories")}</FilterGroupLabel>
+					{subCategoryOptions.map((subCategory) => {
+						const active = activeSubCategory === subCategory.key;
+						return (
+							<FilterPill
+								key={subCategory.key}
+								active={active}
+								onClick={() =>
+									handleSubCategory(active ? null : subCategory.key)
+								}
 							>
-								<div
-									className={cn(
-										"flex h-12 min-w-0 flex-1 items-stretch border border-border-strong bg-surface",
-										"transition-colors focus-within:border-foreground",
-									)}
-								>
-									<input
-										type="search"
-										name="q"
-										value={query}
-										onChange={(event) => handleQueryChange(event.target.value)}
-										aria-label={t("search.label")}
-										autoComplete="off"
-										className="h-full min-w-0 flex-1 bg-transparent px-3 py-0 text-body text-foreground placeholder:text-muted focus:outline-none sm:px-4"
-									/>
+								{subCategory.label}
+							</FilterPill>
+						);
+					})}
+				</>
+			) : null}
 
-									{query ? (
-										<button
-											type="button"
-											onClick={handleClearSearch}
-											className="flex shrink-0 items-center px-3 text-muted transition-colors fine-hover:text-foreground"
-											aria-label={t("search.clear")}
-										>
-											<XMarkIcon className="size-4" aria-hidden />
-										</button>
-									) : null}
-								</div>
+			{tagOptions.length > 0 ? (
+				<>
+					<FilterDivider />
+					<FilterGroupLabel>{t("filter.tags")}</FilterGroupLabel>
+					{tagOptions.map((tag) => {
+						const active = activeTag === tag;
+						return (
+							<FilterPill
+								key={tag}
+								active={active}
+								onClick={() => handleTag(active ? null : tag)}
+							>
+								#{tag}
+							</FilterPill>
+						);
+					})}
+				</>
+			) : null}
 
-								<Button
-									type="submit"
-									variant="primary"
-									size="lg"
-									leadingIcon={<MagnifyingGlassIcon aria-hidden />}
-									className="h-12 shrink-0 sm:min-w-32"
-									disabled={isPending}
-								>
-									{t("search.submit")}
-								</Button>
-							</form>
-						</div>
+			{/* same line — the row's remaining space goes to search */}
+			<FilterSearchBox
+				className="sm:max-w-sm"
+				value={query}
+				onValueChange={handleQueryChange}
+				onSubmit={handleSearchSubmit}
+				onClear={handleClearSearch}
+				busy={isPending}
+				searchLabel={t("search.label")}
+				clearLabel={t("search.clear")}
+				submitLabel={t("search.submit")}
+			/>
 
-						{subCategoryOptions.length > 0 ||
-						tagOptions.length > 0 ||
-						hasActiveFilters ? (
-							<div className="px-4 py-4 sm:px-5 sm:py-5">
-								{hasActiveFilters ? (
-									<div className="mb-4 flex justify-end">
-										<button
-											type="button"
-											onClick={handleClearAll}
-											className="font-heading text-label font-medium text-muted underline decoration-border underline-offset-4 transition-colors fine-hover:text-foreground"
-										>
-											{t("filter.clear")}
-										</button>
-									</div>
-								) : null}
-
-								{subCategoryOptions.length > 0 ? (
-									<FilterRow label={t("filter.subcategories")}>
-										{subCategoryOptions.map((subCategory) => {
-											const active = activeSubCategory === subCategory.key;
-											return (
-												<CategoryPill
-													key={subCategory.key}
-													active={active}
-													onClick={() =>
-														handleSubCategory(active ? null : subCategory.key)
-													}
-												>
-													{subCategory.label}
-												</CategoryPill>
-											);
-										})}
-									</FilterRow>
-								) : null}
-
-								{tagOptions.length > 0 ? (
-									<FilterRow label={t("filter.tags")}>
-										{tagOptions.map((tag) => {
-											const active = activeTag === tag;
-											return (
-												<CategoryPill
-													key={tag}
-													active={active}
-													onClick={() => handleTag(active ? null : tag)}
-												>
-													#{tag}
-												</CategoryPill>
-											);
-										})}
-									</FilterRow>
-								) : null}
-
-								{hasActiveFilters ? (
-									<div className="mt-4 flex flex-wrap items-center gap-2 border-t border-border pt-4">
-										<span className="text-label text-muted">
-											{t("filter.active")}
-										</span>
-										{activeCategoryLabel ? (
-											<Badge variant="outline" size="sm">
-												{activeCategoryLabel}
-											</Badge>
-										) : null}
-										{activeSubCategoryLabel ? (
-											<Badge variant="outline" size="sm">
-												{activeSubCategoryLabel}
-											</Badge>
-										) : null}
-										{hasActiveTag && activeTag ? (
-											<Badge variant="outline" size="sm">
-												#{activeTag}
-											</Badge>
-										) : null}
-										{hasActiveQuery && activeQuery ? (
-											<Badge variant="outline" size="sm">
-												&ldquo;{activeQuery}&rdquo;
-											</Badge>
-										) : null}
-									</div>
-								) : null}
-							</div>
-						) : null}
-					</div>
-				</div>
-			</div>
-		</div>
-	);
-}
-
-type FilterRowProps = {
-	label: string;
-	children: React.ReactNode;
-};
-
-function FilterRow({ label, children }: FilterRowProps) {
-	return (
-		<div className="mt-4 border-t border-border pt-4">
-			<p className="font-heading text-label font-semibold uppercase tracking-[0.14em] text-muted">
-				{label}
-			</p>
-			<div
-				className="mt-3 flex flex-wrap gap-2"
-				role="group"
-				aria-label={label}
-			>
-				{children}
-			</div>
-		</div>
-	);
-}
-
-type CategoryPillProps = {
-	active: boolean;
-	onClick: () => void;
-	children: React.ReactNode;
-};
-
-function CategoryPill({ active, onClick, children }: CategoryPillProps) {
-	return (
-		<button
-			type="button"
-			onClick={onClick}
-			aria-pressed={active}
-			className={cn(
-				"shrink-0 border px-3.5 py-2 font-heading text-small font-medium transition-colors sm:px-4",
-				active
-					? "border-primary bg-primary text-primary-foreground"
-					: "border-primary bg-background text-foreground fine-hover:bg-sunken",
-			)}
-		>
-			{children}
-		</button>
+			{hasActiveFilters ? (
+				<>
+					<FilterDivider />
+					<span className="text-label text-muted">{t("filter.active")}</span>
+					{activeCategoryLabel ? (
+						<Badge variant="outline" size="sm">
+							{activeCategoryLabel}
+						</Badge>
+					) : null}
+					{activeSubCategoryLabel ? (
+						<Badge variant="outline" size="sm">
+							{activeSubCategoryLabel}
+						</Badge>
+					) : null}
+					{hasActiveTag && activeTag ? (
+						<Badge variant="outline" size="sm">
+							#{activeTag}
+						</Badge>
+					) : null}
+					{hasActiveQuery && activeQuery ? (
+						<Badge variant="outline" size="sm">
+							&ldquo;{activeQuery}&rdquo;
+						</Badge>
+					) : null}
+					<button
+						type="button"
+						onClick={handleClearAll}
+						disabled={isPending}
+						className="font-heading text-small font-medium text-muted underline decoration-border underline-offset-4 transition-colors fine-hover:text-foreground"
+					>
+						{t("filter.clear")}
+					</button>
+				</>
+			) : null}
+		</FilterBar>
 	);
 }

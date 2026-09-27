@@ -41,6 +41,7 @@ export async function getWritingGenreLabelSets(
 			slug: normalizeGenreSlug(record.slug),
 			label: preferLocaleText(isCkb, record.nameCkb, record.nameKmr),
 			order: record.displayOrder ?? 0,
+			books: record.bookCount ?? 0,
 		}))
 		.filter((entry): entry is typeof entry & { slug: string; label: string } =>
 			Boolean(entry.slug && entry.label),
@@ -51,8 +52,18 @@ export async function getWritingGenreLabelSets(
 		cmsEntries.map((entry) => [entry.slug, entry.label]),
 	);
 
+	// A genre chip is only useful when at least one book carries it — an unused
+	// CMS row would draw a filter that can only ever answer empty. Built-ins
+	// stay the fallback for an empty CMS table, but must never reintroduce
+	// genres the admin created yet no book uses.
+	const usedLabels = Object.fromEntries(
+		cmsEntries
+			.filter((entry) => entry.books > 0)
+			.map((entry) => [entry.slug, entry.label]),
+	);
+
 	return {
-		chipLabels: cmsEntries.length > 0 ? cmsLabels : builtinLabels,
+		chipLabels: cmsEntries.length > 0 ? usedLabels : builtinLabels,
 		labelLookup: { ...builtinLabels, ...cmsLabels },
 	};
 }

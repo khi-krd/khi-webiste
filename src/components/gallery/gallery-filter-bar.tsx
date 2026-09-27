@@ -1,15 +1,16 @@
 "use client";
 
-import {
-	AdjustmentsHorizontalIcon,
-	MagnifyingGlassIcon,
-	XMarkIcon,
-} from "@heroicons/react/24/outline";
 import { useSearchParams } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { useCallback, useEffect, useRef, useState, useTransition } from "react";
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
+import {
+	FilterBar,
+	FilterDivider,
+	FilterGroupLabel,
+	FilterPill,
+	FilterSearchBox,
+} from "@/components/ui/filter-bar";
 import { Select } from "@/components/ui/select";
 import { useRouter } from "@/i18n/navigation";
 import {
@@ -19,7 +20,6 @@ import {
 } from "@/lib/gallery-url";
 import type { GalleryCollectionType } from "@/lib/mock/gallery";
 import { useScrollToSection } from "@/lib/use-scroll-to-section";
-import { cn } from "@/lib/utils";
 
 const GALLERY_TYPE_OPTIONS: GalleryCollectionType[] = [
 	"GALLERY",
@@ -40,6 +40,11 @@ type GalleryFilterBarProps = {
 	className?: string;
 };
 
+/**
+ * All controls on ONE continuous line: type pills, topic select and the
+ * search box flow in a single `flex-wrap` row — no expand panel, no stacked
+ * sections. Active-filter chips trail at the row's tail.
+ */
 export function GalleryFilterBar({
 	topics,
 	activeType,
@@ -51,7 +56,6 @@ export function GalleryFilterBar({
 	const router = useRouter();
 	const searchParams = useSearchParams();
 	const [isPending, startTransition] = useTransition();
-	const [expanded, setExpanded] = useState(true);
 	const [query, setQuery] = useState(activeQuery ?? "");
 	const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 	const scrollToSection = useScrollToSection();
@@ -102,8 +106,7 @@ export function GalleryFilterBar({
 		pushFilters(topic != null ? null : currentType, query, topic);
 	};
 
-	const handleSearchSubmit = (event: React.FormEvent) => {
-		event.preventDefault();
+	const handleSearchSubmit = () => {
 		if (debounceRef.current) clearTimeout(debounceRef.current);
 		pushFilters(currentType, query, currentTopic);
 	};
@@ -136,199 +139,90 @@ export function GalleryFilterBar({
 	);
 
 	return (
-		<div
-			className={cn("transition-opacity", isPending && "opacity-80", className)}
+		<FilterBar
+			label={t("filter.label")}
+			pending={isPending}
+			className={className}
 		>
-			<div
-				className="flex flex-wrap items-center gap-2"
-				role="group"
-				aria-label={t("filter.label")}
-			>
-				<button
-					type="button"
-					onClick={() => setExpanded((open) => !open)}
-					aria-expanded={expanded}
-					aria-label={t("filter.heading")}
-					title={t("filter.heading")}
-					className={cn(
-						"inline-flex size-11 shrink-0 items-center justify-center border transition-colors",
-						"focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring",
-						expanded
-							? "border-primary bg-primary text-primary-foreground"
-							: "border-primary bg-surface text-foreground fine-hover:bg-sunken",
-					)}
+			{/* primary browse axis — the collection types */}
+			<FilterPill active={!hasActiveType} onClick={() => handleType(null)}>
+				{t("filter.all")}
+			</FilterPill>
+			{GALLERY_TYPE_OPTIONS.map((type) => (
+				<FilterPill
+					key={type}
+					active={activeType === type}
+					onClick={() => handleType(type)}
 				>
-					<AdjustmentsHorizontalIcon className="size-5" aria-hidden />
-				</button>
-				<TypePill active={!hasActiveType} onClick={() => handleType(null)}>
-					{t("filter.all")}
-				</TypePill>
-				{GALLERY_TYPE_OPTIONS.map((type) => (
-					<TypePill
-						key={type}
-						active={activeType === type}
-						onClick={() => handleType(type)}
-					>
-						{t(`posts.types.${type}`)}
-					</TypePill>
-				))}
-			</div>
+					{t(`posts.types.${type}`)}
+				</FilterPill>
+			))}
 
-			{/* Collapsible panel — the 0fr↔1fr grid-row tween animates height
-			    without measuring; `inert` parks the hidden controls out of the
-			    tab order and the accessibility tree while collapsed. */}
-			<div
-				className={cn(
-					"grid transition-[grid-template-rows,opacity] duration-300 ease-out",
-					expanded
-						? "grid-rows-[1fr] opacity-100"
-						: "grid-rows-[0fr] opacity-0",
-				)}
-				inert={!expanded}
-			>
-				<div className="min-h-0 overflow-hidden">
-					<div className="mt-6 border border-border bg-surface">
-						<div className="border-b border-border bg-background px-4 py-4 sm:px-5 sm:py-5">
-							<form
-								onSubmit={handleSearchSubmit}
-								className="flex flex-col gap-3 sm:flex-row sm:items-stretch"
-								role="search"
-							>
-								<div
-									className={cn(
-										"flex h-12 min-w-0 flex-1 items-stretch border border-border-strong bg-surface",
-										"transition-colors focus-within:border-foreground",
-									)}
-								>
-									<input
-										type="search"
-										name="q"
-										value={query}
-										onChange={(event) => handleQueryChange(event.target.value)}
-										aria-label={t("search.label")}
-										autoComplete="off"
-										className="h-full min-w-0 flex-1 bg-transparent px-3 py-0 text-body text-foreground placeholder:text-muted focus:outline-none sm:px-4"
-									/>
-
-									{query ? (
-										<button
-											type="button"
-											onClick={handleClearSearch}
-											className="flex shrink-0 items-center px-3 text-muted transition-colors fine-hover:text-foreground"
-											aria-label={t("search.clear")}
-										>
-											<XMarkIcon className="size-4" aria-hidden />
-										</button>
-									) : null}
-								</div>
-
-								<Button
-									type="submit"
-									variant="primary"
-									size="lg"
-									leadingIcon={<MagnifyingGlassIcon aria-hidden />}
-									className="h-12 shrink-0 sm:min-w-32"
-									disabled={isPending}
-								>
-									{t("search.submit")}
-								</Button>
-							</form>
-						</div>
-
-						{topics.length > 0 || hasActiveFilters ? (
-							<div className="px-4 py-4 sm:px-5 sm:py-5">
-								{hasActiveFilters ? (
-									<div className="mb-4 flex justify-end">
-										<button
-											type="button"
-											onClick={handleClearAll}
-											className="font-heading text-label font-medium text-muted underline decoration-border underline-offset-4 transition-colors fine-hover:text-foreground"
-										>
-											{t("filter.clear")}
-										</button>
-									</div>
-								) : null}
-
-								{topics.length > 0 ? (
-									<div>
-										<label
-											htmlFor="gallery-topic-select"
-											className="label font-semibold text-muted"
-										>
-											{t("filter.topicLabel")}
-										</label>
-										<div className="mt-3 max-w-xs">
-											<Select
-												id="gallery-topic-select"
-												value={
-													activeTopicId != null ? String(activeTopicId) : ""
-												}
-												onChange={(event) =>
-													handleTopic(parseGalleryTopicId(event.target.value))
-												}
-											>
-												<option value="">{t("filter.topicAll")}</option>
-												{topics.map((topic) => (
-													<option key={topic.id} value={topic.id}>
-														{topic.name}
-													</option>
-												))}
-											</Select>
-										</div>
-									</div>
-								) : null}
-
-								{hasActiveFilters ? (
-									<div className="mt-4 flex flex-wrap items-center gap-2 border-t border-border pt-4">
-										<span className="text-label text-muted">
-											{t("filter.active")}
-										</span>
-										{activeTypeLabel ? (
-											<Badge variant="outline" size="sm">
-												{activeTypeLabel}
-											</Badge>
-										) : null}
-										{activeTopicName ? (
-											<Badge variant="outline" size="sm">
-												{activeTopicName}
-											</Badge>
-										) : null}
-										{hasActiveQuery && activeQuery ? (
-											<Badge variant="outline" size="sm">
-												&ldquo;{activeQuery}&rdquo;
-											</Badge>
-										) : null}
-									</div>
-								) : null}
-							</div>
-						) : null}
+			{topics.length > 0 ? (
+				<>
+					<FilterDivider />
+					<FilterGroupLabel>{t("filter.topicLabel")}</FilterGroupLabel>
+					<div className="w-44 min-w-36">
+						<Select
+							aria-label={t("filter.topicLabel")}
+							value={activeTopicId != null ? String(activeTopicId) : ""}
+							onChange={(event) =>
+								handleTopic(parseGalleryTopicId(event.target.value))
+							}
+						>
+							<option value="">{t("filter.topicAll")}</option>
+							{topics.map((topic) => (
+								<option key={topic.id} value={topic.id}>
+									{topic.name}
+								</option>
+							))}
+						</Select>
 					</div>
-				</div>
-			</div>
-		</div>
-	);
-}
+				</>
+			) : null}
 
-type TypePillProps = {
-	active: boolean;
-	onClick: () => void;
-	children: React.ReactNode;
-};
+			{/* same line — the row's remaining space goes to search */}
+			<FilterSearchBox
+				className="sm:max-w-sm"
+				value={query}
+				onValueChange={handleQueryChange}
+				onSubmit={handleSearchSubmit}
+				onClear={handleClearSearch}
+				busy={isPending}
+				searchLabel={t("search.label")}
+				clearLabel={t("search.clear")}
+				submitLabel={t("search.submit")}
+			/>
 
-function TypePill({ active, onClick, children }: TypePillProps) {
-	return (
-		<button
-			type="button"
-			onClick={onClick}
-			aria-pressed={active}
-			className={cn(
-				"shrink-0 border px-3.5 py-2 font-heading text-small font-medium transition-colors sm:px-4",
-				active
-					? "border-primary bg-primary text-primary-foreground"
-					: "border-primary bg-background text-foreground fine-hover:bg-sunken",
-			)}
-		>
-			{children}
-		</button>
+			{hasActiveFilters ? (
+				<>
+					<FilterDivider />
+					<span className="text-label text-muted">{t("filter.active")}</span>
+					{activeTypeLabel ? (
+						<Badge variant="outline" size="sm">
+							{activeTypeLabel}
+						</Badge>
+					) : null}
+					{activeTopicName ? (
+						<Badge variant="outline" size="sm">
+							{activeTopicName}
+						</Badge>
+					) : null}
+					{hasActiveQuery && activeQuery ? (
+						<Badge variant="outline" size="sm">
+							&ldquo;{activeQuery}&rdquo;
+						</Badge>
+					) : null}
+					<button
+						type="button"
+						onClick={handleClearAll}
+						disabled={isPending}
+						className="font-heading text-small font-medium text-muted underline decoration-border underline-offset-4 transition-colors fine-hover:text-foreground"
+					>
+						{t("filter.clear")}
+					</button>
+				</>
+			) : null}
+		</FilterBar>
 	);
 }
