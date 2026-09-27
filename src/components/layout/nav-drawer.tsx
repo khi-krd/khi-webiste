@@ -148,34 +148,20 @@ function mergeNavItems(
 ): ResolvedNavItem[] {
 	const byKey = new Map(overrides.map((o) => [o.itemKey, o]));
 
-	const merged: ResolvedNavItem[] = items.map((item) => {
+	// Static config owns the section list, labels and hrefs — the CMS row with a
+	// matching key only supplies the background photo. CMS-only keys are ignored
+	// rather than appended: an unknown key is by definition not a real section.
+	return items.map((item) => {
 		const cms = byKey.get(item.key.toLowerCase());
 		const resolved: ResolvedNavItem = {
 			key: item.key,
-			href: cms?.href ?? item.href,
-			label: cms?.label ?? t(item.labelKey),
+			href: item.href,
+			label: t(item.labelKey),
 		};
 		const imageSrc = cms?.imageSrc ?? item.imageSrc;
 		if (imageSrc) resolved.imageSrc = imageSrc;
 		return resolved;
 	});
-
-	// Sections that exist only in the CMS still deserve a place in the menu.
-	const known = new Set(items.map((item) => item.key.toLowerCase()));
-	for (const cms of overrides) {
-		if (known.has(cms.itemKey) || !cms.label || !cms.href) {
-			continue;
-		}
-		const extra: ResolvedNavItem = {
-			key: cms.itemKey,
-			href: cms.href,
-			label: cms.label,
-		};
-		if (cms.imageSrc) extra.imageSrc = cms.imageSrc;
-		merged.push(extra);
-	}
-
-	return merged;
 }
 
 type NavView = "nav" | "search";
