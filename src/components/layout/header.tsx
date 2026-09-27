@@ -1,4 +1,4 @@
-import { getLocale, getTranslations } from "next-intl/server";
+import { getTranslations } from "next-intl/server";
 import { HeaderNav } from "@/components/layout/header-nav";
 import { HeaderShell } from "@/components/layout/header-shell";
 import { Logo } from "@/components/layout/logo";
@@ -33,11 +33,10 @@ import { getNavMenuOverrides } from "@/lib/api/nav-menu";
  */
 export async function Header() {
 	const t = await getTranslations("Nav");
-	const locale = await getLocale();
-	// CMS overlay for the mega menu (labels, descriptions, background photos).
-	// Empty when the API is unreachable — the overlay then renders the static
-	// config alone, so the menu never depends on the CMS being up.
-	const navMenu = await getNavMenuOverrides(locale);
+	// CMS overlay for the mega menu's background photos. Empty when the API is
+	// unreachable — the overlay then renders the static config alone, so the
+	// menu never depends on the CMS being up.
+	const navMenu = await getNavMenuOverrides();
 
 	return (
 		<HeaderShell>
