@@ -22,8 +22,7 @@ import {
  * here before a response leaves the server.
  */
 
-const DEFAULT_PLATFORM_API_BASE_URL =
-	"https://khiarchiveplatformbackend-production.up.railway.app";
+const DEFAULT_PLATFORM_API_BASE_URL = "http://178.105.87.169";
 
 /** Give up on a slow origin rather than hanging the page render. */
 const TIMEOUT_MS = 12_000;
