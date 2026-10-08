@@ -31,6 +31,12 @@ export function generateStaticParams() {
 	return routing.locales.map((locale) => ({ locale }));
 }
 
+// Every route under [locale] renders live CMS data (no-store fetch policy).
+// Without this, generateStaticParams + setRequestLocale prerender each locale
+// at build time - and the backend host does not resolve inside the build,
+// so the empty snapshot gets baked in and served indefinitely.
+export const dynamic = "force-dynamic";
+
 // Renders hit the CMS live (no-store policy), so a slow backend burns real
 // render time. 60s is the Hobby ceiling — it covers the worst-case chain of
 // timeout+retry upstream calls (~48s) without letting a hung fetch get the
