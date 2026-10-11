@@ -10,7 +10,7 @@ import {
 import { PublicationsDropdown } from "@/components/layout/publications-dropdown";
 import { Container } from "@/components/ui/container";
 import { DrawnBorder } from "@/components/ui/drawn-border";
-import { SERVICES_HREF } from "@/config/site";
+import { ARCHIVE_HREF, LIBRARY_HREF, SERVICES_HREF } from "@/config/site";
 import { Link } from "@/i18n/navigation";
 import { getNavMenuOverrides } from "@/lib/api/nav-menu";
 
@@ -64,15 +64,25 @@ export async function Header() {
 					<div className="hidden items-center gap-0.5 sm:flex sm:gap-1">
 						<PublicationsDropdown />
 
-						<button type="button" className={navBoxTriggerClass}>
+						<a
+							href={ARCHIVE_HREF}
+							target="_blank"
+							rel="noopener noreferrer"
+							className={navBoxTriggerClass}
+						>
 							<DrawnBorder />
 							<span className={navBoxTriggerLabelClass}>{t("archive")}</span>
-						</button>
+						</a>
 
-						<button type="button" className={navBoxTriggerClass}>
+						<a
+							href={LIBRARY_HREF}
+							target="_blank"
+							rel="noopener noreferrer"
+							className={navBoxTriggerClass}
+						>
 							<DrawnBorder />
 							<span className={navBoxTriggerLabelClass}>{t("library")}</span>
-						</button>
+						</a>
 					</div>
 
 					<HeaderNav navMenu={navMenu} />

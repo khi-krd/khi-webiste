@@ -207,6 +207,14 @@ export const SERVICES_HREF = "/services";
 
 export const DONATE_HREF = "/donate";
 
+/**
+ * External platforms served from their own servers. Plain <a> links — not
+ * the locale-aware router — since they leave this site entirely.
+ */
+export const ARCHIVE_HREF = "http://178.105.87.169";
+
+export const LIBRARY_HREF = "http://178.105.91.187:8080";
+
 /** A footer navigation link — label resolved via the "Footer" message namespace. */
 export type FooterLink = {
 	/** Key under Footer.* when navKey is unset. */
