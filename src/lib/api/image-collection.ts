@@ -16,8 +16,9 @@ import { ImageCollectionSchema } from "@/types/gallery";
 const GALLERY_ENDPOINT = "/api/v1/image-collections";
 const GALLERY_TAG = "image-collections";
 
-/** The bento is a cover wall, so multi-image galleries read best in it. */
-const BENTO_COLLECTION_TYPE: GalleryCollectionType = "GALLERY";
+/** All three collection types (SINGLE, GALLERY, PHOTO_STORY) belong in the
+ *  home bento — no type filter. */
+const BENTO_COLLECTION_TYPE: GalleryCollectionType | undefined = undefined;
 
 async function fetchCollections(type?: GalleryCollectionType) {
 	return apiFetchPage(GALLERY_ENDPOINT, {
@@ -36,10 +37,9 @@ export async function getImageCollection(
 		return sliceToCount([], HOME_IMAGE_BENTO_COUNT);
 	}
 
-	// A CMS that files everything as PHOTO_STORY/SINGLE must still fill the grid,
-	// otherwise the whole homepage section drops out.
-	const typed = await fetchCollections(BENTO_COLLECTION_TYPE);
-	const page = typed?.content.length ? typed : await fetchCollections();
+	// Every type shows: singles, galleries, and photo stories all appear in the
+	// bento. The unfiltered page already returns newest-first.
+	const page = await fetchCollections(BENTO_COLLECTION_TYPE);
 
 	const apiItems = page?.content.length
 		? resolveImageCollectionItems(locale, page.content)
