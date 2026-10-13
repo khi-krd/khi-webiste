@@ -105,8 +105,8 @@ export default async function LocaleLayout({ children, params }: Props) {
 
 	setRequestLocale(locale);
 
-	// Settings are tag-cached — header/footer read the same row for the logo
-	// and donate band, so this fetch is deduplicated rather than doubled.
+	// Settings are tag-cached — header/footer and the home donate band read the
+	// same row, so this fetch is deduplicated rather than doubled.
 	const [messages, siteSettings] = await Promise.all([
 		getMessages(),
 		getSiteSettings(),

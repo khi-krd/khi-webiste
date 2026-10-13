@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { FeaturedHero } from "@/components/hero/featured-hero";
+import { DonateBand } from "@/components/home/donate-band";
 import { FilmSection } from "@/components/home/film-section";
 import { ImageCollectionSection } from "@/components/home/image-collection-section";
 import { LatestUpdates } from "@/components/home/latest-updates";
@@ -51,6 +52,7 @@ export default async function Home({
 			<FilmSection />
 			<VideoSection />
 			<ImageCollectionSection />
+			<DonateBand />
 		</main>
 	);
 }
