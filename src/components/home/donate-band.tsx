@@ -1,6 +1,10 @@
 import { ArrowRightIcon } from "@heroicons/react/24/outline";
 import NextImage from "next/image";
 import { getTranslations } from "next-intl/server";
+import {
+	ScrollReveal,
+	ScrollRevealItem,
+} from "@/components/motion/scroll-reveal";
 import { viewAllCtaOnBrandClass } from "@/components/ui/cta-styles";
 import { DirectionalIcon } from "@/components/ui/directional-icon";
 import { Link } from "@/components/ui/link";
@@ -22,25 +26,31 @@ export async function DonateBand() {
 
 	return (
 		<section className="relative z-10 flex flex-col overflow-hidden bg-foreground sm:h-[15rem] sm:flex-row lg:h-[17rem] 2xl:h-[20rem]">
-			<div className="footer-donate-cut relative z-10 flex flex-col justify-center gap-3 bg-brand px-6 py-8 text-start sm:w-[54%] sm:px-10 sm:py-0 lg:px-16 xl:px-20 2xl:w-[46%] 2xl:px-32">
-				<h2 className="max-w-lg text-balance font-heading text-[clamp(1.375rem,2.2vw,1.875rem)] font-bold leading-[1.2] text-white 2xl:max-w-2xl 2xl:text-[2.25rem]">
-					{t("donateTitle")}
-				</h2>
-				<p className="max-w-md text-small leading-relaxed text-white/80 2xl:max-w-lg">
-					{t("donateDescription")}
-				</p>
-				<Link
-					href={DONATE_HREF}
-					variant="nav"
-					className={cn(viewAllCtaOnBrandClass, "mt-1")}
-				>
-					<span className="relative z-1">{t("donateCta")}</span>
-					<DirectionalIcon
-						icon={ArrowRightIcon}
-						className="relative z-1 size-4"
-					/>
-				</Link>
-			</div>
+			<ScrollReveal className="footer-donate-cut relative z-10 flex flex-col justify-center gap-3 bg-brand px-6 py-8 text-start sm:w-[54%] sm:px-10 sm:py-0 lg:px-16 xl:px-20 2xl:w-[46%] 2xl:px-32">
+				<ScrollRevealItem>
+					<h2 className="max-w-lg text-balance font-heading text-[clamp(1.375rem,2.2vw,1.875rem)] font-bold leading-[1.2] text-white 2xl:max-w-2xl 2xl:text-[2.25rem]">
+						{t("donateTitle")}
+					</h2>
+				</ScrollRevealItem>
+				<ScrollRevealItem>
+					<p className="max-w-md text-small leading-relaxed text-white/80 2xl:max-w-lg">
+						{t("donateDescription")}
+					</p>
+				</ScrollRevealItem>
+				<ScrollRevealItem>
+					<Link
+						href={DONATE_HREF}
+						variant="nav"
+						className={cn(viewAllCtaOnBrandClass, "mt-1")}
+					>
+						<span className="relative z-1">{t("donateCta")}</span>
+						<DirectionalIcon
+							icon={ArrowRightIcon}
+							className="relative z-1 size-4"
+						/>
+					</Link>
+				</ScrollRevealItem>
+			</ScrollReveal>
 
 			{/* No CMS photograph — the panel is dropped entirely rather than
 			    framing an empty rectangle. The photograph is shown as the plain
