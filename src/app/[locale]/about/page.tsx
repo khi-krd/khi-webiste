@@ -136,9 +136,10 @@ export default async function AboutPage({
 								eyebrow: t("partners.title"),
 								title: partner.title,
 								description: partner.description ?? "",
-								cta: t(`partners.items.${id}.cta`, {
-									defaultValue: t("partners.items.services.cta"),
-								}),
+								// CMS partners share one CTA label — a per-record
+								// `items.<id>.cta` key only exists for the bundled
+								// cards, so an id lookup rendered the raw key.
+								cta: t("partners.more"),
 							};
 						}
 
