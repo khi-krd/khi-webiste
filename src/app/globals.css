@@ -817,6 +817,37 @@ html[data-corners="rounded"]
 		pointer-events: none;
 	}
 
+	/* Floating image — Word's "In Front of Text" / "Behind Text". The prose
+	   block is the positioning context; the editor saved `left/top/width`
+	   inline so the image stays where it was dragged. `isolation` keeps a
+	   behind-mode image under the text but above the page background. */
+	.prose {
+		position: relative;
+		isolation: isolate;
+	}
+	.prose .rt-float {
+		position: absolute;
+		z-index: 3;
+		margin: 0;
+	}
+	.prose .rt-float[data-pos="behind"] {
+		z-index: -1;
+	}
+	.prose .rt-float img {
+		display: block;
+		inline-size: 100%;
+		block-size: auto;
+		margin: 0;
+		border-radius: var(--radius-md, 0.5rem);
+	}
+	.prose .rt-float figcaption {
+		margin-block-start: 0.4em;
+		font-size: var(--text-small);
+		line-height: 1.5;
+		color: var(--color-muted, #6b7280);
+		text-align: center;
+	}
+
 	/* A float must never run past the body or under a table/columns block. */
 	.prose::after {
 		content: "";

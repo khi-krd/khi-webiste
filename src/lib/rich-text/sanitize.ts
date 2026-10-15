@@ -79,6 +79,9 @@ const ALLOWED_STYLES: Record<string, RegExp[]> = {
 	"background-color": COLOR,
 	width: LENGTH,
 	"min-width": LENGTH,
+	// Free-floating images (`.rt-float`) keep their dragged position.
+	left: LENGTH,
+	top: LENGTH,
 };
 
 export function sanitizeRichTextHtml(html: string): string {
