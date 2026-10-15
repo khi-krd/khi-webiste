@@ -1,5 +1,6 @@
 import "server-only";
 
+import type { SiteFont } from "@/lib/api/site-fonts";
 import type { SiteSettings } from "@/types/site-settings";
 
 const DEFAULT_S3_MEDIA_HOST = "s3-khiwebsite.s3.us-east-1.amazonaws.com";
@@ -103,5 +104,36 @@ export function buildSiteFontCss(settings: SiteSettings | null): string {
 		);
 	}
 
+	return parts.join("\n");
+}
+
+/**
+ * The CSS family name a library font is addressed by in rich text. Must match
+ * `siteFontFamily` in the dashboard (`components/shared/site-font-faces.tsx`)
+ * so `font-family: "Rabar"` in a stored description resolves here too.
+ */
+export function libraryFontFamily(font: Pick<SiteFont, "name">): string {
+	return font.name.replace(/["\\;{}]/g, "").trim();
+}
+
+/**
+ * @font-face for every uploaded typeface, so rich-text bodies that pick a
+ * library font render it. Faces load through the same-origin proxy like the
+ * activated site fonts; duplicates by family name collapse to the first file.
+ */
+export function buildLibraryFontCss(fonts: SiteFont[]): string {
+	const seen = new Set<string>();
+	const parts: string[] = [];
+	for (const font of fonts) {
+		const family = libraryFontFamily(font);
+		const url = font.url.trim();
+		if (!family || seen.has(family) || !isAllowedSiteFontUrl(url)) {
+			continue;
+		}
+		seen.add(family);
+		parts.push(
+			`@font-face{font-family:"${family}";src:url("${siteFontProxySrc(url)}")${fontFormatHint(url)};font-weight:100 900;font-style:normal;font-display:swap}`,
+		);
+	}
 	return parts.join("\n");
 }

@@ -13,10 +13,11 @@ import { Header } from "@/components/layout/header";
 import { RouteProgress } from "@/components/layout/route-progress";
 import { NativeScroll } from "@/components/providers/native-scroll";
 import { routing } from "@/i18n/routing";
+import { getSiteFonts } from "@/lib/api/site-fonts";
 import { getSiteSettings } from "@/lib/api/site-settings";
 import { assertServerEnv } from "@/lib/env";
 import { archivo, clashDisplay, vazirmatn } from "@/lib/fonts";
-import { buildSiteFontCss } from "@/lib/site-font";
+import { buildLibraryFontCss, buildSiteFontCss } from "@/lib/site-font";
 import { buildSiteColorCss, buildSiteSizeCss } from "@/lib/site-theme";
 import { getBorderRadiusHtmlAttrs } from "@/lib/theme/border-radius";
 import { cn } from "@/lib/utils";
@@ -107,15 +108,17 @@ export default async function LocaleLayout({ children, params }: Props) {
 
 	// Settings are tag-cached — header/footer and the home donate band read the
 	// same row, so this fetch is deduplicated rather than doubled.
-	const [messages, siteSettings] = await Promise.all([
+	const [messages, siteSettings, siteFonts] = await Promise.all([
 		getMessages(),
 		getSiteSettings(),
+		getSiteFonts(),
 	]);
 	const isLatin = locale === "ku";
 	// One injected sheet: dashboard-picked typefaces + surface colors, both
 	// derived from the same cached site-settings row.
 	const siteThemeCss = [
 		buildSiteFontCss(siteSettings),
+		buildLibraryFontCss(siteFonts),
 		buildSiteColorCss(siteSettings),
 		buildSiteSizeCss(siteSettings),
 	]

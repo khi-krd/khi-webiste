@@ -698,6 +698,162 @@ html[data-corners="rounded"]
 		margin-block-end: 0;
 	}
 
+	/* --- Word-like layout authored in the dashboard editor ----------------
+	   The editor stores HTML; these hooks are its layout vocabulary. Keep the
+	   selectors in sync with khi-dashboard app/globals.css. Floats are PHYSICAL
+	   on purpose: the editor offers "left"/"right" as the visual side the
+	   author sees, in both scripts. */
+
+	/* Image figure: `data-align` placement + `data-width` size preset. */
+	.prose .rt-figure {
+		--rt-w: 100%;
+		position: relative;
+		margin-block: 1.6em;
+	}
+	.prose .rt-figure[data-width="25"] { --rt-w: 25%; }
+	.prose .rt-figure[data-width="33"] { --rt-w: 33.333%; }
+	.prose .rt-figure[data-width="50"] { --rt-w: 50%; }
+	.prose .rt-figure[data-width="66"] { --rt-w: 66.666%; }
+	.prose .rt-figure[data-width="75"] { --rt-w: 75%; }
+	.prose .rt-figure img {
+		inline-size: 100%;
+		max-inline-size: 100%;
+		block-size: auto;
+		margin: 0;
+	}
+	.prose .rt-figure[data-align="center"] {
+		inline-size: var(--rt-w);
+		margin-inline: auto;
+	}
+	.prose .rt-figure[data-align="full"] {
+		inline-size: 100%;
+	}
+	.prose .rt-figure[data-align="left"] {
+		float: left;
+		inline-size: var(--rt-w);
+		margin: 0.3em 1.5em 0.8em 0;
+	}
+	.prose .rt-figure[data-align="right"] {
+		float: right;
+		inline-size: var(--rt-w);
+		margin: 0.3em 0 0.8em 1.5em;
+	}
+	/* Text over the image: the caption is laid on a gradient at the foot. */
+	.prose .rt-figure[data-align="behind"] {
+		inline-size: var(--rt-w);
+		margin-inline: auto;
+		overflow: hidden;
+		border-radius: var(--radius-md, 0.5rem);
+	}
+	.prose .rt-figure[data-align="behind"] img {
+		border: 0;
+	}
+	.prose .rt-figure[data-align="behind"] figcaption {
+		position: absolute;
+		inset: auto 0 0 0;
+		margin: 0;
+		padding: 1.6em 1.2em 1em;
+		color: #fff;
+		background: linear-gradient(to top, rgb(0 0 0 / 0.74), rgb(0 0 0 / 0));
+		font-size: var(--text-body);
+		font-weight: 600;
+		text-align: center;
+	}
+	.prose .rt-figure figcaption {
+		text-align: center;
+	}
+	.prose figcaption:empty {
+		display: none;
+	}
+	/* A float must never run past the body or under a table/columns block. */
+	.prose::after {
+		content: "";
+		display: block;
+		clear: both;
+	}
+	.prose :is(.rt-columns, .rt-table, hr) {
+		clear: both;
+	}
+
+	/* Side-by-side columns (2 or 3); single column on narrow screens. */
+	.prose .rt-columns {
+		display: grid;
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+		gap: 1.6em;
+		margin-block: 1.6em;
+	}
+	.prose .rt-columns[data-cols="3"] {
+		grid-template-columns: repeat(3, minmax(0, 1fr));
+	}
+	.prose .rt-column > * + * {
+		margin-block-start: 0.9em;
+	}
+	@media (max-width: 40rem) {
+		.prose .rt-columns,
+		.prose .rt-columns[data-cols="3"] {
+			grid-template-columns: 1fr;
+		}
+	}
+
+	/* Tables: `data-style` preset on the <table>, caption under it. */
+	.prose .rt-table {
+		margin-block: 1.6em;
+		overflow-x: auto;
+	}
+	.prose table {
+		inline-size: 100%;
+		border-collapse: collapse;
+		font-size: var(--text-small);
+		line-height: 1.5;
+	}
+	.prose :is(th, td) {
+		border: 1px solid var(--color-border);
+		padding: 0.55em 0.8em;
+		vertical-align: top;
+	}
+	.prose th {
+		background-color: var(--color-sunken);
+		font-weight: 600;
+	}
+	.prose :is(th, td) > p {
+		margin: 0;
+	}
+	.prose :is(th, td) > p + p {
+		margin-block-start: 0.5em;
+	}
+	.prose table[data-style="striped"] tbody tr:nth-child(even) td {
+		background-color: var(--color-sunken);
+	}
+	.prose table[data-style="borderless"] :is(th, td) {
+		border: 0;
+	}
+	.prose table[data-style="minimal"] :is(th, td) {
+		border: 0;
+		border-block-end: 1px solid var(--color-border);
+	}
+	.prose table[data-style="minimal"] th {
+		background-color: transparent;
+	}
+	.prose .rt-table > figcaption {
+		text-align: center;
+	}
+
+	/* Inline typography marks from the editor. */
+	.prose mark {
+		background-color: #fde68a;
+		padding-inline: 0.1em;
+		border-radius: 2px;
+	}
+	.prose :is(sub, sup) {
+		font-size: 0.75em;
+		line-height: 0;
+	}
+	/* Author-set direction: make the block's own alignment follow it. */
+	.prose [dir="rtl"],
+	.prose [dir="ltr"] {
+		unicode-bidi: isolate;
+	}
+
 	/* Project detail — full blog article body beside the cover. */
 	.project-article-body .prose {
 		/* Wider than .prose's default 68ch, but still capped: justified text
