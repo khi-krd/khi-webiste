@@ -878,10 +878,34 @@ html[data-corners="rounded"]
 		}
 	}
 
-	/* Tables: `data-style` preset on the <table>, caption under it. */
+	/* Tables: `data-style` preset on the <table>, caption under it. The
+	   figure's data-align / data-wrap / data-width are Word's Table
+	   Properties — alignment, text wrapping, preferred width. */
 	.prose .rt-table {
 		margin-block: 1.6em;
 		overflow-x: auto;
+		--rt-w: 100%;
+		inline-size: var(--rt-w);
+	}
+	.prose .rt-table[data-width="25"] { --rt-w: 25%; }
+	.prose .rt-table[data-width="33"] { --rt-w: 33.333%; }
+	.prose .rt-table[data-width="50"] { --rt-w: 50%; }
+	.prose .rt-table[data-width="66"] { --rt-w: 66.666%; }
+	.prose .rt-table[data-width="75"] { --rt-w: 75%; }
+	.prose .rt-table[data-align="center"] {
+		margin-inline: auto;
+	}
+	.prose .rt-table[data-align="right"] {
+		margin-left: auto;
+		margin-right: 0;
+	}
+	.prose .rt-table[data-wrap="around"][data-align="left"] {
+		float: left;
+		margin: 0.4em 1.5em 1em 0;
+	}
+	.prose .rt-table[data-wrap="around"][data-align="right"] {
+		float: right;
+		margin: 0.4em 0 1em 1.5em;
 	}
 	.prose table {
 		inline-size: 100%;
