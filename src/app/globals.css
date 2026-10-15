@@ -765,6 +765,58 @@ html[data-corners="rounded"]
 	.prose figcaption:empty {
 		display: none;
 	}
+
+	/* Image backdrop — editable text over the picture (Word's "Behind Text")
+	   or the picture laid translucently over the text ("In Front of Text"). */
+	.prose .rt-backdrop {
+		position: relative;
+		margin-block: 1.6em;
+		border-radius: var(--radius-md, 0.5rem);
+		overflow: hidden;
+		clear: both;
+		--rt-w: 100%;
+		inline-size: var(--rt-w);
+		margin-inline: auto;
+	}
+	.prose .rt-backdrop[data-width="25"] { --rt-w: 25%; }
+	.prose .rt-backdrop[data-width="33"] { --rt-w: 33.333%; }
+	.prose .rt-backdrop[data-width="50"] { --rt-w: 50%; }
+	.prose .rt-backdrop[data-width="66"] { --rt-w: 66.666%; }
+	.prose .rt-backdrop[data-width="75"] { --rt-w: 75%; }
+	.prose .rt-backdrop-layer {
+		position: absolute;
+		inset: 0;
+		z-index: 0;
+	}
+	.prose .rt-backdrop-img {
+		display: block;
+		inline-size: 100%;
+		block-size: 100%;
+		object-fit: cover;
+		margin: 0;
+		border: 0;
+	}
+	.prose .rt-backdrop[data-pos="behind"]::before {
+		content: "";
+		position: absolute;
+		inset: 0;
+		z-index: 0;
+		background: rgb(0 0 0 / 0.32);
+		pointer-events: none;
+	}
+	.prose .rt-backdrop-body {
+		position: relative;
+		z-index: 1;
+		padding: clamp(1rem, 4vw, 2.5rem);
+		color: #fff;
+		text-shadow: 0 1px 3px rgb(0 0 0 / 0.5);
+	}
+	.prose .rt-backdrop[data-pos="front"] .rt-backdrop-layer {
+		z-index: 2;
+		opacity: 0.55;
+		pointer-events: none;
+	}
+
 	/* A float must never run past the body or under a table/columns block. */
 	.prose::after {
 		content: "";
