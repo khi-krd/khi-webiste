@@ -4,6 +4,7 @@ import {
 	ArrowTopRightOnSquareIcon,
 	MapPinIcon,
 } from "@heroicons/react/24/outline";
+import { Prose } from "@/components/ui/prose";
 import { VisuallyHidden } from "@/components/ui/visually-hidden";
 import type { ContactOffice, OfficeId } from "@/lib/contact/office";
 import { formatCoordinates } from "@/lib/contact/office";
@@ -18,6 +19,12 @@ type ContactMapProps = {
 	office: ContactOffice;
 	heading: string;
 	body: string;
+	/**
+	 * Sanitized CMS rich text (Tiptap HTML) — when set it replaces `body` and
+	 * keeps the editor's bold/highlight/color/spacing intact on the green
+	 * panel. Already run through renderRichText on the server.
+	 */
+	bodyHtml?: string;
 	openInMapsLabel: string;
 	iframeTitle: string;
 	/** Rendered only when there is more than one office to switch between. */
@@ -31,6 +38,7 @@ export function ContactMap({
 	office,
 	heading,
 	body,
+	bodyHtml,
 	openInMapsLabel,
 	iframeTitle,
 	options,
@@ -102,9 +110,20 @@ export function ContactMap({
 					<h3 className="font-heading text-h2 font-semibold leading-[1.12] text-balance">
 						{heading}
 					</h3>
-					<p className="mt-4 max-w-sm text-body leading-relaxed text-primary-foreground/75">
-						{body}
-					</p>
+					{bodyHtml ? (
+						// Editor-authored markup on the brand-green panel: prose
+						// tokens retinted to primary-foreground so links,
+						// strong, blockquotes and markers stay readable.
+						<Prose
+							className="mt-4 max-w-sm text-primary-foreground/75 leading-relaxed [&_:is(h1,h2,h3,h4,h5,h6)]:font-semibold [&_:is(h1,h2,h3,h4,h5,h6)]:text-primary-foreground [&_a]:text-primary-foreground [&_a]:decoration-primary-foreground/40 fine-hover:[&_a]:decoration-primary-foreground [&_blockquote]:border-primary-foreground/30 [&_blockquote]:text-primary-foreground/70 [&_code]:bg-primary-foreground/10 [&_code]:text-primary-foreground [&_figcaption]:text-primary-foreground/60 [&_hr]:border-primary-foreground/25 [&_li::marker]:text-primary-foreground/60 [&_strong]:text-primary-foreground"
+							// biome-ignore lint/security/noDangerouslySetInnerHtml: bodyHtml is sanitized by renderRichText during resolve (sanitize-html allowlist) — never raw CMS markup.
+							dangerouslySetInnerHTML={{ __html: bodyHtml }}
+						/>
+					) : (
+						<p className="mt-4 max-w-sm text-body leading-relaxed text-primary-foreground/75">
+							{body}
+						</p>
+					)}
 					{coordinates ? (
 						<p
 							className="mt-8 font-mono text-lead tabular-nums text-primary-foreground"

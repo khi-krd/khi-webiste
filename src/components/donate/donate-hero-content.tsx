@@ -36,7 +36,9 @@ export function DonateHeroContent({
 				</h2>
 			</ScrollRevealItem>
 			<ScrollRevealItem>
-				<p className="hero-slide-description mt-5 max-w-xl">{intro}</p>
+				<p className="hero-slide-description mt-5 max-w-xl whitespace-pre-line">
+					{intro}
+				</p>
 			</ScrollRevealItem>
 			{showArchiveCta || showFinancialCta ? (
 				<ScrollRevealItem>

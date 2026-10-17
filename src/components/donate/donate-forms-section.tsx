@@ -43,7 +43,9 @@ export function DonateFormsSection({
 						{heading}
 					</h2>
 					{description ? (
-						<p className="mt-3 text-body text-muted">{description}</p>
+						<p className="mt-3 text-body whitespace-pre-line text-muted">
+							{description}
+						</p>
 					) : null}
 				</header>
 			</ScrollRevealBlock>

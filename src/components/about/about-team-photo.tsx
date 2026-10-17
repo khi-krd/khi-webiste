@@ -46,7 +46,9 @@ export function AboutTeamPhoto({
 					</p>
 				) : null}
 				{bio ? (
-					<p className="mt-1.5 text-small leading-relaxed text-muted">{bio}</p>
+					<p className="mt-1.5 text-small leading-relaxed whitespace-pre-line text-muted">
+						{bio}
+					</p>
 				) : null}
 			</figcaption>
 		</figure>

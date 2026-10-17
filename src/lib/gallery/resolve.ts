@@ -7,6 +7,7 @@ import type {
 	GalleryPost,
 } from "@/lib/mock/gallery";
 import type { ImageCollectionItem } from "@/lib/mock/image-collection";
+import { renderRichText } from "@/lib/rich-text";
 import type { ImageAlbumItem, ImageCollection } from "@/types/gallery";
 
 type GalleryAspect = GalleryHeroImage["aspect"];
@@ -164,6 +165,8 @@ function resolveAlbumItem(
 ): GalleryAlbumItem {
 	const caption = resolveAlbumCaption(locale, item);
 	const description = resolveAlbumDescription(locale, item);
+	const deduped =
+		description && description !== caption ? description : undefined;
 
 	return {
 		id: item.id,
@@ -171,8 +174,8 @@ function resolveAlbumItem(
 		externalUrl: item.externalUrl ?? undefined,
 		embedUrl: item.embedUrl ?? undefined,
 		caption,
-		description:
-			description && description !== caption ? description : undefined,
+		description: deduped,
+		descriptionHtml: deduped ? renderRichText(deduped) || undefined : undefined,
 		sortOrder: item.sortOrder ?? 0,
 		widthPx: item.widthPx ?? undefined,
 		heightPx: item.heightPx ?? undefined,

@@ -93,7 +93,9 @@ export function ServicesHero({
 					</ServicesHeroBlock>
 
 					<ServicesHeroBlock>
-						<p className="hero-slide-description mt-5 max-w-2xl">{intro}</p>
+						<p className="hero-slide-description mt-5 max-w-2xl whitespace-pre-line">
+							{intro}
+						</p>
 					</ServicesHeroBlock>
 
 					<ServicesHeroBlock>

@@ -18,6 +18,7 @@ import {
 import { prefersReducedMotion } from "@/components/motion/scroll-reveal";
 import { DirectionalIcon } from "@/components/ui/directional-icon";
 import { ImageWatermark } from "@/components/ui/image-watermark";
+import { Prose } from "@/components/ui/prose";
 import { useGestureZoom } from "@/lib/use-gesture-zoom";
 import { useScrollLock } from "@/lib/use-scroll-lock";
 import { cn } from "@/lib/utils";
@@ -453,11 +454,22 @@ export function GalleryLightbox({
 								</p>
 							)}
 
-							{showDescription && (
+							{showDescription && item.descriptionHtml ? (
+								// CMS description is Tiptap HTML — inject the sanitized
+								// render so bold/color/highlight/spacing survive; prose
+								// tokens retinted for the dark lightbox surface.
+								<Prose
+									className="text-small leading-relaxed text-background/70 [&_:is(h1,h2,h3,h4,h5,h6)]:font-semibold [&_:is(h1,h2,h3,h4,h5,h6)]:text-background [&_a]:text-background [&_a]:decoration-background/40 fine-hover:[&_a]:decoration-background [&_blockquote]:border-background/25 [&_blockquote]:text-background/70 [&_code]:bg-background/10 [&_code]:text-background [&_figcaption]:text-background/60 [&_hr]:border-background/25 [&_li::marker]:text-background/60 [&_strong]:text-background"
+									// biome-ignore lint/security/noDangerouslySetInnerHtml: descriptionHtml is sanitized by renderRichText during resolve (sanitize-html allowlist) — never raw CMS markup.
+									dangerouslySetInnerHTML={{
+										__html: item.descriptionHtml,
+									}}
+								/>
+							) : showDescription ? (
 								<p className="text-justify text-small leading-relaxed text-background/70">
 									{item.description}
 								</p>
-							)}
+							) : null}
 
 							{hasMetadataRows(item) && (
 								<dl className="border-y border-background/15 divide-y divide-background/15">

@@ -3,7 +3,14 @@ import { richTextContentType } from "@/lib/rich-text/content-type";
 import { sanitizeRichTextHtml } from "@/lib/rich-text/sanitize";
 
 function markdownToHtml(md: string): string {
-	const html = marked.parse(md, { async: false, gfm: true }) as string;
+	// `breaks: true` — legacy/plain-text records were typed in textareas where
+	// a single Enter IS a line break; GFM without it collapses them into one
+	// wrapped line and loses the editor's spacing.
+	const html = marked.parse(md, {
+		async: false,
+		gfm: true,
+		breaks: true,
+	}) as string;
 	return sanitizeRichTextHtml(html);
 }
 

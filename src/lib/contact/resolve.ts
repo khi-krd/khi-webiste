@@ -4,7 +4,7 @@ import {
 	OFFICE_IMAGES,
 	type OfficeId,
 } from "@/lib/contact/office";
-import { plainTextFromRichContent } from "@/lib/rich-text/plain-text";
+import { renderRichText } from "@/lib/rich-text";
 import type { ContactPage } from "@/types/contact-page";
 
 function firstNonBlank(
@@ -65,10 +65,10 @@ export type ResolvedContactOffice = ContactOffice & {
 		/** From the CMS only — the bundled fallback copy has no opening hours. */
 		workingHours?: string;
 		/**
-		 * Plain-text render of the Tiptap `description` — used by the map panel,
-		 * which wants real CMS copy instead of the bundled static paragraph.
+		 * Sanitized HTML render of the Tiptap `description` — used by the map
+		 * panel so bold/highlight/color/spacing survive end to end.
 		 */
-		description?: string;
+		descriptionHtml?: string;
 	};
 };
 
@@ -118,9 +118,10 @@ export function resolveContactOffice(
 			// `subtitle` instead, so raw HTML never reaches a <p> slot.
 			subtitle: content?.subtitle?.trim() || undefined,
 			address: content?.address?.trim() ?? "",
-			description:
-				plainTextFromRichContent(content?.description ?? "").trim() ||
-				undefined,
+			descriptionHtml:
+				content?.description?.trim() != null
+					? renderRichText(content.description) || undefined
+					: undefined,
 		},
 	};
 }

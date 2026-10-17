@@ -588,6 +588,12 @@ html[data-corners="rounded"]
 		margin-block-start: 0;
 	}
 
+	/* Empty paragraphs are the editor's blank lines (Tiptap emits <p></p>);
+	   without a glyph the line box collapses and the spacing is lost. */
+	.prose p:empty::after {
+		content: "\00a0";
+	}
+
 	.prose :is(h2, h3, h4) {
 		font-weight: 600;
 		margin-block-start: 1.9em;

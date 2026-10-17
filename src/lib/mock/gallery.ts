@@ -363,6 +363,12 @@ export type GalleryAlbumItem = {
 	caption?: string;
 	/** Localized long description (descriptionCkb / descriptionKmr). */
 	description?: string;
+	/**
+	 * `description` rendered to sanitized HTML by renderRichText during
+	 * resolve — the lightbox injects it as markup, preserving the editor's
+	 * bold/highlight/color/spacing.
+	 */
+	descriptionHtml?: string;
 	/** 0-based display order — the album arrives sorted ASC. */
 	sortOrder: number;
 	/* Auto-extracted upload metadata — absent for URL-only items (per API). */

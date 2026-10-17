@@ -10,6 +10,8 @@ export type GalleryLightboxItem = {
 	alt?: string;
 	caption?: string;
 	description?: string;
+	/** Pre-rendered sanitized HTML of `description` — inject as markup. */
+	descriptionHtml?: string;
 	sortOrder?: number;
 	fileSizeBytes?: number;
 	widthPx?: number;
@@ -32,6 +34,7 @@ export function albumItemToLightboxItem(
 		embedUrl: item.embedUrl,
 		caption: item.caption,
 		description: item.description,
+		descriptionHtml: item.descriptionHtml,
 		sortOrder: item.sortOrder,
 		fileSizeBytes: item.fileSizeBytes,
 		widthPx: item.widthPx,
