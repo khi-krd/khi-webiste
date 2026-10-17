@@ -31,6 +31,26 @@ export function ServiceSectionVideo({
 	const poster = video.poster ?? "";
 
 	if (active) {
+		if (video.embed) {
+			return (
+				<span
+					className={cn(
+						"relative block w-full overflow-hidden bg-foreground",
+						className,
+					)}
+					style={{ aspectRatio }}
+				>
+					<iframe
+						src={video.src}
+						title={title}
+						loading="lazy"
+						allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; fullscreen"
+						allowFullScreen
+						className="absolute inset-0 size-full border-0"
+					/>
+				</span>
+			);
+		}
 		return (
 			<VideoPlayer
 				src={video.src}

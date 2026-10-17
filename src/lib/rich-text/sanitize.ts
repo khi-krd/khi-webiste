@@ -39,6 +39,7 @@ const ALLOWED_TAGS = [
 	"td",
 	"br",
 	"div",
+	"iframe",
 ] as const;
 
 /**
@@ -54,6 +55,16 @@ const TAG_ATTR: Partial<Record<(typeof ALLOWED_TAGS)[number], string[]>> = {
 	img: ["src", "alt", "width", "height", "loading"],
 	video: ["src", "controls", "preload", "poster"],
 	audio: ["src", "controls", "preload"],
+	iframe: [
+		"src",
+		"allow",
+		"allowfullscreen",
+		"loading",
+		"title",
+		"width",
+		"height",
+		"frameborder",
+	],
 	td: ["colspan", "rowspan", "colwidth"],
 	th: ["colspan", "rowspan", "colwidth"],
 	col: ["span"],
@@ -95,7 +106,30 @@ export function sanitizeRichTextHtml(html: string): string {
 		),
 		allowedStyles: { "*": ALLOWED_STYLES },
 		allowedSchemes: ["http", "https", "mailto", "tel"],
-		allowedSchemesByTag: { img: ["http", "https", "data"] },
+		allowedSchemesByTag: {
+			img: ["http", "https", "data"],
+			// Embeds are always remote players — https only.
+			iframe: ["https"],
+		},
+		// Only media-provider player hosts may be iframed — matches the embed
+		// URLs the dashboard normalizes (YouTube, Vimeo, SoundCloud, Spotify,
+		// Dailymotion, Mixcloud, Audiomack).
+		allowedIframeHostnames: [
+			"www.youtube.com",
+			"youtube.com",
+			"www.youtube-nocookie.com",
+			"youtube-nocookie.com",
+			"player.vimeo.com",
+			"w.soundcloud.com",
+			"open.spotify.com",
+			"www.dailymotion.com",
+			"dailymotion.com",
+			"geo.dailymotion.com",
+			"www.mixcloud.com",
+			"mixcloud.com",
+			"audiomack.com",
+			"www.audiomack.com",
+		],
 		// Links the editor opens in a new tab must not hand the opener over.
 		transformTags: {
 			a: (tagName, attribs) =>

@@ -1,5 +1,10 @@
 import { ArrowTopRightOnSquareIcon } from "@heroicons/react/24/outline";
 import NextImage from "next/image";
+import {
+	AudioEmbedRow,
+	EmbedPanel,
+	EmbedToggleButton,
+} from "@/components/audio/audio-embed-row";
 import { AudioPlayButton } from "@/components/audio/audio-play-button";
 import { AudioTrackRow } from "@/components/audio/audio-track-row";
 import { AudioTrackWave } from "@/components/audio/audio-track-wave";
@@ -65,70 +70,77 @@ export function AudioTracklist({
 						.filter(Boolean)
 						.join(" · ");
 
+					const embedSrc = !row.playable && row.embedUrl ? row.embedUrl : null;
+
 					return (
 						<AudioTrackRow key={row.id} fileId={row.id}>
-							{/* LTR row whatever the locale: the number leads on the left,
+							<AudioEmbedRow>
+								{/* LTR row whatever the locale: the number leads on the left,
 							    then the jacket (with the play control ON the artwork),
 							    then the mostly-Latin title — reading like a record
 							    sleeve's printed tracklist. */}
-							<div
-								dir="ltr"
-								// Wraps on phones so the strip gets a full-width line of its
-								// own under the jacket and title, instead of being dropped
-								// (there is no room for it beside them); one line from sm up.
-								className="flex flex-wrap items-center gap-x-4 gap-y-2 sm:flex-nowrap sm:gap-5"
-							>
-								<span
-									aria-hidden
-									className="label w-6 shrink-0 font-medium text-muted tabular-nums"
+								<div
+									dir="ltr"
+									// Wraps on phones so the strip gets a full-width line of its
+									// own under the jacket and title, instead of being dropped
+									// (there is no room for it beside them); one line from sm up.
+									className="flex flex-wrap items-center gap-x-4 gap-y-2 sm:flex-nowrap sm:gap-5"
 								>
-									{trackNo(index)}
-								</span>
-
-								<span className="relative size-24 shrink-0 overflow-hidden bg-sunken sm:size-32 lg:size-36">
-									{thumbUrl ? (
-										<NextImage
-											src={thumbUrl}
-											alt=""
-											fill
-											sizes="(min-width: 1024px) 9rem, (min-width: 640px) 8rem, 6rem"
-											className="object-cover"
-										/>
-									) : null}
-									{row.playable && queueIndex != null ? (
-										<AudioPlayButton
-											queue={queue}
-											startIndex={queueIndex}
-											size="cover"
-										/>
-									) : row.externalUrl ? (
-										<a
-											href={row.externalUrl}
-											target="_blank"
-											rel="noopener noreferrer"
-											aria-label={`${labels.externalLink} — ${row.title}`}
-											className="absolute inset-0 inline-flex items-center justify-center bg-primary/30 text-white transition-colors fine-hover:bg-primary/50 focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-ring"
-										>
-											<ArrowTopRightOnSquareIcon
-												aria-hidden
-												className="size-8 drop-shadow-[0_1px_4px_rgba(0,0,0,0.45)]"
-											/>
-										</a>
-									) : null}
-								</span>
-
-								<span className="min-w-0 flex-1 text-start sm:w-[15rem] sm:flex-none">
-									<span className="block truncate text-body font-bold text-foreground">
-										{row.title}
+									<span
+										aria-hidden
+										className="label w-6 shrink-0 font-medium text-muted tabular-nums"
+									>
+										{trackNo(index)}
 									</span>
-									{finePrint ? (
-										<span className="mt-0.5 block text-label text-muted">
-											{finePrint}
-										</span>
-									) : null}
-								</span>
 
-								{/* A resting contour on every row, the live playhead on the one
+									<span className="relative size-24 shrink-0 overflow-hidden bg-sunken sm:size-32 lg:size-36">
+										{thumbUrl ? (
+											<NextImage
+												src={thumbUrl}
+												alt=""
+												fill
+												sizes="(min-width: 1024px) 9rem, (min-width: 640px) 8rem, 6rem"
+												className="object-cover"
+											/>
+										) : null}
+										{row.playable && queueIndex != null ? (
+											<AudioPlayButton
+												queue={queue}
+												startIndex={queueIndex}
+												size="cover"
+											/>
+										) : embedSrc ? (
+											<EmbedToggleButton
+												ariaLabel={`${labels.externalLink} — ${row.title}`}
+											/>
+										) : row.externalUrl ? (
+											<a
+												href={row.externalUrl}
+												target="_blank"
+												rel="noopener noreferrer"
+												aria-label={`${labels.externalLink} — ${row.title}`}
+												className="absolute inset-0 inline-flex items-center justify-center bg-primary/30 text-white transition-colors fine-hover:bg-primary/50 focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-ring"
+											>
+												<ArrowTopRightOnSquareIcon
+													aria-hidden
+													className="size-8 drop-shadow-[0_1px_4px_rgba(0,0,0,0.45)]"
+												/>
+											</a>
+										) : null}
+									</span>
+
+									<span className="min-w-0 flex-1 text-start sm:w-[15rem] sm:flex-none">
+										<span className="block truncate text-body font-bold text-foreground">
+											{row.title}
+										</span>
+										{finePrint ? (
+											<span className="mt-0.5 block text-label text-muted">
+												{finePrint}
+											</span>
+										) : null}
+									</span>
+
+									{/* A resting contour on every row, the live playhead on the one
 								    loaded in the player. From sm up the title column is a
 								    FIXED 15rem — narrow on purpose, so the wave
 								    gets the lion's share of the row (long titles truncate) —, so every row's wave starts at the same edge and
@@ -137,17 +149,21 @@ export function AudioTracklist({
 								    phones the order swap makes it the item that wraps to a
 								    full-width second line, where there is no room beside the
 								    jacket. */}
-								<AudioTrackWave
-									fileId={row.id}
-									className="order-2 w-full sm:order-1 sm:w-auto sm:min-w-0 sm:flex-1"
-								/>
+									<AudioTrackWave
+										fileId={row.id}
+										className="order-2 w-full sm:order-1 sm:w-auto sm:min-w-0 sm:flex-1"
+									/>
 
-								{formatDuration(row.durationSeconds) ? (
-									<span className="label order-1 shrink-0 text-muted tabular-nums sm:order-2">
-										{formatDuration(row.durationSeconds)}
-									</span>
+									{formatDuration(row.durationSeconds) ? (
+										<span className="label order-1 shrink-0 text-muted tabular-nums sm:order-2">
+											{formatDuration(row.durationSeconds)}
+										</span>
+									) : null}
+								</div>
+								{embedSrc ? (
+									<EmbedPanel src={embedSrc} title={row.title} />
 								) : null}
-							</div>
+							</AudioEmbedRow>
 						</AudioTrackRow>
 					);
 				})}

@@ -42,9 +42,20 @@ export function inferMediaKindFromUrl(url: string): MediaKind | null {
 	if (
 		lower.includes("youtube.com") ||
 		lower.includes("youtu.be") ||
-		lower.startsWith("youtube/")
+		lower.startsWith("youtube/") ||
+		lower.includes("vimeo.com") ||
+		lower.includes("dailymotion.com")
 	) {
 		return "VIDEO";
+	}
+
+	if (
+		lower.includes("soundcloud.com") ||
+		lower.includes("spotify.com") ||
+		lower.includes("mixcloud.com") ||
+		lower.includes("audiomack.com")
+	) {
+		return "AUDIO";
 	}
 
 	return null;
@@ -77,7 +88,19 @@ export function parseMediaGallery(
 				typeof record.url === "string" ? record.url : null,
 				typeof record.mediaUrl === "string" ? record.mediaUrl : null,
 			);
-			if (!url) return [];
+			const externalUrl = firstNonBlank(
+				typeof record.externalUrl === "string" ? record.externalUrl : null,
+				typeof record.external_url === "string" ? record.external_url : null,
+			);
+			const embedUrl = firstNonBlank(
+				typeof record.embedUrl === "string" ? record.embedUrl : null,
+				typeof record.embed_url === "string" ? record.embed_url : null,
+			);
+			// An item is playable when it carries ANY source: a direct file, an
+			// embeddable player URL, or an external page link.
+			if (!url && !externalUrl && !embedUrl) return [];
+
+			const bestSrc = url ?? embedUrl ?? externalUrl;
 
 			const caption =
 				locale === "ckb"
@@ -100,11 +123,13 @@ export function parseMediaGallery(
 
 			return [
 				{
-					url,
+					url: url ?? "",
 					kind: parseMediaKind(
 						record.kind ?? record.mediaType ?? record.type,
-						url,
+						bestSrc,
 					),
+					externalUrl,
+					embedUrl,
 					thumbnailUrl: firstNonBlank(
 						typeof record.thumbnailUrl === "string"
 							? record.thumbnailUrl

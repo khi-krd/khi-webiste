@@ -20,6 +20,8 @@ export type ServiceVideo = {
 	poster?: string;
 	posterAlt?: string;
 	variant?: "minimal" | "full";
+	/** Provider/player URL (YouTube embed, Vimeo player, …) — plays in an iframe. */
+	embed?: boolean;
 };
 
 export type ServiceGalleryMediaItem =

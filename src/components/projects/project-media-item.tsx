@@ -2,6 +2,10 @@
 
 import { ProjectCoverImage } from "@/components/projects/project-cover-image";
 import { CoverLightbox } from "@/components/ui/cover-lightbox";
+import {
+	ExternalMediaLink,
+	MediaEmbedFrame,
+} from "@/components/ui/media-source";
 import { VideoPlayer } from "@/components/ui/video-player";
 import { cn } from "@/lib/utils";
 import type { MediaItem } from "@/types/media";
@@ -47,31 +51,61 @@ export function ProjectMediaItemBlock({
 				</CoverLightbox>
 			)}
 
-			{item.kind === "VIDEO" && (
-				<div className="overflow-hidden border border-border bg-foreground">
-					<VideoPlayer
-						src={item.url}
-						title={item.caption ?? title}
-						poster={item.thumbnailUrl ?? undefined}
-						posterAlt={item.caption ?? title}
-						variant="minimal"
-						className="aspect-video w-full"
+			{item.kind === "VIDEO" &&
+				(item.embedUrl ? (
+					<div className="overflow-hidden border border-border bg-foreground">
+						<MediaEmbedFrame
+							src={item.embedUrl}
+							title={item.caption ?? title}
+							kind="VIDEO"
+						/>
+					</div>
+				) : item.url ? (
+					<div className="overflow-hidden border border-border bg-foreground">
+						<VideoPlayer
+							src={item.url}
+							title={item.caption ?? title}
+							poster={item.thumbnailUrl ?? undefined}
+							posterAlt={item.caption ?? title}
+							variant="minimal"
+							className="aspect-video w-full"
+						/>
+					</div>
+				) : item.externalUrl ? (
+					<ExternalMediaLink
+						href={item.externalUrl}
+						label={item.caption ?? title}
+						kind="VIDEO"
 					/>
-				</div>
-			)}
+				) : null)}
 
-			{item.kind === "AUDIO" && (
-				<div className="border border-border bg-surface p-5 sm:p-6">
-					{/* biome-ignore lint/a11y/useMediaCaption: archival audio — no captions from API */}
-					<audio
-						controls
-						preload="metadata"
-						src={item.url}
-						className="w-full accent-accent"
-						aria-label={item.caption ?? title}
+			{item.kind === "AUDIO" &&
+				(item.embedUrl ? (
+					<div className="overflow-hidden border border-border">
+						<MediaEmbedFrame
+							src={item.embedUrl}
+							title={item.caption ?? title}
+							kind="AUDIO"
+						/>
+					</div>
+				) : item.url ? (
+					<div className="border border-border bg-surface p-5 sm:p-6">
+						{/* biome-ignore lint/a11y/useMediaCaption: archival audio — no captions from API */}
+						<audio
+							controls
+							preload="metadata"
+							src={item.url}
+							className="w-full accent-accent"
+							aria-label={item.caption ?? title}
+						/>
+					</div>
+				) : item.externalUrl ? (
+					<ExternalMediaLink
+						href={item.externalUrl}
+						label={item.caption ?? title}
+						kind="AUDIO"
 					/>
-				</div>
-			)}
+				) : null)}
 
 			{item.caption && (
 				<figcaption className="mt-3 text-small leading-relaxed text-muted">

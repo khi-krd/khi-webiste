@@ -691,6 +691,14 @@ html[data-corners="rounded"]
 		inline-size: 100%;
 		background-color: var(--color-sunken);
 	}
+	/* Embedded audio players (SoundCloud, Spotify, …) inserted by the editor. */
+	.prose iframe.rt-audio-embed {
+		display: block;
+		inline-size: 100%;
+		block-size: 166px;
+		border: 1px solid var(--color-border);
+		background-color: var(--color-sunken);
+	}
 	.prose figure {
 		margin-block: 2em;
 	}

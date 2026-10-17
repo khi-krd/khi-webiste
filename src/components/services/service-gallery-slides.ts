@@ -4,6 +4,11 @@ import type {
 	ServiceMedia,
 	ServiceVideo,
 } from "@/lib/mock/services";
+import {
+	classifyPlayableSource,
+	getYouTubePosterUrl,
+	parseYouTubeVideoId,
+} from "@/lib/video/source";
 import type { ServiceGalleryMedia } from "@/types/service";
 
 export type GallerySlide =
@@ -120,14 +125,19 @@ export function mapApiGalleryMedia(
 		if (!url) return [];
 
 		if (item.type === "VIDEO") {
+			const playable = classifyPlayableSource(url);
+			const youTubeId = parseYouTubeVideoId(url);
 			return [
 				{
 					kind: "video",
 					video: {
-						src: url,
-						poster: item.posterUrl?.trim() || undefined,
+						src: playable?.src ?? url,
+						poster:
+							item.posterUrl?.trim() ||
+							(youTubeId ? getYouTubePosterUrl(youTubeId) : undefined),
 						posterAlt: item.alt?.trim() || title,
 						variant: videoVariant,
+						embed: playable?.kind === "iframe",
 					},
 				},
 			];

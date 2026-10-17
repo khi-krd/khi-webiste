@@ -11,6 +11,10 @@ import { useCallback } from "react";
 import { ProjectCoverMedia } from "@/components/projects/project-cover-media";
 import { DirectionalIcon } from "@/components/ui/directional-icon";
 import { ImageWatermark } from "@/components/ui/image-watermark";
+import {
+	ExternalMediaLink,
+	MediaEmbedFrame,
+} from "@/components/ui/media-source";
 import { VideoPlayer } from "@/components/ui/video-player";
 import { useScrollLock } from "@/lib/use-scroll-lock";
 import { cn } from "@/lib/utils";
@@ -37,6 +41,9 @@ function isRemoteSrc(src: string): boolean {
 function thumbPreview(item: MediaItem): string | null {
 	if (item.thumbnailUrl) return item.thumbnailUrl;
 	if (item.kind === "IMAGE") return item.url;
+	// Source-only audio/video items (embed or external link, no file URL and
+	// no thumbnail) still need a tile in the filmstrip.
+	if (item.kind === "AUDIO") return "/menu/5.jpg";
 	return null;
 }
 
@@ -78,6 +85,28 @@ function ModalMedia({
 	}
 
 	if (item.kind === "VIDEO") {
+		if (item.embedUrl) {
+			return (
+				<div className="bg-foreground">
+					<MediaEmbedFrame
+						src={item.embedUrl}
+						title={label}
+						kind="VIDEO"
+						className="aspect-video max-h-[min(72svh,48rem)]"
+					/>
+				</div>
+			);
+		}
+		if (!item.url && item.externalUrl) {
+			return (
+				<ExternalMediaLink
+					href={item.externalUrl}
+					label={label}
+					kind="VIDEO"
+					className="min-h-64 sm:min-h-72"
+				/>
+			);
+		}
 		return (
 			<div className="bg-foreground">
 				<VideoPlayer
@@ -89,6 +118,29 @@ function ModalMedia({
 					className="aspect-video w-full max-h-[min(72svh,48rem)]"
 				/>
 			</div>
+		);
+	}
+
+	if (item.embedUrl) {
+		return (
+			<div className="bg-foreground">
+				<MediaEmbedFrame
+					src={item.embedUrl}
+					title={label}
+					kind="AUDIO"
+					className="mx-auto max-w-2xl"
+				/>
+			</div>
+		);
+	}
+	if (!item.url && item.externalUrl) {
+		return (
+			<ExternalMediaLink
+				href={item.externalUrl}
+				label={label}
+				kind="AUDIO"
+				className="min-h-64 sm:min-h-72"
+			/>
 		);
 	}
 
