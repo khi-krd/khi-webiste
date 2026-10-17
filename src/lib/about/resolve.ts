@@ -128,6 +128,30 @@ function resolveTeamMember(locale: string, member: ApiTeamMember): TeamMember {
 	};
 }
 
+function isManager(member: ApiTeamMember): boolean {
+	return member.memberType?.trim().toUpperCase() === "MANAGER";
+}
+
+export type ResolvedManager = TeamMember & {
+	officeId: OfficeTeam["id"];
+};
+
+/** Managers sit in their own section after the founder — each still belongs
+ * to one of the two cities, shown as a label on the card. */
+export function resolveManagers(
+	locale: string,
+	members: ApiTeamMember[],
+): ResolvedManager[] {
+	return members
+		.filter(isManager)
+		.slice()
+		.sort((a, b) => (a.displayOrder ?? 0) - (b.displayOrder ?? 0))
+		.map((member) => ({
+			...resolveTeamMember(locale, member),
+			officeId: resolveTeamOfficeId(member.office),
+		}));
+}
+
 export function resolveTeamOffices(
 	locale: string,
 	members: ApiTeamMember[],
@@ -135,6 +159,7 @@ export function resolveTeamOffices(
 	const grouped = new Map<OfficeTeam["id"], TeamMember[]>();
 
 	for (const member of members) {
+		if (isManager(member)) continue;
 		const officeId = resolveTeamOfficeId(member.office);
 		const resolvedMember = resolveTeamMember(locale, member);
 		const existing = grouped.get(officeId) ?? [];

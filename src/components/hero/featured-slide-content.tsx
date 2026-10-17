@@ -22,9 +22,11 @@ export function FeaturedSlideContent({
 }: FeaturedSlideContentProps) {
 	return (
 		<ScrollReveal className="max-w-4xl text-start text-white 2xl:max-w-5xl">
-			<ScrollRevealItem>
-				<p className="hero-slide-eyebrow">{typeLabel}</p>
-			</ScrollRevealItem>
+			{typeLabel ? (
+				<ScrollRevealItem>
+					<p className="hero-slide-eyebrow">{typeLabel}</p>
+				</ScrollRevealItem>
+			) : null}
 			<ScrollRevealItem>
 				{/* The clamp() ceiling (4.75rem) is reached by 1200px — restore the
 				    title's share of the frame on wide canvases. */}

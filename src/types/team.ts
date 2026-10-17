@@ -9,6 +9,7 @@ export const TeamMemberSchema = z.object({
 	bioCkb: z.string().nullish(),
 	bioKmr: z.string().nullish(),
 	office: z.string().nullish(),
+	memberType: z.string().nullish(),
 	imageUrl: z.string().nullish(),
 	displayOrder: z.number().int().nullish(),
 	active: z.boolean().optional(),

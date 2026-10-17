@@ -30,7 +30,7 @@ export function PartnerCard({
 	return (
 		<article
 			className={cn(
-				"group relative min-h-60 overflow-hidden border border-border sm:min-h-64 lg:min-h-72",
+				"group relative h-full min-h-60 overflow-hidden border border-border sm:min-h-72 lg:min-h-80",
 				className,
 			)}
 		>
@@ -67,18 +67,20 @@ export function PartnerCard({
 				/>
 			</div>
 
-			<div className="relative z-10 flex h-full min-h-60 flex-col justify-end p-4 sm:min-h-64 sm:p-5 lg:min-h-72 lg:p-6">
-				<p className="label font-medium text-white/80">{eyebrow}</p>
-				<h3 className="mt-1.5 font-heading text-h3 font-semibold leading-snug text-balance text-white sm:mt-2">
+			<div className="relative z-10 flex h-full min-h-60 flex-col justify-end p-4 sm:min-h-72 sm:p-5 lg:min-h-80 lg:p-6">
+				<p className="text-small font-medium text-white/85">{eyebrow}</p>
+				<h3 className="mt-1.5 font-heading text-h2 font-semibold leading-snug text-balance text-white sm:mt-2">
 					{title}
 				</h3>
-				<p className="mt-2.5 max-w-md text-small leading-relaxed text-white/85 sm:mt-3">
+				<p className="mt-2.5 max-w-lg text-body leading-relaxed text-white/85 sm:mt-3">
 					{description}
 				</p>
+				{/* Pinned to the physical bottom-left corner: inline-start in LTR,
+				    inline-end in RTL. */}
 				<Link
 					href={item.href}
 					variant="nav"
-					className={cn(viewAllClass, "mt-4 sm:mt-5")}
+					className={cn(viewAllClass, "mt-4 self-start rtl:self-end sm:mt-5")}
 				>
 					<span className="relative z-1">{cta}</span>
 					<DirectionalIcon

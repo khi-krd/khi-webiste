@@ -3,8 +3,10 @@ import {
 	resolveAboutContent,
 	resolveAboutSlug,
 	resolveFounderFromAbout,
+	resolveManagers,
 	resolvePartnerItems,
 	resolveTeamOffices,
+	type ResolvedManager,
 } from "@/lib/about/resolve";
 import {
 	apiFetch,
@@ -132,6 +134,13 @@ export async function getAboutFounder(
 export async function getAboutOffices(locale: string): Promise<OfficeTeam[]> {
 	const members = await getTeamMembers();
 	return members.length > 0 ? resolveTeamOffices(locale, members) : [];
+}
+
+export async function getAboutManagers(
+	locale: string,
+): Promise<ResolvedManager[]> {
+	const members = await getTeamMembers();
+	return members.length > 0 ? resolveManagers(locale, members) : [];
 }
 
 export async function getAboutPartners(locale: string): Promise<PartnerItem[]> {

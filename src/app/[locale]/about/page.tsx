@@ -10,6 +10,7 @@ import { resolveFounderFromAbout } from "@/lib/about/resolve";
 import {
 	getAboutFounder,
 	getAboutHeroMedia,
+	getAboutManagers,
 	getAboutOffices,
 	getAboutPartners,
 	getPrimaryAboutPage,
@@ -53,12 +54,14 @@ export default async function AboutPage({
 	const aboutContent = aboutPage
 		? resolveAboutContent(locale, aboutPage)
 		: null;
-	const [heroMedia, founder, offices, partners] = await Promise.all([
-		getAboutHeroMedia(locale),
-		getAboutFounder(locale),
-		getAboutOffices(locale),
-		getAboutPartners(locale),
-	]);
+	const [heroMedia, founder, offices, partners, managers] =
+		await Promise.all([
+			getAboutHeroMedia(locale),
+			getAboutFounder(locale),
+			getAboutOffices(locale),
+			getAboutPartners(locale),
+			getAboutManagers(locale),
+		]);
 	const apiFounder = aboutPage
 		? resolveFounderFromAbout(locale, aboutPage)
 		: null;
@@ -66,18 +69,31 @@ export default async function AboutPage({
 		sulaymaniyah: t("team.offices.sulaymaniyah"),
 		duhok: t("team.offices.duhok"),
 	} as const;
+	const cityLabels = {
+		sulaymaniyah: t("team.cities.sulaymaniyah"),
+		duhok: t("team.cities.duhok"),
+	} as const;
+
+	const withCopy = <T extends { id: string; name?: string; role?: string; image: { alt?: string } }>(
+		member: T,
+	) => ({
+		...member,
+		name: member.name ?? t(`team.members.${member.id}.name`),
+		role: member.role ?? t(`team.members.${member.id}.role`),
+		image: {
+			...member.image,
+			alt: member.name ?? t(`team.members.${member.id}.name`),
+		},
+	});
 
 	const officesWithCopy = offices.map((office) => ({
 		...office,
-		members: office.members.map((member) => ({
-			...member,
-			name: member.name ?? t(`team.members.${member.id}.name`),
-			role: member.role ?? t(`team.members.${member.id}.role`),
-			image: {
-				...member.image,
-				alt: member.name ?? t(`team.members.${member.id}.name`),
-			},
-		})),
+		members: office.members.map(withCopy),
+	}));
+
+	const managersWithCopy = managers.map((m) => ({
+		...withCopy(m),
+		officeLabel: cityLabels[m.officeId],
 	}));
 
 	return (
@@ -118,10 +134,12 @@ export default async function AboutPage({
 				/>
 			) : null}
 
-			{officesWithCopy.length > 0 ? (
+			{officesWithCopy.length > 0 || managersWithCopy.length > 0 ? (
 				<AboutTeamShowcase
 					offices={officesWithCopy}
 					officeLabels={officeLabels}
+					managers={managersWithCopy}
+					managersLabel={t("team.managers")}
 				/>
 			) : null}
 

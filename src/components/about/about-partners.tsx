@@ -43,7 +43,7 @@ export function AboutPartners({
 					{partners.map((partner) => {
 						const copy = getPartnerCopy(partner.id);
 						return (
-							<ScrollRevealItem key={partner.id}>
+							<ScrollRevealItem key={partner.id} className="h-full">
 								<PartnerCard
 									item={partner}
 									eyebrow={copy.eyebrow}

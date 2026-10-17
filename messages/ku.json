@@ -716,7 +716,7 @@
 		},
 		"shortfilms": {
 			"pageTitle": "Kurtefîlm",
-			"metaDescription": "Hilbijartineke kurtefîlmên kurdî ji arşîva Enstîtuya Kelepora Kurdî.",
+			"metaDescription": "Kurtefîlmên kurdî ji arşîva Enstîtuya Kelepora Kurdî.",
 			"hero": {
 				"title": "Wêneyên biçûk, cîhanên temam.",
 				"description": "Bernameyeke bijartî ya kurtefîlmên kurdî — nêz, afirîner û bi mebest kurt.",
@@ -740,7 +740,7 @@
 				"bookmark": "Tomar bike bo lîsteya temaşeyê",
 				"description": "Danasîn",
 				"cast": "Lîstikvan",
-				"selectedClips": "Clipên bijartî",
+				"selectedClips": "Klîp",
 				"scenes": "Dîmen",
 				"scene": "Dîmen",
 				"playScene": "Dîmenê lê bike",
@@ -758,9 +758,9 @@
 		"viewAll": "Galeriyê bibîne"
 	},
 	"Hero": {
-		"regionLabel": "Naveroka Hilbijartî",
-		"emptyTitle": "Beşa naveroka hilbijartî dê zû were",
-		"emptyDescription": "Niha tu madeya hilbijartî nehatîye dîtin. Ji kerema xwe paşê dîsa serdan bike.",
+		"regionLabel": "Naverok",
+		"emptyTitle": "Beşa naverokê dê zû were",
+		"emptyDescription": "Niha tu made nehatîye dîtin. Ji kerema xwe paşê dîsa serdan bike.",
 		"previous": "Slide-a berê",
 		"next": "Slide-a paş",
 		"pagination": "Veguhastina slide-an",
@@ -909,6 +909,11 @@
 					"name": "Kazhîn Ferhad",
 					"role": "Lêkolînera zaravayan"
 				}
+			},
+			"managers": "Tîma Rêveberan",
+			"cities": {
+				"sulaymaniyah": "Silêmanî",
+				"duhok": "Dihok"
 			}
 		},
 		"partners": {
@@ -940,8 +945,8 @@
 			"cta": "Xizmetên me bibîne"
 		},
 		"featured": {
-			"eyebrow": "Hilbijartî",
-			"title": "Xizmetên Hilbijartî"
+			"eyebrow": "",
+			"title": "Xizmet"
 		},
 		"nav": {
 			"label": "Xizmet"
@@ -1302,7 +1307,7 @@
 		"refineDoneEmpty": "Tu encam nînin — bigire",
 		"facetExpand": "{group} veke",
 		"facetCollapse": "{group} bigire",
-		"facetSelected": "hilbijartî",
+		"facetSelected": "diyarîkirî",
 		"pageOf": "Rûpela {page} ji {total}",
 		"emptyFilteredTitle": "Bi van fîltreyan tu encam nîne",
 		"emptyClearFilters": "Fîltreyan rake û dîsa bigere",
