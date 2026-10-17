@@ -125,6 +125,11 @@ export function AboutIntroVideoModal({
 					aria-modal="true"
 					aria-label={dialogLabel}
 					onKeyDown={onKeyDown}
+					onClick={(event) => {
+						// Every control inside is a child — only a backdrop
+						// click hits the overlay element itself.
+						if (event.target === event.currentTarget) onClose();
+					}}
 					className="fixed inset-0 z-[100] flex flex-col bg-foreground/90"
 					{...overlayMotion}
 					transition={{
@@ -132,8 +137,19 @@ export function AboutIntroVideoModal({
 						ease: "easeOut",
 					}}
 				>
-					<Container className="max-w-none shrink-0 pt-8 sm:pt-10">
-						<div className="flex justify-end">
+					<Container
+						className="max-w-none shrink-0 pt-8 sm:pt-10"
+						onClick={(event) => {
+							if (event.target === event.currentTarget) onClose();
+						}}
+					>
+						{/* biome-ignore lint/a11y/useKeyWithClickEvents lint/a11y/noStaticElementInteractions: same pointer-only backdrop close as the overlay. */}
+						<div
+							className="flex justify-end"
+							onClick={(event) => {
+								if (event.target === event.currentTarget) onClose();
+							}}
+						>
 							<button
 								ref={closeRef}
 								type="button"
@@ -146,7 +162,13 @@ export function AboutIntroVideoModal({
 						</div>
 					</Container>
 
-					<div className="flex min-h-0 flex-1 items-center justify-center px-6 pb-10 sm:px-8 sm:pb-14">
+					{/* biome-ignore lint/a11y/useKeyWithClickEvents lint/a11y/noStaticElementInteractions: same pointer-only backdrop close as the overlay. */}
+					<div
+						className="flex min-h-0 flex-1 items-center justify-center px-6 pb-10 sm:px-8 sm:pb-14"
+						onClick={(event) => {
+							if (event.target === event.currentTarget) onClose();
+						}}
+					>
 						<div className="w-full max-w-6xl">
 							<VideoPlayer
 								src={videoSrc}

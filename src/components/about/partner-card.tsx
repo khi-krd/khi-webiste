@@ -12,7 +12,6 @@ const imageEase = "ease-[cubic-bezier(0.25,0.46,0.45,0.94)]";
 
 type PartnerCardProps = {
 	item: PartnerItem;
-	eyebrow: string;
 	title: string;
 	description: string;
 	cta: string;
@@ -21,7 +20,6 @@ type PartnerCardProps = {
 
 export function PartnerCard({
 	item,
-	eyebrow,
 	title,
 	description,
 	cta,
@@ -68,11 +66,10 @@ export function PartnerCard({
 			</div>
 
 			<div className="relative z-10 flex h-full min-h-60 flex-col justify-end p-4 sm:min-h-72 sm:p-5 lg:min-h-80 lg:p-6">
-				<p className="text-small font-medium text-white/85">{eyebrow}</p>
-				<h3 className="mt-1.5 font-heading text-h2 font-semibold leading-snug text-balance text-white sm:mt-2">
+				<h3 className="font-heading text-h2 font-semibold leading-snug text-balance text-white">
 					{title}
 				</h3>
-				<p className="mt-2.5 max-w-lg text-body leading-relaxed text-white/85 sm:mt-3">
+				<p className="mt-2.5 max-w-lg text-justify text-body leading-relaxed text-white/85 sm:mt-3">
 					{description}
 				</p>
 				{/* Pinned to the physical bottom-left corner: inline-start in LTR,

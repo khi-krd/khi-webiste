@@ -92,6 +92,7 @@ function ModalMedia({
 						src={item.embedUrl}
 						title={label}
 						kind="VIDEO"
+						autoplay
 						className="aspect-video max-h-[min(72svh,48rem)]"
 					/>
 				</div>
@@ -128,6 +129,7 @@ function ModalMedia({
 					src={item.embedUrl}
 					title={label}
 					kind="AUDIO"
+					autoplay
 					className="mx-auto max-w-2xl"
 				/>
 			</div>

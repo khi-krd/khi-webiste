@@ -96,13 +96,11 @@ export default async function ServicesPage({ params }: ServicesPageProps) {
 		card,
 		copy: card.title
 			? {
-					eyebrow: "",
 					title: card.title,
 					description: card.description ?? "",
 					cta: t("hero.cta"),
 				}
 			: {
-					eyebrow: t(`bottom.${card.id}.eyebrow`),
 					title: t(`bottom.${card.id}.title`),
 					description: t(`bottom.${card.id}.description`),
 					cta: t(`bottom.${card.id}.cta`),

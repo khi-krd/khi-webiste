@@ -3,9 +3,10 @@
 import { PlayIcon } from "@heroicons/react/24/solid";
 import dynamic from "next/dynamic";
 import NextImage from "next/image";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import type { ServiceVideo } from "@/lib/mock/services";
 import { cn } from "@/lib/utils";
+import { toCleanEmbedSrc } from "@/lib/video/source";
 
 const VideoPlayer = dynamic(
 	() => import("@/components/ui/video-player").then((mod) => mod.VideoPlayer),
@@ -30,6 +31,13 @@ export function ServiceSectionVideo({
 	const [active, setActive] = useState(false);
 	const poster = video.poster ?? "";
 
+	useEffect(() => {
+		if (video.embed) return; // iframe mounts on the press itself
+		// Warm the player chunk while the poster is on screen — a click
+		// mounts an already-loaded player instead of a cold import.
+		void import("@/components/ui/video-player");
+	}, [video.embed]);
+
 	if (active) {
 		if (video.embed) {
 			return (
@@ -41,7 +49,7 @@ export function ServiceSectionVideo({
 					style={{ aspectRatio }}
 				>
 					<iframe
-						src={video.src}
+						src={toCleanEmbedSrc(video.src, { autoplay: true })}
 						title={title}
 						loading="lazy"
 						allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; fullscreen"
@@ -66,6 +74,11 @@ export function ServiceSectionVideo({
 	return (
 		<button
 			type="button"
+			onPointerDown={(event) => {
+				// Activating on the press mounts the player/iframe ahead of
+				// `click`, shaving the activation wait off provider startup.
+				if (event.button === 0) setActive(true);
+			}}
 			onClick={() => setActive(true)}
 			aria-label={title}
 			className={cn(

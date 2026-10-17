@@ -54,14 +54,13 @@ export default async function AboutPage({
 	const aboutContent = aboutPage
 		? resolveAboutContent(locale, aboutPage)
 		: null;
-	const [heroMedia, founder, offices, partners, managers] =
-		await Promise.all([
-			getAboutHeroMedia(locale),
-			getAboutFounder(locale),
-			getAboutOffices(locale),
-			getAboutPartners(locale),
-			getAboutManagers(locale),
-		]);
+	const [heroMedia, founder, offices, partners, managers] = await Promise.all([
+		getAboutHeroMedia(locale),
+		getAboutFounder(locale),
+		getAboutOffices(locale),
+		getAboutPartners(locale),
+		getAboutManagers(locale),
+	]);
 	const apiFounder = aboutPage
 		? resolveFounderFromAbout(locale, aboutPage)
 		: null;
@@ -74,7 +73,14 @@ export default async function AboutPage({
 		duhok: t("team.cities.duhok"),
 	} as const;
 
-	const withCopy = <T extends { id: string; name?: string; role?: string; image: { alt?: string } }>(
+	const withCopy = <
+		T extends {
+			id: string;
+			name?: string;
+			role?: string;
+			image: { alt?: string };
+		},
+	>(
 		member: T,
 	) => ({
 		...member,
@@ -151,7 +157,6 @@ export default async function AboutPage({
 						const partner = partners.find((item) => item.id === id);
 						if (partner?.title) {
 							return {
-								eyebrow: t("partners.title"),
 								title: partner.title,
 								description: partner.description ?? "",
 								// CMS partners share one CTA label — a per-record
@@ -162,7 +167,6 @@ export default async function AboutPage({
 						}
 
 						return {
-							eyebrow: t(`partners.items.${id}.eyebrow`),
 							title: t(`partners.items.${id}.title`),
 							description: t(`partners.items.${id}.description`),
 							cta: t(`partners.items.${id}.cta`),

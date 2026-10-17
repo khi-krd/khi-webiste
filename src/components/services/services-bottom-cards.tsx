@@ -4,7 +4,6 @@ import { ServicesReveal } from "@/components/services/services-motion";
 import type { PartnerItem } from "@/lib/mock/about";
 
 type BottomCardCopy = {
-	eyebrow: string;
 	title: string;
 	description: string;
 	cta: string;
@@ -32,7 +31,6 @@ export function ServicesBottomCards({
 						<ServicesReveal key={card.id} delay={index * 0.08}>
 							<PartnerCard
 								item={card}
-								eyebrow={copy.eyebrow}
 								title={copy.title}
 								description={copy.description}
 								cta={copy.cta}

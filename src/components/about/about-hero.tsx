@@ -1,11 +1,13 @@
 "use client";
 
-import { PlayIcon } from "@heroicons/react/24/solid";
+import { PlayIcon, XMarkIcon } from "@heroicons/react/24/solid";
 import NextImage from "next/image";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
+import { preconnect } from "react-dom";
 import { AboutIntroVideoModal } from "@/components/about/about-intro-video-modal";
 import { ScrollRevealBlock } from "@/components/motion/scroll-reveal";
 import { cn } from "@/lib/utils";
+import { parseYouTubeVideoId, toCleanEmbedSrc } from "@/lib/video/source";
 
 type AboutHeroProps = {
 	poster: string;
@@ -36,13 +38,27 @@ export function AboutHero({
 		? heroHeightClass.compact
 		: heroHeightClass.default;
 	const [videoOpen, setVideoOpen] = useState(false);
+	const youTubeId = videoSrc ? parseYouTubeVideoId(videoSrc) : null;
+	const [youTubePlaying, setYouTubePlaying] = useState(false);
+	const startYouTube = useCallback(() => {
+		if (youTubeId) setYouTubePlaying(true);
+	}, [youTubeId]);
 
 	useEffect(() => {
+		if (youTubeId) {
+			// YouTube plays in-place — the only warm-up that matters is
+			// TLS to the nocookie host; the iframe mounts on pointerdown,
+			// ahead of the click, so playback is as close to instant as
+			// a provider iframe can be.
+			preconnect("https://www.youtube-nocookie.com");
+			preconnect("https://i.ytimg.com");
+			return;
+		}
 		// Warm the video-player chunk while the hero is on screen so the
 		// intro modal mounts an already-loaded player — the click feels
 		// instant instead of waiting on a cold dynamic import.
 		void import("@/components/ui/video-player");
-	}, []);
+	}, [youTubeId]);
 
 	return (
 		<>
@@ -111,11 +127,16 @@ export function AboutHero({
 					</h2>
 
 					{/* Nothing to play until the CMS holds an intro video. */}
-					{videoSrc ? (
+					{videoSrc && !youTubePlaying ? (
 						<button
 							type="button"
-							onClick={() => setVideoOpen(true)}
-							aria-haspopup="dialog"
+							onPointerDown={(event) => {
+								// Mounts the iframe on the press, ahead of `click`,
+								// shaving the activation wait off provider startup.
+								if (event.button === 0) startYouTube();
+							}}
+							onClick={() => (youTubeId ? startYouTube() : setVideoOpen(true))}
+							aria-haspopup={youTubeId ? undefined : "dialog"}
 							aria-label={playLabel}
 							className={cn(
 								"mt-8 inline-flex size-14 items-center justify-center rounded-full bg-primary text-white shadow-[0_12px_32px_-10px_rgb(0_0_0/0.55)] ring-1 ring-primary-foreground/30 backdrop-blur-[2px] sm:mt-9 sm:size-16",
@@ -132,16 +153,41 @@ export function AboutHero({
 						</button>
 					) : null}
 				</ScrollRevealBlock>
+
+				{/* One click plays the intro right here: the nocookie iframe
+				    covers the hero and runs until the ✕ returns the poster —
+				    no modal, no second play button, no provider pause. */}
+				{youTubePlaying && youTubeId ? (
+					<>
+						<iframe
+							src={toCleanEmbedSrc(videoSrc, { autoplay: true })}
+							title={title}
+							allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; fullscreen"
+							allowFullScreen
+							className="absolute inset-0 z-20 size-full border-0 bg-foreground"
+						/>
+						<button
+							type="button"
+							onClick={() => setYouTubePlaying(false)}
+							aria-label={closeLabel}
+							className="absolute top-4 z-30 inline-flex min-h-11 min-w-11 items-center justify-center border border-primary-foreground/25 bg-foreground/70 p-2 text-white backdrop-blur-[2px] transition-opacity hover:opacity-90 focus-visible:opacity-90 end-4 sm:end-6"
+						>
+							<XMarkIcon className="size-5 shrink-0" aria-hidden="true" />
+						</button>
+					</>
+				) : null}
 			</section>
 
-			<AboutIntroVideoModal
-				open={videoOpen}
-				onClose={() => setVideoOpen(false)}
-				videoSrc={videoSrc}
-				title={title}
-				closeLabel={closeLabel}
-				dialogLabel={playLabel}
-			/>
+			{youTubeId ? null : (
+				<AboutIntroVideoModal
+					open={videoOpen}
+					onClose={() => setVideoOpen(false)}
+					videoSrc={videoSrc}
+					title={title}
+					closeLabel={closeLabel}
+					dialogLabel={playLabel}
+				/>
+			)}
 		</>
 	);
 }

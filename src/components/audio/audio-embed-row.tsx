@@ -3,6 +3,7 @@
 import { MusicalNoteIcon } from "@heroicons/react/24/outline";
 import { createContext, type ReactNode, useContext, useState } from "react";
 import { cn } from "@/lib/utils";
+import { toCleanEmbedSrc } from "@/lib/video/source";
 
 /**
  * Expandable embed player for a tracklist row whose source is a provider
@@ -61,7 +62,7 @@ export function EmbedPanel({ src, title }: { src: string; title: string }) {
 	if (!ctx?.open) return null;
 	return (
 		<iframe
-			src={src}
+			src={toCleanEmbedSrc(src, { autoplay: true })}
 			title={title}
 			loading="lazy"
 			allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"

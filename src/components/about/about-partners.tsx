@@ -9,7 +9,6 @@ import {
 import type { PartnerItem } from "@/lib/mock/about";
 
 type PartnerCopy = {
-	eyebrow: string;
 	title: string;
 	description: string;
 	cta: string;
@@ -46,7 +45,6 @@ export function AboutPartners({
 							<ScrollRevealItem key={partner.id} className="h-full">
 								<PartnerCard
 									item={partner}
-									eyebrow={copy.eyebrow}
 									title={copy.title}
 									description={copy.description}
 									cta={copy.cta}

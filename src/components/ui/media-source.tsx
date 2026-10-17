@@ -4,6 +4,7 @@ import {
 	PlayIcon,
 } from "@heroicons/react/24/outline";
 import { cn } from "@/lib/utils";
+import { toCleanEmbedSrc } from "@/lib/video/source";
 
 /**
  * Shared renderers for gallery media whose source isn't a direct file —
@@ -15,16 +16,19 @@ export function MediaEmbedFrame({
 	src,
 	title,
 	kind,
+	autoplay = false,
 	className,
 }: {
 	src: string;
 	title: string;
 	kind: "VIDEO" | "AUDIO";
+	/** Only on surfaces reached by a click — providers honor it via autoplay=1. */
+	autoplay?: boolean;
 	className?: string;
 }) {
 	return (
 		<iframe
-			src={src}
+			src={toCleanEmbedSrc(src, { autoplay })}
 			title={title}
 			loading="lazy"
 			allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; fullscreen"

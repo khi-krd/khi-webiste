@@ -13,7 +13,7 @@ import {
 	type VideoClipListLabels,
 } from "@/components/video/video-clip-list";
 import { cn } from "@/lib/utils";
-import { classifyPlayableSource } from "@/lib/video/source";
+import { classifyPlayableSource, toCleanEmbedSrc } from "@/lib/video/source";
 import type { ResolvedVideoClip, VideoPlayerKind } from "@/types/video";
 
 const VideoPlayer = dynamic(
@@ -182,7 +182,7 @@ export function VideoPlayerFrame({
 			<PlayerSurface cinema={isCinema}>
 				<iframe
 					key={`clip-${selectedClipNumber ?? "single"}-${surfaceSrc}`}
-					src={surfaceSrc}
+					src={toCleanEmbedSrc(surfaceSrc)}
 					title={title}
 					loading="lazy"
 					allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; fullscreen"
