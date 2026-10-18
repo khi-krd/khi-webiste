@@ -1,24 +1,16 @@
 import NextImage from "next/image";
 import { Link } from "@/components/ui/link";
 import { newsDetailHref } from "@/lib/content/href";
-import { formatNewsDate, type NewsItem } from "@/lib/mock/news";
+import type { NewsItem } from "@/lib/mock/news";
 import { cn } from "@/lib/utils";
 
 type NewsSidebarCardProps = {
 	item: NewsItem;
-	categoryLabel: string;
-	locale: string;
 	className?: string;
 };
 
-export function NewsSidebarCard({
-	item,
-	categoryLabel,
-	locale,
-	className,
-}: NewsSidebarCardProps) {
+export function NewsSidebarCard({ item, className }: NewsSidebarCardProps) {
 	const href = newsDetailHref(item.slug);
-	const dateLabel = formatNewsDate(item.publishedAt, locale);
 
 	return (
 		<article className={cn("border border-border bg-surface", className)}>
@@ -38,12 +30,7 @@ export function NewsSidebarCard({
 					/>
 				</div>
 
-				<div className="min-w-0 flex-1 text-start">
-					<p className="text-label text-muted">
-						<span className="text-foreground">{categoryLabel}</span>
-						<span aria-hidden> · </span>
-						<time dateTime={item.publishedAt}>{dateLabel}</time>
-					</p>
+				<div className="min-w-0 flex-1 self-center text-start">
 					<h3
 						className={cn(
 							"mt-1 font-heading text-small font-semibold leading-snug text-balance text-foreground line-clamp-2",

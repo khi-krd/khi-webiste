@@ -167,12 +167,7 @@ export function NewsShell({
 				</div>
 
 				<aside className="mt-12 lg:mt-0 lg:sticky lg:top-28 lg:self-start">
-					<NewsSidebarPanel
-						title={latestLabel}
-						items={sidebarItems}
-						locale={locale}
-						categories={categories}
-					/>
+					<NewsSidebarPanel title={latestLabel} items={sidebarItems} />
 				</aside>
 			</div>
 		</section>
