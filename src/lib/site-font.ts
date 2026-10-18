@@ -72,8 +72,9 @@ function fontFormatHint(url: string): string {
  *
  * Each language gets one fixed family name — the stored `*FontName` is a
  * dashboard label only, and a fixed name keeps the generated CSS free of any
- * admin-typed string. The face declares `font-weight: 100 900` so a single
- * file (variable or not) covers every weight the site asks for.
+ * admin-typed string. The face declares `font-weight: 400` — its true weight —
+ * because a 100-900 range on a static file makes the browser skip faux-bold
+ * synthesis, leaving <strong> visually identical to body text.
  *
  * The overrides are emitted unlayered, which beats the `@layer base` rules in
  * globals.css; the heading rules there name the bundled vars directly rather
@@ -89,7 +90,7 @@ export function buildSiteFontCss(settings: SiteSettings | null): string {
 	const ckbUrl = settings.ckbFontUrl?.trim();
 	if (ckbUrl && isAllowedSiteFontUrl(ckbUrl)) {
 		parts.push(
-			`@font-face{font-family:"KHI Site CKB";src:url("${siteFontProxySrc(ckbUrl)}")${fontFormatHint(ckbUrl)};font-weight:100 900;font-style:normal;font-display:swap}`,
+			`@font-face{font-family:"KHI Site CKB";src:url("${siteFontProxySrc(ckbUrl)}")${fontFormatHint(ckbUrl)};font-weight:400;font-style:normal;font-display:swap}`,
 			'html[data-script="arabic"]{--font-app-body:"KHI Site CKB";--font-app-heading:"KHI Site CKB"}',
 			'html[data-script="arabic"] :is(h1,h2,h3,h4){font-family:"KHI Site CKB",var(--font-vazirmatn),sans-serif}',
 		);
@@ -98,7 +99,7 @@ export function buildSiteFontCss(settings: SiteSettings | null): string {
 	const kmrUrl = settings.kmrFontUrl?.trim();
 	if (kmrUrl && isAllowedSiteFontUrl(kmrUrl)) {
 		parts.push(
-			`@font-face{font-family:"KHI Site KMR";src:url("${siteFontProxySrc(kmrUrl)}")${fontFormatHint(kmrUrl)};font-weight:100 900;font-style:normal;font-display:swap}`,
+			`@font-face{font-family:"KHI Site KMR";src:url("${siteFontProxySrc(kmrUrl)}")${fontFormatHint(kmrUrl)};font-weight:400;font-style:normal;font-display:swap}`,
 			'html[data-script="latin"]{--font-app-body:"KHI Site KMR";--font-app-heading:"KHI Site KMR"}',
 			'html[data-script="latin"] :is(h1,h2,h3,h4){font-family:"KHI Site KMR",var(--font-archivo),var(--font-vazirmatn),sans-serif}',
 		);
@@ -132,7 +133,7 @@ export function buildLibraryFontCss(fonts: SiteFont[]): string {
 		}
 		seen.add(family);
 		parts.push(
-			`@font-face{font-family:"${family}";src:url("${siteFontProxySrc(url)}")${fontFormatHint(url)};font-weight:100 900;font-style:normal;font-display:swap}`,
+			`@font-face{font-family:"${family}";src:url("${siteFontProxySrc(url)}")${fontFormatHint(url)};font-weight:400;font-style:normal;font-display:swap}`,
 		);
 	}
 	return parts.join("\n");
