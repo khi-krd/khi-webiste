@@ -8,7 +8,7 @@ import { getBentoNews } from "@/lib/api/news";
 import { homeInsetClass } from "@/lib/layout";
 import {
 	type NewsCategoryOption,
-	newsItemCategoryLabel,
+	newsItemBadgeLabel,
 } from "@/lib/mock/news";
 import { cn } from "@/lib/utils";
 
@@ -49,7 +49,7 @@ export async function NewsBento({
 						<NewsCard
 							item={hero}
 							variant="featured"
-							categoryLabel={newsItemCategoryLabel(hero, categories)}
+							categoryLabel={newsItemBadgeLabel(hero, categories)}
 							className="h-full"
 						/>
 					</ScrollRevealItem>
@@ -62,7 +62,7 @@ export async function NewsBento({
 										<NewsCard
 											item={item}
 											variant="small"
-											categoryLabel={newsItemCategoryLabel(item, categories)}
+											categoryLabel={newsItemBadgeLabel(item, categories)}
 										/>
 									</ScrollRevealItem>
 								))}
@@ -77,7 +77,7 @@ export async function NewsBento({
 							<ScrollRevealItem className="sm:col-span-2 lg:col-span-5">
 								<NewsEditorialCard
 									item={editorial}
-									categoryLabel={newsItemCategoryLabel(editorial, categories)}
+									categoryLabel={newsItemBadgeLabel(editorial, categories)}
 								/>
 							</ScrollRevealItem>
 						) : null}
@@ -92,7 +92,7 @@ export async function NewsBento({
 								<NewsCard
 									item={wide}
 									variant="wide"
-									categoryLabel={newsItemCategoryLabel(wide, categories)}
+									categoryLabel={newsItemBadgeLabel(wide, categories)}
 								/>
 							</ScrollRevealItem>
 						) : null}

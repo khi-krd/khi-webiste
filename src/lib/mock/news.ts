@@ -483,6 +483,23 @@ export function newsItemCategoryLabel(
 	return match?.label ?? item.category;
 }
 
+/** Card badge: subcategory is the more specific label — fall back to the category when absent. */
+export function newsItemBadgeLabel(
+	item: Pick<
+		NewsItem,
+		"category" | "categoryLabel" | "subCategory" | "subCategoryLabel"
+	>,
+	options?: readonly NewsCategoryOption[],
+): string {
+	if (item.subCategoryLabel?.trim()) {
+		return item.subCategoryLabel.trim();
+	}
+	if (item.subCategory?.trim()) {
+		return item.subCategory.trim();
+	}
+	return newsItemCategoryLabel(item, options);
+}
+
 /** Case-insensitive membership test for the localized tag/keyword collections. */
 function hasTerm(terms: string[] | undefined, term: string): boolean {
 	const needle = term.toLowerCase();

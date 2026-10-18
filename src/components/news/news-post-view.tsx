@@ -11,7 +11,7 @@ import { BackToIndexLink } from "@/components/ui/back-to-index";
 import { RichText } from "@/components/ui/rich-text";
 import { Link } from "@/i18n/navigation";
 import { homeInsetClass } from "@/lib/layout";
-import { type NewsItem, newsItemCategoryLabel } from "@/lib/mock/news";
+import { type NewsItem, newsItemBadgeLabel } from "@/lib/mock/news";
 import { isRichTextEmpty } from "@/lib/rich-text";
 import { newsTagHref } from "@/lib/search/taxonomy-href";
 import { cn } from "@/lib/utils";
@@ -220,7 +220,7 @@ export function NewsPostView({
 									<NewsCard
 										item={relatedItem}
 										variant="square"
-										categoryLabel={newsItemCategoryLabel(relatedItem)}
+										categoryLabel={newsItemBadgeLabel(relatedItem)}
 										className="min-h-56 sm:min-h-64 2xl:min-h-[17rem]"
 									/>
 								</ScrollRevealItem>

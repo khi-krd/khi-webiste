@@ -12,7 +12,7 @@ import { homeInsetClass } from "@/lib/layout";
 import {
 	type NewsCategoryOption,
 	type NewsItem,
-	newsItemCategoryLabel,
+	newsItemBadgeLabel,
 } from "@/lib/mock/news";
 import { cn } from "@/lib/utils";
 
@@ -142,7 +142,7 @@ export function NewsShell({
 									<NewsCard
 										item={item}
 										variant="square"
-										categoryLabel={newsItemCategoryLabel(item, categories)}
+										categoryLabel={newsItemBadgeLabel(item, categories)}
 										className="min-h-64 sm:min-h-72 2xl:min-h-80"
 									/>
 								</ScrollRevealItem>
