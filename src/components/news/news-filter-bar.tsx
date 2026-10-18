@@ -14,8 +14,6 @@ import { Badge } from "@/components/ui/badge";
 import {
 	FilterBar,
 	FilterDivider,
-	FilterGroupLabel,
-	FilterPill,
 	FilterSearchBox,
 } from "@/components/ui/filter-bar";
 import { useRouter } from "@/i18n/navigation";
@@ -35,19 +33,6 @@ type NewsFilterBarProps = {
 	className?: string;
 };
 
-/** Keep an active term clickable even when it falls outside the derived chip cap. */
-function withActiveTerm(terms: string[], active?: string | null): string[] {
-	const value = active?.trim();
-	if (!value) {
-		return terms;
-	}
-
-	const needle = value.toLocaleLowerCase();
-	return terms.some((term) => term.toLocaleLowerCase() === needle)
-		? terms
-		: [value, ...terms];
-}
-
 /**
  * All controls on ONE continuous line: category pills, subcategory and tag
  * groups and the search box flow in a single `flex-wrap` row — no expand
@@ -56,7 +41,7 @@ function withActiveTerm(terms: string[], active?: string | null): string[] {
 export function NewsFilterBar({
 	categories,
 	subCategories,
-	tags,
+	tags: _tags,
 	activeCategory,
 	activeSubCategory,
 	activeTag,
@@ -72,10 +57,6 @@ export function NewsFilterBar({
 	const scrollToSection = useScrollToSection();
 
 	const subCategoryOptions = subCategories ?? [];
-	const tagOptions = useMemo(
-		() => withActiveTerm(tags ?? [], activeTag),
-		[tags, activeTag],
-	);
 
 	const hasActiveCategory =
 		Boolean(activeCategory) &&
@@ -131,18 +112,6 @@ export function NewsFilterBar({
 		[activeFilters, router, searchParams, scrollToSection],
 	);
 
-	const handleCategory = (category: string | null) => {
-		pushFilters({ category, q: query });
-	};
-
-	const handleSubCategory = (subcategory: string | null) => {
-		pushFilters({ subcategory, q: query });
-	};
-
-	const handleTag = (tag: string | null) => {
-		pushFilters({ tag, q: query });
-	};
-
 	const handleSearchSubmit = () => {
 		if (debounceRef.current) clearTimeout(debounceRef.current);
 		pushFilters({ q: query });
@@ -181,59 +150,9 @@ export function NewsFilterBar({
 			pending={isPending}
 			className={className}
 		>
-			{/* primary browse axis — the news categories */}
-			<FilterPill active={!activeCategory} onClick={() => handleCategory(null)}>
-				{t("filter.all")}
-			</FilterPill>
-			{categories.map((category) => (
-				<FilterPill
-					key={category.key}
-					active={activeCategory === category.key}
-					onClick={() => handleCategory(category.key)}
-				>
-					{category.label}
-				</FilterPill>
-			))}
-
-			{subCategoryOptions.length > 0 ? (
-				<>
-					<FilterDivider />
-					<FilterGroupLabel>{t("filter.subcategories")}</FilterGroupLabel>
-					{subCategoryOptions.map((subCategory) => {
-						const active = activeSubCategory === subCategory.key;
-						return (
-							<FilterPill
-								key={subCategory.key}
-								active={active}
-								onClick={() =>
-									handleSubCategory(active ? null : subCategory.key)
-								}
-							>
-								{subCategory.label}
-							</FilterPill>
-						);
-					})}
-				</>
-			) : null}
-
-			{tagOptions.length > 0 ? (
-				<>
-					<FilterDivider />
-					<FilterGroupLabel>{t("filter.tags")}</FilterGroupLabel>
-					{tagOptions.map((tag) => {
-						const active = activeTag === tag;
-						return (
-							<FilterPill
-								key={tag}
-								active={active}
-								onClick={() => handleTag(active ? null : tag)}
-							>
-								#{tag}
-							</FilterPill>
-						);
-					})}
-				</>
-			) : null}
+			{/* Filter pills are hidden by request — search remains the only
+			    on-page control. URL-driven filters (?category=, ?tag=) still
+			    apply and surface through the active-filter chips below. */}
 
 			{/* same line — the row's remaining space goes to search */}
 			<FilterSearchBox
