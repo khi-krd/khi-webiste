@@ -67,7 +67,7 @@ export function PartnerCard({
 				<h3 className="font-heading text-h2 font-semibold leading-snug text-balance text-white">
 					{title}
 				</h3>
-				<p className="mt-2.5 max-w-lg text-justify text-body leading-relaxed whitespace-pre-line text-white/85 sm:mt-3">
+				<p className="mt-2.5 line-clamp-3 max-w-lg text-justify text-body leading-relaxed whitespace-pre-line text-white/85 sm:mt-3">
 					{description}
 				</p>
 				{/* Pinned to the physical bottom-left corner: inline-start in LTR,
