@@ -114,10 +114,6 @@ export function NewsFilterBar({
 		[activeFilters, router, searchParams, scrollToSection],
 	);
 
-	const handleCategory = (category: string | null) => {
-		pushFilters({ category, q: query });
-	};
-
 	const handleSubCategory = (subcategory: string | null) => {
 		pushFilters({ subcategory, q: query });
 	};
@@ -160,23 +156,10 @@ export function NewsFilterBar({
 			pending={isPending}
 			className={className}
 		>
-			{/* primary browse axis — the news categories */}
-			<FilterPill active={!activeCategory} onClick={() => handleCategory(null)}>
-				{t("filter.all")}
-			</FilterPill>
-			{categories.map((category) => (
-				<FilterPill
-					key={category.key}
-					active={activeCategory === category.key}
-					onClick={() => handleCategory(category.key)}
-				>
-					{category.label}
-				</FilterPill>
-			))}
-
+			{/* browse axis — subcategories only; categories stay reachable via
+			    ?category= deep links surfaced through the active chips below. */}
 			{subCategoryOptions.length > 0 ? (
 				<>
-					<FilterDivider />
 					<FilterGroupLabel>{t("filter.subcategories")}</FilterGroupLabel>
 					{subCategoryOptions.map((subCategory) => {
 						const active = activeSubCategory === subCategory.key;
