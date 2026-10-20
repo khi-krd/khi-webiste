@@ -24,7 +24,7 @@ type ProjectsPageProps = {
 	params: Promise<{ locale: string }>;
 	searchParams: Promise<{
 		year?: string;
-		tag?: string;
+		type?: string;
 		q?: string;
 		page?: string;
 	}>;
@@ -35,7 +35,7 @@ export default async function ProjectsPage({
 	searchParams,
 }: ProjectsPageProps) {
 	const { locale } = await params;
-	const { year, tag, q, page: pageParam } = await searchParams;
+	const { year, type, q, page: pageParam } = await searchParams;
 	setRequestLocale(locale);
 
 	const t = await getTranslations("ProjectsPage");
@@ -43,7 +43,7 @@ export default async function ProjectsPage({
 
 	const pageData = await loadProjectsPageData(locale, {
 		year,
-		tag,
+		type,
 		query: q,
 		page,
 	});
@@ -56,9 +56,9 @@ export default async function ProjectsPage({
 				items={pageData.items}
 				currentPage={pageData.currentPage}
 				totalPages={pageData.totalPages}
-				tags={pageData.tags}
+				types={pageData.types}
 				activeYear={pageData.activeYear}
-				activeTag={pageData.activeTag}
+				activeType={pageData.activeType}
 				activeQuery={pageData.activeQuery}
 				previewLabel={t("grid.preview")}
 				noResultsMessage={t("grid.noResults")}

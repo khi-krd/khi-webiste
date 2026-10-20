@@ -558,8 +558,23 @@ export function getProjectTags(items: ProjectListItem[]): string[] {
 	return [...tags].sort((a, b) => a.localeCompare(b));
 }
 
+/** Distinct project types across items — the filter bar's pill axis. */
+export function getProjectTypeOptions(items: ProjectListItem[]): string[] {
+	const types = new Set<string>();
+	for (const item of items) {
+		const list = item.projectTypes?.length
+			? item.projectTypes
+			: item.projectType
+				? [item.projectType]
+				: [];
+		for (const type of list) types.add(type);
+	}
+	return [...types].sort((a, b) => a.localeCompare(b));
+}
+
 export type ProjectFilter = {
 	year?: string | null;
+	type?: string | null;
 	tag?: string | null;
 	query?: string | null;
 };
@@ -574,6 +589,19 @@ export function filterProjects(
 		result = result.filter((item) => item.year === filter.year);
 	}
 
+	if (filter.type) {
+		result = result.filter((item) => {
+			const list = item.projectTypes?.length
+				? item.projectTypes
+				: item.projectType
+					? [item.projectType]
+					: [];
+			return list.some(
+				(type) => type.toLowerCase() === filter.type?.toLowerCase(),
+			);
+		});
+	}
+
 	if (filter.tag) {
 		result = result.filter((item) =>
 			item.tags.some((tag) => tag.toLowerCase() === filter.tag?.toLowerCase()),
@@ -586,6 +614,10 @@ export function filterProjects(
 			(item) =>
 				item.title.toLowerCase().includes(q) ||
 				item.excerpt.toLowerCase().includes(q) ||
+				(item.projectType ?? "").toLowerCase().includes(q) ||
+				(item.projectTypes ?? []).some((type) =>
+					type.toLowerCase().includes(q),
+				) ||
 				item.tags.some((tag) => tag.toLowerCase().includes(q)) ||
 				item.keywords.some((kw) => kw.toLowerCase().includes(q)),
 		);

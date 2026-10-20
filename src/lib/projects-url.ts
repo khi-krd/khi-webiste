@@ -1,20 +1,20 @@
 type ProjectsSearchParams = {
 	year?: string | null;
-	tag?: string | null;
+	type?: string | null;
 	q?: string | null;
 	page?: number | null;
 };
 
 export function projectsHref({
 	year,
-	tag,
+	type,
 	q,
 	page,
 }: ProjectsSearchParams = {}): string {
 	const params = new URLSearchParams();
 
 	if (year) params.set("year", year);
-	if (tag) params.set("tag", tag);
+	if (type) params.set("type", type);
 	if (q?.trim()) params.set("q", q.trim());
 	if (page && page > 1) params.set("page", String(page));
 

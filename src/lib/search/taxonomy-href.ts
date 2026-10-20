@@ -18,7 +18,8 @@ export function newsTagHref(tag: string): string {
 }
 
 export function projectTagHref(tag: string): string {
-	return projectsHref({ tag });
+	// Projects filter by type — a tag chip deep-links into the text search.
+	return projectsHref({ q: tag });
 }
 
 export function galleryTagHref(tag: string): string {

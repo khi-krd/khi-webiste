@@ -15,22 +15,22 @@ import { projectsHref } from "@/lib/projects-url";
 import { useScrollToSection } from "@/lib/use-scroll-to-section";
 
 type ProjectsFilterBarProps = {
-	tags: string[];
+	types: string[];
 	activeYear?: string | null;
-	activeTag?: string | null;
+	activeType?: string | null;
 	activeQuery?: string | null;
 	className?: string;
 };
 
 /**
- * All controls on ONE continuous line: tag pills and the search box flow in a
+ * All controls on ONE continuous line: type pills and the search box flow in a
  * single `flex-wrap` row — no expand panel, no stacked sections. Active-filter
  * chips trail at the row's tail.
  */
 export function ProjectsFilterBar({
-	tags,
+	types,
 	activeYear,
-	activeTag,
+	activeType,
 	activeQuery,
 	className,
 }: ProjectsFilterBarProps) {
@@ -42,22 +42,22 @@ export function ProjectsFilterBar({
 	const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 	const scrollToSection = useScrollToSection();
 
-	const hasActiveTag = Boolean(activeTag);
+	const hasActiveType = Boolean(activeType);
 	const hasActiveQuery = Boolean(activeQuery?.trim());
 	const hasActiveYear = Boolean(activeYear);
-	const hasActiveFilters = hasActiveTag || hasActiveQuery || hasActiveYear;
+	const hasActiveFilters = hasActiveType || hasActiveQuery || hasActiveYear;
 
 	useEffect(() => {
 		setQuery(activeQuery ?? "");
 	}, [activeQuery]);
 
 	const pushFilters = useCallback(
-		(tag: string | null, q: string) => {
+		(type: string | null, q: string) => {
 			startTransition(() => {
 				router.replace(
 					projectsHref({
 						year: activeYear,
-						tag,
+						type,
 						q,
 						page: 1,
 					}),
@@ -73,27 +73,27 @@ export function ProjectsFilterBar({
 		[router, searchParams, scrollToSection, activeYear],
 	);
 
-	const handleTag = (tag: string | null) => {
-		pushFilters(tag, query);
+	const handleType = (type: string | null) => {
+		pushFilters(type, query);
 	};
 
 	const handleSearchSubmit = () => {
 		if (debounceRef.current) clearTimeout(debounceRef.current);
-		pushFilters(activeTag ?? null, query);
+		pushFilters(activeType ?? null, query);
 	};
 
 	const handleQueryChange = (value: string) => {
 		setQuery(value);
 		if (debounceRef.current) clearTimeout(debounceRef.current);
 		debounceRef.current = setTimeout(() => {
-			pushFilters(activeTag ?? null, value);
+			pushFilters(activeType ?? null, value);
 		}, 350);
 	};
 
 	const handleClearSearch = () => {
 		if (debounceRef.current) clearTimeout(debounceRef.current);
 		setQuery("");
-		pushFilters(activeTag ?? null, "");
+		pushFilters(activeType ?? null, "");
 	};
 
 	const handleClearAll = () => {
@@ -115,19 +115,19 @@ export function ProjectsFilterBar({
 			pending={isPending}
 			className={className}
 		>
-			{/* primary browse axis — the project tags */}
-			{tags.length > 0 ? (
+			{/* primary browse axis — the project types */}
+			{types.length > 0 ? (
 				<>
-					<FilterPill active={!activeTag} onClick={() => handleTag(null)}>
+					<FilterPill active={!activeType} onClick={() => handleType(null)}>
 						{t("filter.all")}
 					</FilterPill>
-					{tags.map((tag) => (
+					{types.map((type) => (
 						<FilterPill
-							key={tag}
-							active={activeTag === tag}
-							onClick={() => handleTag(tag)}
+							key={type}
+							active={activeType === type}
+							onClick={() => handleType(type)}
 						>
-							{tag}
+							{type}
 						</FilterPill>
 					))}
 					<FilterDivider />
@@ -156,9 +156,9 @@ export function ProjectsFilterBar({
 							{activeYear}
 						</Badge>
 					) : null}
-					{activeTag ? (
+					{activeType ? (
 						<Badge variant="outline" size="sm">
-							{activeTag}
+							{activeType}
 						</Badge>
 					) : null}
 					{hasActiveQuery && activeQuery ? (

@@ -11,7 +11,7 @@ type ProjectsPaginationProps = {
 	currentPage: number;
 	totalPages: number;
 	activeYear: string | null;
-	activeTag: string | null;
+	activeType: string | null;
 	activeQuery: string | null;
 	label: string;
 	previousLabel: string;
@@ -22,12 +22,12 @@ type ProjectsPaginationProps = {
 function hrefFor(
 	page: number,
 	activeYear: string | null,
-	activeTag: string | null,
+	activeType: string | null,
 	activeQuery: string | null,
 ) {
 	return projectsHref({
 		year: activeYear,
-		tag: activeTag,
+		type: activeType,
 		q: activeQuery,
 		page: page > 1 ? page : undefined,
 	});
@@ -37,7 +37,7 @@ export function ProjectsPagination({
 	currentPage,
 	totalPages,
 	activeYear,
-	activeTag,
+	activeType,
 	activeQuery,
 	label,
 	previousLabel,
@@ -50,7 +50,7 @@ export function ProjectsPagination({
 
 	const handlePageChange = (page: number) => {
 		startTransition(() => {
-			router.replace(hrefFor(page, activeYear, activeTag, activeQuery), {
+			router.replace(hrefFor(page, activeYear, activeType, activeQuery), {
 				scroll: false,
 			});
 
@@ -62,7 +62,7 @@ export function ProjectsPagination({
 		<Pagination
 			currentPage={currentPage}
 			totalPages={totalPages}
-			createHref={(page) => hrefFor(page, activeYear, activeTag, activeQuery)}
+			createHref={(page) => hrefFor(page, activeYear, activeType, activeQuery)}
 			onPageChange={handlePageChange}
 			label={label}
 			previousLabel={previousLabel}

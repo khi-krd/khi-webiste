@@ -1,7 +1,7 @@
 import {
 	filterProjects,
 	getProjectListItems,
-	getProjectTags,
+	getProjectTypeOptions,
 	getProjectYears,
 	PROJECTS_PER_PAGE,
 	type ProjectListItem,
@@ -12,43 +12,42 @@ export type ProjectsPageData = {
 	allItems: ProjectListItem[];
 	items: ProjectListItem[];
 	years: string[];
-	tags: string[];
+	types: string[];
 	totalElements: number;
 	totalPages: number;
 	currentPage: number;
 	activeYear: string | null;
-	activeTag: string | null;
+	activeType: string | null;
 	activeQuery: string | null;
 };
 
 type LoadProjectsPageOptions = {
 	year?: string | null;
-	tag?: string | null;
+	type?: string | null;
 	query?: string | null;
 	page?: number;
 };
 
 export async function loadProjectsPageData(
 	locale: string,
-	{ year, tag, query, page = 1 }: LoadProjectsPageOptions,
+	{ year, type, query, page = 1 }: LoadProjectsPageOptions,
 ): Promise<ProjectsPageData> {
 	const allItems = await getProjectListItems(locale);
 	const years = getProjectYears(allItems);
-	const tags = getProjectTags(allItems);
+	const types = getProjectTypeOptions(allItems);
 
 	const activeYear = year && years.includes(year) ? year : null;
-	const activeTag =
-		tag && allItems.some((item) => item.tags.includes(tag)) ? tag : null;
+	const activeType = type && types.includes(type) ? type : null;
 	const activeQuery = query?.trim() || null;
 
 	const filtered =
-		activeTag || activeQuery
+		activeQuery
 			? await getProjectListItems(locale, {
 					year: activeYear,
-					tag: activeTag,
+					type: activeType,
 					query: activeQuery,
 				})
-			: filterProjects(allItems, { year: activeYear });
+			: filterProjects(allItems, { year: activeYear, type: activeType });
 
 	const { items, totalElements, totalPages, currentPage } = paginateProjects(
 		filtered,
@@ -60,12 +59,12 @@ export async function loadProjectsPageData(
 		allItems,
 		items,
 		years,
-		tags,
+		types,
 		totalElements,
 		totalPages,
 		currentPage,
 		activeYear,
-		activeTag,
+		activeType,
 		activeQuery,
 	};
 }

@@ -9,7 +9,7 @@ import {
 import { getApiBaseUrl } from "@/lib/api/config";
 import {
 	filterProjects,
-	getProjectTags,
+	getProjectTypeOptions,
 	getProjectYears,
 	PROJECTS_PER_PAGE,
 	type ProjectDetail,
@@ -31,7 +31,7 @@ const PROJECTS_TAG = "projects";
 
 export {
 	filterProjects,
-	getProjectTags,
+	getProjectTypeOptions,
 	getProjectYears,
 	PROJECTS_PER_PAGE,
 	type ProjectDetail,
@@ -52,14 +52,6 @@ async function fetchProjectsPage(
 	});
 }
 
-async function fetchProjectsByTag(tag: string) {
-	return apiFetchPage("/api/v1/projects/search/tag", {
-		itemSchema: ProjectSchema,
-		tags: [PROJECTS_TAG],
-		revalidate: DEFAULT_REVALIDATE,
-		searchParams: { tag, page: 0, size: BULK_FETCH_SIZE },
-	});
-}
 
 async function fetchProjectsByKeyword(keyword: string) {
 	return apiFetchPage("/api/v1/projects/search/keyword", {
@@ -100,16 +92,6 @@ async function searchProjectRecords(
 		return [];
 	}
 
-	if (filter.tag?.trim()) {
-		const page = await fetchProjectsByTag(filter.tag.trim());
-		if (page?.content.length) {
-			const items = resolveProjectListItems(locale, page.content);
-			if (items.length > 0) {
-				return filterProjects(items, { ...filter, tag: null });
-			}
-		}
-	}
-
 	if (filter.query?.trim()) {
 		const page = await fetchProjectsByKeyword(filter.query.trim());
 		if (page?.content.length) {
@@ -140,7 +122,7 @@ export async function getProjectListItems(
 	locale: string,
 	filter: ProjectFilter = {},
 ): Promise<ProjectListItem[]> {
-	if (filter.tag?.trim() || filter.query?.trim()) {
+	if (filter.query?.trim()) {
 		return searchProjectRecords(locale, filter);
 	}
 	return filterProjects(await getAllProjectRecords(locale), filter);

@@ -12,9 +12,9 @@ type ProjectsShellProps = {
 	items: ProjectListItem[];
 	currentPage: number;
 	totalPages: number;
-	tags: string[];
+	types: string[];
 	activeYear: string | null;
-	activeTag: string | null;
+	activeType: string | null;
 	activeQuery: string | null;
 	previewLabel: string;
 	noResultsMessage: string;
@@ -27,9 +27,9 @@ export function ProjectsShell({
 	items,
 	currentPage,
 	totalPages,
-	tags,
+	types,
 	activeYear,
-	activeTag,
+	activeType,
 	activeQuery,
 	previewLabel,
 	noResultsMessage,
@@ -37,16 +37,16 @@ export function ProjectsShell({
 	previousLabel,
 	nextLabel,
 }: ProjectsShellProps) {
-	const hasFilters = Boolean(activeYear || activeTag || activeQuery?.trim());
+	const hasFilters = Boolean(activeYear || activeType || activeQuery?.trim());
 	const isEmpty = items.length === 0;
 
 	return (
 		<section id="projects-content" className="scroll-mt-26 sm:scroll-mt-30">
 			<div className="mx-auto max-w-[88rem] px-6 py-12 sm:px-8 sm:py-16 lg:py-20">
 				<ProjectsFilterBar
-					tags={tags}
+					types={types}
 					activeYear={activeYear}
-					activeTag={activeTag}
+					activeType={activeType}
 					activeQuery={activeQuery}
 					className="mb-8 sm:mb-10"
 				/>
@@ -84,7 +84,7 @@ export function ProjectsShell({
 						currentPage={currentPage}
 						totalPages={totalPages}
 						activeYear={activeYear}
-						activeTag={activeTag}
+						activeType={activeType}
 						activeQuery={activeQuery}
 						label={paginationLabel}
 						previousLabel={previousLabel}
