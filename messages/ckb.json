@@ -268,9 +268,9 @@
 			"previous": "پڕۆژەی پێشوو",
 			"next": "پڕۆژەی دواتر",
 			"statusValues": {
-				"ACTIVE": "چالاک",
-				"ONGOING": "بەردەوام",
-				"COMPLETED": "تەواو",
+				"ACTIVE": "تەواونەکراو",
+				"ONGOING": "تەواونەکراو",
+				"COMPLETED": "تەواوکراو",
 				"ARCHIVED": "ئارشیڤ"
 			}
 		}

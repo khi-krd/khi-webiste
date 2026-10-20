@@ -268,9 +268,9 @@
 			"previous": "Projeya berê",
 			"next": "Projeya paşê",
 			"statusValues": {
-				"ACTIVE": "Çalak",
-				"ONGOING": "Domdar",
-				"COMPLETED": "Qediya",
+				"ACTIVE": "Temam nebûye",
+				"ONGOING": "Temam nebûye",
+				"COMPLETED": "Temam bûye",
 				"ARCHIVED": "Arşîvkirî"
 			}
 		}
