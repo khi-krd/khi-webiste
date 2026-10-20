@@ -28,6 +28,20 @@ export const BrochureSchema = z.object({
 
 export type Brochure = z.infer<typeof BrochureSchema>;
 
+/** Album-level brochure file — mixed types (PDF, images …), independent of
+ * the per-file brochure images inside SoundTrackFile.brochures. */
+export const AlbumBrochureSchema = z.object({
+	id: z.number(),
+	fileUrl: z.string().nullish(),
+	title: z.string().nullish(),
+	fileType: AttachmentTypeSchema.default("OTHER"),
+	sizeBytes: z.number().nullish(),
+	mimeType: z.string().nullish(),
+	brochureOrder: z.number().nullish(),
+});
+
+export type AlbumBrochure = z.infer<typeof AlbumBrochureSchema>;
+
 export const SoundTrackFileSchema = z.object({
 	id: z.number(),
 	fileUrl: z.string().nullish(),
@@ -101,6 +115,7 @@ export const SoundTrackSchema = z.object({
 	cdNumber: z.number().int().nullish(),
 	totalTracks: z.number().int().nullish(),
 	attachments: z.array(SoundAttachmentSchema).default([]),
+	brochures: z.array(AlbumBrochureSchema).default([]),
 	sortOrder: z.number().int().nullish(),
 	createdAt: z.string().optional(),
 	updatedAt: z.string().optional(),
@@ -205,7 +220,10 @@ export type ResolvedAudioFileRow = {
 
 export type ResolvedBrochureItem = {
 	id: number;
-	imageUrl: string;
+	/** Direct file URL — image scans render in the flipbook; PDFs and other
+	 * documents open in a new tab. */
+	fileUrl: string;
+	kind: "image" | "pdf" | "other";
 	caption: string | null;
 	sortOrder: number;
 };

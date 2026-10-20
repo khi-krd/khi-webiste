@@ -240,7 +240,7 @@ export function AudioBookletReader({
 													}}
 												>
 													<NextImage
-														src={item.imageUrl}
+														src={item.fileUrl}
 														alt={
 															item.caption ??
 															t("pageIndicator", {
@@ -260,7 +260,7 @@ export function AudioBookletReader({
 											    the VISIBLE corner of the page — panning a zoomed
 											    page can never carry it off-screen. */}
 											<ImageWatermark
-												contain={item.imageUrl}
+												contain={item.fileUrl}
 												zoom={index === selectedIndex ? zoomLevel : 1}
 												viewportRef={
 													index === selectedIndex ? zoomViewportRef : undefined

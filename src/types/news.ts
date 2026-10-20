@@ -15,6 +15,7 @@ export const BilingualSetSchema = z.object({
 export const NewsContentSchema = z.object({
 	title: z.string().nullable(),
 	description: z.string().nullable(),
+	location: z.string().nullish(),
 });
 
 export type NewsContent = z.infer<typeof NewsContentSchema>;

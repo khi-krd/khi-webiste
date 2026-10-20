@@ -189,6 +189,7 @@
 		"post": {
 			"back": "گەڕانەوە بۆ هەواڵەکان",
 			"byAuthor": "لە لایەن {author}",
+			"location": "شوێن",
 			"tags": "تاگەکان",
 			"gallery": "میدیا و گالەری",
 			"lightbox": {
@@ -536,6 +537,7 @@
 			"back": "گەڕانەوە بۆ نووسینەکان",
 			"lightboxClose": "داخستن",
 			"writer": "نووسەر",
+			"location": "شوێن",
 			"topic": "بابەت",
 			"series": "زنجیرە",
 			"seriesVolume": "بەندی {order} لە {total}",

@@ -94,6 +94,19 @@ export function audioDetailHref(id: number): string {
 }
 
 /** Files ride the entity's `sortOrder`; unsorted rows fall back to API order. */
+/** Map a brochure's declared type / mime onto the render buckets the detail
+ * page understands. Images feed the flipbook; PDFs and anything else open as
+ * document links. */
+function brochureKind(
+	fileType: string | null | undefined,
+	mimeType: string | null | undefined,
+): ResolvedBrochureItem["kind"] {
+	const mime = mimeType?.toLowerCase() ?? "";
+	if (fileType === "IMAGE" || mime.startsWith("image/")) return "image";
+	if (fileType === "PDF" || mime === "application/pdf") return "pdf";
+	return "other";
+}
+
 function sortedTrackFiles(track: SoundTrack): SoundTrack["files"] {
 	return [...track.files].sort(
 		(a, b) =>
@@ -262,22 +275,45 @@ export function resolveAudioDetail(
 	const coverUrl = resolveAudioCoverUrl(locale, track);
 	const files = sortedTrackFiles(track);
 
-	const brochures: ResolvedBrochureItem[] = files
+	// Album-level brochures (the independent, mixed-type list) come first;
+	// legacy per-file brochure images still render after them.
+	const albumBrochures: ResolvedBrochureItem[] = (track.brochures ?? [])
+		.map((brochure, index): ResolvedBrochureItem | null => {
+			const fileUrl = brochure.fileUrl?.trim();
+			if (!fileUrl) {
+				return null;
+			}
+			const kind = brochureKind(brochure.fileType, brochure.mimeType);
+			return {
+				id: brochure.id,
+				fileUrl,
+				kind,
+				caption: brochure.title ?? null,
+				sortOrder: brochure.brochureOrder ?? index,
+			};
+		})
+		.filter((brochure): brochure is ResolvedBrochureItem => brochure != null)
+		.sort((a, b) => a.sortOrder - b.sortOrder);
+
+	const fileBrochures: ResolvedBrochureItem[] = files
 		.flatMap((file) => file.brochures)
-		.map((brochure, index) => {
+		.map((brochure, index): ResolvedBrochureItem | null => {
 			const imageUrl = brochure.imageUrl?.trim();
 			if (!imageUrl) {
 				return null;
 			}
 			return {
 				id: brochure.id,
-				imageUrl,
-				caption: brochure.caption,
+				fileUrl: imageUrl,
+				kind: "image",
+				caption: brochure.caption ?? null,
 				sortOrder: brochure.brochureOrder ?? index,
 			};
 		})
 		.filter((brochure): brochure is ResolvedBrochureItem => brochure != null)
 		.sort((a, b) => a.sortOrder - b.sortOrder);
+
+	const brochures = [...albumBrochures, ...fileBrochures];
 
 	const attachments = [...track.attachments].sort(
 		(a, b) => (a.attachmentOrder ?? 0) - (b.attachmentOrder ?? 0),

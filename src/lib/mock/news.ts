@@ -29,6 +29,8 @@ export type NewsItem = {
 	publishedAt: string;
 	featured?: boolean;
 	author?: string;
+	/** Where the news happened / was reported from — rendered in the masthead. */
+	location?: string;
 	readTime?: number;
 	image: {
 		url: string;

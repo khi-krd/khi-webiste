@@ -40,6 +40,7 @@ type WritingPostViewProps = {
 	related: ResolvedWritingCard[];
 	genreLabels: Record<BookGenre, string>;
 	writerLabel: string;
+	locationLabel: string;
 	/** "نووسینی" — byline prefix before the bold writer name. */
 	byLabel: string;
 	seriesLabel: string;
@@ -71,6 +72,7 @@ export function WritingPostView({
 	related,
 	genreLabels,
 	writerLabel,
+	locationLabel,
 	byLabel,
 	seriesLabel,
 	seriesVolumeLabel,
@@ -133,6 +135,7 @@ export function WritingPostView({
 
 	const stripFields = [
 		detail.writer ? { label: writerLabel, value: detail.writer } : null,
+		detail.location ? { label: locationLabel, value: detail.location } : null,
 		detail.topicName ? { label: topicLabel, value: detail.topicName } : null,
 		formatValue ? { label: formatLabel, value: formatValue, ltr: true } : null,
 		languagesValue ? { label: languagesLabel, value: languagesValue } : null,

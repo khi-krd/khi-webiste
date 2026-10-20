@@ -36,6 +36,7 @@ type NewsPostViewProps = {
 	backAriaLabel?: string;
 
 	authorLabel?: string;
+	locationLabel?: string;
 	galleryLabel: string;
 	closeLabel: string;
 	lightboxPreviousLabel: string;
@@ -55,6 +56,7 @@ export function NewsPostView({
 	backLabel,
 	backAriaLabel,
 	authorLabel,
+	locationLabel,
 	galleryLabel,
 	closeLabel,
 	lightboxPreviousLabel,
@@ -106,6 +108,33 @@ export function NewsPostView({
 
 						{authorLabel ? (
 							<p className="mt-4 text-lead text-muted">{authorLabel}</p>
+						) : null}
+						{item.location ? (
+							<p className="mt-2 flex items-center gap-1.5 text-label text-muted">
+								<svg
+									viewBox="0 0 24 24"
+									fill="none"
+									stroke="currentColor"
+									strokeWidth="1.5"
+									className="size-4 shrink-0"
+									aria-hidden="true"
+								>
+									<path
+										strokeLinecap="round"
+										strokeLinejoin="round"
+										d="M15 10.5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"
+									/>
+									<path
+										strokeLinecap="round"
+										strokeLinejoin="round"
+										d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1 1 15 0Z"
+									/>
+								</svg>
+								<span>
+									{locationLabel ? `${locationLabel}: ` : ""}
+									{item.location}
+								</span>
+							</p>
 						) : null}
 					</header>
 

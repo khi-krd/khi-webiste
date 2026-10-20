@@ -51,6 +51,7 @@ export default async function NewsPostPage({ params }: NewsPostPageProps) {
 						? t("post.byAuthor", { author: detail.item.author })
 						: undefined
 				}
+				locationLabel={t("post.location")}
 				galleryLabel={t("post.gallery")}
 				closeLabel={t("post.lightbox.close")}
 				lightboxPreviousLabel={t("post.lightbox.previous")}

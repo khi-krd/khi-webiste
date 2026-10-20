@@ -237,6 +237,7 @@ export function resolveWritingDetail(
 		id: writing.id,
 		title: content.title,
 		writer: content.writer?.trim() ?? "",
+		location: content.location?.trim() || null,
 		description,
 		coverUrl: resolveCoverUrl(locale, writing),
 		hoverCoverUrl: writing.hoverCoverUrl ?? null,

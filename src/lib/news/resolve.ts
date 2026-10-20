@@ -165,6 +165,7 @@ export function resolveNewsItem(locale: string, news: News): NewsItem | null {
 		coverUrl: coverUrl ?? "/menu/1.jpg",
 		coverThumbnailUrl: news.coverThumbnailUrl ?? null,
 		mediaGallery: parseMediaGallery(news.mediaGallery, locale),
+		location: content?.location?.trim() || undefined,
 		tags,
 		keywords,
 		image: {

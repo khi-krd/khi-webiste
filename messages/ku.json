@@ -189,6 +189,7 @@
 		"post": {
 			"back": "Vegere nûçeyan",
 			"byAuthor": "Ji aliyê {author}",
+			"location": "Cih",
 			"tags": "Tag",
 			"gallery": "Medya & galerî",
 			"lightbox": {
@@ -536,6 +537,7 @@
 			"back": "Vegere nivîsan",
 			"lightboxClose": "Bigire",
 			"writer": "Nivîskar",
+			"location": "Cih",
 			"topic": "Mijar",
 			"series": "Rêz",
 			"seriesVolume": "Cild {order} ji {total}",

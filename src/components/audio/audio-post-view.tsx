@@ -3,7 +3,10 @@ import { AudioAlbumVideo } from "@/components/audio/audio-album-video";
 import { AudioAttachmentSlider } from "@/components/audio/audio-attachment-slider";
 import { AudioAttachments } from "@/components/audio/audio-attachments";
 import { AudioBookletReader } from "@/components/audio/audio-booklet-reader";
-import { AudioBrochures } from "@/components/audio/audio-brochures";
+import {
+	AudioBrochureDocuments,
+	AudioBrochures,
+} from "@/components/audio/audio-brochures";
 import { AudioCard, type AudioCardProps } from "@/components/audio/audio-card";
 import { AudioHeroWave } from "@/components/audio/audio-hero-wave";
 import { AudioPlayButton } from "@/components/audio/audio-play-button";
@@ -141,6 +144,9 @@ export async function AudioPostView({
 			totalDurationLabel ||
 			totalSizeLabel,
 	);
+
+	const imageBrochures = detail.brochures.filter((b) => b.kind === "image");
+	const documentBrochures = detail.brochures.filter((b) => b.kind !== "image");
 
 	const downloadableAttachments = detail.attachments.filter((attachment) => {
 		if (attachment.attachmentType === "VIDEO") {
@@ -393,16 +399,26 @@ export async function AudioPostView({
 						<ScrollRevealItem>
 							<div className="mt-10 sm:mt-12">
 								{detail.albumOfMemories ? (
-									<AudioBookletReader
-										title={t("brochures.title")}
-										items={detail.brochures}
-										labels={{
-											previous: t("brochures.previous"),
-											next: t("brochures.next"),
-											fullscreen: t("brochures.fullscreen"),
-											exitFullscreen: t("brochures.exitFullscreen"),
-										}}
-									/>
+									<>
+										{imageBrochures.length > 0 ? (
+											<AudioBookletReader
+												title={t("brochures.title")}
+												items={imageBrochures}
+												labels={{
+													previous: t("brochures.previous"),
+													next: t("brochures.next"),
+													fullscreen: t("brochures.fullscreen"),
+													exitFullscreen: t("brochures.exitFullscreen"),
+												}}
+											/>
+										) : null}
+										<AudioBrochureDocuments
+											title={t("brochures.title")}
+											items={documentBrochures}
+											openLabel={t("brochures.open")}
+											showTitle={imageBrochures.length === 0}
+										/>
+									</>
 								) : (
 									<AudioBrochures
 										title={t("brochures.title")}

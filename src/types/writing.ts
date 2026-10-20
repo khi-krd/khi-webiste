@@ -39,6 +39,7 @@ export const WritingContentSchema = z.object({
 	title: z.string().nullable(),
 	description: z.string().nullable(),
 	writer: z.string().nullable(),
+	location: z.string().nullish(),
 	fileUrl: z.string().nullish(),
 	fileFormat: WritingFileFormatSchema.nullish(),
 	fileSizeBytes: z.number().nullish(),
@@ -171,6 +172,7 @@ export type ResolvedWritingDetail = {
 	id: number;
 	title: string;
 	writer: string;
+	location: string | null;
 	description: string;
 	coverUrl: string | null;
 	hoverCoverUrl: string | null;
