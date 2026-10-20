@@ -29,6 +29,7 @@ function makeVideo(seed: VideoSeed): Video {
 		featured: false,
 		featuredOrder: null,
 		albumOfMemories: false,
+		topics: [],
 		ckbCoverUrl: null,
 		kmrCoverUrl: null,
 		hoverCoverUrl: null,

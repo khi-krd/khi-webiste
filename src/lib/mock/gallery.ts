@@ -394,6 +394,9 @@ export type GalleryPost = {
 	topicId?: number;
 	/** Localized topic name (topicNameCkb / topicNameKmr). */
 	topicName?: string;
+	/** All linked topic ids/names — multi-topic collections expose every one. */
+	topicIds?: number[];
+	topicNames?: string[];
 	/** ISO-8601 date (YYYY-MM-DD). */
 	publishmentDate: string;
 	tags: string[];

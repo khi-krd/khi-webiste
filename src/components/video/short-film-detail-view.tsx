@@ -165,7 +165,7 @@ export async function ShortFilmDetailView({
 	const t = await getTranslations("Video");
 
 	const durationLabel = formatDuration(detail.durationSeconds);
-	const genreLabel = detail.tags[0] ?? detail.topicName ?? "—";
+	const genreLabel = detail.tags[0] ?? (detail.topicNames.join("، ") || "—");
 	const directorLabel = detail.director ?? null;
 	const producerLabel = detail.producer ?? null;
 
@@ -264,22 +264,32 @@ export async function ShortFilmDetailView({
 					<ScrollRevealItem className="flex min-w-0">
 						<aside className="flex w-full flex-col justify-between gap-6 border border-primary-foreground/15 bg-primary-foreground/3 p-5 sm:p-6 lg:sticky lg:top-24 lg:self-start">
 							<div className="flex flex-col gap-4">
-								{detail.topicName ? (
-									detail.topicId != null ? (
-										<Link
-											href={videoTopicHref(
-												detail.topicId,
-												"/videos/shortfilms",
-											)}
-											className="w-fit text-label text-primary-foreground/55 underline decoration-primary-foreground/25 underline-offset-2 transition-colors fine-hover:text-primary-foreground/80 fine-hover:decoration-primary-foreground/50"
-										>
-											{detail.topicName}
-										</Link>
-									) : (
-										<span className="text-label text-primary-foreground/55">
-											{detail.topicName}
-										</span>
-									)
+								{detail.topicNames.length > 0 ? (
+									<span className="inline-flex flex-wrap items-center gap-x-1">
+										{detail.topicNames.map((name, index) => {
+											const id = detail.topicIds[index];
+											return (
+												<span key={`${name}-${index}`}>
+													{id != null ? (
+														<Link
+															href={videoTopicHref(
+																id,
+																"/videos/shortfilms",
+															)}
+															className="w-fit text-label text-primary-foreground/55 underline decoration-primary-foreground/25 underline-offset-2 transition-colors fine-hover:text-primary-foreground/80 fine-hover:decoration-primary-foreground/50"
+														>
+															{name}
+														</Link>
+													) : (
+														<span className="text-label text-primary-foreground/55">
+															{name}
+														</span>
+													)}
+													{index < detail.topicNames.length - 1 ? "، " : ""}
+												</span>
+											);
+										})}
+									</span>
 								) : null}
 
 								<h2 className="font-heading text-h2 font-bold leading-[1.12] text-balance text-primary-foreground xl:text-h1">

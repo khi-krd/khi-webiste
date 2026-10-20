@@ -95,7 +95,13 @@ export function resolveContactOffice(
 	return {
 		id: officeId,
 		index: (index + 1) as ContactOffice["index"],
-		badge: isHeadquarters(page.officeType) ? "hq" : "regional",
+		badge:
+			(page.officeTypes?.length
+				? page.officeTypes.some(isHeadquarters)
+				: isHeadquarters(page.officeType)) ||
+			isHeadquarters(page.officeType)
+				? "hq"
+				: "regional",
 		phone: page.phone ?? "",
 		secondaryPhone: page.secondaryPhone?.trim() || undefined,
 		email: page.email ?? "",

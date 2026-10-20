@@ -74,9 +74,16 @@ export function ProjectCard({
 					</div>
 
 					<div className="mt-5 flex flex-wrap items-center gap-2 sm:mt-6">
-						{item.projectType && (
-							<p className="label font-medium text-muted">{item.projectType}</p>
-						)}
+						{(item.projectTypes?.length
+							? item.projectTypes
+							: item.projectType
+								? [item.projectType]
+								: []
+						).map((type) => (
+							<p key={type} className="label font-medium text-muted">
+								{type}
+							</p>
+						))}
 						{hasGallery && (
 							<span className="inline-flex items-center gap-1 label font-medium text-muted">
 								<PhotoIcon className="size-3.5" aria-hidden />

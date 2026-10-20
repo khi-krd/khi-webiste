@@ -58,6 +58,7 @@ describe("resolveImageCollectionItem", () => {
 				collectedBy: null,
 			},
 			imageAlbum: [albumItem(1, "https://cdn.example.com/full-image.jpg", 0)],
+			topics: [],
 		} as ImageCollection;
 
 		const item = resolveImageCollectionItem("ku", collection, 0);
@@ -78,6 +79,7 @@ describe("resolveImageCollectionItem", () => {
 				collectedBy: null,
 			},
 			imageAlbum: [],
+			topics: [],
 		} as ImageCollection;
 
 		const item = resolveImageCollectionItem("ku", collection, 0);
@@ -107,6 +109,7 @@ describe("resolveGalleryPost", () => {
 					albumItem(2, "https://example.com/b.jpg", 1),
 				),
 			],
+			topics: [],
 		} as ImageCollection;
 
 		const post = resolveGalleryPost("ku", collection);
@@ -127,6 +130,7 @@ describe("resolveGalleryPost", () => {
 				collectedBy: null,
 			},
 			imageAlbum: [albumItem(1, "https://cdn.example.com/full-image.jpg", 0)],
+			topics: [],
 		} as ImageCollection;
 
 		const post = resolveGalleryPost("ku", collection);

@@ -30,6 +30,7 @@ export const ContactPageSchema = z.object({
 	longitude: z.number().nullish(),
 	heroImageUrl: z.string().nullish(),
 	officeType: OfficeTypeSchema.nullish(),
+	officeTypes: z.array(OfficeTypeSchema).optional().default([]),
 	badgeCkb: z.string().nullish(),
 	badgeKmr: z.string().nullish(),
 	displayOrder: z.number().nullish(),

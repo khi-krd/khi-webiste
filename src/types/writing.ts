@@ -89,6 +89,7 @@ export const WritingSchema = z.object({
 	topicNameCkb: z.string().nullish(),
 	topicNameKmr: z.string().nullish(),
 	topic: TopicInfoSchema.nullish(),
+	topics: z.array(TopicInfoSchema).optional().default([]),
 	bookGenres: z.array(z.string()),
 	publishedByInstitute: z.boolean(),
 	tags: BilingualSetSchema,
@@ -179,6 +180,7 @@ export type ResolvedWritingDetail = {
 	genres: BookGenre[];
 	freeTextGenre: string | null;
 	topicName: string | null;
+	topicNames: string[];
 	publishedByInstitute: boolean;
 	seriesName: string | null;
 	seriesId: string | null;
@@ -206,6 +208,7 @@ export type ResolvedWritingCard = {
 	tags: string[];
 	keywords: string[];
 	topicName: string | null;
+	topicNames: string[];
 	seriesName: string | null;
 	publishedByInstitute: boolean;
 	seriesOrderLabel: string;

@@ -63,6 +63,8 @@ const RAW_TRACKS: RawTrack[] = [
 		topicId: 4,
 		topicNameCkb: "خوێندنەوەی شیعر",
 		topicNameKmr: "Xwendina helbestê",
+		soundTypes: [],
+		topics: [],
 		contentLanguages: ["CKB", "KMR"],
 		ckbContent: {
 			title: "هاوار — خوێندنەوەی شیعری کلاسیک",
@@ -139,6 +141,8 @@ const RAW_TRACKS: RawTrack[] = [
 		topicId: 1,
 		topicNameCkb: "مۆسیقای فۆلکلۆر",
 		topicNameKmr: "Muzîka folklorî",
+		soundTypes: [],
+		topics: [],
 		contentLanguages: ["CKB", "KMR"],
 		ckbContent: {
 			title: "هەیرانێکی هەورامان",
@@ -205,6 +209,8 @@ const RAW_TRACKS: RawTrack[] = [
 		topicId: 2,
 		topicNameCkb: "مێژووی زارەکی",
 		topicNameKmr: "Dîroka devkî",
+		soundTypes: [],
+		topics: [],
 		contentLanguages: ["CKB", "KMR"],
 		ckbContent: {
 			title: "وتارێکی مێژوویی — مەهاباد ١٩٤٧",
@@ -271,6 +277,8 @@ const RAW_TRACKS: RawTrack[] = [
 		topicId: 3,
 		topicNameCkb: "کەلەپووری ئایینی",
 		topicNameKmr: "Mîrateya olî",
+		soundTypes: [],
+		topics: [],
 		contentLanguages: ["CKB", "KMR"],
 		ckbContent: {
 			title: "بەیتی مەولوود",
@@ -337,6 +345,8 @@ const RAW_TRACKS: RawTrack[] = [
 		topicId: 2,
 		topicNameCkb: "مێژووی زارەکی",
 		topicNameKmr: "Dîroka devkî",
+		soundTypes: [],
+		topics: [],
 		contentLanguages: ["CKB", "KMR"],
 		ckbContent: {
 			title: "چیرۆکی ژیان — دیمانە لەگەڵ دەنگبێژ",
@@ -413,6 +423,8 @@ const RAW_TRACKS: RawTrack[] = [
 		topicId: 5,
 		topicNameCkb: "ئەرشیفی ڕادیۆ",
 		topicNameKmr: "Arşîva radyoyê",
+		soundTypes: [],
+		topics: [],
 		contentLanguages: ["CKB", "KMR"],
 		ckbContent: {
 			title: "ئەلبووم: گوتارەکانی مێژوو",
@@ -623,6 +635,8 @@ const RAW_TRACKS: RawTrack[] = [
 		topicId: 4,
 		topicNameCkb: "خوێندنەوەی شیعر",
 		topicNameKmr: "Xwendina helbestê",
+		soundTypes: [],
+		topics: [],
 		contentLanguages: ["CKB", "KMR"],
 		ckbContent: {
 			title: "دیوانی نالی — خوێندنەوە",
@@ -769,6 +783,8 @@ const RAW_TRACKS: RawTrack[] = [
 		topicId: 1,
 		topicNameCkb: "مۆسیقای فۆلکلۆر",
 		topicNameKmr: "Muzîka folklorî",
+		soundTypes: [],
+		topics: [],
 		contentLanguages: ["CKB", "KMR"],
 		ckbContent: {
 			title: "دەنگەکانی زاگرۆس",
@@ -955,6 +971,8 @@ const RAW_TRACKS: RawTrack[] = [
 		topicId: 1,
 		topicNameCkb: "مۆسیقای فۆلکلۆر",
 		topicNameKmr: "Muzîka folklorî",
+		soundTypes: [],
+		topics: [],
 		contentLanguages: ["CKB", "KMR"],
 		ckbContent: {
 			title: "ئەلبوومی یادەوەری — گۆرانییە کۆنەکان",
@@ -1111,6 +1129,8 @@ const RAW_TRACKS: RawTrack[] = [
 		topicId: 5,
 		topicNameCkb: "ئەرشیفی ڕادیۆ",
 		topicNameKmr: "Arşîva radyoyê",
+		soundTypes: [],
+		topics: [],
 		contentLanguages: ["CKB", "KMR"],
 		ckbContent: {
 			title: "یادەوەری ڕادیۆی بەغدا — بەشی کوردی",
@@ -1237,6 +1257,8 @@ const RAW_TRACKS: RawTrack[] = [
 		topicId: 1,
 		topicNameCkb: "مۆسیقای فۆلکلۆر",
 		topicNameKmr: "Muzîka folklorî",
+		soundTypes: [],
+		topics: [],
 		contentLanguages: ["CKB"],
 		ckbContent: {
 			title: "میرزا مەحموود — گۆرانییەکی دێرین",
@@ -1299,6 +1321,8 @@ const RAW_TRACKS: RawTrack[] = [
 		topicId: null,
 		topicNameCkb: null,
 		topicNameKmr: null,
+		soundTypes: [],
+		topics: [],
 		contentLanguages: ["CKB", "KMR"],
 		ckbContent: {
 			title: "سیمینارێک لەسەر پاراستنی دەنگ",
@@ -1375,6 +1399,8 @@ const RAW_TRACKS: RawTrack[] = [
 		topicId: 1,
 		topicNameCkb: "مۆسیقای فۆلکلۆر",
 		topicNameKmr: "Muzîka folklorî",
+		soundTypes: [],
+		topics: [],
 		contentLanguages: ["CKB"],
 		ckbContent: {
 			title: "یادگارییەکان",

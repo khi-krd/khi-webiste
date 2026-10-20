@@ -77,6 +77,32 @@ function resolveTopicId(collection: ImageCollection): number | undefined {
 		: undefined;
 }
 
+/** Every linked topic, locale-ordered names; falls back to singular fields. */
+function resolveTopicNames(
+	locale: string,
+	collection: ImageCollection,
+): string[] {
+	const names = (collection.topics ?? [])
+		.map((topic) =>
+			locale === "ckb"
+				? firstNonBlank(topic.nameCkb, topic.nameKmr)
+				: firstNonBlank(topic.nameKmr, topic.nameCkb),
+		)
+		.filter((name): name is string => Boolean(name));
+	if (names.length > 0) return names;
+	const single = resolveTopicName(locale, collection);
+	return single ? [single] : [];
+}
+
+function resolveTopicIds(collection: ImageCollection): number[] {
+	const ids = (collection.topics ?? [])
+		.map((topic) => topic.id)
+		.filter((id) => Number.isInteger(id) && id > 0);
+	if (ids.length > 0) return ids;
+	const single = resolveTopicId(collection);
+	return single != null ? [single] : [];
+}
+
 function mapCollectionType(
 	apiType: ImageCollection["collectionType"],
 ): GalleryCollectionType {
@@ -230,6 +256,8 @@ export function resolveGalleryPost(
 		collectedBy: content?.collectedBy?.trim() || undefined,
 		topicId: resolveTopicId(collection),
 		topicName: resolveTopicName(locale, collection),
+		topicIds: resolveTopicIds(collection),
+		topicNames: resolveTopicNames(locale, collection),
 		publishmentDate:
 			collection.publishmentDate ?? new Date().toISOString().slice(0, 10),
 		tags: resolveTags(locale, collection),

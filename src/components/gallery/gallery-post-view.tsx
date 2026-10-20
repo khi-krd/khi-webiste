@@ -156,11 +156,16 @@ export function GalleryPostView({
 									<span>{dateLabel}</span>
 								</>
 							)}
-							{post.topicName && (
-								<Badge variant="outline" size="sm" className="ms-1">
-									{post.topicName}
+							{(post.topicNames?.length
+								? post.topicNames
+								: post.topicName
+									? [post.topicName]
+									: []
+							).map((name) => (
+								<Badge key={name} variant="outline" size="sm" className="ms-1">
+									{name}
 								</Badge>
-							)}
+							))}
 						</p>
 						<h1
 							className={cn(

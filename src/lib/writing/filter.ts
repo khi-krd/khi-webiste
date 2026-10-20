@@ -65,6 +65,7 @@ export function filterWritings(
 				item.excerpt,
 				item.seriesName,
 				item.topicName,
+				...item.topicNames,
 				item.freeTextGenre,
 			]
 				.filter(Boolean)

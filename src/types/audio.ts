@@ -92,11 +92,22 @@ export const SoundTrackSchema = z.object({
 	kmrCoverUrl: z.string().nullish(),
 	hoverCoverUrl: z.string().nullish(),
 	soundType: z.string(),
+	soundTypes: z.array(z.string()).optional().default([]),
 	trackState: TrackStateSchema,
 	albumOfMemories: z.boolean(),
 	topicId: z.number().nullish(),
 	topicNameCkb: z.string().nullish(),
 	topicNameKmr: z.string().nullish(),
+	topics: z
+		.array(
+			z.object({
+				id: z.number(),
+				nameCkb: z.string().nullish(),
+				nameKmr: z.string().nullish(),
+			}),
+		)
+		.optional()
+		.default([]),
 	contentLanguages: z.array(z.enum(["CKB", "KMR"])),
 	ckbContent: SoundContentSchema.nullish(),
 	kmrContent: SoundContentSchema.nullish(),
@@ -191,10 +202,13 @@ export type ResolvedAudioCard = {
 	coverUrl: string | null;
 	hoverCoverUrl: string | null;
 	soundType: string;
+	soundTypes: string[];
 	trackState: TrackState;
 	albumOfMemories: boolean;
 	topicId: number | null;
 	topicName: string | null;
+	topicIds: number[];
+	topicNames: string[];
 	totalDurationSeconds: number | null;
 	totalTracks: number | null;
 	publishmentYear: number | null;
@@ -248,10 +262,13 @@ export type ResolvedAudioDetail = {
 	coverUrl: string | null;
 	hoverCoverUrl: string | null;
 	soundType: string;
+	soundTypes: string[];
 	trackState: TrackState;
 	albumOfMemories: boolean;
 	topicId: number | null;
 	topicName: string | null;
+	topicIds: number[];
+	topicNames: string[];
 	reader: string | null;
 	directors: string[];
 	locations: string[];

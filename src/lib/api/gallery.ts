@@ -130,12 +130,22 @@ function collectTopicOptions(
 	const map = new Map<number, GalleryTopicOption>();
 
 	for (const post of posts) {
-		if (post.topicId == null || !post.topicName) {
-			continue;
-		}
+		const ids = post.topicIds?.length
+			? post.topicIds
+			: post.topicId != null
+				? [post.topicId]
+				: [];
+		const names = post.topicNames?.length
+			? post.topicNames
+			: post.topicName
+				? [post.topicName]
+				: [];
 
-		if (!map.has(post.topicId)) {
-			map.set(post.topicId, { id: post.topicId, name: post.topicName });
+		for (let i = 0; i < ids.length; i++) {
+			const name = names[i];
+			if (name && !map.has(ids[i])) {
+				map.set(ids[i], { id: ids[i], name });
+			}
 		}
 	}
 

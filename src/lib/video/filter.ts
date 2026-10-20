@@ -19,11 +19,20 @@ export function filterVideos(
 	}
 
 	if (topicId != null) {
-		result = result.filter((item) => item.topicId === topicId);
+		result = result.filter((item) =>
+			(item.topicIds.length ? item.topicIds : [item.topicId]).includes(
+				topicId,
+			),
+		);
 	}
 
 	if (excludeTopicId != null) {
-		result = result.filter((item) => item.topicId !== excludeTopicId);
+		result = result.filter(
+			(item) =>
+				!(item.topicIds.length ? item.topicIds : [item.topicId]).includes(
+					excludeTopicId ?? -1,
+				),
+		);
 	}
 
 	if (memories) {
@@ -38,6 +47,7 @@ export function filterVideos(
 				item.subtitle,
 				item.excerpt,
 				item.topicName,
+				...item.topicNames,
 				...item.tags,
 				...item.keywords,
 			]

@@ -61,20 +61,31 @@ export async function VideoDetailView({
 		detail.location
 			? { label: t("detail.location"), value: detail.location }
 			: null,
-		detail.topicName
+		detail.topicNames.length > 0
 			? {
 					label: t("detail.topic"),
-					value:
-						detail.topicId != null ? (
-							<Link
-								href={videoTopicHref(detail.topicId)}
-								className="underline decoration-border underline-offset-2 transition-colors fine-hover:decoration-foreground"
-							>
-								{detail.topicName}
-							</Link>
-						) : (
-							detail.topicName
-						),
+					value: (
+						<span className="inline-flex flex-wrap items-center gap-x-1">
+							{detail.topicNames.map((name, index) => {
+								const id = detail.topicIds[index];
+								return (
+									<span key={`${name}-${index}`}>
+										{id != null ? (
+											<Link
+												href={videoTopicHref(id)}
+												className="underline decoration-border underline-offset-2 transition-colors fine-hover:decoration-foreground"
+											>
+												{name}
+											</Link>
+										) : (
+											name
+										)}
+										{index < detail.topicNames.length - 1 ? "، " : ""}
+									</span>
+								);
+							})}
+						</span>
+					),
 				}
 			: null,
 		durationLabel
@@ -138,14 +149,17 @@ export async function VideoDetailView({
 										>
 											{t(`typeBadge.${detail.videoType}`)}
 										</NavLink>
-										{detail.topicName && detail.topicId != null ? (
-											<NavLink
-												href={videoTopicHref(detail.topicId)}
-												className="border border-primary-foreground/40 px-3.5 py-1.5 text-label font-semibold text-primary-foreground no-underline transition-colors fine-hover:border-primary-foreground"
-											>
-												{detail.topicName}
-											</NavLink>
-										) : null}
+										{detail.topicNames.map((name, index) =>
+											detail.topicIds[index] != null ? (
+												<NavLink
+													key={`${name}-${index}`}
+													href={videoTopicHref(detail.topicIds[index] as number)}
+													className="border border-primary-foreground/40 px-3.5 py-1.5 text-label font-semibold text-primary-foreground no-underline transition-colors fine-hover:border-primary-foreground"
+												>
+													{name}
+												</NavLink>
+											) : null,
+										)}
 										{detail.albumOfMemories ? (
 											<NavLink
 												href={videoMemoriesHref()}

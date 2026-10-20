@@ -47,6 +47,16 @@ export const ImageCollectionSchema = z.object({
 	topicId: z.number().nullish(),
 	topicNameCkb: z.string().nullish(),
 	topicNameKmr: z.string().nullish(),
+	topics: z
+		.array(
+			z.object({
+				id: z.number(),
+				nameCkb: z.string().nullish(),
+				nameKmr: z.string().nullish(),
+			}),
+		)
+		.optional()
+		.default([]),
 	publishmentDate: z.string().nullish(),
 	contentLanguages: z.array(ContentLanguageSchema),
 	ckbContent: ImageCollectionContentSchema.nullish(),

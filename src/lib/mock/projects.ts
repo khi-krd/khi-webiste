@@ -17,6 +17,7 @@ export type ProjectListItem = ProjectItem & {
 	excerpt: string;
 	location: string | null;
 	projectType: string | null;
+	projectTypes?: string[];
 	status: ProjectStatus | null;
 	projectDate: string | null;
 	year: string | null;

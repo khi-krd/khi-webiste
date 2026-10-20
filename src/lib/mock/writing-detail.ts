@@ -80,6 +80,7 @@ function cardToWriting(
 		{
 			id: card.id,
 			contentLanguages: hasKmr ? ["CKB", "KMR"] : ["CKB"],
+			topics: [],
 			ckbCoverUrl: card.coverUrl,
 			kmrCoverUrl: card.coverUrl,
 			hoverCoverUrl: card.hoverCoverUrl,

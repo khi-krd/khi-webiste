@@ -80,9 +80,9 @@ function toAudioCardProps(
 	t: (key: string, values?: Record<string, number>) => string,
 	soundTypeLabels?: Record<string, string>,
 ): AudioCardProps {
-	const typeLabel =
-		soundTypeLabels?.[card.soundType] ??
-		soundTypeLabel((key) => t(key), card.soundType);
+	const typeLabel = (card.soundTypes.length ? card.soundTypes : [card.soundType])
+		.map((raw) => soundTypeLabels?.[raw] ?? soundTypeLabel((key) => t(key), raw))
+		.join(" · ");
 	const metaLabel =
 		card.trackState === "MULTI"
 			? `${typeLabel} · ${t("card.albumTracks", { count: card.totalTracks ?? 0 })}`
@@ -115,9 +115,16 @@ export async function AudioPostView({
 	// Back links are named after the menu entry for the section they return to.
 	const tNav = await getTranslations("Nav");
 
-	const typeLabel =
-		soundTypeLabels?.[detail.soundType] ??
-		soundTypeLabel((key) => t(key), detail.soundType);
+	const typeLabels = (detail.soundTypes.length
+		? detail.soundTypes
+		: [detail.soundType]
+	).map(
+		(raw) => soundTypeLabels?.[raw] ?? soundTypeLabel((key) => t(key), raw),
+	);
+	const typeHrefs = (detail.soundTypes.length
+		? detail.soundTypes
+		: [detail.soundType]
+	).map((raw) => audioSoundTypeHref(raw));
 	const stateLabel = t(
 		detail.trackState === "MULTI" ? "state.multi" : "state.single",
 	);
@@ -142,7 +149,7 @@ export async function AudioPostView({
 	const hasCredits = Boolean(detail.reader || detail.directors.length > 0);
 	// Guards the liner-notes <dl> so an empty one never draws a stray hairline.
 	const hasMeta = Boolean(
-		detail.topicName ||
+		detail.topicNames.length > 0 ||
 			detail.terms ||
 			detail.genre ||
 			detail.locations.length > 0 ||
@@ -223,13 +230,16 @@ export async function AudioPostView({
 											{t("card.instituteBadge")}
 										</Badge>
 									) : null}
-									<TaxonomyBadgeLink
-										href={audioSoundTypeHref(detail.soundType)}
-										variant="outline"
-										size="sm"
-									>
-										{typeLabel}
-									</TaxonomyBadgeLink>
+									{typeLabels.map((label, index) => (
+										<TaxonomyBadgeLink
+											key={`${label}-${index}`}
+											href={typeHrefs[index]}
+											variant="outline"
+											size="sm"
+										>
+											{label}
+										</TaxonomyBadgeLink>
+									))}
 									<Badge variant="subtle" size="sm">
 										{stateLabel}
 									</Badge>
@@ -328,18 +338,30 @@ export async function AudioPostView({
 
 								{hasMeta ? (
 									<dl className="grid min-w-0 grid-cols-2 gap-x-5 gap-y-4 rounded-md bg-sunken p-5 sm:p-6">
-										{detail.topicName ? (
+										{detail.topicNames.length > 0 ? (
 											<MetaCell label={t("post.topic")}>
-												{detail.topicId != null ? (
-													<Link
-														href={audioTopicHref(detail.topicId)}
-														className="underline decoration-border underline-offset-2 transition-colors fine-hover:decoration-foreground"
-													>
-														{detail.topicName}
-													</Link>
-												) : (
-													detail.topicName
-												)}
+												<span className="inline-flex flex-wrap items-center gap-x-1">
+													{detail.topicNames.map((name, index) => {
+														const id = detail.topicIds[index];
+														return (
+															<span key={`${name}-${index}`}>
+																{id != null ? (
+																	<Link
+																		href={audioTopicHref(id)}
+																		className="underline decoration-border underline-offset-2 transition-colors fine-hover:decoration-foreground"
+																	>
+																		{name}
+																	</Link>
+																) : (
+																	name
+																)}
+																{index < detail.topicNames.length - 1
+																	? "، "
+																	: ""}
+															</span>
+														);
+													})}
+												</span>
 											</MetaCell>
 										) : null}
 										{detail.genre ? (

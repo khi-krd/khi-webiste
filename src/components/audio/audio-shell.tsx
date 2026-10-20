@@ -55,9 +55,15 @@ export async function AudioShell({
 	const isEmpty = cards.length === 0;
 
 	const cardProps: AudioCardProps[] = cards.map((card) => {
-		const typeLabel =
-			soundTypeLabels?.[card.soundType] ??
-			soundTypeLabel((key) => t(key), card.soundType);
+		const typeLabel = (card.soundTypes.length
+			? card.soundTypes
+			: [card.soundType]
+		)
+			.map(
+				(raw) =>
+					soundTypeLabels?.[raw] ?? soundTypeLabel((key) => t(key), raw),
+			)
+			.join(" · ");
 		const metaLabel =
 			card.trackState === "MULTI"
 				? `${typeLabel} · ${t("card.albumTracks", { count: card.totalTracks ?? 0 })}`

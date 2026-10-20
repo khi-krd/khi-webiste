@@ -26,6 +26,15 @@ export const ProjectSchema = z.object({
 	mediaGallery: z.array(z.unknown()).optional(),
 	projectTypeCkb: z.string().nullable().optional(),
 	projectTypeKmr: z.string().nullable().optional(),
+	projectTypes: z
+		.array(
+			z.object({
+				nameCkb: z.string().nullish(),
+				nameKmr: z.string().nullish(),
+			}),
+		)
+		.optional()
+		.default([]),
 	status: ProjectStatusSchema.nullable().optional(),
 	projectDate: z.string().nullish(),
 	contentLanguages: z.array(ContentLanguageSchema),

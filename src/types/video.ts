@@ -89,6 +89,16 @@ export const VideoSchema = z.object({
 	topicNameCkb: z.string().nullish(),
 	topicNameKmr: z.string().nullish(),
 	topicNameEn: z.string().nullish(),
+	topics: z
+		.array(
+			z.object({
+				id: z.number(),
+				nameCkb: z.string().nullish(),
+				nameKmr: z.string().nullish(),
+			}),
+		)
+		.optional()
+		.default([]),
 	contentLanguages: z.array(VideoContentLanguageSchema),
 	ckbContent: VideoContentSchema.nullish(),
 	kmrContent: VideoContentSchema.nullish(),
@@ -155,6 +165,8 @@ export type ResolvedVideoCard = {
 	albumOfMemories: boolean;
 	topicId: number | null;
 	topicName: string | null;
+	topicIds: number[];
+	topicNames: string[];
 	durationSeconds: number | null;
 	/** Always null — clips are standalone, never a playlist count. */
 	clipCount: number | null;
@@ -190,6 +202,8 @@ export type ResolvedVideoDetail = {
 	albumOfMemories: boolean;
 	topicId: number | null;
 	topicName: string | null;
+	topicIds: number[];
+	topicNames: string[];
 	director: string | null;
 	producer: string | null;
 	location: string | null;

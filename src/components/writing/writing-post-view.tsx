@@ -136,7 +136,9 @@ export function WritingPostView({
 	const stripFields = [
 		detail.writer ? { label: writerLabel, value: detail.writer } : null,
 		detail.location ? { label: locationLabel, value: detail.location } : null,
-		detail.topicName ? { label: topicLabel, value: detail.topicName } : null,
+		detail.topicNames.length > 0
+			? { label: topicLabel, value: detail.topicNames.join("، ") }
+			: null,
 		formatValue ? { label: formatLabel, value: formatValue, ltr: true } : null,
 		languagesValue ? { label: languagesLabel, value: languagesValue } : null,
 	].filter((field): field is NonNullable<typeof field> => field != null);
@@ -167,9 +169,11 @@ export function WritingPostView({
 									{chip.label}
 								</NavLink>
 							))}
-							{detail.topicName ? (
-								<span className={chipLineClass}>{detail.topicName}</span>
-							) : null}
+							{detail.topicNames.map((name) => (
+								<span key={name} className={chipLineClass}>
+									{name}
+								</span>
+							))}
 						</div>
 
 						<h1

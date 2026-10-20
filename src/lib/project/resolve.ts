@@ -46,6 +46,23 @@ function resolveProjectType(locale: string, project: Project): string | null {
 	return firstNonBlank(project.projectTypeKmr, project.projectTypeCkb);
 }
 
+/** Every selected type, locale-ordered; falls back to the singular pair. */
+export function resolveProjectTypes(
+	locale: string,
+	project: Project,
+): string[] {
+	const names = (project.projectTypes ?? [])
+		.map((entry) =>
+			locale === "ckb"
+				? firstNonBlank(entry.nameCkb, entry.nameKmr)
+				: firstNonBlank(entry.nameKmr, entry.nameCkb),
+		)
+		.filter((name): name is string => Boolean(name));
+	if (names.length > 0) return names;
+	const single = resolveProjectType(locale, project);
+	return single ? [single] : [];
+}
+
 function isUsableCoverUrl(url: string | null | undefined): url is string {
 	if (!url?.trim()) return false;
 	try {
@@ -113,6 +130,7 @@ export function resolveProjectListItem(
 		excerpt,
 		location,
 		projectType: resolveProjectType(locale, project),
+		projectTypes: resolveProjectTypes(locale, project),
 		status: project.status ?? null,
 		projectDate,
 		year,

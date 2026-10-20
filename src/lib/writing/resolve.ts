@@ -95,6 +95,19 @@ function resolveWritingTopicName(
 	return firstNonBlank(writing.topicNameKmr, writing.topicNameCkb);
 }
 
+/** Every linked topic, locale-ordered names; falls back to singular fields. */
+export function resolveWritingTopicNames(
+	locale: string,
+	writing: Writing,
+): string[] {
+	const names = (writing.topics ?? [])
+		.map((topic) => resolveTopicName(locale, topic))
+		.filter((name): name is string => Boolean(name));
+	if (names.length > 0) return names;
+	const single = resolveWritingTopicName(locale, writing);
+	return single ? [single] : [];
+}
+
 function resolveWritingSeriesInfo(writing: Writing): SeriesInfo {
 	if (writing.seriesInfo) {
 		return writing.seriesInfo;
@@ -139,6 +152,7 @@ export function resolveWritingCard(
 		tags: unionBilingualStrings(writing.tags.ckb, writing.tags.kmr),
 		keywords: unionBilingualStrings(writing.keywords.ckb, writing.keywords.kmr),
 		topicName: resolveWritingTopicName(locale, writing),
+		topicNames: resolveWritingTopicNames(locale, writing),
 		seriesName: seriesInfo.seriesName?.trim() || null,
 		publishedByInstitute: writing.publishedByInstitute,
 		seriesOrderLabel: String(Math.round(seriesOrder)).padStart(2, "0"),
@@ -244,6 +258,7 @@ export function resolveWritingDetail(
 		genres: writing.bookGenres,
 		freeTextGenre: content.genre,
 		topicName: resolveWritingTopicName(locale, writing),
+		topicNames: resolveWritingTopicNames(locale, writing),
 		publishedByInstitute: writing.publishedByInstitute,
 		seriesName: seriesInfo.seriesName?.trim() || null,
 		seriesId: seriesInfo.seriesId,

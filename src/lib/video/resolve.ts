@@ -92,6 +92,28 @@ export function resolveVideoTopicName(
 	return firstNonBlank(video.topicNameKmr, video.topicNameCkb);
 }
 
+/** Every linked topic, locale-ordered names; falls back to the singular pair. */
+export function resolveVideoTopicNames(
+	locale: string,
+	video: Video,
+): string[] {
+	const names = (video.topics ?? [])
+		.map((topic) =>
+			locale === "ckb"
+				? firstNonBlank(topic.nameCkb, topic.nameKmr)
+				: firstNonBlank(topic.nameKmr, topic.nameCkb),
+		)
+		.filter((name): name is string => Boolean(name));
+	if (names.length > 0) return names;
+	const single = resolveVideoTopicName(locale, video);
+	return single ? [single] : [];
+}
+
+export function resolveVideoTopicIds(video: Video): number[] {
+	if (video.topics?.length) return video.topics.map((topic) => topic.id);
+	return video.topicId != null ? [video.topicId] : [];
+}
+
 function resolveBilingualStrings(
 	locale: string,
 	ckb: string[],
@@ -341,6 +363,8 @@ export function resolveVideoCard(
 		albumOfMemories: video.albumOfMemories,
 		topicId: video.topicId ?? null,
 		topicName: resolveVideoTopicName(locale, video),
+		topicIds: resolveVideoTopicIds(video),
+		topicNames: resolveVideoTopicNames(locale, video),
 		durationSeconds:
 			singleClip?.durationSeconds ??
 			video.durationSeconds ??
@@ -436,6 +460,8 @@ export function resolveVideoDetail(
 		albumOfMemories: video.albumOfMemories,
 		topicId: video.topicId ?? null,
 		topicName: resolveVideoTopicName(locale, video),
+		topicIds: resolveVideoTopicIds(video),
+		topicNames: resolveVideoTopicNames(locale, video),
 		director: firstNonBlank(content.director),
 		producer: firstNonBlank(content.producer),
 		location: firstNonBlank(content.location),

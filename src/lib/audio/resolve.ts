@@ -69,6 +69,34 @@ export function resolveAudioTopicName(
 	return firstNonBlank(track.topicNameKmr, track.topicNameCkb);
 }
 
+/** Every linked topic, locale-ordered names; falls back to the singular pair
+ * for responses that predate the plural field. */
+export function resolveAudioTopicNames(
+	locale: string,
+	track: SoundTrack,
+): string[] {
+	const names = (track.topics ?? [])
+		.map((topic) =>
+			locale === "ckb"
+				? firstNonBlank(topic.nameCkb, topic.nameKmr)
+				: firstNonBlank(topic.nameKmr, topic.nameCkb),
+		)
+		.filter((name): name is string => Boolean(name));
+	if (names.length > 0) return names;
+	const single = resolveAudioTopicName(locale, track);
+	return single ? [single] : [];
+}
+
+export function resolveAudioTopicIds(track: SoundTrack): number[] {
+	if (track.topics?.length) return track.topics.map((topic) => topic.id);
+	return track.topicId != null ? [track.topicId] : [];
+}
+
+export function resolveAudioSoundTypes(track: SoundTrack): string[] {
+	if (track.soundTypes?.length) return track.soundTypes;
+	return track.soundType ? [track.soundType] : [];
+}
+
 function resolveBilingualStrings(
 	locale: string,
 	ckb: string[],
@@ -163,10 +191,13 @@ export function resolveAudioCard(
 		coverUrl: resolveAudioCoverUrl(locale, track),
 		hoverCoverUrl: track.hoverCoverUrl ?? null,
 		soundType: track.soundType,
+		soundTypes: resolveAudioSoundTypes(track),
 		trackState: track.trackState,
 		albumOfMemories: track.albumOfMemories,
 		topicId: track.topicId ?? null,
 		topicName: resolveAudioTopicName(locale, track),
+		topicIds: resolveAudioTopicIds(track),
+		topicNames: resolveAudioTopicNames(locale, track),
 		totalDurationSeconds: track.totalDurationSeconds ?? null,
 		totalTracks:
 			track.totalTracks ??
@@ -326,10 +357,13 @@ export function resolveAudioDetail(
 		coverUrl,
 		hoverCoverUrl: track.hoverCoverUrl ?? null,
 		soundType: track.soundType,
+		soundTypes: resolveAudioSoundTypes(track),
 		trackState: track.trackState,
 		albumOfMemories: track.albumOfMemories,
 		topicId: track.topicId ?? null,
 		topicName: resolveAudioTopicName(locale, track),
+		topicIds: resolveAudioTopicIds(track),
+		topicNames: resolveAudioTopicNames(locale, track),
 		reader: track.reader ?? null,
 		directors: track.directors,
 		locations: track.locations,

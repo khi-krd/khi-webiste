@@ -239,6 +239,7 @@ function buildDemoCard(
 		tags: [],
 		keywords: [],
 		topicName: null,
+		topicNames: [],
 		seriesName: DEMO_SERIES[globalIndex % DEMO_SERIES.length] ?? null,
 		publishedByInstitute: order % 2 === 0,
 		seriesOrderLabel: String(order).padStart(2, "0"),

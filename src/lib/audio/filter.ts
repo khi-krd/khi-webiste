@@ -15,7 +15,11 @@ export function filterAudioTracks(
 	let result = items;
 
 	if (soundType) {
-		result = result.filter((item) => item.soundType === soundType);
+		result = result.filter((item) =>
+			(item.soundTypes.length ? item.soundTypes : [item.soundType]).includes(
+				soundType,
+			),
+		);
 	}
 
 	if (state) {
@@ -23,7 +27,11 @@ export function filterAudioTracks(
 	}
 
 	if (topicId != null) {
-		result = result.filter((item) => item.topicId === topicId);
+		result = result.filter((item) =>
+			(item.topicIds.length ? item.topicIds : [item.topicId]).includes(
+				topicId,
+			),
+		);
 	}
 
 	// Whole-entry match, mirroring the server's tag-collection lookup rather
@@ -44,6 +52,8 @@ export function filterAudioTracks(
 				item.excerpt,
 				item.topicName,
 				item.soundType,
+				...item.topicNames,
+				...item.soundTypes,
 				...item.tags,
 				...item.keywords,
 			]

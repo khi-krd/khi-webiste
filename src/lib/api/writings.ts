@@ -473,7 +473,11 @@ export async function getRelatedWritings(
 			.filter(Boolean),
 	);
 	const genreSet = new Set(detail.genres);
-	const topicKey = detail.topicName?.trim().toLowerCase() ?? "";
+	const topicKeys = new Set(
+		(detail.topicNames.length ? detail.topicNames : [detail.topicName])
+			.map((name) => name?.trim().toLowerCase())
+			.filter(Boolean),
+	);
 	const seriesKey = detail.seriesName?.trim().toLowerCase() ?? "";
 
 	const ranked = allItems
@@ -487,9 +491,13 @@ export async function getRelatedWritings(
 				tagSet.has(entry.freeTextGenre.trim().toLowerCase())
 					? 1
 					: 0;
+			const entryTopics = (
+				entry.topicNames?.length ? entry.topicNames : [entry.topicName]
+			)
+				.map((name) => name?.trim().toLowerCase())
+				.filter(Boolean);
 			const sameTopic =
-				topicKey.length > 0 &&
-				entry.topicName?.trim().toLowerCase() === topicKey
+				topicKeys.size > 0 && entryTopics.some((k) => topicKeys.has(k))
 					? 1
 					: 0;
 			const sameSeries =

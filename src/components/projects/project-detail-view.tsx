@@ -200,9 +200,16 @@ export function ProjectDetailView({
 
 						{(project.projectType || project.status || project.projectDate) && (
 							<dl className="mt-8 grid grid-cols-2 gap-2.5 sm:grid-cols-3">
-								{project.projectType && (
-									<FactCell label={typeLabel}>{project.projectType}</FactCell>
-								)}
+								{(project.projectTypes?.length
+									? project.projectTypes
+									: project.projectType
+										? [project.projectType]
+										: []
+								).map((type) => (
+									<FactCell key={type} label={typeLabel}>
+										{type}
+									</FactCell>
+								))}
 								{project.status && (
 									<FactCell label={statusLabel}>
 										<span className="inline-flex items-center gap-2">
