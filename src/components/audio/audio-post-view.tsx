@@ -42,6 +42,8 @@ type AudioPostViewProps = {
 	detail: ResolvedAudioDetail;
 	locale: string;
 	related: ResolvedAudioCard[];
+	/** Managed-vocabulary labels keyed by the canonical CKB name. */
+	soundTypeLabels?: Record<string, string>;
 };
 
 /** One entry in the liner-notes card — quiet label over a confident value. */
@@ -76,8 +78,11 @@ function formatNumber(locale: string, value: number): string {
 function toAudioCardProps(
 	card: ResolvedAudioCard,
 	t: (key: string, values?: Record<string, number>) => string,
+	soundTypeLabels?: Record<string, string>,
 ): AudioCardProps {
-	const typeLabel = soundTypeLabel((key) => t(key), card.soundType);
+	const typeLabel =
+		soundTypeLabels?.[card.soundType] ??
+		soundTypeLabel((key) => t(key), card.soundType);
 	const metaLabel =
 		card.trackState === "MULTI"
 			? `${typeLabel} · ${t("card.albumTracks", { count: card.totalTracks ?? 0 })}`
@@ -104,12 +109,15 @@ export async function AudioPostView({
 	detail,
 	locale,
 	related,
+	soundTypeLabels,
 }: AudioPostViewProps) {
 	const t = await getTranslations("Audio");
 	// Back links are named after the menu entry for the section they return to.
 	const tNav = await getTranslations("Nav");
 
-	const typeLabel = soundTypeLabel((key) => t(key), detail.soundType);
+	const typeLabel =
+		soundTypeLabels?.[detail.soundType] ??
+		soundTypeLabel((key) => t(key), detail.soundType);
 	const stateLabel = t(
 		detail.trackState === "MULTI" ? "state.multi" : "state.single",
 	);
@@ -171,7 +179,9 @@ export async function AudioPostView({
 	);
 	const hasSources = imageAttachments.length > 0 || fileAttachments.length > 0;
 
-	const relatedCards = related.map((card) => toAudioCardProps(card, t));
+	const relatedCards = related.map((card) =>
+		toAudioCardProps(card, t, soundTypeLabels),
+	);
 
 	// Hashtag row under the description, set like the news article tags.
 	const tagsBlock =

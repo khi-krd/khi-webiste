@@ -131,6 +131,14 @@ export const SoundTopicSchema = z.object({
 
 export type SoundTopic = z.infer<typeof SoundTopicSchema>;
 
+export const SoundTrackTypeSchema = z.object({
+	id: z.number(),
+	nameCkb: z.string().nullish(),
+	nameKmr: z.string().nullish(),
+});
+
+export type SoundTrackType = z.infer<typeof SoundTrackTypeSchema>;
+
 /** Single global sound-section background video (`GET .../sound-reklam-video`). */
 export const SoundReklamVideoSchema = z.object({
 	// Everything but the URL is nullish: a schema miss makes `apiFetch` return

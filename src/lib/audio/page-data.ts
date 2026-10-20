@@ -1,6 +1,7 @@
 import {
 	AUDIO_GRID_PAGE_SIZE,
 	getAudioListing,
+	getAudioSoundTypeLabels,
 	getAudioSoundTypes,
 	getAudioTopics,
 } from "@/lib/api/audio";
@@ -40,7 +41,7 @@ export async function loadAudioPageData(
 	const activeQuery = searchParams.q?.trim() || null;
 	const page = Math.max(1, Number.parseInt(searchParams.page ?? "1", 10) || 1);
 
-	const [listing, soundTypes, topics] = await Promise.all([
+	const [listing, soundTypes, soundTypeLabels, topics] = await Promise.all([
 		getAudioListing(locale, {
 			soundType: activeType,
 			state: activeState,
@@ -51,6 +52,7 @@ export async function loadAudioPageData(
 			size: AUDIO_GRID_PAGE_SIZE,
 		}),
 		getAudioSoundTypes(locale),
+		getAudioSoundTypeLabels(locale),
 		getAudioTopics(locale),
 	]);
 
@@ -70,6 +72,7 @@ export async function loadAudioPageData(
 		activeQuery,
 		listing,
 		soundTypes,
+		soundTypeLabels: Object.fromEntries(soundTypeLabels),
 		topics,
 		noResultsMessage: hasFilters ? t("grid.noResults") : t("grid.empty"),
 		direction: (locale === "ckb" ? "rtl" : "ltr") as "ltr" | "rtl",

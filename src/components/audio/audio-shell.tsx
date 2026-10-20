@@ -23,6 +23,8 @@ type AudioShellProps = {
 	currentPage: number;
 	totalPages: number;
 	soundTypes: string[];
+	/** Managed-vocabulary labels keyed by the canonical CKB name. */
+	soundTypeLabels?: Record<string, string>;
 	topics: TopicOption[];
 	activeType?: string | null;
 	activeState?: TrackState | null;
@@ -39,6 +41,7 @@ export async function AudioShell({
 	currentPage,
 	totalPages,
 	soundTypes,
+	soundTypeLabels,
 	topics,
 	activeType,
 	activeState,
@@ -52,7 +55,9 @@ export async function AudioShell({
 	const isEmpty = cards.length === 0;
 
 	const cardProps: AudioCardProps[] = cards.map((card) => {
-		const typeLabel = soundTypeLabel((key) => t(key), card.soundType);
+		const typeLabel =
+			soundTypeLabels?.[card.soundType] ??
+			soundTypeLabel((key) => t(key), card.soundType);
 		const metaLabel =
 			card.trackState === "MULTI"
 				? `${typeLabel} · ${t("card.albumTracks", { count: card.totalTracks ?? 0 })}`
@@ -87,6 +92,7 @@ export async function AudioShell({
 			<div className={homeInsetClass}>
 				<AudioFilterBar
 					soundTypes={soundTypes}
+					soundTypeLabels={soundTypeLabels}
 					topics={topics}
 					activeType={activeType}
 					activeState={activeState}

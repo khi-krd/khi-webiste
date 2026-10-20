@@ -32,6 +32,7 @@ import {
 	SoundReklamVideoSchema,
 	SoundTopicSchema,
 	SoundTrackSchema,
+	SoundTrackTypeSchema,
 	TrackStateSchema,
 } from "@/types/audio";
 
@@ -486,10 +487,47 @@ export async function getAudioTopics(
 	return apiItems;
 }
 
-/** Distinct soundType values present in the catalogue — drives the type chips. */
+/**
+ * Managed sound-type vocabulary (`GET /api/v1/sound-tracks/types`).
+ * Returns a lookup keyed by the canonical CKB name — tracks store that name
+ * in their free-text `soundType` — to the display label for the locale
+ * (KMR falls back to CKB when blank).
+ */
+export async function getAudioSoundTypeLabels(
+	locale: string,
+): Promise<Map<string, string>> {
+	const labels = new Map<string, string>();
+	if (!getApiBaseUrl()) return labels;
+
+	const types = await apiFetch(`${SOUND_TRACKS_ENDPOINT}/types`, {
+		schema: z.array(SoundTrackTypeSchema),
+		tags: [SOUND_TRACKS_TAG],
+		revalidate: DEFAULT_REVALIDATE,
+	});
+
+	for (const t of types ?? []) {
+		const ckb = t.nameCkb?.trim();
+		if (!ckb) continue;
+		const kmr = t.nameKmr?.trim();
+		labels.set(ckb, locale === "ckb" ? ckb : kmr || ckb);
+	}
+	return labels;
+}
+
+/**
+ * Type chips for the filter bar — the managed vocabulary unioned with any
+ * distinct values still present on tracks (legacy names not yet registered).
+ */
 export async function getAudioSoundTypes(locale: string): Promise<string[]> {
-	const allItems = await getAllAudioCards(locale);
-	return [...new Set(allItems.map((item) => item.soundType))];
+	const [allItems, vocab] = await Promise.all([
+		getAllAudioCards(locale),
+		getAudioSoundTypeLabels(locale),
+	]);
+	const values = new Set<string>([...vocab.keys()]);
+	for (const item of allItems) {
+		if (item.soundType?.trim()) values.add(item.soundType.trim());
+	}
+	return [...values];
 }
 
 /** Homepage sound-section background video (`GET .../sound-reklam-video`). */

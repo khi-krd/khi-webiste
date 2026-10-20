@@ -2,7 +2,11 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { setRequestLocale } from "next-intl/server";
 import { AudioPostView } from "@/components/audio/audio-post-view";
-import { getAudioTrackById, getRelatedAudio } from "@/lib/api/audio";
+import {
+	getAudioSoundTypeLabels,
+	getAudioTrackById,
+	getRelatedAudio,
+} from "@/lib/api/audio";
 import { localeAlternates } from "@/lib/seo/metadata";
 
 type AudioDetailPageProps = {
@@ -45,11 +49,19 @@ export default async function AudioDetailPage({
 	const detail = await getAudioTrackById(locale, trackId);
 	if (!detail) notFound();
 
-	const related = await getRelatedAudio(locale, detail);
+	const [related, soundTypeLabels] = await Promise.all([
+		getRelatedAudio(locale, detail),
+		getAudioSoundTypeLabels(locale),
+	]);
 
 	return (
 		<main className="bg-background">
-			<AudioPostView detail={detail} locale={locale} related={related} />
+			<AudioPostView
+				detail={detail}
+				locale={locale}
+				related={related}
+				soundTypeLabels={Object.fromEntries(soundTypeLabels)}
+			/>
 		</main>
 	);
 }

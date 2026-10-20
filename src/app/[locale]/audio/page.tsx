@@ -94,6 +94,7 @@ export default async function AudioPage({
 					currentPage={pageData.listing.currentPage}
 					totalPages={pageData.listing.totalPages}
 					soundTypes={pageData.soundTypes}
+					soundTypeLabels={pageData.soundTypeLabels}
 					topics={pageData.topics}
 					activeType={pageData.activeType}
 					activeState={pageData.activeState}

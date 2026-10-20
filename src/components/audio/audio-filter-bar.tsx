@@ -25,6 +25,8 @@ type TopicOption = {
 
 type AudioFilterBarProps = {
 	soundTypes: string[];
+	/** Managed-vocabulary labels keyed by the canonical CKB name. */
+	soundTypeLabels?: Record<string, string>;
 	topics: TopicOption[];
 	activeType?: string | null;
 	activeState?: TrackState | null;
@@ -42,6 +44,7 @@ type AudioFilterBarProps = {
  */
 export function AudioFilterBar({
 	soundTypes,
+	soundTypeLabels,
 	topics,
 	activeType,
 	activeState,
@@ -58,6 +61,8 @@ export function AudioFilterBar({
 	const [query, setQuery] = useState(activeQuery ?? "");
 	const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 	const scrollToSection = useScrollToSection();
+	const typeLabel = (raw: string) =>
+		soundTypeLabels?.[raw] ?? soundTypeLabel((key) => t(key), raw);
 
 	const hasActiveFilters = Boolean(
 		activeType ||
@@ -164,7 +169,7 @@ export function AudioFilterBar({
 					active={activeType === type}
 					onClick={() => pushFilters({ type })}
 				>
-					{soundTypeLabel((key) => t(key), type)}
+					{typeLabel(type)}
 				</FilterPill>
 			))}
 
@@ -235,7 +240,7 @@ export function AudioFilterBar({
 					<span className="text-label text-muted">{t("filter.active")}</span>
 					{activeType ? (
 						<Badge variant="outline" size="sm">
-							{soundTypeLabel((key) => t(key), activeType)}
+							{typeLabel(activeType)}
 						</Badge>
 					) : null}
 					{activeState ? (
