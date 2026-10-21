@@ -15,7 +15,7 @@ import { VideoRelatedGrid } from "@/components/video/video-related-grid";
 import { homeInsetClass } from "@/lib/layout";
 import { videoTagHref, videoTopicHref } from "@/lib/search/taxonomy-href";
 import { cn } from "@/lib/utils";
-import { formatDuration } from "@/lib/video/format";
+import { formatDuration, formatFileSizeMb } from "@/lib/video/format";
 import type {
 	ResolvedVideoCastMember,
 	ResolvedVideoDetail,
@@ -165,9 +165,47 @@ export async function ShortFilmDetailView({
 	const t = await getTranslations("Video");
 
 	const durationLabel = formatDuration(detail.durationSeconds);
+	const fileSizeLabel = formatFileSizeMb(detail.fileSizeMb);
+	const languageLabels = detail.contentLanguages.map((language) =>
+		t(`detail.languages.${language}`),
+	);
 	const genreLabel = detail.tags[0] ?? (detail.topicNames.join("، ") || "—");
 	const directorLabel = detail.director ?? null;
 	const producerLabel = detail.producer ?? null;
+
+	/** Technical file rows for the card beside the description. */
+	const fileRows = [
+		durationLabel
+			? { label: t("detail.duration"), value: durationLabel, ltr: true }
+			: null,
+		detail.resolution
+			? { label: t("detail.resolution"), value: detail.resolution, ltr: true }
+			: null,
+		detail.fileFormat
+			? {
+					label: t("detail.fileFormat"),
+					value: detail.fileFormat.toUpperCase(),
+					ltr: true,
+				}
+			: null,
+		fileSizeLabel
+			? { label: t("detail.fileSize"), value: fileSizeLabel, ltr: true }
+			: null,
+		detail.publishmentDate
+			? {
+					label: t("detail.publishmentDate"),
+					value: detail.publishmentDate,
+					ltr: true,
+				}
+			: null,
+		languageLabels.length > 0
+			? {
+					label: t("detail.languagesLabel"),
+					value: languageLabels.join(" · "),
+					ltr: false,
+				}
+			: null,
+	].filter((row): row is NonNullable<typeof row> => row != null);
 
 	const metaRows = [
 		genreLabel !== "—"
@@ -345,14 +383,35 @@ export async function ShortFilmDetailView({
 					"mx-auto max-w-7xl space-y-5 pb-10 sm:space-y-6 sm:pb-14 2xl:max-w-none",
 				)}
 			>
-				{detail.description ? (
+				{detail.description || fileRows.length > 0 ? (
 					<ScrollReveal>
 						<ScrollRevealItem>
-							<section className="border-t border-primary-foreground/20 pt-5 sm:pt-6">
-								<RichText
-									content={detail.description}
-									className="max-w-prose text-body leading-relaxed text-primary-foreground/85 2xl:max-w-[70ch] 2xl:text-[1.0625rem]"
-								/>
+							<section className="grid gap-6 border-t border-primary-foreground/20 pt-5 sm:pt-6 lg:grid-cols-[minmax(0,1fr)_minmax(15rem,20rem)] lg:gap-10">
+								{detail.description ? (
+									<RichText
+										content={detail.description}
+										className="max-w-prose text-body leading-relaxed text-primary-foreground/85 2xl:max-w-[70ch] 2xl:text-[1.0625rem]"
+									/>
+								) : (
+									<div />
+								)}
+								{fileRows.length > 0 ? (
+									<aside className="h-fit border border-primary-foreground/15 bg-primary-foreground/3 p-5 lg:sticky lg:top-24">
+										<h2 className="text-label font-semibold uppercase tracking-wider text-primary-foreground/55">
+											{t("shortfilms.detail.fileInfo")}
+										</h2>
+										<dl className="mt-2 divide-y divide-primary-foreground/12">
+											{fileRows.map((row) => (
+												<MetaRow
+													key={row.label}
+													label={row.label}
+													value={row.value}
+													ltr={row.ltr}
+												/>
+											))}
+										</dl>
+									</aside>
+								) : null}
 							</section>
 						</ScrollRevealItem>
 					</ScrollReveal>
