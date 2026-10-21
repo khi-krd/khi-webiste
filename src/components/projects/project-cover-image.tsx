@@ -1,6 +1,7 @@
 "use client";
 
 import NextImage from "next/image";
+import { MediaMark } from "@/components/ui/media-mark";
 import { useEffect, useState } from "react";
 import { cn } from "@/lib/utils";
 
@@ -80,6 +81,7 @@ export function ProjectCoverImage({
 					}
 				}}
 			/>
+			<MediaMark />
 		</div>
 	);
 }

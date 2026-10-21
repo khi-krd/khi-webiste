@@ -1,4 +1,5 @@
 import NextImage from "next/image";
+import { MediaMark } from "@/components/ui/media-mark";
 import { Link } from "@/components/ui/link";
 import { formatFileSize } from "@/lib/writing/resolve";
 
@@ -49,6 +50,7 @@ export function WritingCard({
 					{coverUrl ? (
 						<>
 							<CoverImage src={coverUrl} alt="" />
+							<MediaMark />
 							{hasHoverCover ? (
 								<div className="absolute inset-0 opacity-0 transition-opacity duration-700 fine-hover:opacity-100">
 									<CoverImage src={hoverCoverUrl} alt="" />
@@ -91,7 +93,10 @@ export function WritingCard({
 									{subtitle}
 								</p>
 							) : writer ? (
-								<p className="mt-1 line-clamp-2 text-small text-primary-foreground/72">
+								<p
+									title={title}
+									className="mt-1 truncate text-small text-primary-foreground/72"
+								>
 									{title}
 								</p>
 							) : null}

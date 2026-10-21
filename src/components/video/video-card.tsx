@@ -6,6 +6,7 @@ import {
 	RectangleStackIcon,
 } from "@heroicons/react/24/solid";
 import NextImage from "next/image";
+import { MediaMark } from "@/components/ui/media-mark";
 import { Link } from "@/components/ui/link";
 import { VideoHoverPreview } from "@/components/video/video-hover-preview";
 import { VideoStillPreview } from "@/components/video/video-still-preview-lazy";
@@ -168,6 +169,7 @@ function CoverLayer({
 					className={memories ? memoriesCoverClass : undefined}
 				/>
 			) : null}
+			<MediaMark />
 		</>
 	);
 }
@@ -258,7 +260,10 @@ export function VideoCard({
 					<div className="absolute inset-x-0 bottom-0 z-2 p-5 text-primary-foreground sm:p-7 lg:p-9">
 						{/* Beat 2: the meta block drifts up — y-only, RTL-safe. */}
 						<div className="max-w-2xl transition-transform duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] group-fine:-translate-y-1 group-fine:delay-100 motion-reduce:transition-none motion-reduce:group-fine:translate-y-0">
-							<h3 className="font-heading text-h2 font-bold leading-tight text-balance lg:text-display">
+							<h3
+								title={title}
+								className="truncate font-heading text-h2 font-bold leading-tight lg:text-display"
+							>
 								{title}
 							</h3>
 							{subtitle ? (
@@ -310,7 +315,10 @@ export function VideoCard({
 					</span>
 					{footerMeta}
 				</p>
-				<h3 className="font-heading text-h3 font-bold leading-snug text-foreground">
+				<h3
+					title={title}
+					className="truncate font-heading text-h3 font-bold leading-snug text-foreground"
+				>
 					{title}
 				</h3>
 				{subtitle ? (

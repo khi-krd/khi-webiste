@@ -85,7 +85,10 @@ export function ProjectCard({
 						)}
 					</div>
 
-					<h3 className="mt-3 font-heading text-h3 font-bold leading-snug text-balance text-foreground transition-[text-decoration-color] duration-300 group-fine:underline group-fine:decoration-border group-fine:underline-offset-4 motion-reduce:group-fine:no-underline">
+					<h3
+						title={item.title}
+						className="mt-3 truncate font-heading text-h3 font-bold leading-snug text-foreground transition-[text-decoration-color] duration-300 group-fine:underline group-fine:decoration-border group-fine:underline-offset-4 motion-reduce:group-fine:no-underline"
+					>
 						{item.title}
 					</h3>
 

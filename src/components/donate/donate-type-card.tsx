@@ -1,4 +1,5 @@
 import NextImage from "next/image";
+import { MediaMark } from "@/components/ui/media-mark";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 
@@ -36,6 +37,7 @@ export function DonateTypeCard({
 						/>
 					</div>
 				</div>
+				<MediaMark className="z-2" />
 
 				<div
 					className={cn(

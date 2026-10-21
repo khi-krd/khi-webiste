@@ -1,4 +1,5 @@
 import NextImage from "next/image";
+import { MediaMark } from "@/components/ui/media-mark";
 import type { ContactOffice } from "@/lib/contact/office";
 import { cn } from "@/lib/utils";
 
@@ -74,6 +75,7 @@ export function ContactOfficeCard({
 					sizes="(max-width: 1024px) 100vw, 50vw"
 					className="object-cover brightness-[0.94] saturate-[0.82] transition-[transform,filter] duration-700 ease-out group-fine:scale-[1.04] group-fine:brightness-100 group-fine:saturate-100 motion-reduce:transition-none motion-reduce:group-fine:scale-100"
 				/>
+				<MediaMark />
 			</div>
 
 			<div className="p-6 sm:p-8 lg:p-10">

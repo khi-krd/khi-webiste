@@ -2,6 +2,7 @@
 
 import { PlayIcon, SpeakerWaveIcon } from "@heroicons/react/24/solid";
 import NextImage from "next/image";
+import { MediaMark } from "@/components/ui/media-mark";
 import { VideoStillPreview } from "@/components/video/video-still-preview-lazy";
 import { cn } from "@/lib/utils";
 import { formatDuration } from "@/lib/video/format";
@@ -123,6 +124,7 @@ export function VideoClipList({
 										isActive={isActive}
 										fallbackCoverUrl={fallbackCoverUrl}
 									/>
+									<MediaMark className="z-2" />
 
 									<div
 										aria-hidden
@@ -165,7 +167,10 @@ export function VideoClipList({
 
 									<div className="absolute inset-x-0 bottom-0 z-1 p-3 sm:p-3.5">
 										{clip.title ? (
-											<span className="block font-heading text-small font-semibold leading-snug text-balance text-primary-foreground line-clamp-2 sm:text-body">
+											<span
+												title={clip.title}
+												className="block truncate font-heading text-small font-semibold leading-snug text-primary-foreground sm:text-body"
+											>
 												{clip.title}
 											</span>
 										) : null}

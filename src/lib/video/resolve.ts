@@ -1,5 +1,10 @@
 import { plainTextFromRichContent, renderRichText } from "@/lib/rich-text";
-import { classifyPlayableSource } from "@/lib/video/source";
+import {
+	classifyPlayableSource,
+	getYouTubePosterUrl,
+	isDirectMediaFileUrl,
+	parseYouTubeVideoId,
+} from "@/lib/video/source";
 import type {
 	ResolvedVideoCard,
 	ResolvedVideoCastMember,
@@ -64,7 +69,11 @@ export function resolveVideoCoverUrl(
 	);
 }
 
-/** Direct file URL for thumbnail previews when the CMS has no cover image. */
+/**
+ * Direct file URL for thumbnail previews when the CMS has no cover image.
+ * Only real media files qualify — a YouTube URL inside a plain <video> tag
+ * can never load (the YouTube poster covers those cards instead).
+ */
 export function resolveVideoPreviewUrl(video: Video): string | null {
 	const clips = sortedClips(video) ?? [];
 
@@ -73,9 +82,8 @@ export function resolveVideoPreviewUrl(video: Video): string | null {
 		video.sourceExternalUrl,
 		...clips.map((clip) => resolveClipUrl(clip)),
 	]) {
-		const classified = classifyPlayableSource(candidate);
-		if (classified?.kind === "vidstack") {
-			return classified.src;
+		if (isDirectMediaFileUrl(candidate)) {
+			return candidate.trim();
 		}
 	}
 
@@ -271,6 +279,30 @@ function resolveHighlight(
 	};
 }
 
+/**
+ * Thumbnail for a video source that is hosted on YouTube — the CMS stores no
+ * cover for those, so the player page's own poster image is the stand-in.
+ */
+function youTubePosterForUrl(url: string | null | undefined): string | null {
+	const id = url ? parseYouTubeVideoId(url) : null;
+	return id ? getYouTubePosterUrl(id) : null;
+}
+
+/** First YouTube poster found across the video's playable sources. */
+function resolveVideoYouTubePoster(video: Video): string | null {
+	const clips = sortedClips(video) ?? [];
+	for (const candidate of [
+		video.sourceUrl,
+		video.sourceExternalUrl,
+		video.sourceEmbedUrl,
+		...clips.map((clip) => resolveClipUrl(clip)),
+	]) {
+		const poster = youTubePosterForUrl(candidate);
+		if (poster) return poster;
+	}
+	return null;
+}
+
 function resolveClipCoverUrl(
 	locale: string,
 	clip: NonNullable<Video["videoClipItems"]>[number],
@@ -312,7 +344,11 @@ function resolveClip(
 		title: title ?? "",
 		url: resolveClipUrl(clip) ?? "",
 		durationSeconds: clip.durationSeconds ?? null,
-		coverUrl: resolveClipCoverUrl(locale, clip) ?? parentCoverUrl ?? null,
+		coverUrl:
+			resolveClipCoverUrl(locale, clip) ??
+			youTubePosterForUrl(resolveClipUrl(clip)) ??
+			parentCoverUrl ??
+			null,
 		main: clip.main ?? false,
 		description: description ? plainTextFromRichContent(description) : null,
 		descriptionHtml: description ? renderRichText(description) || null : null,
@@ -370,7 +406,8 @@ export function resolveVideoCard(
 		excerpt: description
 			? truncate(plainTextFromRichContent(description), EXCERPT_MAX_LENGTH)
 			: "",
-		coverUrl: resolveVideoCoverUrl(locale, video),
+		coverUrl:
+			resolveVideoCoverUrl(locale, video) ?? resolveVideoYouTubePoster(video),
 		previewVideoUrl: resolveVideoPreviewUrl(video),
 		hoverCoverUrl: video.hoverCoverUrl ?? null,
 		videoType: video.videoType,
@@ -443,7 +480,8 @@ export function resolveVideoDetail(
 		return null;
 	}
 
-	const coverUrl = resolveVideoCoverUrl(locale, video);
+	const coverUrl =
+		resolveVideoCoverUrl(locale, video) ?? resolveVideoYouTubePoster(video);
 	const previewVideoUrl = resolveVideoPreviewUrl(video);
 	const clips = (sortedClips(video) ?? []).map((clip) =>
 		resolveClip(locale, clip, coverUrl),

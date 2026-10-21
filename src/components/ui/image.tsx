@@ -1,4 +1,5 @@
 import NextImage, { type ImageProps as NextImageProps } from "next/image";
+import { MediaMark } from "@/components/ui/media-mark";
 import { cn } from "@/lib/utils";
 
 /** Named ratios + any custom "w/h" string (e.g. "5/4"). */
@@ -19,6 +20,12 @@ type ImageProps = Omit<NextImageProps, "className" | "fill"> & {
 	className?: string;
 	/** Classes for the <img> itself. */
 	imageClassName?: string;
+	/**
+	 * Brand watermark pinned to the picture's bottom-left. On by default —
+	 * every rendered content image carries the KHI mark. Set `false` only for
+	 * non-media imagery (icons, the brand lockup itself, UI chrome).
+	 */
+	watermark?: boolean;
 };
 
 // Reasonable responsive default; override per usage. Roughly: full width on
@@ -63,6 +70,7 @@ export function Image({
 	alt,
 	src,
 	unoptimized: unoptimizedProp,
+	watermark = true,
 	...props
 }: ImageProps) {
 	const fit = objectFit === "contain" ? "object-contain" : "object-cover";
@@ -99,19 +107,38 @@ export function Image({
 					unoptimized={unoptimized}
 					{...props}
 				/>
+				{watermark ? <MediaMark /> : null}
 			</div>
 		);
 	}
 
 	// Intrinsic mode: width/height come through ...props (required by next/image).
+	if (!watermark) {
+		return (
+			<NextImage
+				alt={alt}
+				src={src}
+				sizes={sizes ?? DEFAULT_SIZES}
+				className={cn("h-auto", fit, frame, className, imageClassName)}
+				unoptimized={unoptimized}
+				{...props}
+			/>
+		);
+	}
+
+	// The mark needs a positioned parent — wrap the intrinsic image in a
+	// shrink-wrap span so it still hugs the picture's bottom-left corner.
 	return (
-		<NextImage
-			alt={alt}
-			src={src}
-			sizes={sizes ?? DEFAULT_SIZES}
-			className={cn("h-auto", fit, frame, className, imageClassName)}
-			unoptimized={unoptimized}
-			{...props}
-		/>
+		<span className="relative inline-block w-full">
+			<NextImage
+				alt={alt}
+				src={src}
+				sizes={sizes ?? DEFAULT_SIZES}
+				className={cn("h-auto", fit, frame, className, imageClassName)}
+				unoptimized={unoptimized}
+				{...props}
+			/>
+			<MediaMark />
+		</span>
 	);
 }

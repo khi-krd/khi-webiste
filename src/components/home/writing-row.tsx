@@ -1,4 +1,5 @@
 import NextImage from "next/image";
+import { MediaMark } from "@/components/ui/media-mark";
 import { Link } from "@/components/ui/link";
 import { cn } from "@/lib/utils";
 
@@ -74,12 +75,14 @@ export function WritingRow({ item, className }: WritingRowProps) {
 							</span>
 						</div>
 					)}
+					<MediaMark />
 				</div>
 
 				<div className="flex min-w-0 flex-1 flex-col text-start">
 					<h3
+						title={item.title}
 						className={cn(
-							"font-heading text-body font-semibold leading-snug text-balance text-foreground",
+							"truncate font-heading text-body font-semibold leading-snug text-foreground",
 							"transition-[text-decoration-color] duration-300",
 							"group-fine:underline group-fine:decoration-border group-fine:underline-offset-4",
 							"motion-reduce:group-fine:no-underline",

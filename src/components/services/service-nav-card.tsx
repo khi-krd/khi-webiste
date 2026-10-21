@@ -1,5 +1,6 @@
 import { ArrowRightIcon } from "@heroicons/react/24/outline";
 import NextImage from "next/image";
+import { MediaMark } from "@/components/ui/media-mark";
 import { DirectionalIcon } from "@/components/ui/directional-icon";
 import type { ServiceItem } from "@/lib/mock/services";
 import { cn } from "@/lib/utils";
@@ -50,6 +51,7 @@ export function ServiceNavCard({
 						draggable={false}
 					/>
 				</div>
+				<MediaMark className="z-2" />
 
 				<div
 					className="pointer-events-none absolute inset-0 z-1 bg-foreground/22"
@@ -72,7 +74,10 @@ export function ServiceNavCard({
 					/>
 				</span>
 
-				<h3 className="font-heading text-small font-semibold leading-snug text-balance text-white sm:text-body">
+				<h3
+					title={title}
+					className="truncate font-heading text-small font-semibold leading-snug text-white sm:text-body"
+				>
 					{title}
 				</h3>
 			</div>

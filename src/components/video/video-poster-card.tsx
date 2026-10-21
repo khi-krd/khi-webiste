@@ -2,6 +2,7 @@
 
 import { PlayIcon } from "@heroicons/react/24/solid";
 import NextImage from "next/image";
+import { MediaMark } from "@/components/ui/media-mark";
 import { Link } from "@/components/ui/link";
 import { VideoHoverPreview } from "@/components/video/video-hover-preview";
 import { VideoStillPreview } from "@/components/video/video-still-preview-lazy";
@@ -110,6 +111,7 @@ export function VideoPosterCard({
 						</span>
 					</div>
 				)}
+				<MediaMark />
 
 				{/* Hover plays the film itself — the sibling dim from
 				    `.spotlight-grid-dark` already isolates it, so the only thing
@@ -168,7 +170,10 @@ export function VideoPosterCard({
 
 				{isCaption ? null : (
 					<div className="absolute inset-x-0 bottom-0 z-2 p-3.5 transition-transform duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] group-fine:-translate-y-0.5 motion-reduce:transition-none motion-reduce:group-fine:translate-y-0 sm:p-4">
-						<h3 className="font-heading text-body font-semibold leading-snug text-balance text-primary-foreground line-clamp-2 sm:text-h3">
+						<h3
+							title={title}
+							className="truncate font-heading text-body font-semibold leading-snug text-primary-foreground sm:text-h3"
+						>
 							{title}
 						</h3>
 						{subtitle ? (
@@ -186,8 +191,9 @@ export function VideoPosterCard({
 				// into three blocks of text competing with the artwork.
 				<div className="flex flex-1 flex-col px-4 py-3.5 text-start sm:px-5 sm:py-4">
 					<h3
+						title={title}
 						className={cn(
-							"font-heading text-body font-semibold leading-snug text-balance line-clamp-2",
+							"truncate font-heading text-body font-semibold leading-snug",
 							dark ? "text-primary-foreground" : "text-foreground",
 						)}
 					>

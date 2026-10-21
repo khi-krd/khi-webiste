@@ -1,4 +1,8 @@
 import type { MediaItem, MediaKind } from "@/types/media";
+import {
+	getYouTubePosterUrl,
+	parseYouTubeVideoId,
+} from "@/lib/video/source";
 
 function firstNonBlank(
 	...values: (string | null | undefined)[]
@@ -130,17 +134,24 @@ export function parseMediaGallery(
 					),
 					externalUrl,
 					embedUrl,
-					thumbnailUrl: firstNonBlank(
-						typeof record.thumbnailUrl === "string"
-							? record.thumbnailUrl
-							: null,
-					),
+					thumbnailUrl:
+						firstNonBlank(
+							typeof record.thumbnailUrl === "string"
+								? record.thumbnailUrl
+								: null,
+						) ?? youTubePosterFor(bestSrc),
 					caption,
 					sortOrder,
 				},
 			];
 		})
 		.sort((a, b) => a.sortOrder - b.sortOrder);
+}
+
+/** YouTube's own poster image for media records with no stored thumbnail. */
+function youTubePosterFor(url: string | null | undefined): string | null {
+	const id = url ? parseYouTubeVideoId(url) : null;
+	return id ? getYouTubePosterUrl(id) : null;
 }
 
 export function countGalleryMedia(items: MediaItem[]) {

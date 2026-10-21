@@ -13,6 +13,29 @@ import type {
 
 const EXCERPT_MAX_LENGTH = 120;
 
+/** Locale-ordered file title: titleCkb/titleKmr, then the legacy mirror. */
+function localizedFileTitle(
+	locale: string,
+	file: { title?: string | null; titleCkb?: string | null; titleKmr?: string | null },
+): string | null {
+	return locale === "ckb"
+		? firstNonBlank(file.titleCkb, file.title, file.titleKmr)
+		: firstNonBlank(file.titleKmr, file.titleCkb, file.title);
+}
+
+function localizedCaption(
+	locale: string,
+	item: {
+		caption?: string | null;
+		captionCkb?: string | null;
+		captionKmr?: string | null;
+	},
+): string | null {
+	return locale === "ckb"
+		? firstNonBlank(item.captionCkb, item.caption, item.captionKmr)
+		: firstNonBlank(item.captionKmr, item.captionCkb, item.caption);
+}
+
 function firstNonBlank(
 	...values: (string | null | undefined)[]
 ): string | null {
@@ -157,7 +180,7 @@ export function buildPlayerQueue(
 		fileId: file.id,
 		trackId: track.id,
 		title:
-			firstNonBlank(file.title) ??
+			localizedFileTitle(locale, file) ??
 			(files.length > 1 ? `${trackTitle} — ${index + 1}` : trackTitle),
 		artist,
 		coverUrl,
@@ -220,6 +243,7 @@ export function resolveAudioCard(
 }
 
 function resolveFileRow(
+	locale: string,
 	file: SoundTrackFile,
 	trackTitle: string,
 	index: number,
@@ -235,7 +259,7 @@ function resolveFileRow(
 	return {
 		id: file.id,
 		title:
-			firstNonBlank(file.title) ??
+			localizedFileTitle(locale, file) ??
 			(totalFiles > 1 ? `${trackTitle} — ${index + 1}` : trackTitle),
 		thumbUrl: firstNonBlank(file.thumbUrl, coverUrl),
 		fileType: file.fileType,
@@ -319,7 +343,7 @@ export function resolveAudioDetail(
 				id: brochure.id,
 				fileUrl,
 				kind,
-				caption: brochure.title ?? null,
+				caption: localizedFileTitle(locale, brochure) ?? null,
 				sortOrder: brochure.brochureOrder ?? index,
 			};
 		})
@@ -337,7 +361,7 @@ export function resolveAudioDetail(
 				id: brochure.id,
 				fileUrl: imageUrl,
 				kind: "image",
-				caption: brochure.caption ?? null,
+				caption: localizedCaption(locale, brochure) ?? null,
 				sortOrder: brochure.brochureOrder ?? index,
 			};
 		})
@@ -379,7 +403,7 @@ export function resolveAudioDetail(
 		totalDurationSeconds: track.totalDurationSeconds ?? null,
 		totalSizeBytes: track.totalSizeBytes ?? null,
 		fileRows: files.map((file, index) =>
-			resolveFileRow(file, trackTitle, index, files.length, coverUrl),
+			resolveFileRow(locale, file, trackTitle, index, files.length, coverUrl),
 		),
 		brochures,
 		video: resolveAlbumVideo(track),

@@ -2,7 +2,6 @@
 
 import {
 	ArrowsPointingOutIcon,
-	ArrowTopRightOnSquareIcon,
 	ChevronLeftIcon,
 	ChevronRightIcon,
 	FilmIcon,
@@ -10,6 +9,7 @@ import {
 	PhotoIcon,
 } from "@heroicons/react/24/outline";
 import NextImage from "next/image";
+import { MediaMark } from "@/components/ui/media-mark";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { CoverLightbox } from "@/components/ui/cover-lightbox";
 import { DirectionalIcon } from "@/components/ui/directional-icon";
@@ -32,7 +32,6 @@ export type ProjectMediaPlaylistLabels = {
 	source: string;
 	position: string;
 	sources: { file: string; embed: string; external: string };
-	open: string;
 	enlarge: string;
 	previous: string;
 	next: string;
@@ -107,12 +106,6 @@ function sourceLabel(
 	return provider
 		? `${labels.sources.external} · ${provider}`
 		: labels.sources.external;
-}
-
-function openHref(item: MediaItem): string | null {
-	const raw = item.url || item.externalUrl || item.embedUrl || null;
-	if (!raw) return null;
-	return isRemote(raw) ? raw : `https://${raw}`;
 }
 
 function pad(n: number): string {
@@ -208,6 +201,7 @@ function Stage({
 					unoptimized={isRemote(item.url)}
 					className="object-contain"
 				/>
+				<MediaMark />
 				<CoverLightbox
 					src={item.url}
 					alt={title}
@@ -240,6 +234,7 @@ function Stage({
 						variant="full"
 						className="absolute inset-0 size-full"
 					/>
+					<MediaMark className="top-0 bottom-auto z-20" />
 				</div>
 			);
 		}
@@ -283,6 +278,7 @@ function Stage({
 					className="max-w-lg"
 				/>
 			) : null}
+			<MediaMark />
 		</div>
 	);
 }
@@ -367,7 +363,6 @@ export function ProjectMediaPlaylist({
 	if (!current) return null;
 
 	const format = fileFormat(current);
-	const href = openHref(current);
 	const currentTitle = titleFor(selected);
 
 	return (
@@ -453,18 +448,6 @@ export function ProjectMediaPlaylist({
 							</div>
 						))}
 					</dl>
-
-					{href ? (
-						<a
-							href={href}
-							target="_blank"
-							rel="noopener noreferrer"
-							className="mt-4 inline-flex items-center gap-2 font-heading text-small font-semibold text-primary no-underline transition-opacity fine-hover:opacity-80"
-						>
-							<ArrowTopRightOnSquareIcon aria-hidden className="size-4" />
-							{labels.open}
-						</a>
-					) : null}
 				</section>
 			</div>
 
@@ -557,6 +540,7 @@ export function ProjectMediaPlaylist({
 											)}
 										>
 											<Thumb item={item} poster={posterFor(items, index)} />
+											<MediaMark className="p-1 [&_img]:size-5" />
 											<span className="absolute bottom-0 end-0 z-1 inline-flex size-6 items-center justify-center bg-foreground/80 text-primary-foreground">
 												<KindIcon kind={item.kind} className="size-3.5" />
 											</span>

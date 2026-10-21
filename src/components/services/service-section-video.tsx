@@ -3,6 +3,7 @@
 import { PlayIcon } from "@heroicons/react/24/solid";
 import dynamic from "next/dynamic";
 import NextImage from "next/image";
+import { MediaMark } from "@/components/ui/media-mark";
 import { useEffect, useState } from "react";
 import type { ServiceVideo } from "@/lib/mock/services";
 import { cn } from "@/lib/utils";
@@ -101,6 +102,7 @@ export function ServiceSectionVideo({
 						className="object-cover brightness-[0.85] contrast-[1.1] saturate-[0.72] transition-[filter,transform] duration-500 group-fine:scale-[1.02] group-fine:brightness-[0.92] motion-reduce:transition-none motion-reduce:group-fine:scale-100"
 					/>
 				) : null}
+				<MediaMark />
 				<span
 					className="pointer-events-none absolute inset-0 bg-linear-to-t from-foreground/55 via-foreground/15 to-transparent"
 					aria-hidden

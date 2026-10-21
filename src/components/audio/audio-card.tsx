@@ -1,4 +1,5 @@
 import NextImage from "next/image";
+import { MediaMark } from "@/components/ui/media-mark";
 import { AudioCardTransport } from "@/components/audio/audio-card-transport";
 import { Link } from "@/components/ui/link";
 import { audioDetailHref } from "@/lib/audio/resolve";
@@ -100,6 +101,7 @@ export function AudioCard({
 						</span>
 					</div>
 				)}
+				<MediaMark />
 
 				{memories && memoriesLabel ? (
 					<span className="label absolute top-0 start-0 z-1 border-b border-e border-border bg-surface/95 px-2 py-1 font-medium text-muted">
@@ -112,7 +114,10 @@ export function AudioCard({
 
 			<div className="flex flex-1 flex-col gap-1.5 px-4 py-4 sm:px-5 sm:py-5">
 				<p className="label text-muted">{metaLabel}</p>
-				<h3 className="font-heading text-h3 font-bold leading-snug text-balance">
+				<h3
+					title={title}
+					className="truncate font-heading text-h3 font-bold leading-snug"
+				>
 					<Link
 						href={audioDetailHref(id)}
 						variant="nav"

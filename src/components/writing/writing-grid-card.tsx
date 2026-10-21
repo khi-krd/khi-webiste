@@ -1,4 +1,5 @@
 import NextImage from "next/image";
+import { MediaMark } from "@/components/ui/media-mark";
 import { Link } from "@/components/ui/link";
 import { cn } from "@/lib/utils";
 
@@ -51,7 +52,9 @@ export function WritingGridCard({
 				<div className="relative aspect-[4/3] w-full overflow-hidden bg-sunken">
 					{coverUrl ? (
 						<CoverImage src={coverUrl} alt="" />
-					) : (
+					) : null}
+					<MediaMark />
+					{coverUrl ? null : (
 						<div
 							aria-hidden
 							className="flex h-full w-full items-center justify-center bg-sunken"
@@ -64,7 +67,10 @@ export function WritingGridCard({
 				</div>
 
 				<div className="flex flex-1 flex-col gap-1.5 px-4 py-4 sm:px-5 sm:py-5">
-					<h3 className="font-heading text-h3 font-bold leading-snug text-balance">
+					<h3
+						title={title}
+						className="truncate font-heading text-h3 font-bold leading-snug"
+					>
 						{title}
 					</h3>
 					{subtitle ? (

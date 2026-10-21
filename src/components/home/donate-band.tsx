@@ -1,5 +1,6 @@
 import { ArrowRightIcon } from "@heroicons/react/24/outline";
 import NextImage from "next/image";
+import { MediaMark } from "@/components/ui/media-mark";
 import { getTranslations } from "next-intl/server";
 import {
 	ScrollReveal,
@@ -72,6 +73,7 @@ export async function DonateBand() {
 						quality={75}
 						className="object-cover"
 					/>
+					<MediaMark />
 				</div>
 			) : null}
 		</section>

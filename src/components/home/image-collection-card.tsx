@@ -1,5 +1,6 @@
 import { ArrowUpRightIcon } from "@heroicons/react/24/outline";
 import NextImage from "next/image";
+import { MediaMark } from "@/components/ui/media-mark";
 import { Link } from "@/components/ui/link";
 import { galleryDetailHref } from "@/lib/content/href";
 import type { ImageCollectionItem } from "@/lib/mock/image-collection";
@@ -46,6 +47,7 @@ export function ImageCollectionCard({
 					"group-fine:scale-[1.05] motion-reduce:transition-none motion-reduce:duration-0 motion-reduce:group-fine:scale-100",
 				)}
 			/>
+			<MediaMark />
 
 			<div
 				className={cn(
@@ -78,8 +80,9 @@ export function ImageCollectionCard({
 			>
 				<div className="min-w-0 text-start text-primary-foreground">
 					<h3
+						title={item.title}
 						className={cn(
-							"font-heading text-label font-bold leading-snug text-balance sm:text-small",
+							"truncate font-heading text-label font-bold leading-snug sm:text-small",
 							"translate-y-1.5 opacity-0 transition-[opacity,transform,text-decoration-color] duration-300",
 							imageEase,
 							"group-fine:translate-y-0 group-fine:opacity-100 group-fine:delay-75",

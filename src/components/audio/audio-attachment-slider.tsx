@@ -3,6 +3,7 @@
 
 import useEmblaCarousel from "embla-carousel-react";
 import NextImage from "next/image";
+import { MediaMark } from "@/components/ui/media-mark";
 import { useLocale } from "next-intl";
 import { useCallback, useEffect, useState } from "react";
 import type { GalleryAlbumMetadataLabels } from "@/components/gallery/gallery-album-item";
@@ -94,12 +95,17 @@ export function AudioAttachmentSlider({
 		return null;
 	}
 
+	const attachmentTitle = (a: SoundAttachment) =>
+		(locale === "ckb"
+			? a.titleCkb?.trim() || a.title?.trim() || a.titleKmr?.trim()
+			: a.titleKmr?.trim() || a.titleCkb?.trim() || a.title?.trim()) || "";
+
 	const lightboxItems: GalleryLightboxItem[] = attachments
 		.filter((attachment) => Boolean(attachment.fileUrl))
 		.map((attachment) => ({
 			id: attachment.id,
 			imageUrl: attachment.fileUrl as string,
-			caption: attachment.title?.trim() || undefined,
+			caption: attachmentTitle(attachment) || undefined,
 		}));
 
 	const showPagination = attachments.length > 1;
@@ -115,7 +121,7 @@ export function AudioAttachmentSlider({
 					aria-label={title}
 				>
 					{attachments.map((attachment, index) => {
-						const caption = attachment.title?.trim() || untitledLabel;
+						const caption = attachmentTitle(attachment) || untitledLabel;
 						const imageUrl = attachment.fileUrl;
 						const lightboxIndex = lightboxItems.findIndex(
 							(item) => item.id === attachment.id,
@@ -152,6 +158,7 @@ export function AudioAttachmentSlider({
 												draggable={false}
 											/>
 										) : null}
+										<MediaMark className="p-1.5 [&_img]:size-7" />
 									</span>
 									{caption ? (
 										<span className="mt-1.5 block truncate text-label text-muted">
@@ -173,7 +180,7 @@ export function AudioAttachmentSlider({
 				>
 					{attachments.map((attachment, index) => {
 						const isActive = selectedIndex === index;
-						const caption = attachment.title?.trim() || untitledLabel;
+						const caption = attachmentTitle(attachment) || untitledLabel;
 
 						return (
 							<button

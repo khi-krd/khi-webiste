@@ -1,5 +1,6 @@
 import { ArrowRightIcon } from "@heroicons/react/24/outline";
 import NextImage from "next/image";
+import { MediaMark } from "@/components/ui/media-mark";
 import { viewAllCtaOnDarkClass } from "@/components/ui/cta-styles";
 import { DirectionalIcon } from "@/components/ui/directional-icon";
 import { Link } from "@/components/ui/link";
@@ -52,6 +53,7 @@ export function PartnerCard({
 						)}
 					/>
 				</div>
+				<MediaMark className="z-2" />
 
 				<div
 					className="pointer-events-none absolute inset-0 z-1 bg-foreground/50"

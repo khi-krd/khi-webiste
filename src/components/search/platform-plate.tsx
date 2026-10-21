@@ -134,7 +134,8 @@ export async function PlatformPlate({
 
 					<TitleTag
 						id={titleId}
-						className="text-start font-heading text-body font-semibold leading-snug text-foreground line-clamp-2 [overflow-wrap:anywhere] transition-colors duration-200 group-fine:text-brand sm:text-lead"
+						title={display.title}
+						className="truncate text-start font-heading text-body font-semibold leading-snug text-foreground transition-colors duration-200 group-fine:text-brand sm:text-lead"
 					>
 						<SearchNavLink
 							href={platformDetailHref(hit.type, hit.code)}

@@ -8,6 +8,7 @@ import {
 	FilmSceneList,
 	type FilmSceneListLabels,
 } from "@/components/video/film-scene-list";
+import { MediaMark } from "@/components/ui/media-mark";
 import {
 	VideoClipList,
 	type VideoClipListLabels,
@@ -57,6 +58,10 @@ function PlayerSurface({
 			)}
 		>
 			{children}
+			{/* Brand mark over every playback surface — top-left so it never
+			    sits on the control bar; pointer-events-none, so controls and
+			    the iframe still take the click. */}
+			<MediaMark className="top-0 bottom-auto z-20" />
 		</div>
 	);
 }

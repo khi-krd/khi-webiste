@@ -4,6 +4,7 @@ import {
 	PlayIcon,
 } from "@heroicons/react/24/outline";
 import { cn } from "@/lib/utils";
+import { MediaMark } from "@/components/ui/media-mark";
 import { toCleanEmbedSrc } from "@/lib/video/source";
 
 /**
@@ -27,18 +28,23 @@ export function MediaEmbedFrame({
 	className?: string;
 }) {
 	return (
-		<iframe
-			src={toCleanEmbedSrc(src, { autoplay })}
-			title={title}
-			loading="lazy"
-			allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; fullscreen"
-			allowFullScreen
+		<div
 			className={cn(
-				"w-full border-0 bg-foreground",
+				"relative w-full bg-foreground",
 				kind === "AUDIO" ? "h-[166px]" : "aspect-video",
 				className,
 			)}
-		/>
+		>
+			<iframe
+				src={toCleanEmbedSrc(src, { autoplay })}
+				title={title}
+				loading="lazy"
+				allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; fullscreen"
+				allowFullScreen
+				className="absolute inset-0 size-full border-0"
+			/>
+			<MediaMark className="top-0 bottom-auto z-10" />
+		</div>
 	);
 }
 

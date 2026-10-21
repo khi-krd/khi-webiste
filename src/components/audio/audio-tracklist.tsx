@@ -1,5 +1,6 @@
 import { ArrowTopRightOnSquareIcon } from "@heroicons/react/24/outline";
 import NextImage from "next/image";
+import { MediaMark } from "@/components/ui/media-mark";
 import {
 	AudioEmbedRow,
 	EmbedPanel,
@@ -103,6 +104,7 @@ export function AudioTracklist({
 												className="object-cover"
 											/>
 										) : null}
+										<MediaMark className="p-1 [&_img]:size-6" />
 										{row.playable && queueIndex != null ? (
 											<AudioPlayButton
 												queue={queue}
@@ -130,7 +132,10 @@ export function AudioTracklist({
 									</span>
 
 									<span className="min-w-0 flex-1 text-start sm:w-[15rem] sm:flex-none">
-										<span className="block truncate text-body font-bold text-foreground">
+										<span
+											title={row.title}
+											className="block truncate text-body font-bold text-foreground"
+										>
 											{row.title}
 										</span>
 										{finePrint ? (

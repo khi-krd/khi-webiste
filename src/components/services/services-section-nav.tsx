@@ -197,8 +197,9 @@ function ServicesMobileNav({
 										>
 											<ServicesNavIndicator active={isActive} />
 											<span
+												title={item.title}
 												className={cn(
-													"font-heading text-body leading-snug text-balance sm:text-lead",
+													"min-w-0 flex-1 truncate font-heading text-body leading-snug sm:text-lead",
 													isActive
 														? "font-semibold text-primary"
 														: "font-medium text-muted",
@@ -301,8 +302,9 @@ export function ServicesSectionNav({
 									>
 										<ServicesNavIndicator active={isActive} />
 										<span
+											title={item.title}
 											className={cn(
-												"font-heading text-lead leading-snug text-balance transition-colors duration-300 xl:text-h3",
+												"min-w-0 flex-1 truncate font-heading text-lead leading-snug transition-colors duration-300 xl:text-h3",
 												isActive
 													? "font-semibold text-primary"
 													: "font-medium text-muted group-fine:group-hover:text-primary",

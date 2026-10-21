@@ -1,4 +1,5 @@
 import NextImage from "next/image";
+import { MediaMark } from "@/components/ui/media-mark";
 import { Badge } from "@/components/ui/badge";
 import { Link } from "@/components/ui/link";
 import { newsDetailHref } from "@/lib/content/href";
@@ -68,7 +69,7 @@ const titleClass: Record<NewsCardVariant, string> = {
 	featured: "text-h2 lg:text-display",
 	tall: "text-h2",
 	square: "text-h3",
-	small: "text-small font-semibold sm:text-h3 line-clamp-2",
+	small: "text-small font-semibold sm:text-h3 truncate",
 	medium: "text-h3",
 	wide: "text-h2 sm:text-h3",
 };
@@ -141,6 +142,7 @@ export function NewsCard({
 					)}
 					aria-hidden
 				/>
+				<MediaMark className="z-2" />
 			</div>
 
 			<div className="relative z-10 flex h-full min-h-[inherit] flex-col justify-end p-5 text-start text-white transition-transform duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:-translate-y-1.5 motion-reduce:transition-none motion-reduce:group-hover:translate-y-0 sm:p-6">
@@ -152,8 +154,9 @@ export function NewsCard({
 					{categoryLabel}
 				</Badge>
 				<h3
+					title={item.title}
 					className={cn(
-						"font-heading font-semibold text-balance text-white transition-[text-decoration-color] duration-300 group-hover:underline group-hover:decoration-white/40 group-hover:underline-offset-4 motion-reduce:group-hover:no-underline",
+						"truncate font-heading font-semibold text-white transition-[text-decoration-color] duration-300 group-hover:underline group-hover:decoration-white/40 group-hover:underline-offset-4 motion-reduce:group-hover:no-underline",
 						titleClass[variant],
 					)}
 				>

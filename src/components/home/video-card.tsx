@@ -2,6 +2,7 @@
 
 import { PlayIcon } from "@heroicons/react/24/solid";
 import NextImage from "next/image";
+import { MediaMark } from "@/components/ui/media-mark";
 import { type RefObject, useEffect, useMemo, useRef, useState } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Link } from "@/components/ui/link";
@@ -93,6 +94,7 @@ function StageHero({
 					aria-label={item.title}
 					className="absolute inset-0 h-full w-full object-contain"
 				/>
+				<MediaMark className="z-20" />
 			</div>
 		);
 	}
@@ -136,6 +138,7 @@ function StageHero({
 					className="pointer-events-none absolute inset-0 z-1 bg-linear-to-t from-foreground from-0% via-foreground/70 via-38% to-transparent to-72% transition-opacity duration-500 ease-out group-fine:via-foreground/80 motion-reduce:transition-none"
 					aria-hidden
 				/>
+				<MediaMark className="z-2" />
 			</div>
 
 			<div className="absolute inset-x-0 top-0 z-10 p-4 sm:p-5">
@@ -161,7 +164,10 @@ function StageHero({
 
 			<div className="pointer-events-none absolute inset-x-0 bottom-0 z-20 flex items-end justify-between gap-4 p-4 sm:p-5 lg:p-6">
 				<div className="min-w-0 flex-1 text-start text-white">
-					<h3 className="font-heading text-h2 font-semibold leading-snug text-balance lg:text-h1">
+					<h3
+						title={item.title}
+						className="truncate font-heading text-h2 font-semibold leading-snug lg:text-h1"
+					>
 						<Link
 							href={item.href}
 							variant="nav"
@@ -247,7 +253,9 @@ function PlaylistRow({
 							"motion-reduce:transition-none motion-reduce:group-fine:scale-100",
 						)}
 					/>
-				) : (
+				) : (null)}
+				<MediaMark className="p-1.5 [&_img]:size-6 sm:[&_img]:size-7" />
+				{item.coverUrl ? null : (
 					<div
 						aria-hidden
 						className="flex h-full w-full items-center justify-center bg-foreground"
@@ -276,7 +284,10 @@ function PlaylistRow({
 				<p className="truncate text-label font-medium text-muted">
 					{item.categoryLabel}
 				</p>
-				<h3 className="line-clamp-2 font-heading text-small font-semibold leading-snug text-foreground sm:text-body">
+				<h3
+					title={item.title}
+					className="truncate font-heading text-small font-semibold leading-snug text-foreground sm:text-body"
+				>
 					<Link
 						href={item.href}
 						variant="nav"

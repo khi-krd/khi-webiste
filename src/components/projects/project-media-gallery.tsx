@@ -48,7 +48,6 @@ export async function ProjectMediaGallery({
 						embed: t("sources.embed"),
 						external: t("sources.external"),
 					},
-					open: t("open"),
 					enlarge: t("enlarge"),
 					previous: t("previous"),
 					next: t("next"),

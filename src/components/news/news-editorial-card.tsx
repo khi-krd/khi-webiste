@@ -34,8 +34,9 @@ export function NewsEditorialCard({
 					{categoryLabel}
 				</Badge>
 				<h3
+					title={item.title}
 					className={cn(
-						"font-heading text-h2 font-bold leading-[1.12] text-balance text-foreground",
+						"truncate font-heading text-h2 font-bold leading-[1.12] text-foreground",
 						"transition-[text-decoration-color] duration-300",
 						"group-fine:underline group-fine:decoration-border group-fine:underline-offset-4",
 						"motion-reduce:group-fine:no-underline",

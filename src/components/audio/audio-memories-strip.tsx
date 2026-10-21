@@ -1,4 +1,5 @@
 import NextImage from "next/image";
+import { MediaMark } from "@/components/ui/media-mark";
 import { AudioCardTransport } from "@/components/audio/audio-card-transport";
 import {
 	ScrollReveal,
@@ -35,10 +36,14 @@ function MemoriesCard({ item }: { item: ResolvedAudioCard }) {
 						className="object-cover brightness-[0.94] saturate-[0.88] sepia-[0.3] contrast-[0.96] transition-[filter,transform] duration-700 ease-[cubic-bezier(0.22,1,0.36,1)] group-fine:scale-[1.04] group-fine:brightness-100 group-fine:saturate-100"
 					/>
 				) : null}
+				<MediaMark />
 				<AudioCardTransport seedId={item.id} queue={item.queue} />
 			</div>
 
-			<h3 className="mt-3 font-heading text-body font-bold leading-snug">
+			<h3
+				title={item.title}
+				className="mt-3 truncate font-heading text-body font-bold leading-snug"
+			>
 				<Link
 					href={audioDetailHref(item.id)}
 					variant="nav"

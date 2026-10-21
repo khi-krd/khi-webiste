@@ -164,8 +164,9 @@ function SiteRow({
 				<div className="min-w-0 flex-1">
 					<TitleTag
 						id={`${id}-title`}
+						title={item.title}
 						className={cn(
-							"line-clamp-1 text-start text-body font-medium text-foreground [overflow-wrap:anywhere]",
+							"truncate text-start text-body font-medium text-foreground",
 							"transition-colors duration-200 group-fine:text-brand",
 						)}
 					>

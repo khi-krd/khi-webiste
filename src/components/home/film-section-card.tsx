@@ -1,5 +1,6 @@
 import { PlayIcon } from "@heroicons/react/24/solid";
 import NextImage from "next/image";
+import { MediaMark } from "@/components/ui/media-mark";
 import { Link } from "@/components/ui/link";
 import { cn } from "@/lib/utils";
 
@@ -52,6 +53,7 @@ export function FilmCinemaHero({ item }: FilmCinemaHeroProps) {
 						</span>
 					</div>
 				)}
+				<MediaMark />
 			</div>
 
 			<div
@@ -138,6 +140,7 @@ export function FilmGridCard({ item }: FilmGridCardProps) {
 						</span>
 					</div>
 				)}
+				<MediaMark />
 
 				<div
 					aria-hidden
@@ -168,7 +171,10 @@ export function FilmGridCard({ item }: FilmGridCardProps) {
 							{item.topicLabel}
 						</p>
 					) : null}
-					<h3 className="mt-0.5 font-heading text-small font-semibold leading-snug text-balance text-primary-foreground line-clamp-2 transition-[text-decoration-color] duration-300 group-fine:underline group-fine:decoration-primary-foreground/30 group-fine:underline-offset-[0.2em] motion-reduce:group-fine:no-underline">
+					<h3
+						title={item.title}
+						className="mt-0.5 truncate font-heading text-small font-semibold leading-snug text-primary-foreground transition-[text-decoration-color] duration-300 group-fine:underline group-fine:decoration-primary-foreground/30 group-fine:underline-offset-[0.2em] motion-reduce:group-fine:no-underline"
+					>
 						{item.title}
 					</h3>
 					{item.subtitle ? (

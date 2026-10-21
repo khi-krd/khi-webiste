@@ -9,6 +9,7 @@ import {
 } from "@heroicons/react/24/outline";
 import { PauseIcon, PlayIcon } from "@heroicons/react/24/solid";
 import NextImage from "next/image";
+import { MediaMark } from "@/components/ui/media-mark";
 import { useTranslations } from "next-intl";
 import type { ComponentProps } from "react";
 import {
@@ -138,6 +139,7 @@ export function AudioPlayerBar() {
 								className="object-cover"
 							/>
 						) : null}
+						<MediaMark className="p-0.5 [&_img]:size-4" />
 					</div>
 
 					<div className="min-w-0 flex-1 md:w-fit md:max-w-48 md:flex-none">

@@ -1,4 +1,5 @@
 import Image from "next/image";
+import { MediaMark } from "@/components/ui/media-mark";
 import { FeaturedSlideContent } from "@/components/hero/featured-slide-content";
 import { Link } from "@/i18n/navigation";
 import { cn } from "@/lib/utils";
@@ -51,6 +52,7 @@ export function FeaturedSlide({
 						className="object-cover"
 					/>
 				</div>
+				<MediaMark className="z-2" />
 
 				{/* Ink wash + legibility scrims (stacked; strongest at bottom + text side). */}
 				<div

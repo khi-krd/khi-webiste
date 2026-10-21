@@ -1,4 +1,5 @@
 import NextImage from "next/image";
+import { MediaMark } from "@/components/ui/media-mark";
 import {
 	galleryPhotoSurfaceClass,
 	galleryStripTrayClass,
@@ -107,6 +108,7 @@ export function AudioCoverStrip({ covers, className }: AudioCoverStripProps) {
 								sliceEase,
 							)}
 						/>
+						<MediaMark />
 					</Link>
 				</ScrollRevealItem>
 			))}

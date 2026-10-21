@@ -3,6 +3,7 @@
 import { PlayIcon } from "@heroicons/react/24/solid";
 import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 import NextImage from "next/image";
+import { MediaMark } from "@/components/ui/media-mark";
 import { useCallback, useEffect, useId, useState } from "react";
 import { ServiceFeatureImage } from "@/components/services/service-feature-image";
 import {
@@ -170,6 +171,7 @@ export function ServiceMediaGallery({
 									) : (
 										<span className="absolute inset-0 bg-sunken" />
 									)}
+									<MediaMark className="p-1 [&_img]:size-6" />
 
 									{isVideo && (
 										<span className="pointer-events-none absolute inset-x-0 top-0 flex justify-end bg-linear-to-b from-foreground/55 to-transparent px-1.5 py-1">

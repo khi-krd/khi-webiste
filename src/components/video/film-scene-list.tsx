@@ -2,6 +2,7 @@
 
 import { PlayIcon } from "@heroicons/react/24/solid";
 import NextImage from "next/image";
+import { MediaMark } from "@/components/ui/media-mark";
 import { VideoStillPreview } from "@/components/video/video-still-preview-lazy";
 import { cn } from "@/lib/utils";
 import { formatDuration } from "@/lib/video/format";
@@ -136,6 +137,7 @@ export function FilmSceneList({
 										isActive={isActive}
 										fallbackCoverUrl={fallbackCoverUrl}
 									/>
+									<MediaMark className="z-3" />
 
 									{/* Top/bottom cinema bars */}
 									<span
@@ -198,7 +200,10 @@ export function FilmSceneList({
 											</span>
 										</span>
 										{scene.title ? (
-											<span className="mt-0.5 block font-heading text-small font-semibold leading-snug text-balance text-primary-foreground line-clamp-1 @[17.5rem]:line-clamp-2 sm:text-body">
+											<span
+												title={scene.title}
+												className="mt-0.5 block truncate font-heading text-small font-semibold leading-snug text-primary-foreground sm:text-body"
+											>
 												{scene.title}
 											</span>
 										) : null}
