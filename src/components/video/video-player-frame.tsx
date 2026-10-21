@@ -201,6 +201,32 @@ export function VideoPlayerFrame({
 		);
 	}
 
+	/**
+	 * Selected clip's own description — swaps with the rail selection. Lives in
+	 * the dark hero, so chrome keys off primary-foreground like the rail.
+	 */
+	const clipCaption =
+		isGallery &&
+		activeClip != null &&
+		(activeClip.descriptionHtml || activeClip.description) ? (
+			<div
+				aria-live="polite"
+				className="mt-4 border-t border-primary-foreground/15 pt-4 sm:mt-5"
+			>
+				{activeClip.descriptionHtml ? (
+					<div
+						className="text-small leading-relaxed text-primary-foreground/80 [&_:is(h1,h2,h3,h4,h5,h6)]:font-semibold [&_:is(h1,h2,h3,h4,h5,h6)]:text-primary-foreground [&_a]:text-primary-foreground [&_a]:decoration-primary-foreground/40 fine-hover:[&_a]:decoration-primary-foreground [&_blockquote]:border-primary-foreground/25 [&_blockquote]:text-primary-foreground/70 [&_code]:bg-primary-foreground/10 [&_code]:text-primary-foreground [&_figcaption]:text-primary-foreground/60 [&_hr]:border-primary-foreground/25 [&_li::marker]:text-primary-foreground/60 [&_strong]:text-primary-foreground"
+						// biome-ignore lint/security/noDangerouslySetInnerHtml: descriptionHtml is sanitized by renderRichText during resolve (sanitize-html allowlist) — never raw CMS markup.
+						dangerouslySetInnerHTML={{ __html: activeClip.descriptionHtml }}
+					/>
+				) : (
+					<p className="text-small leading-relaxed text-primary-foreground/80">
+						{activeClip.description}
+					</p>
+				)}
+			</div>
+		) : null;
+
 	const clipList =
 		isGallery && activeClip != null ? (
 			isCinema && sceneLabels ? (
@@ -238,6 +264,7 @@ export function VideoPlayerFrame({
 			<div className={cn(className)}>
 				{framedSurface}
 				{clipList}
+				{clipCaption}
 			</div>
 		);
 	}
@@ -249,6 +276,7 @@ export function VideoPlayerFrame({
 				<div className="min-w-0 lg:sticky lg:top-24">{aside}</div>
 			</div>
 			{clipList}
+			{clipCaption}
 		</div>
 	);
 }

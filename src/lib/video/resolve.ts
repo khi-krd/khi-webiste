@@ -1,4 +1,4 @@
-import { plainTextFromRichContent } from "@/lib/rich-text";
+import { plainTextFromRichContent, renderRichText } from "@/lib/rich-text";
 import { classifyPlayableSource } from "@/lib/video/source";
 import type {
 	ResolvedVideoCard,
@@ -188,8 +188,8 @@ export function resolveVideoPlayer(
 	const clips = sortedClips(video) ?? [];
 	const selectedClip =
 		clipNumber != null
-			? (clips.find((clip) => clip.clipNumber === clipNumber) ?? clips[0])
-			: clips[0];
+			? (clips.find((clip) => clip.clipNumber === clipNumber) ?? defaultClip(clips))
+			: defaultClip(clips);
 
 	if (video.videoType === "VIDEO_CLIP") {
 		const classified = classifyPlayableSource(resolveClipUrl(selectedClip));
@@ -302,6 +302,10 @@ function resolveClip(
 		locale === "ckb"
 			? firstNonBlank(clip.titleCkb, clip.titleKmr)
 			: firstNonBlank(clip.titleKmr, clip.titleCkb);
+	const description =
+		locale === "ckb"
+			? firstNonBlank(clip.descriptionCkb, clip.descriptionKmr)
+			: firstNonBlank(clip.descriptionKmr, clip.descriptionCkb);
 
 	return {
 		clipNumber: clip.clipNumber,
@@ -309,7 +313,17 @@ function resolveClip(
 		url: resolveClipUrl(clip) ?? "",
 		durationSeconds: clip.durationSeconds ?? null,
 		coverUrl: resolveClipCoverUrl(locale, clip) ?? parentCoverUrl ?? null,
+		main: clip.main ?? false,
+		description: description ? plainTextFromRichContent(description) : null,
+		descriptionHtml: description ? renderRichText(description) || null : null,
 	};
+}
+
+/** The clip the player opens with — the editor-flagged main, else the first. */
+function defaultClip(
+	clips: NonNullable<Video["videoClipItems"]>,
+): NonNullable<Video["videoClipItems"]>[number] | undefined {
+	return clips.find((clip) => clip.main) ?? clips[0];
 }
 
 function publishmentYear(video: Video): number | null {
@@ -436,8 +450,10 @@ export function resolveVideoDetail(
 	);
 	const activeClip =
 		clipNumber != null
-			? (clips.find((clip) => clip.clipNumber === clipNumber) ?? null)
-			: null;
+			? (clips.find((clip) => clip.clipNumber === clipNumber) ??
+				clips.find((clip) => clip.main) ??
+				null)
+			: (clips.find((clip) => clip.main) ?? null);
 	const { playerKind, playableSrc } = resolveVideoPlayer(video, clipNumber);
 
 	const cast = (video.castMembers ?? [])

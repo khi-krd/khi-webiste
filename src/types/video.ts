@@ -24,6 +24,10 @@ export const VideoClipItemSchema = z.object({
 	durationSeconds: z.number().int().nullish(),
 	titleCkb: z.string().nullish(),
 	titleKmr: z.string().nullish(),
+	descriptionCkb: z.string().nullish(),
+	descriptionKmr: z.string().nullish(),
+	/** Primary clip — the detail page opens with it. */
+	main: z.boolean().nullish(),
 	/** Per-clip still — prefer over the parent video cover. */
 	coverUrl: z.string().nullish(),
 	thumbnailUrl: z.string().nullish(),
@@ -146,6 +150,12 @@ export type ResolvedVideoClip = {
 	durationSeconds: number | null;
 	/** Clip-specific still; null when the API only sent a playable URL. */
 	coverUrl: string | null;
+	/** Editor-flagged primary clip — plays first when no `?clip=` deep-link. */
+	main: boolean;
+	/** Plain-text clip description (locale-resolved). */
+	description: string | null;
+	/** Sanitized rich-text clip description — safe for dangerouslySetInnerHTML. */
+	descriptionHtml: string | null;
 };
 
 export type ResolvedVideoCard = {
