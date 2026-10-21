@@ -60,12 +60,12 @@ export function ProjectsShell({
 					</div>
 				) : (
 					<ScrollReveal>
-						<ul className="grid grid-cols-1 gap-12 md:grid-cols-2 md:gap-x-10 lg:grid-cols-3 lg:gap-x-0 lg:divide-x lg:divide-border">
+						{/* Equal px on every column (row edges pulled back with -mx) so
+						    all three cards get the same content width — and therefore
+						    the same fixed-ratio cover height. */}
+						<ul className="grid grid-cols-1 gap-12 md:grid-cols-2 md:gap-x-10 lg:-mx-8 lg:grid-cols-3 lg:gap-x-0 lg:divide-x lg:divide-border">
 							{items.map((item, index) => (
-								<ScrollRevealItem
-									key={item.id}
-									className="min-w-0 lg:px-8 lg:first:ps-0 lg:last:pe-0"
-								>
+								<ScrollRevealItem key={item.id} className="min-w-0 lg:px-8">
 									<ProjectCard item={item} priority={index < 3} />
 								</ScrollRevealItem>
 							))}
