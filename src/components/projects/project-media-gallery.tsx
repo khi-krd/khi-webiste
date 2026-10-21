@@ -1,6 +1,7 @@
+import { getTranslations } from "next-intl/server";
 import { ScrollRevealItem } from "@/components/motion/scroll-reveal";
 import { SectionEyebrow } from "@/components/projects/project-detail-view";
-import { ProjectMediaItemBlock } from "@/components/projects/project-media-item";
+import { ProjectMediaPlaylist } from "@/components/projects/project-media-playlist";
 import type { MediaItem } from "@/types/media";
 
 type ProjectMediaGalleryProps = {
@@ -12,7 +13,7 @@ type ProjectMediaGalleryProps = {
 	closeLabel: string;
 };
 
-export function ProjectMediaGallery({
+export async function ProjectMediaGallery({
 	items,
 	title,
 	projectTitle,
@@ -21,19 +22,40 @@ export function ProjectMediaGallery({
 }: ProjectMediaGalleryProps) {
 	if (items.length === 0) return null;
 
+	const t = await getTranslations("ProjectsPage.detail.media");
+
 	return (
 		<ScrollRevealItem>
 			<SectionEyebrow as="h2" number={number} label={title} />
-			<div className="grid grid-cols-1 gap-6 pt-6 sm:gap-8 md:grid-cols-2 lg:grid-cols-3">
-				{items.map((item) => (
-					<ProjectMediaItemBlock
-						key={`${item.kind}-${item.url}-${item.sortOrder}`}
-						item={item}
-						title={projectTitle}
-						closeLabel={closeLabel}
-					/>
-				))}
-			</div>
+			<ProjectMediaPlaylist
+				items={items}
+				projectTitle={projectTitle}
+				labels={{
+					playlist: t("playlist"),
+					all: t("all"),
+					kinds: {
+						IMAGE: t("kinds.IMAGE"),
+						VIDEO: t("kinds.VIDEO"),
+						AUDIO: t("kinds.AUDIO"),
+					},
+					details: t("details"),
+					kind: t("kind"),
+					format: t("format"),
+					source: t("source"),
+					position: t("position"),
+					sources: {
+						file: t("sources.file"),
+						embed: t("sources.embed"),
+						external: t("sources.external"),
+					},
+					open: t("open"),
+					enlarge: t("enlarge"),
+					previous: t("previous"),
+					next: t("next"),
+					nowShowing: t("nowShowing"),
+					close: closeLabel,
+				}}
+			/>
 		</ScrollRevealItem>
 	);
 }

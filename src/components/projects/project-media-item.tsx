@@ -44,7 +44,7 @@ export function ProjectMediaItemBlock({
 						<ProjectCoverImage
 							src={item.url}
 							alt={item.caption ?? title}
-							className="absolute inset-0"
+							className="h-full w-full"
 							sizes="(max-width: 768px) 100vw, 50vw"
 						/>
 					</div>

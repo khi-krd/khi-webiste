@@ -16,7 +16,6 @@ type ProjectsShellProps = {
 	activeYear: string | null;
 	activeType: string | null;
 	activeQuery: string | null;
-	previewLabel: string;
 	noResultsMessage: string;
 	paginationLabel: string;
 	previousLabel: string;
@@ -31,7 +30,6 @@ export function ProjectsShell({
 	activeYear,
 	activeType,
 	activeQuery,
-	previewLabel,
 	noResultsMessage,
 	paginationLabel,
 	previousLabel,
@@ -68,11 +66,7 @@ export function ProjectsShell({
 									key={item.id}
 									className="min-w-0 lg:px-8 lg:first:ps-0 lg:last:pe-0"
 								>
-									<ProjectCard
-										item={item}
-										copy={{ preview: previewLabel }}
-										priority={index < 3}
-									/>
+									<ProjectCard item={item} priority={index < 3} />
 								</ScrollRevealItem>
 							))}
 						</ul>

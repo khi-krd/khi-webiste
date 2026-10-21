@@ -64,7 +64,7 @@ function FrameChip({
 
 /**
  * Beat 2 (+150ms): the pill pops with a magnetic back-out overshoot. While the
- * preview screens (`data-previewing` on the host) it politely recedes — the
+ * preview screens (`data-previewing` on the host) it fully retracts — the
  * affordance yields to the content — and returns the instant playback stops.
  */
 function PlayMark({ large = false }: { large?: boolean }) {
@@ -82,7 +82,7 @@ function PlayMark({ large = false }: { large?: boolean }) {
 					"opacity-0 scale-75 sm:opacity-80 sm:scale-90",
 					"group-fine:opacity-100 group-fine:scale-100 group-fine:delay-150",
 					"group-focus-visible:opacity-100 group-focus-visible:scale-100",
-					"group-data-[previewing]:opacity-70! group-data-[previewing]:scale-90!",
+					"group-data-[previewing]:opacity-0! group-data-[previewing]:scale-75! group-data-[previewing]:delay-0!",
 					"motion-reduce:transition-none motion-reduce:scale-100",
 					large ? "size-16" : "size-12",
 				)}

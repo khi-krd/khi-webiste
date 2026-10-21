@@ -272,6 +272,30 @@
 				"ONGOING": "Temam nebûye",
 				"COMPLETED": "Temam bûye",
 				"ARCHIVED": "Arşîvkirî"
+			},
+			"media": {
+				"playlist": "Lîsteya medyayê",
+				"all": "Hemû",
+				"kinds": {
+					"IMAGE": "Wêne",
+					"VIDEO": "Vîdyo",
+					"AUDIO": "Deng"
+				},
+				"details": "Agahiya medyayê",
+				"kind": "Cure",
+				"format": "Format",
+				"source": "Çavkanî",
+				"position": "Rêz",
+				"sources": {
+					"file": "Pelê arşîvê",
+					"embed": "Lîstikvanê derve",
+					"external": "Girêdana derve"
+				},
+				"open": "Pelê veke",
+				"enlarge": "Wêneyê mezin bike",
+				"previous": "Medyaya berê",
+				"next": "Medyaya paşê",
+				"nowShowing": "Niha tê nîşandan"
 			}
 		}
 	},

@@ -5,9 +5,9 @@ import {
 	ScrollRevealItem,
 } from "@/components/motion/scroll-reveal";
 import { DirectionalIcon } from "@/components/ui/directional-icon";
-import { Link } from "@/components/ui/link";
 import { RichText } from "@/components/ui/rich-text";
 import { VideoCinemaHeroBackground } from "@/components/video/video-cinema-hero-background";
+import { Link } from "@/i18n/navigation";
 import { shortFilmDetailHref } from "@/lib/video/resolve";
 
 type VideoCinemaHeroProps = {
@@ -25,8 +25,11 @@ type VideoCinemaHeroProps = {
 const watchNowClass =
 	"group/cta inline-flex h-12 items-center gap-2 border border-primary-foreground/25 bg-primary px-7 font-heading text-small font-semibold text-primary-foreground no-underline transition-[gap,box-shadow,opacity] duration-300 ease-out fine-hover:gap-2.5 fine-hover:opacity-90 fine-hover:shadow-[0_12px_32px_-14px_rgba(0,0,0,0.35)]";
 
+// Plain i18n Link (not ui/Link variant="nav"): the nav variant injects
+// text-muted/hover:text-foreground, which beat text-primary-foreground in the
+// compiled sheet (cn has no tw-merge) and turned this label dark.
 const detailsClass =
-	"inline-flex h-12 items-center gap-2 border border-primary-foreground/40 bg-primary-foreground/10 px-7 font-heading text-small font-semibold text-primary-foreground no-underline backdrop-blur-[2px] transition-colors duration-300 fine-hover:border-primary-foreground/70 fine-hover:bg-primary-foreground/20";
+	"group/details inline-flex h-12 items-center gap-2 border border-primary-foreground/45 bg-foreground/35 px-7 font-heading text-small font-semibold text-primary-foreground no-underline backdrop-blur-[2px] transition-[background-color,border-color,gap] duration-300 ease-out fine-hover:gap-2.5 fine-hover:border-primary fine-hover:bg-primary focus-visible:border-primary focus-visible:bg-primary";
 
 /**
  * Image-led cinematic hero — the one place the Videos area goes dark. The
@@ -83,11 +86,11 @@ export function VideoCinemaHero({
 
 					<ScrollRevealItem>
 						<div className="mt-7 flex flex-wrap items-center gap-3">
-							<Link href={detailHref} variant="nav" className={watchNowClass}>
+							<Link href={detailHref} className={watchNowClass}>
 								<span>{watchNowLabel}</span>
 								<PlayIcon className="size-4" aria-hidden />
 							</Link>
-							<Link href={detailHref} variant="nav" className={detailsClass}>
+							<Link href={detailHref} className={detailsClass}>
 								<span>{detailsLabel}</span>
 								<DirectionalIcon icon={ChevronRightIcon} className="size-4" />
 							</Link>

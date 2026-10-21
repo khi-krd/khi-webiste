@@ -131,36 +131,40 @@ export function VideoPosterCard({
 				{durationLabel ? (
 					// Timecode: top corner when the title sits on the still, foot
 					// corner when it sits below — always the corner the text is not.
+					// Stays neutral on hover so the frame has one accent, not three.
 					<span
 						dir="ltr"
 						className={cn(
-							"label absolute end-0 z-3 border-s px-2 py-1 font-medium tabular-nums backdrop-blur-[1px] transition-colors duration-300",
+							"label absolute end-0 z-3 border-s px-2 py-1 font-medium tabular-nums backdrop-blur-[2px]",
 							isCaption ? "bottom-0 border-t" : "top-0 border-b",
 							dark
-								? "border-primary-foreground/20 bg-foreground/70 text-primary-foreground"
+								? "border-primary-foreground/20 bg-foreground/75 text-primary-foreground"
 								: "border-border bg-surface/90 text-foreground",
-							"group-fine:border-primary group-fine:bg-primary group-fine:text-primary-foreground",
 						)}
 					>
 						{durationLabel}
 					</span>
 				) : null}
 
-				{/* Fades in under the pointer and recedes again once the clip is
-				    actually rolling. */}
+				{/* Small play chip in the free top-start corner — never over the
+				    title or the timecode. It slides in on hover/focus and retracts
+				    as soon as the preview is actually rolling, so the moving film
+				    is never covered by chrome. */}
 				<span
 					aria-hidden
-					className={cn(
-						"pointer-events-none absolute inset-0 z-2 flex items-center justify-center opacity-0 transition-opacity duration-300 group-fine:opacity-100 group-focus-visible:opacity-100 group-data-[previewing]:opacity-0",
-						// The overlay variant seats the title at the foot of the still —
-						// bias the circle up so it blooms in the clear area above the text.
-						!isCaption && "pb-14 sm:pb-16",
-					)}
+					className="pointer-events-none absolute start-0 top-0 z-3 inline-flex size-9 -translate-y-1 items-center justify-center bg-primary text-primary-foreground opacity-0 shadow-[0_8px_20px_-10px_rgb(0_0_0/0.6)] transition-[opacity,transform] duration-300 ease-out group-fine:translate-y-0 group-fine:opacity-100 group-focus-visible:translate-y-0 group-focus-visible:opacity-100 group-data-[previewing]:-translate-y-1 group-data-[previewing]:opacity-0 motion-reduce:translate-y-0 motion-reduce:transition-none"
 				>
-					<span className="inline-flex size-12 scale-75 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-[0_12px_32px_-10px_rgb(0_0_0/0.55)] ring-1 ring-primary-foreground/30 backdrop-blur-[2px] transition-[transform] duration-300 ease-out group-fine:scale-100 group-focus-visible:scale-100 motion-reduce:scale-100 motion-reduce:transition-none">
-						<PlayIcon className="size-5 translate-x-0.5" />
-					</span>
+					<PlayIcon className="size-4 translate-x-px" />
 				</span>
+
+				{/* Preview-rolling cue: a thin brand hairline along the foot of the
+				    frame instead of a button over the picture. */}
+				{previewVideoUrl ? (
+					<span
+						aria-hidden
+						className="pointer-events-none absolute inset-x-0 bottom-0 z-3 h-0.5 origin-center scale-x-0 bg-primary transition-transform duration-700 ease-out group-data-[previewing]:scale-x-100 motion-reduce:hidden"
+					/>
+				) : null}
 
 				{isCaption ? null : (
 					<div className="absolute inset-x-0 bottom-0 z-2 p-3.5 transition-transform duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] group-fine:-translate-y-0.5 motion-reduce:transition-none motion-reduce:group-fine:translate-y-0 sm:p-4">

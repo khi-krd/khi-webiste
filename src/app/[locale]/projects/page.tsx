@@ -60,7 +60,6 @@ export default async function ProjectsPage({
 				activeYear={pageData.activeYear}
 				activeType={pageData.activeType}
 				activeQuery={pageData.activeQuery}
-				previewLabel={t("grid.preview")}
 				noResultsMessage={t("grid.noResults")}
 				paginationLabel={t("pagination.label")}
 				previousLabel={t("pagination.previous")}
