@@ -119,40 +119,58 @@ function pad(n: number): string {
 	return String(n).padStart(2, "0");
 }
 
+/**
+ * Poster for a non-image item: its own thumbnail, else a neighbouring photo
+ * with the same caption — editors upload each interview as a photo + video
+ * pair, so the photo is the natural still for the video.
+ */
+function posterFor(items: MediaItem[], index: number): string | null {
+	const item = items[index];
+	if (!item || item.kind === "IMAGE") return null;
+	if (item.thumbnailUrl) return item.thumbnailUrl;
+	const caption = item.caption?.trim();
+	if (!caption) return null;
+	for (const neighbour of [items[index - 1], items[index + 1]]) {
+		if (
+			neighbour?.kind === "IMAGE" &&
+			neighbour.url &&
+			neighbour.caption?.trim() === caption
+		) {
+			return neighbour.url;
+		}
+	}
+	return null;
+}
+
 /** Rail thumbnail — real picture for images, a decoded still for files. */
-function Thumb({ item }: { item: MediaItem }) {
+function Thumb({ item, poster }: { item: MediaItem; poster: string | null }) {
 	const media = "absolute inset-0 size-full object-cover";
-	if (item.kind === "IMAGE" && item.url) {
+	const still = item.kind === "IMAGE" ? item.url : poster;
+	if (still) {
 		return (
 			<NextImage
-				src={item.url}
+				src={still}
 				alt=""
 				fill
 				sizes="7rem"
-				unoptimized={isRemote(item.url)}
+				unoptimized={isRemote(still)}
 				className={media}
 			/>
 		);
-	}
-	if (item.thumbnailUrl) {
-		return (
-			<NextImage
-				src={item.thumbnailUrl}
-				alt=""
-				fill
-				sizes="7rem"
-				unoptimized={isRemote(item.thumbnailUrl)}
-				className={media}
-			/>
-		);
-	}
-	if (item.kind === "VIDEO" && item.url && MEDIA_FILE_PATTERN.test(item.url)) {
-		return <VideoStillPreview src={item.url} sizes="7rem" className={media} />;
 	}
 	return (
-		<span className="absolute inset-0 flex items-center justify-center bg-primary/10 text-primary">
-			<KindIcon kind={item.kind} className="size-6" />
-		</span>
+		<>
+			{/* Branded tile underneath — stays visible until (or unless) the
+			    video's own first frame decodes over it. */}
+			<span className="absolute inset-0 flex items-center justify-center bg-foreground text-primary-foreground/60">
+				<KindIcon kind={item.kind} className="size-6" />
+			</span>
+			{item.kind === "VIDEO" &&
+			item.url &&
+			MEDIA_FILE_PATTERN.test(item.url) ? (
+				<VideoStillPreview src={item.url} sizes="7rem" className={media} />
+			) : null}
+		</>
 	);
 }
 
@@ -160,10 +178,12 @@ function Thumb({ item }: { item: MediaItem }) {
 function Stage({
 	item,
 	title,
+	poster,
 	labels,
 }: {
 	item: MediaItem;
 	title: string;
+	poster: string | null;
 	labels: ProjectMediaPlaylistLabels;
 }) {
 	if (item.kind === "IMAGE") {
@@ -215,7 +235,7 @@ function Stage({
 						key={item.url}
 						src={item.url}
 						title={title}
-						poster={item.thumbnailUrl ?? undefined}
+						poster={poster ?? undefined}
 						posterAlt={title}
 						variant="full"
 						className="absolute inset-0 size-full"
@@ -359,6 +379,7 @@ export function ProjectMediaPlaylist({
 						key={`${current.kind}-${selected}`}
 						item={current}
 						title={currentTitle}
+						poster={posterFor(items, selected)}
 						labels={labels}
 					/>
 				</div>
@@ -535,7 +556,7 @@ export function ProjectMediaPlaylist({
 												active ? "border-primary" : "border-border",
 											)}
 										>
-											<Thumb item={item} />
+											<Thumb item={item} poster={posterFor(items, index)} />
 											<span className="absolute bottom-0 end-0 z-1 inline-flex size-6 items-center justify-center bg-foreground/80 text-primary-foreground">
 												<KindIcon kind={item.kind} className="size-3.5" />
 											</span>
@@ -561,7 +582,10 @@ export function ProjectMediaPlaylist({
 													<>
 														{labels.kinds[item.kind]}
 														{fileFormat(item) ? (
-															<span dir="ltr">· {fileFormat(item)}</span>
+															<>
+																<span aria-hidden>·</span>
+																<span dir="ltr">{fileFormat(item)}</span>
+															</>
 														) : null}
 													</>
 												)}
