@@ -32,6 +32,11 @@ type ProjectCoverImageProps = {
 	 * fallback ratio holds the space until the first frame is decoded.
 	 */
 	naturalRatio?: boolean;
+	/**
+	 * Inline logo mark. Off for surfaces that open in a lightbox — the opened
+	 * view carries its own watermark, so the resting image stays clean.
+	 */
+	mark?: boolean;
 };
 
 export function ProjectCoverImage({
@@ -42,6 +47,7 @@ export function ProjectCoverImage({
 	priority = false,
 	sizes = "(max-width: 768px) 100vw, 33vw",
 	naturalRatio = false,
+	mark = true,
 }: ProjectCoverImageProps) {
 	const [currentSrc, setCurrentSrc] = useState(src || FALLBACK);
 	const [ratio, setRatio] = useState<number | null>(null);
@@ -81,7 +87,7 @@ export function ProjectCoverImage({
 					}
 				}}
 			/>
-			<MediaMark />
+			{mark ? <MediaMark /> : null}
 		</div>
 	);
 }

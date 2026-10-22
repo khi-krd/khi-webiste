@@ -24,6 +24,8 @@ type ProjectCoverMediaProps = {
 	variant?: "card" | "hero";
 	/** IMAGE covers only: frame takes the artwork's own ratio — full jacket, no crop. */
 	naturalRatio?: boolean;
+	/** IMAGE covers only: inline logo mark — off when the cover opens in a lightbox. */
+	mark?: boolean;
 };
 
 export function ProjectCoverMedia({
@@ -37,6 +39,7 @@ export function ProjectCoverMedia({
 	sizes,
 	variant = "card",
 	naturalRatio = false,
+	mark = true,
 }: ProjectCoverMediaProps) {
 	const isHero = variant === "hero";
 
@@ -114,6 +117,7 @@ export function ProjectCoverMedia({
 			className={className}
 			imageClassName={imageClassName}
 			naturalRatio={naturalRatio}
+			mark={mark}
 		/>
 	);
 }
