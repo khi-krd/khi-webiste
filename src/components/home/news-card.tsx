@@ -143,7 +143,7 @@ export function NewsCard({
 				/>
 			</div>
 
-			<div className="relative z-10 flex h-full min-h-[inherit] flex-col justify-end p-5 text-start text-white transition-transform duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:-translate-y-1.5 motion-reduce:transition-none motion-reduce:group-hover:translate-y-0 sm:p-6">
+			<div className="relative z-10 flex h-full min-h-[inherit] w-full min-w-0 flex-col justify-end p-5 text-start text-white transition-transform duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:-translate-y-1.5 motion-reduce:transition-none motion-reduce:group-hover:translate-y-0 sm:p-6">
 				<Badge
 					variant="subtle"
 					size="sm"

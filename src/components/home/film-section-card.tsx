@@ -63,7 +63,7 @@ export function FilmCinemaHero({ item }: FilmCinemaHeroProps) {
 				className="pointer-events-none absolute inset-0 bg-linear-to-r from-foreground/60 from-0% via-foreground/25 via-40% to-transparent to-85% rtl:bg-linear-to-l"
 			/>
 
-			<div className="relative flex h-full flex-col justify-end p-4 sm:p-5 lg:p-6">
+			<div className="relative flex h-full w-full min-w-0 flex-col justify-end p-4 sm:p-5 lg:p-6">
 				{item.topicLabel ? (
 					<div className="flex flex-wrap items-center gap-2">
 						<span className="text-label text-primary-foreground/55">
