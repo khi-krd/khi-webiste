@@ -91,6 +91,8 @@ export const WritingSchema = z.object({
 	topic: TopicInfoSchema.nullish(),
 	topics: z.array(TopicInfoSchema).optional().default([]),
 	bookGenres: z.array(z.string()),
+	bookLanguageCkb: z.string().nullish(),
+	bookLanguageKmr: z.string().nullish(),
 	publishedByInstitute: z.boolean(),
 	tags: BilingualSetSchema,
 	keywords: BilingualSetSchema,
@@ -174,6 +176,7 @@ export type ResolvedWritingDetail = {
 	title: string;
 	writer: string;
 	location: string | null;
+	bookLanguage: string | null;
 	description: string;
 	coverUrl: string | null;
 	hoverCoverUrl: string | null;

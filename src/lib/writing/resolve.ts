@@ -251,6 +251,11 @@ export function resolveWritingDetail(
 		title: content.title,
 		writer: content.writer?.trim() ?? "",
 		location: content.location?.trim() || null,
+		bookLanguage:
+			(locale === "ckb"
+				? writing.bookLanguageCkb || writing.bookLanguageKmr
+				: writing.bookLanguageKmr || writing.bookLanguageCkb)?.trim() ||
+			null,
 		description,
 		coverUrl: resolveCoverUrl(locale, writing),
 		hoverCoverUrl: writing.hoverCoverUrl ?? null,
