@@ -6,6 +6,7 @@ import {
 	unwrapApiPayload,
 } from "@/lib/api/client";
 import { getApiBaseUrl } from "@/lib/api/config";
+import { isServicesPageHeroRecord } from "@/lib/api/services-page";
 import { plainTextFromRichContent } from "@/lib/rich-text";
 import {
 	type ContentType,
@@ -425,6 +426,19 @@ export function featuredItemFromSourceRecord(
 		return null;
 	}
 
+	// Only the services-PAGE record (the "page-hero" service) is a carousel
+	// slide — a section service's featured flag lights the /services rail, not
+	// the hero. Mirrors the backend's aggregate filter.
+	if (
+		endpoint.source === "service" &&
+		!isServicesPageHeroRecord({
+			serviceType: getString(item.serviceType) ?? null,
+			navAnchorId: getString(item.navAnchorId) ?? null,
+		})
+	) {
+		return null;
+	}
+
 	const content = pickLocalizedContent(locale, item);
 	const title = getString(content?.title)?.trim();
 	const imageUrl = pickSourceImageUrl(locale, item)?.trim();
@@ -441,9 +455,9 @@ export function featuredItemFromSourceRecord(
 				getString(item.slugKmr),
 			) ?? entityId)
 		: endpoint.source === "service"
-			? // Services link to their on-page section: navAnchorId when the CMS set
-				// one, else the numeric id — that is what the section DOM id is.
-				(getString(item.navAnchorId) ?? entityId)
+			? // The only service record reaching this point is the page hero —
+				// "services" is the id of the sections grid on /services.
+				"services"
 			: entityId;
 
 	const parsed = FeaturedItemSchema.safeParse({
