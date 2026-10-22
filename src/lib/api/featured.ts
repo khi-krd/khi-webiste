@@ -333,6 +333,7 @@ const FEATURED_SOURCE_ENDPOINTS: FeaturedSourceEndpoint[] = [
 		type: "gallery",
 		slugFromRecord: true,
 	},
+	{ source: "service", path: "/api/v1/services/featured", type: "service" },
 ];
 
 /** Mirrors the backend's `SiteSettings.maxFeaturedSlides` default. */
@@ -352,7 +353,29 @@ function pickLocalizedContent(
 ): UnknownRecord | null {
 	const ckb = asRecord(item.ckbContent);
 	const kmr = asRecord(item.kmrContent);
-	return (locale === "ckb" ? (ckb ?? kmr) : (kmr ?? ckb)) ?? null;
+	if (ckb || kmr) {
+		return (locale === "ckb" ? (ckb ?? kmr) : (kmr ?? ckb)) ?? null;
+	}
+
+	// Service records carry a `contents` array keyed by languageCode instead.
+	if (Array.isArray(item.contents)) {
+		const entries = item.contents
+			.map(asRecord)
+			.filter((entry): entry is UnknownRecord => entry != null);
+		const wanted = locale === "ckb" ? "CKB" : "KMR";
+		const fallback = locale === "ckb" ? "KMR" : "CKB";
+		return (
+			entries.find(
+				(entry) => getString(entry.languageCode)?.toUpperCase() === wanted,
+			) ??
+			entries.find(
+				(entry) => getString(entry.languageCode)?.toUpperCase() === fallback,
+			) ??
+			null
+		);
+	}
+
+	return null;
 }
 
 /** Same precedence the backend applies: wide hero override, then the cover. */
@@ -360,7 +383,7 @@ function pickSourceImageUrl(
 	locale: string,
 	item: UnknownRecord,
 ): string | undefined {
-	return (
+	const standard =
 		getString(item.featureImageUrl) ??
 		getString(item.coverUrl) ??
 		preferLocalized(
@@ -368,8 +391,26 @@ function pickSourceImageUrl(
 			getString(item.ckbCoverUrl),
 			getString(item.kmrCoverUrl),
 		) ??
-		getString(item.hoverCoverUrl)
-	);
+		getString(item.hoverCoverUrl);
+	if (standard) {
+		return standard;
+	}
+
+	// Services resolve their slide image through the gallery media slots —
+	// a video slot contributes its poster — then the legacy list / hero poster.
+	if (Array.isArray(item.galleryMedia)) {
+		for (const slot of item.galleryMedia) {
+			const media = asRecord(slot);
+			if (!media) continue;
+			const isVideo = getString(media.type)?.toUpperCase() === "VIDEO";
+			const candidate = getString(isVideo ? media.posterUrl : media.url);
+			if (candidate) return candidate;
+		}
+	}
+	const legacy = Array.isArray(item.featureImageUrls)
+		? item.featureImageUrls.map(getString).find(Boolean)
+		: undefined;
+	return legacy ?? getString(item.heroPosterUrl);
 }
 
 /** Build one carousel slide from a source's own DTO. */
@@ -399,14 +440,22 @@ export function featuredItemFromSourceRecord(
 				getString(item.slugCkb),
 				getString(item.slugKmr),
 			) ?? entityId)
-		: entityId;
+		: endpoint.source === "service"
+			? // Services link to their on-page section: navAnchorId when the CMS set
+				// one, else the numeric id — that is what the section DOM id is.
+				(getString(item.navAnchorId) ?? entityId)
+			: entityId;
 
 	const parsed = FeaturedItemSchema.safeParse({
 		id: `${endpoint.source}-${entityId}`,
 		type: endpoint.type,
 		slug,
 		title,
-		description: resolveDescription(getString(content?.description)) ?? title,
+		description:
+			resolveDescription(
+				getString(content?.featureDescription) ??
+					getString(content?.description),
+			) ?? title,
 		image: { url: imageUrl, alt: title },
 	});
 
