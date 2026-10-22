@@ -166,6 +166,22 @@ function sortedTrackFiles(track: SoundTrack): SoundTrack["files"] {
 	);
 }
 
+/**
+ * The track's own CD cover is the first image in its per-file brochures.
+ * An explicit `thumbUrl` wins if one was ever set; the album cover is the
+ * last fallback so a trackless CD never leaves the jacket blank.
+ */
+function resolveFileJacketUrl(
+	file: SoundTrackFile,
+	albumCoverUrl: string | null,
+): string | null {
+	const cdCoverUrl = [...(file.brochures ?? [])]
+		.sort((a, b) => (a.brochureOrder ?? 0) - (b.brochureOrder ?? 0))
+		.map((brochure) => brochure.imageUrl?.trim())
+		.find((url) => url != null && url.length > 0);
+	return firstNonBlank(file.thumbUrl, cdCoverUrl, albumCoverUrl);
+}
+
 export function buildPlayerQueue(
 	locale: string,
 	track: SoundTrack,
@@ -183,7 +199,7 @@ export function buildPlayerQueue(
 			localizedFileTitle(locale, file) ??
 			(files.length > 1 ? `${trackTitle} — ${index + 1}` : trackTitle),
 		artist,
-		coverUrl,
+		coverUrl: resolveFileJacketUrl(file, coverUrl),
 		// biome-ignore lint/style/noNonNullAssertion: isPlayable guarantees a source URL
 		audioUrl: resolvePlayableAudioUrl(file)!,
 		href: audioDetailHref(track.id),
@@ -261,7 +277,7 @@ function resolveFileRow(
 		title:
 			localizedFileTitle(locale, file) ??
 			(totalFiles > 1 ? `${trackTitle} — ${index + 1}` : trackTitle),
-		thumbUrl: firstNonBlank(file.thumbUrl, coverUrl),
+		thumbUrl: resolveFileJacketUrl(file, coverUrl),
 		fileType: file.fileType,
 		playable: isPlayable(file),
 		externalUrl: file.externalUrl ?? null,
