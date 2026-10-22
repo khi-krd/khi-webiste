@@ -346,8 +346,8 @@ export function resolveAudioDetail(
 	const coverUrl = resolveAudioCoverUrl(locale, track);
 	const files = sortedTrackFiles(track);
 
-	// Album-level brochures (the independent, mixed-type list) come first;
-	// legacy per-file brochure images still render after them.
+	// Album-level brochures only — per-file CD covers (file.brochures) feed
+	// the track jackets via resolveFileJacketUrl, never this grid.
 	const albumBrochures: ResolvedBrochureItem[] = (track.brochures ?? [])
 		.map((brochure, index): ResolvedBrochureItem | null => {
 			const fileUrl = brochure.fileUrl?.trim();
@@ -366,25 +366,7 @@ export function resolveAudioDetail(
 		.filter((brochure): brochure is ResolvedBrochureItem => brochure != null)
 		.sort((a, b) => a.sortOrder - b.sortOrder);
 
-	const fileBrochures: ResolvedBrochureItem[] = files
-		.flatMap((file) => file.brochures)
-		.map((brochure, index): ResolvedBrochureItem | null => {
-			const imageUrl = brochure.imageUrl?.trim();
-			if (!imageUrl) {
-				return null;
-			}
-			return {
-				id: brochure.id,
-				fileUrl: imageUrl,
-				kind: "image",
-				caption: localizedCaption(locale, brochure) ?? null,
-				sortOrder: brochure.brochureOrder ?? index,
-			};
-		})
-		.filter((brochure): brochure is ResolvedBrochureItem => brochure != null)
-		.sort((a, b) => a.sortOrder - b.sortOrder);
-
-	const brochures = [...albumBrochures, ...fileBrochures];
+	const brochures = albumBrochures;
 
 	const attachments = [...track.attachments].sort(
 		(a, b) => (a.attachmentOrder ?? 0) - (b.attachmentOrder ?? 0),
