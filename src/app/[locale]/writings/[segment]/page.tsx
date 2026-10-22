@@ -164,6 +164,7 @@ export default async function WritingsSegmentPage({
 					t("post.seriesVolume", { order, total: total ?? order })
 				}
 				topicLabel={t("post.topic")}
+				genreLabel={t("post.genre")}
 				keywordsLabel={t("post.keywords")}
 				formatLabel={t("post.format")}
 				languagesLabel={t("post.languagesLabel")}

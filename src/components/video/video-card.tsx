@@ -27,17 +27,12 @@ export type VideoCardProps = {
 	topicLabel?: string | null;
 	/** Timecode, e.g. "12:00" — rendered LTR. */
 	durationLabel: string | null;
-	memories?: boolean;
-	memoriesLabel?: string | null;
 	/** Override detail href (e.g. short-films route or clip deep-link). */
 	href?: string;
 	/** featured = full-bleed cinemascope hero with overlaid text. */
 	variant?: "featured" | "grid";
 	className?: string;
 };
-
-/** Aged-photograph tint for Album-of-Memories covers — subtle, archival. */
-const memoriesCoverClass = "sepia-[0.28] contrast-[0.97]";
 
 const imageBase =
 	"absolute inset-0 size-full object-cover object-center brightness-[0.93] saturate-[0.88] transition-[filter,transform] duration-700 ease-[cubic-bezier(0.22,1,0.36,1)] group-fine:scale-[1.04] group-fine:brightness-100 group-fine:saturate-100 motion-reduce:transition-none motion-reduce:duration-0 motion-reduce:group-fine:scale-100";
@@ -100,14 +95,12 @@ function CoverLayer({
 	previewVideoUrl = null,
 	hoverCoverUrl,
 	title,
-	memories,
 	sizes,
 }: {
 	coverUrl: string | null;
 	previewVideoUrl?: string | null;
 	hoverCoverUrl: string | null;
 	title: string;
-	memories: boolean;
 	sizes: string;
 }) {
 	if (!coverUrl && !previewVideoUrl) {
@@ -133,13 +126,13 @@ function CoverLayer({
 					alt=""
 					fill
 					sizes={sizes}
-					className={cn(imageBase, memories && memoriesCoverClass)}
+					className={imageBase}
 				/>
 			) : previewVideoUrl ? (
 				<VideoStillPreview
 					src={previewVideoUrl}
 					sizes={sizes}
-					className={cn(imageBase, memories && memoriesCoverClass)}
+					className={imageBase}
 				/>
 			) : null}
 			{showHoverCover && hoverCoverUrl ? (
@@ -154,20 +147,12 @@ function CoverLayer({
 						alt=""
 						fill
 						sizes={sizes}
-						className={cn(
-							"absolute inset-0 size-full object-cover object-center",
-							memories && memoriesCoverClass,
-						)}
+						className="absolute inset-0 size-full object-cover object-center"
 					/>
 				</div>
 			) : null}
 			{/* Beat 4 (~450ms+): real motion, keyed to the video's `playing` event. */}
-			{previewVideoUrl ? (
-				<VideoHoverPreview
-					src={previewVideoUrl}
-					className={memories ? memoriesCoverClass : undefined}
-				/>
-			) : null}
+			{previewVideoUrl ? <VideoHoverPreview src={previewVideoUrl} /> : null}
 		</>
 	);
 }
@@ -183,8 +168,6 @@ export function VideoCard({
 	typeLabel,
 	topicLabel,
 	durationLabel,
-	memories = false,
-	memoriesLabel,
 	href,
 	variant = "grid",
 	className,
@@ -201,11 +184,6 @@ export function VideoCard({
 				<TypeIcon className="size-3.5 text-muted" aria-hidden />
 				{typeLabel}
 			</FrameChip>
-			{memories && memoriesLabel ? (
-				<span className="label absolute top-0 end-0 z-2 border-b border-s border-border bg-surface/95 px-2 py-1 font-medium text-muted backdrop-blur-[1px]">
-					{memoriesLabel}
-				</span>
-			) : null}
 			{durationLabel ? (
 				// Beat 1 (0ms): the chip flips to ink — the card's first "awake"
 				// signal. The REC dot snaps on (a recording light, no fade) only
@@ -244,7 +222,6 @@ export function VideoCard({
 						previewVideoUrl={previewVideoUrl}
 						hoverCoverUrl={hoverCoverUrl}
 						title={title}
-						memories={memories}
 						sizes="100vw"
 					/>
 					{/* Beat 1: the scrim lifts a little — house lights dimming. */}
@@ -294,7 +271,6 @@ export function VideoCard({
 					previewVideoUrl={previewVideoUrl}
 					hoverCoverUrl={hoverCoverUrl}
 					title={title}
-					memories={memories}
 					sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
 				/>
 				{corners}

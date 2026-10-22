@@ -13,12 +13,7 @@ import type { VideoPosterCardProps } from "@/components/video/video-poster-card"
 import { VideoRelatedGrid } from "@/components/video/video-related-grid";
 import { Link as NavLink } from "@/i18n/navigation";
 import { homeInsetClass } from "@/lib/layout";
-import {
-	videoMemoriesHref,
-	videoTagHref,
-	videoTopicHref,
-	videoTypeHref,
-} from "@/lib/search/taxonomy-href";
+import { videoTagHref, videoTopicHref } from "@/lib/search/taxonomy-href";
 import { cn } from "@/lib/utils";
 import { formatDuration, formatFileSizeMb } from "@/lib/video/format";
 import type { ResolvedVideoDetail } from "@/types/video";
@@ -142,34 +137,6 @@ export async function VideoDetailView({
 
 							<div className="grid items-center gap-8 lg:grid-cols-[minmax(0,1fr)_minmax(0,39rem)] lg:gap-12 2xl:grid-cols-[minmax(0,1fr)_minmax(0,48rem)] 2xl:gap-16">
 								<div className="min-w-0 text-start">
-									<div className="flex flex-wrap items-center gap-2">
-										<NavLink
-											href={videoTypeHref(detail.videoType)}
-											className="bg-background px-3.5 py-1.5 text-label font-semibold text-foreground no-underline transition-opacity fine-hover:opacity-85"
-										>
-											{t(`typeBadge.${detail.videoType}`)}
-										</NavLink>
-										{detail.topicNames.map((name, index) =>
-											detail.topicIds[index] != null ? (
-												<NavLink
-													key={`${name}-${index}`}
-													href={videoTopicHref(detail.topicIds[index] as number)}
-													className="border border-primary-foreground/40 px-3.5 py-1.5 text-label font-semibold text-primary-foreground no-underline transition-colors fine-hover:border-primary-foreground"
-												>
-													{name}
-												</NavLink>
-											) : null,
-										)}
-										{detail.albumOfMemories ? (
-											<NavLink
-												href={videoMemoriesHref()}
-												className="border border-primary-foreground/40 px-3.5 py-1.5 text-label font-semibold text-primary-foreground no-underline transition-colors fine-hover:border-primary-foreground"
-											>
-												{t("card.memoriesBadge")}
-											</NavLink>
-										) : null}
-									</div>
-
 									<h1 className="mt-6 font-heading text-[clamp(1.9rem,3.2vw,2.75rem)] font-bold leading-[1.35] text-balance text-primary-foreground 2xl:text-[3.25rem]">
 										{detail.title}
 									</h1>

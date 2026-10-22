@@ -3,7 +3,7 @@ import type { GalleryAlbumMetadataLabels } from "@/components/gallery/gallery-al
 import { galleryPhotoSurfaceClass } from "@/components/gallery/gallery-album-item";
 import { ScrollRevealBlock } from "@/components/motion/scroll-reveal";
 import { BackToIndexLink } from "@/components/ui/back-to-index";
-import { Badge } from "@/components/ui/badge";
+
 import { CoverLightbox } from "@/components/ui/cover-lightbox";
 import { Image } from "@/components/ui/image";
 import { RichText } from "@/components/ui/rich-text";
@@ -156,16 +156,6 @@ export function GalleryPostView({
 									<span>{dateLabel}</span>
 								</>
 							)}
-							{(post.topicNames?.length
-								? post.topicNames
-								: post.topicName
-									? [post.topicName]
-									: []
-							).map((name) => (
-								<Badge key={name} variant="outline" size="sm" className="ms-1">
-									{name}
-								</Badge>
-							))}
 						</p>
 						<h1
 							className={cn(

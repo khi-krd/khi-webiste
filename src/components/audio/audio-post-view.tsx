@@ -16,20 +16,13 @@ import {
 } from "@/components/motion/scroll-reveal";
 import { ProjectCoverImage } from "@/components/projects/project-cover-image";
 import { BackToIndexLink } from "@/components/ui/back-to-index";
-import { Badge } from "@/components/ui/badge";
 import { CoverLightbox } from "@/components/ui/cover-lightbox";
 import { Link } from "@/components/ui/link";
 import { RichText } from "@/components/ui/rich-text";
-import { TaxonomyBadgeLink } from "@/components/ui/taxonomy-badge-link";
 import { Link as NavLink } from "@/i18n/navigation";
 import { formatDuration, formatFileSize } from "@/lib/audio/format";
-import { soundTypeLabel } from "@/lib/audio/sound-types";
 import { homeInsetClass } from "@/lib/layout";
-import {
-	audioSoundTypeHref,
-	audioTagHref,
-	audioTopicHref,
-} from "@/lib/search/taxonomy-href";
+import { audioTagHref, audioTopicHref } from "@/lib/search/taxonomy-href";
 import { displayTitleSizeClass } from "@/lib/title-scale";
 import { cn } from "@/lib/utils";
 import type { ResolvedAudioCard, ResolvedAudioDetail } from "@/types/audio";
@@ -38,8 +31,6 @@ type AudioPostViewProps = {
 	detail: ResolvedAudioDetail;
 	locale: string;
 	related: ResolvedAudioCard[];
-	/** Managed-vocabulary labels keyed by the canonical CKB name. */
-	soundTypeLabels?: Record<string, string>;
 };
 
 /** One entry in the liner-notes card — quiet label over a confident value. */
@@ -85,23 +76,11 @@ export async function AudioPostView({
 	detail,
 	locale,
 	related,
-	soundTypeLabels,
 }: AudioPostViewProps) {
 	const t = await getTranslations("Audio");
 	// Back links are named after the menu entry for the section they return to.
 	const tNav = await getTranslations("Nav");
 
-	const typeLabels = (
-		detail.soundTypes.length ? detail.soundTypes : [detail.soundType]
-	).map(
-		(raw) => soundTypeLabels?.[raw] ?? soundTypeLabel((key) => t(key), raw),
-	);
-	const typeHrefs = (
-		detail.soundTypes.length ? detail.soundTypes : [detail.soundType]
-	).map((raw) => audioSoundTypeHref(raw));
-	const stateLabel = t(
-		detail.trackState === "MULTI" ? "state.multi" : "state.single",
-	);
 	const totalSizeLabel =
 		detail.totalSizeBytes != null && detail.totalSizeBytes > 0
 			? formatFileSize(detail.totalSizeBytes)
@@ -187,38 +166,12 @@ export async function AudioPostView({
 
 				<ScrollReveal>
 					<ScrollRevealItem>
-						{/* Open hero — liner text (badges, title, album subtitle, fact
+						{/* Open hero — liner text (title, album subtitle, fact
 						    pills, play row over waveform grooves) beside the record
 						    jacket, shown in full at its own ratio instead of a square
-						    crop. Album-of-Memories covers keep the sepia treatment. */}
+						    crop. */}
 						<div className="grid items-center gap-8 lg:grid-cols-[minmax(0,1fr)_minmax(0,29rem)] lg:gap-10 xl:grid-cols-[minmax(0,1fr)_minmax(0,33rem)] xl:gap-14">
 							<div className="min-w-0 text-start">
-								<div className="flex flex-wrap items-center gap-2">
-									{detail.thisProjectOfInstitute ? (
-										<Badge variant="solid" size="sm">
-											{t("card.instituteBadge")}
-										</Badge>
-									) : null}
-									{typeLabels.map((label, index) => (
-										<TaxonomyBadgeLink
-											key={`${label}-${index}`}
-											href={typeHrefs[index]}
-											variant="outline"
-											size="sm"
-										>
-											{label}
-										</TaxonomyBadgeLink>
-									))}
-									<Badge variant="subtle" size="sm">
-										{stateLabel}
-									</Badge>
-									{detail.albumOfMemories ? (
-										<Badge variant="outline" size="sm">
-											{t("memories.badge")}
-										</Badge>
-									) : null}
-								</div>
-
 								<h1
 									className={cn(
 										"display-title mt-4",
@@ -263,11 +216,7 @@ export async function AudioPostView({
 												priority
 												naturalRatio
 												sizes="(max-width: 1024px) 100vw, 33rem"
-												imageClassName={
-													detail.albumOfMemories
-														? "sepia-[0.3] contrast-[0.96]"
-														: undefined
-												}
+												imageClassName={undefined}
 											/>
 										</div>
 									</CoverLightbox>

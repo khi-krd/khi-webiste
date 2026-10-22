@@ -13,11 +13,7 @@ import { WritingGridCard } from "@/components/writing/writing-grid-card";
 import { WritingPdfPreview } from "@/components/writing/writing-pdf-preview";
 import { Link as NavLink } from "@/i18n/navigation";
 import { homeInsetClass } from "@/lib/layout";
-import {
-	writingGenreHref,
-	writingKeywordHref,
-	writingTagHref,
-} from "@/lib/search/taxonomy-href";
+import { writingKeywordHref, writingTagHref } from "@/lib/search/taxonomy-href";
 import { displayTitleSizeClass } from "@/lib/title-scale";
 import { cn } from "@/lib/utils";
 import { buildWritingGridCards } from "@/lib/writing/catalog";
@@ -47,6 +43,7 @@ type WritingPostViewProps = {
 	seriesLabel: string;
 	seriesVolumeLabel: (order: number, total: number | null) => string;
 	topicLabel: string;
+	genreLabel: string;
 	keywordsLabel: string;
 	formatLabel: string;
 	languagesLabel: string;
@@ -55,14 +52,6 @@ type WritingPostViewProps = {
 	lightboxCloseLabel: string;
 	locale: string;
 };
-
-const chipBase =
-	"px-3.5 py-1.5 text-label font-semibold no-underline transition-opacity fine-hover:opacity-85";
-const chipSolidClass = cn(chipBase, "bg-brand text-white");
-const chipLineClass = cn(
-	chipBase,
-	"border border-foreground/25 text-foreground",
-);
 
 export function WritingPostView({
 	detail,
@@ -79,6 +68,7 @@ export function WritingPostView({
 	seriesLabel,
 	seriesVolumeLabel,
 	topicLabel,
+	genreLabel,
 	keywordsLabel,
 	formatLabel,
 	languagesLabel,
@@ -93,14 +83,10 @@ export function WritingPostView({
 	// brand), the rest as quieter outlined qualifiers, per the house mock.
 	// A slug with no label (a genre deleted from the CMS mid-flight) is
 	// skipped rather than drawn blank.
-	const genreChips = [
-		...detail.genres.flatMap((genre) => {
-			const label = genreLabels[genre];
-			return label
-				? [{ key: `genre-${genre}`, href: writingGenreHref(genre), label }]
-				: [];
-		}),
-	];
+	const genreNames = detail.genres.flatMap((genre) => {
+		const label = genreLabels[genre];
+		return label ? [label] : [];
+	});
 
 	const volumeLine =
 		detail.seriesName && detail.isPartOfSeries
@@ -135,6 +121,9 @@ export function WritingPostView({
 		detail.topicNames.length > 0
 			? { label: topicLabel, value: detail.topicNames.join("، ") }
 			: null,
+		genreNames.length > 0
+			? { label: genreLabel, value: genreNames.join("، ") }
+			: null,
 		formatValue ? { label: formatLabel, value: formatValue, ltr: true } : null,
 		languagesValue ? { label: languagesLabel, value: languagesValue } : null,
 	].filter((field): field is NonNullable<typeof field> => field != null);
@@ -155,23 +144,6 @@ export function WritingPostView({
 
 				<div className="grid gap-8 lg:grid-cols-[minmax(0,1fr)_minmax(0,25rem)] lg:items-center lg:gap-12">
 					<div className="min-w-0 text-start">
-						<div className="flex flex-wrap items-center gap-2">
-							{genreChips.map((chip, index) => (
-								<NavLink
-									key={chip.key}
-									href={chip.href}
-									className={index === 0 ? chipSolidClass : chipLineClass}
-								>
-									{chip.label}
-								</NavLink>
-							))}
-							{detail.topicNames.map((name) => (
-								<span key={name} className={chipLineClass}>
-									{name}
-								</span>
-							))}
-						</div>
-
 						<h1
 							className={cn(
 								"display-title mt-6 max-w-2xl text-balance",
