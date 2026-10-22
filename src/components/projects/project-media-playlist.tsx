@@ -17,7 +17,12 @@ import {
 	ExternalMediaLink,
 	MediaEmbedFrame,
 } from "@/components/ui/media-source";
-import { VideoPlayer } from "@/components/ui/video-player";
+import dynamic from "next/dynamic";
+
+const VideoPlayer = dynamic(
+	() => import("@/components/ui/video-player").then((mod) => mod.VideoPlayer),
+	{ ssr: false },
+);
 import { VideoStillPreview } from "@/components/video/video-still-preview-lazy";
 import { cn } from "@/lib/utils";
 import type { MediaItem, MediaKind } from "@/types/media";

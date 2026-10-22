@@ -1,8 +1,13 @@
 "use client";
 
 import { FilmIcon, MusicalNoteIcon } from "@heroicons/react/24/outline";
+import dynamic from "next/dynamic";
 import { ProjectCoverImage } from "@/components/projects/project-cover-image";
-import { VideoPlayer } from "@/components/ui/video-player";
+
+const VideoPlayer = dynamic(
+	() => import("@/components/ui/video-player").then((mod) => mod.VideoPlayer),
+	{ ssr: false },
+);
 import { cn } from "@/lib/utils";
 import type { MediaKind } from "@/types/media";
 
