@@ -316,6 +316,13 @@ type FeaturedSourceEndpoint = {
 	type: ContentType;
 	/** Gallery detail resolves by slug; every other route resolves by numeric id. */
 	slugFromRecord?: boolean;
+	/**
+	 * Services publish two flags: `featured` feeds the /services rail (and the
+	 * page record's slide); `featuredOnHome` opts a SECTION into the carousel.
+	 * True marks the second route — its records must be sections, and their slug
+	 * is the section anchor, not "services".
+	 */
+	serviceHome?: boolean;
 };
 
 const FEATURED_SOURCE_ENDPOINTS: FeaturedSourceEndpoint[] = [
@@ -335,6 +342,12 @@ const FEATURED_SOURCE_ENDPOINTS: FeaturedSourceEndpoint[] = [
 		slugFromRecord: true,
 	},
 	{ source: "service", path: "/api/v1/services/featured", type: "service" },
+	{
+		source: "service",
+		path: "/api/v1/services/featured-home",
+		type: "service",
+		serviceHome: true,
+	},
 ];
 
 /** Mirrors the backend's `SiteSettings.maxFeaturedSlides` default. */
@@ -426,17 +439,17 @@ export function featuredItemFromSourceRecord(
 		return null;
 	}
 
-	// Only the services-PAGE record (the "page-hero" service) is a carousel
-	// slide — a section service's featured flag lights the /services rail, not
-	// the hero. Mirrors the backend's aggregate filter.
-	if (
-		endpoint.source === "service" &&
-		!isServicesPageHeroRecord({
+	// The two service lists carry opposite record kinds: `/featured` only lends
+	// the page record (page-hero) to the carousel, while `/featured-home` is all
+	// sections by definition — a stray page record there would duplicate it.
+	if (endpoint.source === "service") {
+		const pageHero = isServicesPageHeroRecord({
 			serviceType: getString(item.serviceType) ?? null,
 			navAnchorId: getString(item.navAnchorId) ?? null,
-		})
-	) {
-		return null;
+		});
+		if (endpoint.serviceHome ? pageHero : !pageHero) {
+			return null;
+		}
 	}
 
 	const content = pickLocalizedContent(locale, item);
@@ -455,9 +468,12 @@ export function featuredItemFromSourceRecord(
 				getString(item.slugKmr),
 			) ?? entityId)
 		: endpoint.source === "service"
-			? // The only service record reaching this point is the page hero —
-				// "services" is the id of the sections grid on /services.
-				"services"
+			? endpoint.serviceHome
+				? // Section slide — land on its own /services section anchor.
+					(getString(item.navAnchorId) ?? entityId)
+				: // The only record reaching this point is the page hero —
+					// "services" is the id of the sections grid on /services.
+					"services"
 			: entityId;
 
 	const parsed = FeaturedItemSchema.safeParse({
