@@ -44,7 +44,7 @@ export const WritingContentSchema = z.object({
 	fileFormat: WritingFileFormatSchema.nullish(),
 	fileSizeBytes: z.number().nullish(),
 	pageCount: z.number().int().nullish(),
-	genre: z.string().nullable(),
+	genre: z.string().nullish(),
 });
 
 export const TopicInfoSchema = z.object({
@@ -56,7 +56,7 @@ export const TopicInfoSchema = z.object({
 export const SeriesInfoSchema = z
 	.object({
 		seriesId: z.string().nullable(),
-		seriesName: z.string().nullable(),
+		seriesName: z.string().nullish(),
 		seriesOrder: z.number().nullable(),
 		parentBookId: z.number().nullable().optional(),
 		totalBooks: z.number().int().nullable(),
