@@ -153,7 +153,7 @@ export function ProjectDetailView({
 			// the article then sits on the shared 96rem canvas like other sections.
 			className={cn(
 				homeInsetClass,
-				"mx-auto max-w-6xl pb-12 sm:pb-16 2xl:max-w-none",
+				"mx-auto max-w-7xl pb-12 sm:pb-16 2xl:max-w-none",
 			)}
 		>
 			<ScrollRevealBlock className="pt-10 sm:pt-12">
@@ -171,7 +171,7 @@ export function ProjectDetailView({
 					<div className="min-w-0 flex-1">
 						<h1
 							className={cn(
-								"display-title max-w-3xl text-balance lg:text-nowrap",
+								"display-title max-w-3xl text-balance",
 								projectTitleSizeClass(project.title),
 							)}
 						>
@@ -231,7 +231,7 @@ export function ProjectDetailView({
 					</div>
 
 					{/* Independent cover column — just the image, large and clickable. */}
-					<figure className="min-w-0 lg:sticky lg:top-32 lg:w-[28rem] lg:shrink-0 lg:self-start xl:w-[34rem] 2xl:w-[38rem]">
+					<figure className="min-w-0 lg:w-[28rem] lg:shrink-0 lg:self-start xl:w-[34rem] 2xl:w-[38rem]">
 						{coverKind === "IMAGE" ? (
 							<CoverLightbox
 								src={project.coverUrl}
