@@ -1,5 +1,4 @@
 import NextImage from "next/image";
-import { MediaMark } from "@/components/ui/media-mark";
 import {
 	ScrollReveal,
 	ScrollRevealBlock,
@@ -248,7 +247,6 @@ export function WritingPostView({
 										sizes="(max-width: 1024px) 80vw, 25rem"
 										className="object-cover brightness-[0.94] saturate-[0.9]"
 									/>
-									<MediaMark />
 								</span>
 							</CoverLightbox>
 						) : (

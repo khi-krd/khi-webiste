@@ -10,7 +10,6 @@ import {
 	Square2StackIcon,
 } from "@heroicons/react/24/outline";
 import NextImage from "next/image";
-import { MediaMark } from "@/components/ui/media-mark";
 import { useTranslations } from "next-intl";
 import {
 	type ReactNode,
@@ -112,7 +111,6 @@ function PdfReaderLaunch({
 						className="object-cover brightness-[0.94] saturate-[0.9]"
 					/>
 				) : null}
-				<MediaMark />
 				<div className="writing-pdf-launch__overlay" aria-hidden />
 				<div className="writing-pdf-launch__center">
 					<button

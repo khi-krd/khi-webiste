@@ -1,7 +1,6 @@
 "use client";
 
 import NextImage from "next/image";
-import { MediaMark } from "@/components/ui/media-mark";
 import type { GalleryAlbumMetadataLabels } from "@/components/gallery/gallery-album-item";
 import {
 	GalleryLightbox,
@@ -166,7 +165,6 @@ export function AudioBrochures({
 										sizes="(max-width: 640px) 33vw, 20vw"
 										className="object-cover brightness-[0.94] saturate-[0.88] transition-[filter] duration-500 group-fine:brightness-100 group-fine:saturate-100"
 									/>
-									<MediaMark className="p-1.5 [&_img]:size-7" />
 								</span>
 								{item.caption ? (
 									<span className="mt-2 block truncate text-label text-muted">

@@ -2,7 +2,6 @@
 
 import { PlayIcon } from "@heroicons/react/24/solid";
 import NextImage from "next/image";
-import { MediaMark } from "@/components/ui/media-mark";
 import { type RefObject, useEffect, useMemo, useRef, useState } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Link } from "@/components/ui/link";
@@ -94,7 +93,6 @@ function StageHero({
 					aria-label={item.title}
 					className="absolute inset-0 h-full w-full object-contain"
 				/>
-				<MediaMark className="z-20" />
 			</div>
 		);
 	}
@@ -138,7 +136,6 @@ function StageHero({
 					className="pointer-events-none absolute inset-0 z-1 bg-linear-to-t from-foreground from-0% via-foreground/70 via-38% to-transparent to-72% transition-opacity duration-500 ease-out group-fine:via-foreground/80 motion-reduce:transition-none"
 					aria-hidden
 				/>
-				<MediaMark className="z-2" />
 			</div>
 
 			<div className="absolute inset-x-0 top-0 z-10 p-4 sm:p-5">
@@ -254,7 +251,6 @@ function PlaylistRow({
 						)}
 					/>
 				) : (null)}
-				<MediaMark className="p-1.5 [&_img]:size-6 sm:[&_img]:size-7" />
 				{item.coverUrl ? null : (
 					<div
 						aria-hidden

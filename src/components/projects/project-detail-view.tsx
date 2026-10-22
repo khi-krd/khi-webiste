@@ -142,7 +142,6 @@ export function ProjectDetailView({
 					: "min-h-[16rem] w-full sm:min-h-[20rem]",
 			)}
 			naturalRatio={coverKind === "IMAGE"}
-			mark={false}
 			sizes="(max-width: 1024px) 100vw, (min-width: 1536px) 38rem, 34rem"
 		/>
 	);

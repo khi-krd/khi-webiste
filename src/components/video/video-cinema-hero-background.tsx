@@ -1,7 +1,6 @@
 "use client";
 
 import NextImage from "next/image";
-import { MediaMark } from "@/components/ui/media-mark";
 import { VideoStillPreview } from "@/components/video/video-still-preview-lazy";
 import { cn } from "@/lib/utils";
 
@@ -54,7 +53,6 @@ export function VideoCinemaHeroBackground({
 					className="object-cover object-center opacity-0 transition-opacity duration-700 group-fine:opacity-100 motion-reduce:opacity-100"
 				/>
 			) : null}
-			<MediaMark />
 		</>
 	);
 }

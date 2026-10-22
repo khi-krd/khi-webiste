@@ -1,7 +1,6 @@
 "use client";
 
 import NextImage from "next/image";
-import { MediaMark } from "@/components/ui/media-mark";
 import { AudioPlayButton } from "@/components/audio/audio-play-button";
 import {
 	usePlayer,
@@ -156,7 +155,6 @@ function SoundSectionCard({ item }: { item: SoundSectionCardItem }) {
 						</span>
 					</div>
 				)}
-				<MediaMark />
 
 				{/* Only the foot of the cover is darkened — enough for the play button
 				    to read on a pale sleeve, without washing the artwork out. */}

@@ -1,6 +1,5 @@
 import { ArrowRightIcon } from "@heroicons/react/24/outline";
 import NextImage from "next/image";
-import { MediaMark } from "@/components/ui/media-mark";
 import {
 	ServicesHeroBlock,
 	ServicesHeroMotion,
@@ -53,7 +52,6 @@ export function ServicesHero({
 						/>
 					) : null}
 				</div>
-				<MediaMark className="z-2" />
 
 				<div
 					className="pointer-events-none absolute inset-0 z-1 bg-foreground/45"

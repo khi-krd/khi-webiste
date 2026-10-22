@@ -1,6 +1,5 @@
 import { PlayIcon } from "@heroicons/react/24/solid";
 import NextImage from "next/image";
-import { MediaMark } from "@/components/ui/media-mark";
 import { Link } from "@/components/ui/link";
 import { cn } from "@/lib/utils";
 
@@ -53,7 +52,6 @@ export function FilmCinemaHero({ item }: FilmCinemaHeroProps) {
 						</span>
 					</div>
 				)}
-				<MediaMark />
 			</div>
 
 			<div
@@ -140,7 +138,6 @@ export function FilmGridCard({ item }: FilmGridCardProps) {
 						</span>
 					</div>
 				)}
-				<MediaMark />
 
 				<div
 					aria-hidden

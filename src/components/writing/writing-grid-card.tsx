@@ -1,5 +1,4 @@
 import NextImage from "next/image";
-import { MediaMark } from "@/components/ui/media-mark";
 import { Link } from "@/components/ui/link";
 import { cn } from "@/lib/utils";
 
@@ -53,7 +52,6 @@ export function WritingGridCard({
 					{coverUrl ? (
 						<CoverImage src={coverUrl} alt="" />
 					) : null}
-					<MediaMark />
 					{coverUrl ? null : (
 						<div
 							aria-hidden

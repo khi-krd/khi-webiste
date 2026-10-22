@@ -206,7 +206,6 @@ function Stage({
 					unoptimized={isRemote(item.url)}
 					className="object-contain"
 				/>
-				<MediaMark />
 				<CoverLightbox
 					src={item.url}
 					alt={title}
@@ -283,7 +282,6 @@ function Stage({
 					className="max-w-lg"
 				/>
 			) : null}
-			<MediaMark />
 		</div>
 	);
 }
@@ -545,7 +543,6 @@ export function ProjectMediaPlaylist({
 											)}
 										>
 											<Thumb item={item} poster={posterFor(items, index)} />
-											<MediaMark className="p-1 [&_img]:size-5" />
 											<span className="absolute bottom-0 end-0 z-1 inline-flex size-6 items-center justify-center bg-foreground/80 text-primary-foreground">
 												<KindIcon kind={item.kind} className="size-3.5" />
 											</span>

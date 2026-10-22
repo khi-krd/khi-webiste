@@ -1,5 +1,4 @@
 import NextImage from "next/image";
-import { MediaMark } from "@/components/ui/media-mark";
 import { Link } from "@/components/ui/link";
 import { newsDetailHref } from "@/lib/content/href";
 import type { NewsItem } from "@/lib/mock/news";
@@ -29,7 +28,6 @@ export function NewsSidebarCard({ item, className }: NewsSidebarCardProps) {
 						sizes="5rem"
 						className="object-cover brightness-[0.85] contrast-[1.05] saturate-[0.7] transition-[filter] duration-300 group-fine:brightness-95 group-fine:saturate-80 motion-reduce:transition-none"
 					/>
-					<MediaMark className="p-1 [&_img]:size-5" />
 				</div>
 
 				<div className="min-w-0 flex-1 self-center text-start">

@@ -3,7 +3,6 @@
 
 import useEmblaCarousel from "embla-carousel-react";
 import NextImage from "next/image";
-import { MediaMark } from "@/components/ui/media-mark";
 import { useLocale } from "next-intl";
 import { useCallback, useEffect, useState } from "react";
 import type { GalleryAlbumMetadataLabels } from "@/components/gallery/gallery-album-item";
@@ -158,7 +157,6 @@ export function AudioAttachmentSlider({
 												draggable={false}
 											/>
 										) : null}
-										<MediaMark className="p-1.5 [&_img]:size-7" />
 									</span>
 									{caption ? (
 										<span className="mt-1.5 block truncate text-label text-muted">

@@ -1,6 +1,5 @@
 import { PlayIcon } from "@heroicons/react/24/solid";
 import NextImage from "next/image";
-import { MediaMark } from "@/components/ui/media-mark";
 import type { CSSProperties } from "react";
 import { ScrollRevealBlock } from "@/components/motion/scroll-reveal";
 import { Link } from "@/components/ui/link";
@@ -61,7 +60,6 @@ function Frame({
 				sizes="(max-width: 640px) 16rem, (max-width: 1024px) 20rem, 22rem"
 				className="object-cover brightness-[0.82] saturate-[0.8] transition-[filter,transform] duration-700 ease-[cubic-bezier(0.22,1,0.36,1)] group-fine:scale-[1.05] group-fine:brightness-100 group-fine:saturate-100 group-data-[previewing]:brightness-100 group-data-[previewing]:saturate-100 motion-reduce:transition-none motion-reduce:group-fine:scale-100"
 			/>
-			<MediaMark className="z-2" />
 			{frame.previewSrc ? <VideoHoverPreview src={frame.previewSrc} /> : null}
 
 			{/* Without this the strip reads as a photo wall. The mark sits quiet

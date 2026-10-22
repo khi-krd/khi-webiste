@@ -1,5 +1,4 @@
 import NextImage from "next/image";
-import { MediaMark } from "@/components/ui/media-mark";
 import { RichText } from "@/components/ui/rich-text";
 import { Link } from "@/i18n/navigation";
 import type { GalleryPost } from "@/lib/mock/gallery";
@@ -65,7 +64,6 @@ function Print({
 				sizes="(max-width: 639px) 50vw, (max-width: 1023px) 50vw, 33vw"
 				className="block h-auto w-full"
 			/>
-			<MediaMark />
 
 			{/* Light sheen across the upper-left of the print — over the photo,
 			    under the caption. */}

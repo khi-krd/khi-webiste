@@ -1,6 +1,5 @@
 import { ArrowUpRightIcon } from "@heroicons/react/24/outline";
 import NextImage from "next/image";
-import { MediaMark } from "@/components/ui/media-mark";
 import { Link } from "@/components/ui/link";
 import { galleryDetailHref } from "@/lib/content/href";
 import type { ImageCollectionItem } from "@/lib/mock/image-collection";
@@ -47,7 +46,6 @@ export function ImageCollectionCard({
 					"group-fine:scale-[1.05] motion-reduce:transition-none motion-reduce:duration-0 motion-reduce:group-fine:scale-100",
 				)}
 			/>
-			<MediaMark />
 
 			<div
 				className={cn(

@@ -6,7 +6,6 @@ import {
 	RectangleStackIcon,
 } from "@heroicons/react/24/solid";
 import NextImage from "next/image";
-import { MediaMark } from "@/components/ui/media-mark";
 import { Link } from "@/components/ui/link";
 import { VideoHoverPreview } from "@/components/video/video-hover-preview";
 import { VideoStillPreview } from "@/components/video/video-still-preview-lazy";
@@ -169,7 +168,6 @@ function CoverLayer({
 					className={memories ? memoriesCoverClass : undefined}
 				/>
 			) : null}
-			<MediaMark />
 		</>
 	);
 }

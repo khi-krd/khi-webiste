@@ -1,5 +1,4 @@
 import NextImage from "next/image";
-import { MediaMark } from "@/components/ui/media-mark";
 import { Link } from "@/i18n/navigation";
 import { projectDetailHref } from "@/lib/content/project-href";
 import type { ProjectItem } from "@/lib/mock/projects";
@@ -61,7 +60,6 @@ export function ProjectCard({ item, className }: ProjectCardProps) {
 						className="object-cover object-top"
 					/>
 				</div>
-				<MediaMark className="z-1" />
 			</div>
 
 			<div className="w-full shrink-0 border-t border-border bg-surface px-3 py-3 text-start sm:px-4 sm:py-3.5">

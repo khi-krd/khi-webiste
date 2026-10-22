@@ -1,6 +1,5 @@
 import { ArrowsPointingOutIcon } from "@heroicons/react/24/outline";
 import NextImage from "next/image";
-import { MediaMark } from "@/components/ui/media-mark";
 import { getTranslations } from "next-intl/server";
 import {
 	ScrollReveal,
@@ -98,7 +97,6 @@ function CastCard({ member }: { member: ResolvedVideoCastMember }) {
 						{member.name.charAt(0)}
 					</div>
 				)}
-				<MediaMark />
 			</div>
 			{/* Credits order: role eyebrow first, then the name. */}
 			<div>

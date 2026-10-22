@@ -2,7 +2,6 @@
 
 import { PlayIcon } from "@heroicons/react/24/solid";
 import NextImage from "next/image";
-import { MediaMark } from "@/components/ui/media-mark";
 import { VideoStillPreview } from "@/components/video/video-still-preview-lazy";
 import { cn } from "@/lib/utils";
 import { formatDuration } from "@/lib/video/format";
@@ -137,7 +136,6 @@ export function FilmSceneList({
 										isActive={isActive}
 										fallbackCoverUrl={fallbackCoverUrl}
 									/>
-									<MediaMark className="z-3" />
 
 									{/* Top/bottom cinema bars */}
 									<span

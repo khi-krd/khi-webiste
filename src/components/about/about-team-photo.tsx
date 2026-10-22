@@ -1,5 +1,4 @@
 import NextImage from "next/image";
-import { MediaMark } from "@/components/ui/media-mark";
 import type { TeamMember } from "@/lib/mock/about";
 import { cn } from "@/lib/utils";
 
@@ -35,7 +34,6 @@ export function AboutTeamPhoto({
 					sizes="(max-width: 640px) 44vw, (max-width: 1024px) 28vw, 20vw"
 					className={imageFilter}
 				/>
-				<MediaMark />
 			</div>
 			<figcaption className="mt-2 sm:mt-2.5">
 				<p className="font-heading text-small font-semibold leading-snug text-foreground sm:text-body">

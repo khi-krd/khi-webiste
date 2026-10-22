@@ -1,6 +1,5 @@
 import { ArrowTopRightOnSquareIcon } from "@heroicons/react/24/outline";
 import NextImage from "next/image";
-import { MediaMark } from "@/components/ui/media-mark";
 import {
 	AudioEmbedRow,
 	EmbedPanel,
@@ -104,7 +103,6 @@ export function AudioTracklist({
 												className="object-cover"
 											/>
 										) : null}
-										<MediaMark className="p-1 [&_img]:size-6" />
 										{row.playable && queueIndex != null ? (
 											<AudioPlayButton
 												queue={queue}

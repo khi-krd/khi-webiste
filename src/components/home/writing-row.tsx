@@ -1,5 +1,4 @@
 import NextImage from "next/image";
-import { MediaMark } from "@/components/ui/media-mark";
 import { Link } from "@/components/ui/link";
 import { cn } from "@/lib/utils";
 
@@ -75,7 +74,6 @@ export function WritingRow({ item, className }: WritingRowProps) {
 							</span>
 						</div>
 					)}
-					<MediaMark />
 				</div>
 
 				<div className="flex min-w-0 flex-1 flex-col text-start">

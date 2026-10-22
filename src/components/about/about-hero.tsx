@@ -2,7 +2,6 @@
 
 import { PlayIcon, XMarkIcon } from "@heroicons/react/24/solid";
 import NextImage from "next/image";
-import { MediaMark } from "@/components/ui/media-mark";
 import { useCallback, useEffect, useState } from "react";
 import { preconnect } from "react-dom";
 import { AboutIntroVideoModal } from "@/components/about/about-intro-video-modal";
@@ -87,7 +86,6 @@ export function AboutHero({
 					) : (
 						<div className="absolute inset-0 bg-foreground" aria-hidden />
 					)}
-					<MediaMark className="z-2" />
 
 					<div
 						className="pointer-events-none absolute inset-0 z-1 bg-foreground/30"

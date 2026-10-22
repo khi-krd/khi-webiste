@@ -1,5 +1,4 @@
 import NextImage from "next/image";
-import { MediaMark } from "@/components/ui/media-mark";
 import { DonateHeroContent } from "@/components/donate/donate-hero-content";
 import type { DonateHeroMedia } from "@/lib/donate/content";
 import { cn } from "@/lib/utils";
@@ -50,7 +49,6 @@ export function DonateHero({
 				) : (
 					<div className="absolute inset-0 bg-foreground" aria-hidden />
 				)}
-				<MediaMark className="z-2" />
 
 				<div
 					className="pointer-events-none absolute inset-0 z-1 bg-foreground/45"
