@@ -14,6 +14,7 @@ import {
 	useMemo,
 	useRef,
 } from "react";
+import { cn } from "@/lib/utils";
 
 /** Soft deceleration — longer settle than a standard ease-out. */
 const revealEase = [0.16, 1, 0.3, 1] as const;
@@ -226,7 +227,7 @@ export function ScrollRevealItem({
 	useInViewReveal(ref, { y: 20, duration: 0.9 });
 
 	return (
-		<div ref={ref} className={className} style={style} {...rest}>
+		<div ref={ref} className={cn("min-w-0", className)} style={style} {...rest}>
 			{children}
 		</div>
 	);
