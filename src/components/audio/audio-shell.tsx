@@ -6,8 +6,6 @@ import {
 	ScrollReveal,
 	ScrollRevealItem,
 } from "@/components/motion/scroll-reveal";
-import { formatDuration } from "@/lib/audio/format";
-import { soundTypeLabel } from "@/lib/audio/sound-types";
 import { homeInsetClass } from "@/lib/layout";
 import { cn } from "@/lib/utils";
 import type { ResolvedAudioCard, TrackState } from "@/types/audio";
@@ -54,37 +52,13 @@ export async function AudioShell({
 	const t = await getTranslations("Audio");
 	const isEmpty = cards.length === 0;
 
-	const cardProps: AudioCardProps[] = cards.map((card) => {
-		const typeLabel = (card.soundTypes.length
-			? card.soundTypes
-			: [card.soundType]
-		)
-			.map(
-				(raw) =>
-					soundTypeLabels?.[raw] ?? soundTypeLabel((key) => t(key), raw),
-			)
-			.join(" · ");
-		const metaLabel =
-			card.trackState === "MULTI"
-				? `${typeLabel} · ${t("card.albumTracks", { count: card.totalTracks ?? 0 })}`
-				: typeLabel;
-
-		return {
-			id: card.id,
-			title: card.title,
-			subtitle: card.subtitle,
-			coverUrl: card.coverUrl,
-			hoverCoverUrl: card.hoverCoverUrl,
-			metaLabel,
-			instituteLabel: card.thisProjectOfInstitute
-				? t("card.instituteBadge")
-				: null,
-			durationLabel: formatDuration(card.totalDurationSeconds),
-			memories: card.albumOfMemories,
-			memoriesLabel: card.albumOfMemories ? t("memories.badge") : null,
-			queue: card.queue,
-		};
-	});
+	const cardProps: AudioCardProps[] = cards.map((card) => ({
+		id: card.id,
+		title: card.title,
+		coverUrl: card.coverUrl,
+		hoverCoverUrl: card.hoverCoverUrl,
+		queue: card.queue,
+	}));
 
 	return (
 		<section

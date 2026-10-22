@@ -4,7 +4,6 @@ import {
 	AudioCoverStrip,
 	type AudioStripCover,
 } from "@/components/audio/audio-cover-strip";
-import { AudioMemoriesStrip } from "@/components/audio/audio-memories-strip";
 import { AudioShell } from "@/components/audio/audio-shell";
 import { VisuallyHidden } from "@/components/ui/visually-hidden";
 import { getAlbumOfMemories } from "@/lib/api/audio";
@@ -81,12 +80,6 @@ export default async function AudioPage({
 			<div className={cn(homeInsetClass, "pt-6 pb-0 sm:pt-8")}>
 				<AudioCoverStrip covers={heroCovers} />
 			</div>
-
-			<AudioMemoriesStrip
-				title={t("memories.title")}
-				description={t("memories.description")}
-				items={memories}
-			/>
 
 			<div id="audio-content" className="scroll-mt-26 sm:scroll-mt-30">
 				<AudioShell

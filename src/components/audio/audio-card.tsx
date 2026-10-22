@@ -8,34 +8,20 @@ import type { PlayerTrackPayload } from "@/types/audio";
 export type AudioCardProps = {
 	id: number;
 	title: string;
-	subtitle: string | null;
 	coverUrl: string | null;
 	hoverCoverUrl: string | null;
-	/** Translated soundType (+ album/track count for MULTI), e.g. "Folk · Album — 6 tracks". */
-	metaLabel: string;
-	instituteLabel: string | null;
-	durationLabel: string | null;
-	/** Album-of-Memories records get an aged (sepia) cover + corner label. */
-	memories?: boolean;
-	memoriesLabel?: string | null;
 	queue: PlayerTrackPayload[];
 	className?: string;
 };
 
-/** Aged-photograph tint for Album-of-Memories covers — subtle, archival. */
-const memoriesCoverClass = "sepia-[0.3] contrast-[0.96]";
-
-function CoverImage({ src, aged }: { src: string; aged?: boolean }) {
+function CoverImage({ src }: { src: string }) {
 	return (
 		<NextImage
 			src={src}
 			alt=""
 			fill
 			sizes="(max-width: 640px) 50vw, (max-width: 1280px) 33vw, 25vw"
-			className={cn(
-				"object-cover brightness-[0.94] saturate-[0.88] transition-[filter,transform] duration-700 ease-[cubic-bezier(0.22,1,0.36,1)] group-fine:scale-[1.04] group-fine:brightness-100 group-fine:saturate-100",
-				aged && memoriesCoverClass,
-			)}
+			className="object-cover brightness-[0.94] saturate-[0.88] transition-[filter,transform] duration-700 ease-[cubic-bezier(0.22,1,0.36,1)] group-fine:scale-[1.04] group-fine:brightness-100 group-fine:saturate-100"
 		/>
 	);
 }
@@ -48,21 +34,14 @@ function CoverImage({ src, aged }: { src: string; aged?: boolean }) {
 export function AudioCard({
 	id,
 	title,
-	subtitle,
 	coverUrl,
 	hoverCoverUrl,
-	metaLabel,
-	instituteLabel,
-	durationLabel,
-	memories = false,
-	memoriesLabel,
 	queue,
 	className,
 }: AudioCardProps) {
 	const showHoverCover = Boolean(
 		hoverCoverUrl && coverUrl && hoverCoverUrl !== coverUrl,
 	);
-	const footerItems = [durationLabel].filter(Boolean);
 
 	return (
 		<article
@@ -74,7 +53,7 @@ export function AudioCard({
 			<div className="relative aspect-square w-full overflow-hidden bg-sunken">
 				{coverUrl ? (
 					<>
-						<CoverImage src={coverUrl} aged={memories} />
+						<CoverImage src={coverUrl} />
 						{showHoverCover && hoverCoverUrl ? (
 							<div
 								aria-hidden
@@ -85,7 +64,7 @@ export function AudioCard({
 									alt=""
 									fill
 									sizes="(max-width: 640px) 50vw, (max-width: 1280px) 33vw, 25vw"
-									className={cn("object-cover", memories && memoriesCoverClass)}
+									className="object-cover"
 								/>
 							</div>
 						) : null}
@@ -101,17 +80,10 @@ export function AudioCard({
 					</div>
 				)}
 
-				{memories && memoriesLabel ? (
-					<span className="label absolute top-0 start-0 z-1 border-b border-e border-border bg-surface/95 px-2 py-1 font-medium text-muted">
-						{memoriesLabel}
-					</span>
-				) : null}
-
 				<AudioCardTransport seedId={id} queue={queue} />
 			</div>
 
 			<div className="flex flex-1 flex-col gap-1.5 px-4 py-4 sm:px-5 sm:py-5">
-				<p className="label text-muted">{metaLabel}</p>
 				<h3
 					title={title}
 					className="truncate font-heading text-h3 font-bold leading-snug"
@@ -124,19 +96,7 @@ export function AudioCard({
 						{title}
 					</Link>
 				</h3>
-				{subtitle ? (
-					<p className="text-small text-foreground/80">{subtitle}</p>
-				) : null}
-				{instituteLabel ? (
-					<p className="label text-muted">{instituteLabel}</p>
-				) : null}
 			</div>
-
-			{footerItems.length > 0 ? (
-				<p className="label border-t border-border bg-sunken px-4 py-2.5 text-muted sm:px-5">
-					{footerItems.join(" · ")}
-				</p>
-			) : null}
 		</article>
 	);
 }

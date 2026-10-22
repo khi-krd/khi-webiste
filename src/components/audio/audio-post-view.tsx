@@ -71,36 +71,12 @@ function formatNumber(locale: string, value: number): string {
 	}
 }
 
-function toAudioCardProps(
-	card: ResolvedAudioCard,
-	t: (key: string, values?: Record<string, number>) => string,
-	soundTypeLabels?: Record<string, string>,
-): AudioCardProps {
-	const typeLabel = (
-		card.soundTypes.length ? card.soundTypes : [card.soundType]
-	)
-		.map(
-			(raw) => soundTypeLabels?.[raw] ?? soundTypeLabel((key) => t(key), raw),
-		)
-		.join(" · ");
-	const metaLabel =
-		card.trackState === "MULTI"
-			? `${typeLabel} · ${t("card.albumTracks", { count: card.totalTracks ?? 0 })}`
-			: typeLabel;
-
+function toAudioCardProps(card: ResolvedAudioCard): AudioCardProps {
 	return {
 		id: card.id,
 		title: card.title,
-		subtitle: card.subtitle,
 		coverUrl: card.coverUrl,
 		hoverCoverUrl: card.hoverCoverUrl,
-		metaLabel,
-		instituteLabel: card.thisProjectOfInstitute
-			? t("card.instituteBadge")
-			: null,
-		durationLabel: formatDuration(card.totalDurationSeconds),
-		memories: card.albumOfMemories,
-		memoriesLabel: card.albumOfMemories ? t("memories.badge") : null,
 		queue: card.queue,
 	};
 }
@@ -181,9 +157,7 @@ export async function AudioPostView({
 	);
 	const hasSources = imageAttachments.length > 0 || fileAttachments.length > 0;
 
-	const relatedCards = related.map((card) =>
-		toAudioCardProps(card, t, soundTypeLabels),
-	);
+	const relatedCards = related.map(toAudioCardProps);
 
 	// Hashtag row under the description, set like the news article tags.
 	const tagsBlock =
