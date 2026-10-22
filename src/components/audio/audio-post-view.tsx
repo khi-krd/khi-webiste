@@ -2,11 +2,7 @@ import { getTranslations } from "next-intl/server";
 import { AudioAlbumVideo } from "@/components/audio/audio-album-video";
 import { AudioAttachmentSlider } from "@/components/audio/audio-attachment-slider";
 import { AudioAttachments } from "@/components/audio/audio-attachments";
-import { AudioBookletReader } from "@/components/audio/audio-booklet-reader";
-import {
-	AudioBrochureDocuments,
-	AudioBrochures,
-} from "@/components/audio/audio-brochures";
+import { AudioBrochures } from "@/components/audio/audio-brochures";
 import { AudioCard, type AudioCardProps } from "@/components/audio/audio-card";
 import { AudioHeroWave } from "@/components/audio/audio-hero-wave";
 import { AudioPlayButton } from "@/components/audio/audio-play-button";
@@ -80,8 +76,12 @@ function toAudioCardProps(
 	t: (key: string, values?: Record<string, number>) => string,
 	soundTypeLabels?: Record<string, string>,
 ): AudioCardProps {
-	const typeLabel = (card.soundTypes.length ? card.soundTypes : [card.soundType])
-		.map((raw) => soundTypeLabels?.[raw] ?? soundTypeLabel((key) => t(key), raw))
+	const typeLabel = (
+		card.soundTypes.length ? card.soundTypes : [card.soundType]
+	)
+		.map(
+			(raw) => soundTypeLabels?.[raw] ?? soundTypeLabel((key) => t(key), raw),
+		)
 		.join(" · ");
 	const metaLabel =
 		card.trackState === "MULTI"
@@ -115,15 +115,13 @@ export async function AudioPostView({
 	// Back links are named after the menu entry for the section they return to.
 	const tNav = await getTranslations("Nav");
 
-	const typeLabels = (detail.soundTypes.length
-		? detail.soundTypes
-		: [detail.soundType]
+	const typeLabels = (
+		detail.soundTypes.length ? detail.soundTypes : [detail.soundType]
 	).map(
 		(raw) => soundTypeLabels?.[raw] ?? soundTypeLabel((key) => t(key), raw),
 	);
-	const typeHrefs = (detail.soundTypes.length
-		? detail.soundTypes
-		: [detail.soundType]
+	const typeHrefs = (
+		detail.soundTypes.length ? detail.soundTypes : [detail.soundType]
 	).map((raw) => audioSoundTypeHref(raw));
 	const stateLabel = t(
 		detail.trackState === "MULTI" ? "state.multi" : "state.single",
@@ -159,9 +157,6 @@ export async function AudioPostView({
 			totalDurationLabel ||
 			totalSizeLabel,
 	);
-
-	const imageBrochures = detail.brochures.filter((b) => b.kind === "image");
-	const documentBrochures = detail.brochures.filter((b) => b.kind !== "image");
 
 	const downloadableAttachments = detail.attachments.filter((attachment) => {
 		if (attachment.attachmentType === "VIDEO") {
@@ -430,49 +425,26 @@ export async function AudioPostView({
 					{detail.brochures.length > 0 ? (
 						<ScrollRevealItem>
 							<div className="mt-10 sm:mt-12">
-								{detail.albumOfMemories ? (
-									<>
-										{imageBrochures.length > 0 ? (
-											<AudioBookletReader
-												title={t("brochures.title")}
-												items={imageBrochures}
-												labels={{
-													previous: t("brochures.previous"),
-													next: t("brochures.next"),
-													fullscreen: t("brochures.fullscreen"),
-													exitFullscreen: t("brochures.exitFullscreen"),
-												}}
-											/>
-										) : null}
-										<AudioBrochureDocuments
-											title={t("brochures.title")}
-											items={documentBrochures}
-											openLabel={t("brochures.open")}
-											showTitle={imageBrochures.length === 0}
-										/>
-									</>
-								) : (
-									<AudioBrochures
-										title={t("brochures.title")}
-										items={detail.brochures}
-										openLabel={t("brochures.open")}
-										closeLabel={t("brochures.close")}
-										previousLabel={t("brochures.previous")}
-										nextLabel={t("brochures.next")}
-										zoomInLabel={t("brochures.zoomIn")}
-										zoomOutLabel={t("brochures.zoomOut")}
-										metadataLabels={{
-											dimensions: t("brochures.metadata.dimensions"),
-											fileSize: t("brochures.metadata.fileSize"),
-											fileSizeBytes: t("brochures.metadata.fileSizeBytes"),
-											mimeType: t("brochures.metadata.mimeType"),
-											aspectRatio: t("brochures.metadata.aspectRatio"),
-											sortOrder: t("brochures.metadata.sortOrder"),
-											externalUrl: t("brochures.metadata.externalUrl"),
-											embedUrl: t("brochures.metadata.embedUrl"),
-										}}
-									/>
-								)}
+								<AudioBrochures
+									title={t("brochures.title")}
+									items={detail.brochures}
+									openLabel={t("brochures.open")}
+									closeLabel={t("brochures.close")}
+									previousLabel={t("brochures.previous")}
+									nextLabel={t("brochures.next")}
+									zoomInLabel={t("brochures.zoomIn")}
+									zoomOutLabel={t("brochures.zoomOut")}
+									metadataLabels={{
+										dimensions: t("brochures.metadata.dimensions"),
+										fileSize: t("brochures.metadata.fileSize"),
+										fileSizeBytes: t("brochures.metadata.fileSizeBytes"),
+										mimeType: t("brochures.metadata.mimeType"),
+										aspectRatio: t("brochures.metadata.aspectRatio"),
+										sortOrder: t("brochures.metadata.sortOrder"),
+										externalUrl: t("brochures.metadata.externalUrl"),
+										embedUrl: t("brochures.metadata.embedUrl"),
+									}}
+								/>
 							</div>
 						</ScrollRevealItem>
 					) : null}
