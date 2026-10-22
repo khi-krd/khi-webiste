@@ -24,12 +24,12 @@ export function NewsEditorialCard({
 			href={href}
 			variant="nav"
 			className={cn(
-				"group flex h-full min-h-52 flex-col justify-between border border-border bg-sunken p-6 no-underline sm:p-7 lg:min-h-0",
+				"group flex h-full min-h-52 flex-col items-stretch justify-between border border-border bg-sunken p-6 no-underline sm:p-7 lg:min-h-0",
 				className,
 			)}
 			aria-label={item.title}
 		>
-			<div className="text-start">
+			<div className="min-w-0 text-start">
 				<Badge variant="outline" size="sm" className="mb-4 w-fit">
 					{categoryLabel}
 				</Badge>
@@ -51,7 +51,7 @@ export function NewsEditorialCard({
 
 			<DirectionalIcon
 				icon={ArrowRightIcon}
-				className="mt-6 size-4 text-foreground/80 transition-colors group-fine:text-foreground"
+				className="mt-6 size-4 self-center text-foreground/80 transition-colors group-fine:text-foreground"
 			/>
 		</Link>
 	);
