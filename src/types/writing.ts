@@ -178,7 +178,6 @@ export type ResolvedWritingDetail = {
 	coverUrl: string | null;
 	hoverCoverUrl: string | null;
 	genres: BookGenre[];
-	freeTextGenre: string | null;
 	topicName: string | null;
 	topicNames: string[];
 	publishedByInstitute: boolean;
@@ -202,7 +201,6 @@ export type ResolvedWritingCard = {
 	coverUrl: string | null;
 	hoverCoverUrl: string | null;
 	genres: BookGenre[];
-	freeTextGenre: string | null;
 	/** Both dialects unioned — the tag endpoints OR across CKB and KMR, so the
 	 *  in-memory fallback has to match the same way or it drops real hits. */
 	tags: string[];

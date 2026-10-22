@@ -92,7 +92,7 @@ function cardToWriting(
 				fileFormat: (card.fileFormat ?? "PDF") as "PDF",
 				fileSizeBytes: card.fileSizeBytes,
 				pageCount: card.pageCount,
-				genre: card.freeTextGenre,
+				genre: null,
 			},
 			kmrContent: hasKmr
 				? {
@@ -103,7 +103,7 @@ function cardToWriting(
 						fileFormat: (card.fileFormat ?? "PDF") as "PDF",
 						fileSizeBytes: card.fileSizeBytes,
 						pageCount: card.pageCount,
-						genre: card.freeTextGenre,
+						genre: null,
 					}
 				: null,
 			topic: card.topicName

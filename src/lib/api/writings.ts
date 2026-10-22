@@ -486,11 +486,6 @@ export async function getRelatedWritings(
 			const sharedGenres = entry.genres.filter((genre) =>
 				genreSet.has(genre),
 			).length;
-			const freeTextMatch =
-				entry.freeTextGenre != null &&
-				tagSet.has(entry.freeTextGenre.trim().toLowerCase())
-					? 1
-					: 0;
 			const entryTopics = (
 				entry.topicNames?.length ? entry.topicNames : [entry.topicName]
 			)
@@ -509,7 +504,6 @@ export async function getRelatedWritings(
 				entry,
 				score:
 					sharedGenres * 8 +
-					freeTextMatch * 10 +
 					sameTopic * 5 +
 					sameSeries * 8,
 			};

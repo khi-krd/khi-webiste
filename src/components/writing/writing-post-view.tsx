@@ -99,15 +99,6 @@ export function WritingPostView({
 				? [{ key: `genre-${genre}`, href: writingGenreHref(genre), label }]
 				: [];
 		}),
-		...(detail.freeTextGenre
-			? [
-					{
-						key: "free-genre",
-						href: writingGenreHref(detail.freeTextGenre),
-						label: detail.freeTextGenre,
-					},
-				]
-			: []),
 	];
 
 	const volumeLine =
