@@ -1,3 +1,4 @@
+import NextImage from "next/image";
 import { getTranslations } from "next-intl/server";
 import { AudioAlbumVideo } from "@/components/audio/audio-album-video";
 import { AudioAttachmentSlider } from "@/components/audio/audio-attachment-slider";
@@ -14,7 +15,6 @@ import {
 	ScrollReveal,
 	ScrollRevealItem,
 } from "@/components/motion/scroll-reveal";
-import { ProjectCoverImage } from "@/components/projects/project-cover-image";
 import { BackToIndexLink } from "@/components/ui/back-to-index";
 import { CoverLightbox } from "@/components/ui/cover-lightbox";
 import { Link } from "@/components/ui/link";
@@ -209,16 +209,19 @@ export async function AudioPostView({
 										caption={detail.title}
 										closeLabel={t("brochures.close")}
 									>
-										<div className="overflow-hidden">
-											<ProjectCoverImage
-												src={detail.coverUrl}
-												alt={detail.title}
-												priority
-												naturalRatio
-												sizes="(max-width: 1024px) 100vw, 33rem"
-												imageClassName={undefined}
-											/>
-										</div>
+										{/* No frame or fill — album art is often a transparent
+										    PNG, so a sunken backdrop would show through as a box.
+										    Render it as itself, sized naturally. */}
+										<NextImage
+											src={detail.coverUrl}
+											alt={detail.title}
+											width={0}
+											height={0}
+											priority
+											unoptimized={detail.coverUrl.startsWith("http")}
+											sizes="(max-width: 1024px) 100vw, 33rem"
+											className="h-auto w-full"
+										/>
 									</CoverLightbox>
 								) : (
 									<div
