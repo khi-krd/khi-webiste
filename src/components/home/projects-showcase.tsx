@@ -46,11 +46,26 @@ const gridColumnsClass: Record<number, string> = {
 	5: "grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5",
 };
 
+/** One complete row when the feed cannot fill two rows at all. */
+const singleRowColumnsClass: Record<number, string> = {
+	1: "grid-cols-1",
+	2: "grid-cols-2",
+	3: "grid-cols-2 sm:grid-cols-3",
+	4: "grid-cols-2 sm:grid-cols-3 lg:grid-cols-4",
+	5: "grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5",
+};
+
 /**
  * Cells are `grid`, not `block`: the card then stretches to the row height by
  * grid alignment instead of a `height: 100%` that browsers refuse to resolve.
  */
-function visibilityClass(index: number): string {
+function visibilityClass(index: number, rows: number): string {
+	if (rows === 1) {
+		if (index < 2) return "grid"; // 2 cols × 1 row
+		if (index < 3) return "hidden sm:grid"; // 3 cols × 1 row
+		if (index < 4) return "hidden lg:grid"; // 4 cols × 1 row
+		return "hidden xl:grid"; // 5 cols × 1 row
+	}
 	if (index < 4) return "grid"; // 2 cols × 2 rows
 	if (index < 6) return "hidden sm:grid"; // 3 cols × 2 rows
 	if (index < 8) return "hidden lg:grid"; // 4 cols × 2 rows
@@ -65,12 +80,18 @@ function visibilityClass(index: number): string {
  * viewport instead of spilling into the next section.
  */
 export function ProjectsShowcase({ projects, copy }: ProjectsShowcaseProps) {
-	if (projects.length < MIN_COLUMNS * 2) {
+	if (projects.length === 0) {
 		return null;
 	}
 
-	const columns = columnsFor(projects.length);
-	const cards = projects.slice(0, columns * 2);
+	// Under four items a two-row grid would leave holes; render one complete
+	// row at a capped height instead of dropping the section.
+	const rows = projects.length < MIN_COLUMNS * 2 ? 1 : 2;
+	const columns =
+		rows === 1
+			? Math.min(MAX_COLUMNS, projects.length)
+			: columnsFor(projects.length);
+	const cards = projects.slice(0, columns * rows);
 
 	return (
 		<div className="flex min-h-0 flex-1 flex-col">
@@ -98,14 +119,18 @@ export function ProjectsShowcase({ projects, copy }: ProjectsShowcaseProps) {
 			    the rows would collapse to the cover images' intrinsic height. */}
 			<ScrollReveal
 				className={cn(
-					"grid min-h-0 flex-1 grid-rows-2 gap-6 px-6 pb-10 sm:gap-8 sm:px-8 sm:pb-12",
-					gridColumnsClass[columns],
+					"grid gap-6 px-6 pb-10 sm:gap-8 sm:px-8 sm:pb-12",
+					rows === 2
+						? "min-h-0 flex-1 grid-rows-2"
+						: "h-[clamp(17rem,52svh,32rem)] w-full grid-rows-1",
+					rows === 1 && columns === 1 && "mx-auto max-w-2xl",
+					(rows === 1 ? singleRowColumnsClass : gridColumnsClass)[columns],
 				)}
 			>
 				{cards.map((project, index) => (
 					<ScrollRevealItem
 						key={project.id}
-						className={cn("min-h-0", visibilityClass(index))}
+						className={cn("min-h-0", visibilityClass(index, rows))}
 					>
 						<ProjectCard item={project} />
 					</ScrollRevealItem>

@@ -57,8 +57,23 @@ const gridColumnsClass: Record<number, string> = {
 	5: "grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5",
 };
 
+/** One complete row when the feed cannot fill two rows at all. */
+const singleRowColumnsClass: Record<number, string> = {
+	1: "grid-cols-1",
+	2: "grid-cols-2",
+	3: "grid-cols-2 sm:grid-cols-3",
+	4: "grid-cols-2 sm:grid-cols-3 lg:grid-cols-4",
+	5: "grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5",
+};
+
 /** Cells are `grid` so the card stretches to the row height by alignment. */
-function visibilityClass(index: number): string {
+function visibilityClass(index: number, rows: number): string {
+	if (rows === 1) {
+		if (index < 2) return "grid"; // 2 cols × 1 row
+		if (index < 3) return "hidden sm:grid"; // 3 cols × 1 row
+		if (index < 4) return "hidden lg:grid"; // 4 cols × 1 row
+		return "hidden xl:grid"; // 5 cols × 1 row
+	}
 	if (index < 4) return "grid"; // 2 cols × 2 rows
 	if (index < 6) return "hidden sm:grid"; // 3 cols × 2 rows
 	if (index < 8) return "hidden lg:grid"; // 4 cols × 2 rows
@@ -216,24 +231,39 @@ export function SoundSectionCards({
 	items,
 	compact = false,
 }: SoundSectionCardsProps) {
-	if (items.length < MIN_COLUMNS * 2) {
+	if (items.length === 0) {
 		return null;
 	}
 
-	const columns = compact ? MIN_COLUMNS : columnsFor(items.length);
-	const cards = items.slice(0, columns * 2);
+	// Under four albums a two-row grid would leave holes; render one complete
+	// row at a capped height instead of dropping the wall.
+	const rows = items.length < MIN_COLUMNS * 2 ? 1 : 2;
+	const columns =
+		rows === 1
+			? Math.min(compact ? MIN_COLUMNS : MAX_COLUMNS, items.length)
+			: compact
+				? MIN_COLUMNS
+				: columnsFor(items.length);
+	const cards = items.slice(0, columns * rows);
 
 	return (
 		<ScrollReveal
 			className={cn(
-				"grid min-h-0 flex-1 grid-rows-2 gap-x-3 gap-y-4 sm:gap-x-4 sm:gap-y-5",
-				gridColumnsClass[columns],
+				"grid gap-x-3 gap-y-4 sm:gap-x-4 sm:gap-y-5",
+				rows === 2
+					? "min-h-0 flex-1 grid-rows-2"
+					: "h-[clamp(13rem,38svh,24rem)] w-full grid-rows-1",
+				rows === 1 && columns === 1 && "mx-auto max-w-md",
+				(rows === 1 ? singleRowColumnsClass : gridColumnsClass)[columns],
 			)}
 		>
 			{cards.map((item, index) => (
 				<ScrollRevealItem
 					key={item.id}
-					className={cn("min-h-0 justify-items-center", visibilityClass(index))}
+					className={cn(
+						"min-h-0 justify-items-center",
+						visibilityClass(index, rows),
+					)}
 				>
 					<SoundSectionCard item={item} />
 				</ScrollRevealItem>

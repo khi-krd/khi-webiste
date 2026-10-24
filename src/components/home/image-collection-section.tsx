@@ -7,6 +7,12 @@ export async function ImageCollectionSection() {
 	const t = await getTranslations("ImageCollection");
 	const items = await getImageCollection(locale);
 
+	// No collections → no section at all; an empty h-svh band is a blank
+	// viewport between the video section and the donate band.
+	if (items.length === 0) {
+		return null;
+	}
+
 	return (
 		<section
 			// Full-width section: the bento tray bleeds edge to edge, so no canvas
