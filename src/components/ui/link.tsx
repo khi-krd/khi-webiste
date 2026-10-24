@@ -15,6 +15,9 @@ type LinkProps = {
 	withArrow?: boolean;
 } & ComponentProps<typeof IntlLink>;
 
+const DISPLAY_CLASS =
+	/(^|\s)(block|inline-block|inline|flex|grid|inline-grid|contents|hidden|table)(\s|$)/;
+
 const variants: Record<Variant, string> = {
 	text: "text-foreground underline decoration-border underline-offset-4 hover:decoration-current",
 	nav: "text-muted hover:text-foreground aria-[current]:text-foreground aria-[current]:font-medium",
@@ -39,7 +42,9 @@ export function Link({
 		<IntlLink
 			aria-current={active ? "page" : undefined}
 			className={cn(
-				"inline-flex items-center gap-1 transition-colors",
+				typeof className === "string" && DISPLAY_CLASS.test(className)
+					? "items-center gap-1 transition-colors"
+					: "inline-flex items-center gap-1 transition-colors",
 				variants[variant],
 				className,
 			)}

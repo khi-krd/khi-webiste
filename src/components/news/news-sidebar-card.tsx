@@ -17,7 +17,7 @@ export function NewsSidebarCard({ item, className }: NewsSidebarCardProps) {
 			<Link
 				href={href}
 				variant="nav"
-				className="group flex gap-3 p-3 no-underline sm:gap-4 sm:p-4"
+				className="group flex w-full min-w-0 gap-3 p-3 no-underline sm:gap-4 sm:p-4"
 				aria-label={item.title}
 			>
 				<div className="relative size-16 shrink-0 overflow-hidden sm:size-20">

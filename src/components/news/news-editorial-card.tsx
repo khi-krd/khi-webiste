@@ -24,7 +24,7 @@ export function NewsEditorialCard({
 			href={href}
 			variant="nav"
 			className={cn(
-				"group flex h-full min-h-52 flex-col items-stretch justify-between border border-border bg-sunken p-6 no-underline sm:p-7 lg:min-h-0",
+				"group flex h-full w-full min-w-0 min-h-52 flex-col items-stretch justify-between border border-border bg-sunken p-6 no-underline sm:p-7 lg:min-h-0",
 				className,
 			)}
 			aria-label={item.title}
