@@ -48,6 +48,7 @@ export default async function ProjectDetailPage({
 				typeLabel={t("detail.type")}
 				statusLabel={t("detail.status")}
 				dateLabel={t("detail.date")}
+				locationLabel={t("detail.location")}
 				galleryLabel={t("detail.gallery")}
 				lightboxCloseLabel={t("detail.lightboxClose")}
 				statusLabels={{

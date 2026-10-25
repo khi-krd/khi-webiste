@@ -42,6 +42,7 @@ type ProjectDetailViewProps = {
 	typeLabel: string;
 	statusLabel: string;
 	dateLabel: string;
+	locationLabel: string;
 	galleryLabel: string;
 	lightboxCloseLabel: string;
 	statusLabels: Record<string, string>;
@@ -112,6 +113,7 @@ export function ProjectDetailView({
 	typeLabel,
 	statusLabel,
 	dateLabel,
+	locationLabel,
 	galleryLabel,
 	lightboxCloseLabel,
 	statusLabels,
@@ -198,8 +200,11 @@ export function ProjectDetailView({
 							</div>
 						)}
 
-						{(project.projectType || project.status || project.projectDate) && (
-							<dl className="mt-8 grid grid-cols-2 gap-2.5 sm:grid-cols-3">
+						{(project.projectType ||
+							project.status ||
+							project.projectDate ||
+							project.location) && (
+							<dl className="mt-8 grid grid-cols-2 gap-2.5 sm:grid-cols-3 xl:grid-cols-4">
 								{(project.projectTypes?.length
 									? project.projectTypes
 									: project.projectType
@@ -225,6 +230,9 @@ export function ProjectDetailView({
 									<FactCell label={dateLabel}>
 										{formatProjectDate(locale, project.projectDate)}
 									</FactCell>
+								)}
+								{project.location && (
+									<FactCell label={locationLabel}>{project.location}</FactCell>
 								)}
 							</dl>
 						)}
