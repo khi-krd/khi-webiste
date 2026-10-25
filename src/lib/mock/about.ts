@@ -116,7 +116,7 @@ export function getAboutOffices(_locale: string): OfficeTeam[] {
 	];
 }
 
-const PARTNERS: PartnerItem[] = [
+export const PARTNERS: PartnerItem[] = [
 	{
 		id: "services",
 		slug: "services",

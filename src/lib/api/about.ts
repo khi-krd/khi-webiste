@@ -1,12 +1,12 @@
 import "server-only";
 import {
+	type ResolvedManager,
 	resolveAboutContent,
 	resolveAboutSlug,
 	resolveFounderFromAbout,
 	resolveManagers,
 	resolvePartnerItems,
 	resolveTeamOffices,
-	type ResolvedManager,
 } from "@/lib/about/resolve";
 import {
 	apiFetch,
@@ -14,11 +14,12 @@ import {
 	DEFAULT_REVALIDATE,
 } from "@/lib/api/client";
 import { getApiBaseUrl } from "@/lib/api/config";
-import type {
-	AboutHeroMedia,
-	FounderPerson,
-	OfficeTeam,
-	PartnerItem,
+import {
+	type AboutHeroMedia,
+	type FounderPerson,
+	type OfficeTeam,
+	PARTNERS,
+	type PartnerItem,
 } from "@/lib/mock/about";
 import { type About, AboutPageSchema, AboutSchema } from "@/types/about";
 import { PartnerListSchema } from "@/types/partner";
@@ -144,8 +145,10 @@ export async function getAboutManagers(
 }
 
 export async function getAboutPartners(locale: string): Promise<PartnerItem[]> {
-	const partners = await getPartners();
-	return partners.length > 0 ? resolvePartnerItems(locale, partners) : [];
+	// The bundled services/donate cards always lead; CMS partner rows follow
+	// (the پەیوەندی row today, more later). A CMS row used to REPLACE the
+	// bundled cards, which collapsed the section to a single card.
+	return [...PARTNERS, ...resolvePartnerItems(locale, await getPartners())];
 }
 
 export async function getTeamMembers() {
