@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { lenientArray } from "@/types/lenient";
 import { BilingualSetSchema, ContentLanguageSchema } from "@/types/news";
 
 export const ImageCollectionTypeSchema = z.enum([
@@ -63,7 +64,7 @@ export const ImageCollectionSchema = z.object({
 	kmrContent: ImageCollectionContentSchema.nullish(),
 	tags: BilingualSetSchema.optional(),
 	keywords: BilingualSetSchema.optional(),
-	imageAlbum: z.array(ImageAlbumItemSchema),
+	imageAlbum: lenientArray(ImageAlbumItemSchema, "album image"),
 	sortOrder: z.number().int().nullish(),
 	createdAt: z.string().optional(),
 	updatedAt: z.string().optional(),
@@ -72,7 +73,7 @@ export const ImageCollectionSchema = z.object({
 export type ImageCollection = z.infer<typeof ImageCollectionSchema>;
 
 export const ImageCollectionsPageSchema = z.object({
-	content: z.array(ImageCollectionSchema),
+	content: lenientArray(ImageCollectionSchema, "image collection"),
 	totalElements: z.number(),
 	totalPages: z.number(),
 	number: z.number().optional(),

@@ -28,6 +28,7 @@ import {
 	resolveWritingCard,
 	resolveWritingDetail,
 } from "@/lib/writing/resolve";
+import { reportDropped } from "@/types/lenient";
 import type { BookGenre, BookGenreRecord, Writing } from "@/types/writing";
 import {
 	BookGenreRecordListSchema,
@@ -383,6 +384,9 @@ export async function getWritingById(
 		const parsed = unwrapped
 			? WritingSchema.safeParse(normalizeWritingRecord(unwrapped))
 			: null;
+		if (parsed && !parsed.success) {
+			reportDropped("writing detail", unwrapped, parsed.error);
+		}
 
 		if (parsed?.success) {
 			const resolved = resolveWritingDetail(locale, parsed.data, labels);
@@ -492,9 +496,7 @@ export async function getRelatedWritings(
 				.map((name) => name?.trim().toLowerCase())
 				.filter(Boolean);
 			const sameTopic =
-				topicKeys.size > 0 && entryTopics.some((k) => topicKeys.has(k))
-					? 1
-					: 0;
+				topicKeys.size > 0 && entryTopics.some((k) => topicKeys.has(k)) ? 1 : 0;
 			const sameSeries =
 				seriesKey.length > 0 &&
 				entry.seriesName?.trim().toLowerCase() === seriesKey
@@ -502,10 +504,7 @@ export async function getRelatedWritings(
 					: 0;
 			return {
 				entry,
-				score:
-					sharedGenres * 8 +
-					sameTopic * 5 +
-					sameSeries * 8,
+				score: sharedGenres * 8 + sameTopic * 5 + sameSeries * 8,
 			};
 		})
 		.sort((a, b) => {

@@ -14,6 +14,7 @@ function baseService(overrides: Partial<Service> = {}): Service {
 	return {
 		id: 1,
 		active: true,
+		galleryMedia: [],
 		contents: [
 			{
 				id: 1,

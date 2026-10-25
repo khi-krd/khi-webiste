@@ -24,6 +24,7 @@ import {
 	paginateGalleryPosts,
 } from "@/lib/mock/gallery";
 import { ImageCollectionSchema } from "@/types/gallery";
+import { reportDropped } from "@/types/lenient";
 
 const GALLERY_ENDPOINT = "/api/v1/image-collections";
 const GALLERY_TAG = "image-collections";
@@ -219,11 +220,15 @@ export async function getGalleryPostBySlug(
 				revalidate: DEFAULT_REVALIDATE,
 			});
 			const unwrapped = unwrapApiPayload(raw);
-			return unwrapped
+			const parsed = unwrapped
 				? ImageCollectionSchema.safeParse(
 						normalizeImageCollectionRecord(unwrapped),
 					)
 				: null;
+			if (parsed && !parsed.success) {
+				reportDropped("image collection detail", unwrapped, parsed.error);
+			}
+			return parsed;
 		};
 
 		const slugDetail = await fetchDetail(

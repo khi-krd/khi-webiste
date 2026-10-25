@@ -24,6 +24,7 @@ import {
 	resolveProjectListItem,
 	resolveProjectListItems,
 } from "@/lib/project/resolve";
+import { reportDropped } from "@/types/lenient";
 import { ProjectSchema } from "@/types/project";
 
 const PROJECTS_ENDPOINT = "/api/v1/projects/getAll";
@@ -51,7 +52,6 @@ async function fetchProjectsPage(
 		searchParams,
 	});
 }
-
 
 async function fetchProjectsByKeyword(keyword: string) {
 	return apiFetchPage("/api/v1/projects/search/keyword", {
@@ -144,6 +144,9 @@ export async function getProjectById(
 		);
 		const unwrapped = unwrapApiPayload(raw);
 		const parsed = unwrapped ? ProjectSchema.safeParse(unwrapped) : null;
+		if (parsed && !parsed.success) {
+			reportDropped("project detail", unwrapped, parsed.error);
+		}
 
 		if (parsed?.success) {
 			const item = resolveProjectListItem(locale, parsed.data);

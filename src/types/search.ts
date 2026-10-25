@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { lenientArray } from "@/types/lenient";
 
 export const SearchTypeSchema = z.enum([
 	"ALL",
@@ -31,7 +32,7 @@ export const SearchItemSchema = z.object({
 });
 
 export const SearchSectionSchema = z.object({
-	items: z.array(SearchItemSchema),
+	items: lenientArray(SearchItemSchema, "search result"),
 	totalElements: z.number(),
 	totalPages: z.number(),
 	currentPage: z.number(),

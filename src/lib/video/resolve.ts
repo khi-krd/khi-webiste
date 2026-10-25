@@ -101,10 +101,7 @@ export function resolveVideoTopicName(
 }
 
 /** Every linked topic, locale-ordered names; falls back to the singular pair. */
-export function resolveVideoTopicNames(
-	locale: string,
-	video: Video,
-): string[] {
+export function resolveVideoTopicNames(locale: string, video: Video): string[] {
 	const names = (video.topics ?? [])
 		.map((topic) =>
 			locale === "ckb"
@@ -174,9 +171,6 @@ function resolveClipUrl(
 }
 
 function sortedClips(video: Video): Video["videoClipItems"] {
-	if (!video.videoClipItems) {
-		return null;
-	}
 	return [...video.videoClipItems].sort((a, b) => a.clipNumber - b.clipNumber);
 }
 
@@ -196,7 +190,8 @@ export function resolveVideoPlayer(
 	const clips = sortedClips(video) ?? [];
 	const selectedClip =
 		clipNumber != null
-			? (clips.find((clip) => clip.clipNumber === clipNumber) ?? defaultClip(clips))
+			? (clips.find((clip) => clip.clipNumber === clipNumber) ??
+				defaultClip(clips))
 			: defaultClip(clips);
 
 	if (video.videoType === "VIDEO_CLIP") {

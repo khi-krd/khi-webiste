@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { lenientArray } from "@/types/lenient";
 
 export const ContentLanguageSchema = z.enum(["CKB", "KMR"]);
 
@@ -25,7 +26,7 @@ export const CoverMediaTypeSchema = z.enum(["IMAGE", "VIDEO", "AUDIO"]);
 export const NewsSchema = z.object({
 	id: z.number(),
 	coverUrl: z.string().nullish(),
-	coverMediaType: CoverMediaTypeSchema.nullable().optional(),
+	coverMediaType: CoverMediaTypeSchema.nullish().catch(null),
 	coverThumbnailUrl: z.string().nullable().optional(),
 	mediaGallery: z.array(z.unknown()).optional(),
 	datePublished: z.string().nullish(),
@@ -43,7 +44,7 @@ export const NewsSchema = z.object({
 export type News = z.infer<typeof NewsSchema>;
 
 export const NewsPageSchema = z.object({
-	content: z.array(NewsSchema),
+	content: lenientArray(NewsSchema, "news"),
 	totalElements: z.number(),
 	totalPages: z.number(),
 	number: z.number().optional(),

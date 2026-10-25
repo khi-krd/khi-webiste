@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { lenientArray } from "@/types/lenient";
 
 export const AboutContentSchema = z.object({
 	title: z.string().nullish(),
@@ -32,15 +33,15 @@ export const AboutSchema = z.object({
 	featured: z.boolean().optional(),
 	featuredOrder: z.number().nullish(),
 	featureImageUrl: z.string().nullish(),
-	stats: z.array(AboutStatSchema).optional(),
+	stats: lenientArray(AboutStatSchema, "about stat"),
 	createdAt: z.string().nullish(),
 	updatedAt: z.string().nullish(),
 });
 
-export const AboutListSchema = z.array(AboutSchema);
+export const AboutListSchema = lenientArray(AboutSchema, "about page");
 
 export const AboutPageSchema = z.object({
-	content: z.array(AboutSchema),
+	content: lenientArray(AboutSchema, "about page"),
 	totalElements: z.number(),
 	totalPages: z.number(),
 	number: z.number().optional(),

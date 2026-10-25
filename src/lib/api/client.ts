@@ -43,8 +43,6 @@ export const DEFAULT_REVALIDATE =
 export const DEFAULT_PAGE_SIZE = 20;
 export const BULK_FETCH_SIZE = 200;
 
-const isDevelopment = process.env.NODE_ENV === "development";
-
 /** Ceiling for one upstream CMS call. Renders fetch Railway live (the CMS is
    no-store by default), so a sleeping or hung backend must never stall a page
    render until Vercel kills the function — that was the intermittent 500:
@@ -82,11 +80,9 @@ async function fetchUpstream(
 	return null;
 }
 
+// Logged in production too: a rejected record is content missing from the
+// site, and the server log is the only place that ever surfaces it.
 function logApiParseFailure(path: string, error: z.ZodError): void {
-	if (!isDevelopment) {
-		return;
-	}
-
 	const [firstIssue] = error.issues;
 	console.warn(
 		`[api] Zod parse failed for ${path}:`,
@@ -122,9 +118,7 @@ export function parsePageItems<S extends ZodType>(
 			continue;
 		}
 
-		if (isDevelopment) {
-			options.onItemError?.(rawItem, parsed.error);
-		}
+		options.onItemError?.(rawItem, parsed.error);
 	}
 
 	return items;
@@ -214,9 +208,9 @@ export async function apiFetchPage<T extends ZodType>(
 		);
 
 		if (!response?.ok) {
-			if (isDevelopment && response) {
-				console.warn(`[api] HTTP ${response.status} for ${path}`);
-			}
+			console.warn(
+				`[api] ${response ? `HTTP ${response.status}` : "no response"} for ${path}`,
+			);
 			return null;
 		}
 

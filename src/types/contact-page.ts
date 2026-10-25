@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { lenientArray } from "@/types/lenient";
 
 /**
  * `contact_pages.office_type` is a free-text varchar(40) on the backend, not an
@@ -39,10 +40,13 @@ export const ContactPageSchema = z.object({
 	updatedAt: z.string().nullish(),
 });
 
-export const ContactPageListSchema = z.array(ContactPageSchema);
+export const ContactPageListSchema = lenientArray(
+	ContactPageSchema,
+	"contact page",
+);
 
 export const ContactActivePageSchema = z.object({
-	content: z.array(ContactPageSchema),
+	content: lenientArray(ContactPageSchema, "contact page"),
 	totalElements: z.number().optional(),
 	totalPages: z.number().optional(),
 	number: z.number().optional(),

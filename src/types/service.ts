@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { lenientArray } from "@/types/lenient";
 import { PageableSchema } from "@/types/writing";
 
 export const ServiceContentSchema = z.object({
@@ -29,13 +30,13 @@ export const ServiceSchema = z.object({
 	id: z.number(),
 	serviceType: z.string().nullish(),
 	location: z.string().nullish(),
-	layoutType: ServiceLayoutTypeSchema.nullish(),
+	layoutType: ServiceLayoutTypeSchema.nullish().catch(null),
 	heroVideoUrl: z.string().nullish(),
 	heroPosterUrl: z.string().nullish(),
 	navAnchorId: z.string().nullish(),
 	featureImageUrls: z.array(z.string()).optional(),
 	thumbnailUrls: z.array(z.string()).optional(),
-	galleryMedia: z.array(ServiceGalleryMediaSchema).optional(),
+	galleryMedia: lenientArray(ServiceGalleryMediaSchema, "service media"),
 	partnerIds: z.array(z.number()).optional(),
 	active: z.boolean(),
 	sortOrder: z.number().nullish(),
@@ -45,13 +46,13 @@ export const ServiceSchema = z.object({
 	featured: z.boolean().optional(),
 	featuredOrder: z.number().nullish(),
 	featureImageUrl: z.string().nullish(),
-	contents: z.array(ServiceContentSchema),
+	contents: lenientArray(ServiceContentSchema, "service content"),
 	createdAt: z.string().nullish(),
 	updatedAt: z.string().nullish(),
 });
 
 export const ServicesPageSchema = z.object({
-	content: z.array(ServiceSchema),
+	content: lenientArray(ServiceSchema, "service"),
 	pageable: PageableSchema.optional(),
 	totalElements: z.number(),
 	totalPages: z.number(),
@@ -72,7 +73,10 @@ export const ServiceTypeOptionSchema = z.union([
 	z.object({ serviceType: z.string() }),
 ]);
 
-export const ServiceTypesSchema = z.array(ServiceTypeOptionSchema);
+export const ServiceTypesSchema = lenientArray(
+	ServiceTypeOptionSchema,
+	"service type",
+);
 
 export type ServiceLayoutType = z.infer<typeof ServiceLayoutTypeSchema>;
 export type ServiceGalleryMediaType = z.infer<

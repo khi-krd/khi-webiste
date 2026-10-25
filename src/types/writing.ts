@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { lenientArray } from "@/types/lenient";
 
 /**
  * Genre slug — an open string, not an enum: genres are editor-managed rows in
@@ -19,7 +20,10 @@ export const BookGenreRecordSchema = z.object({
 	bookCount: z.number().nullish(),
 });
 
-export const BookGenreRecordListSchema = z.array(BookGenreRecordSchema);
+export const BookGenreRecordListSchema = lenientArray(
+	BookGenreRecordSchema,
+	"book genre",
+);
 
 export type BookGenreRecord = z.infer<typeof BookGenreRecordSchema>;
 
@@ -41,7 +45,7 @@ export const WritingContentSchema = z.object({
 	writer: z.string().nullish(),
 	location: z.string().nullish(),
 	fileUrl: z.string().nullish(),
-	fileFormat: WritingFileFormatSchema.nullish(),
+	fileFormat: WritingFileFormatSchema.nullish().catch(null),
 	fileSizeBytes: z.number().nullish(),
 	pageCount: z.number().int().nullish(),
 	genre: z.string().nullish(),
@@ -89,7 +93,7 @@ export const WritingSchema = z.object({
 	topicNameCkb: z.string().nullish(),
 	topicNameKmr: z.string().nullish(),
 	topic: TopicInfoSchema.nullish(),
-	topics: z.array(TopicInfoSchema).optional().default([]),
+	topics: lenientArray(TopicInfoSchema, "writing topic"),
 	bookGenres: z.array(z.string()),
 	bookLanguageCkb: z.string().nullish(),
 	bookLanguageKmr: z.string().nullish(),
@@ -113,7 +117,7 @@ export const PageableSchema = z.object({
 });
 
 export const WritingsPageSchema = z.object({
-	content: z.array(WritingSchema),
+	content: lenientArray(WritingSchema, "writing"),
 	pageable: PageableSchema.optional(),
 	totalElements: z.number(),
 	totalPages: z.number(),
@@ -148,7 +152,7 @@ export const SeriesResponseSchema = z.object({
 	seriesId: z.string(),
 	seriesName: z.string().nullish(),
 	totalBooks: z.number().int().nullish(),
-	books: z.array(SeriesBookSummarySchema),
+	books: lenientArray(SeriesBookSummarySchema, "series book"),
 });
 
 export type SeriesBookSummary = z.infer<typeof SeriesBookSummarySchema>;

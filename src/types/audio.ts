@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { lenientArray } from "@/types/lenient";
 import { BilingualSetSchema, PageableSchema } from "@/types/writing";
 
 export const TrackStateSchema = z.enum(["SINGLE", "MULTI"]);
@@ -38,7 +39,7 @@ export const AlbumBrochureSchema = z.object({
 	title: z.string().nullish(),
 	titleCkb: z.string().nullish(),
 	titleKmr: z.string().nullish(),
-	fileType: AttachmentTypeSchema.default("OTHER"),
+	fileType: AttachmentTypeSchema.default("OTHER").catch("OTHER"),
 	sizeBytes: z.number().nullish(),
 	mimeType: z.string().nullish(),
 	brochureOrder: z.number().nullish(),
@@ -63,12 +64,12 @@ export const SoundTrackFileSchema = z.object({
 	durationMinutes: z.number().nullish(),
 	bitRate: z.string().nullish(),
 	sampleRate: z.string().nullish(),
-	audioChannel: AudioChannelSchema.nullish(),
+	audioChannel: AudioChannelSchema.nullish().catch(null),
 	form: z.string().nullish(),
 	genre: z.string().nullish(),
 	recordingVenue: z.string().nullish(),
 	sortOrder: z.number().int().nullish(),
-	brochures: z.array(BrochureSchema).default([]),
+	brochures: lenientArray(BrochureSchema, "file brochure"),
 });
 
 export type SoundTrackFile = z.infer<typeof SoundTrackFileSchema>;
@@ -79,7 +80,7 @@ export const SoundAttachmentSchema = z.object({
 	title: z.string().nullish(),
 	titleCkb: z.string().nullish(),
 	titleKmr: z.string().nullish(),
-	attachmentType: AttachmentTypeSchema.default("OTHER"),
+	attachmentType: AttachmentTypeSchema.default("OTHER").catch("OTHER"),
 	sizeBytes: z.number().nullish(),
 	mimeType: z.string().nullish(),
 	attachmentOrder: z.number().nullish(),
@@ -126,15 +127,15 @@ export const SoundTrackSchema = z.object({
 	thisProjectOfInstitute: z.boolean(),
 	tags: BilingualSetSchema.default({ ckb: [], kmr: [] }),
 	keywords: BilingualSetSchema.default({ ckb: [], kmr: [] }),
-	files: z.array(SoundTrackFileSchema).default([]),
+	files: lenientArray(SoundTrackFileSchema, "sound file"),
 	totalDurationSeconds: z.number().nullish(),
 	totalSizeBytes: z.number().nullish(),
 	albumName: z.string().nullish(),
 	publishmentYear: z.number().int().nullish(),
 	cdNumber: z.number().int().nullish(),
 	totalTracks: z.number().int().nullish(),
-	attachments: z.array(SoundAttachmentSchema).default([]),
-	brochures: z.array(AlbumBrochureSchema).default([]),
+	attachments: lenientArray(SoundAttachmentSchema, "sound attachment"),
+	brochures: lenientArray(AlbumBrochureSchema, "album brochure"),
 	sortOrder: z.number().int().nullish(),
 	createdAt: z.string().optional(),
 	updatedAt: z.string().optional(),
@@ -176,7 +177,7 @@ export const SoundReklamVideoSchema = z.object({
 export type SoundReklamVideo = z.infer<typeof SoundReklamVideoSchema>;
 
 export const SoundTracksPageSchema = z.object({
-	content: z.array(SoundTrackSchema),
+	content: lenientArray(SoundTrackSchema, "sound track"),
 	pageable: PageableSchema.optional(),
 	totalElements: z.number(),
 	totalPages: z.number(),

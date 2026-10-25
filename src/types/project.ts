@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { lenientArray } from "@/types/lenient";
 import { ContentLanguageSchema, CoverMediaTypeSchema } from "@/types/news";
 
 export const ProjectStatusSchema = z.enum([
@@ -21,7 +22,7 @@ export type ProjectContent = z.infer<typeof ProjectContentSchema>;
 export const ProjectSchema = z.object({
 	id: z.number(),
 	coverUrl: z.string().nullish(),
-	coverMediaType: CoverMediaTypeSchema.nullable().optional(),
+	coverMediaType: CoverMediaTypeSchema.nullish().catch(null),
 	coverThumbnailUrl: z.string().nullable().optional(),
 	mediaGallery: z.array(z.unknown()).optional(),
 	projectTypeCkb: z.string().nullable().optional(),
@@ -35,7 +36,7 @@ export const ProjectSchema = z.object({
 		)
 		.optional()
 		.default([]),
-	status: ProjectStatusSchema.nullable().optional(),
+	status: ProjectStatusSchema.nullish().catch(null),
 	projectDate: z.string().nullish(),
 	contentLanguages: z.array(ContentLanguageSchema),
 	ckbContent: ProjectContentSchema.nullish(),
@@ -51,7 +52,7 @@ export const ProjectSchema = z.object({
 export type Project = z.infer<typeof ProjectSchema>;
 
 export const ProjectsPageSchema = z.object({
-	content: z.array(ProjectSchema),
+	content: lenientArray(ProjectSchema, "project"),
 	totalElements: z.number(),
 	totalPages: z.number(),
 	number: z.number().optional(),

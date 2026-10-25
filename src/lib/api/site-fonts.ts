@@ -1,21 +1,13 @@
 import "server-only";
 
-import { z } from "zod";
 import { apiFetch, DEFAULT_REVALIDATE } from "@/lib/api/client";
 import { getApiBaseUrl } from "@/lib/api/config";
+import { type SiteFont, SiteFontListSchema } from "@/types/site-font";
+
+export type { SiteFont } from "@/types/site-font";
 
 const SITE_FONTS_ENDPOINT = "/api/v1/site-fonts";
 export const SITE_FONTS_TAG = "site-fonts";
-
-export const SiteFontSchema = z.object({
-	id: z.number(),
-	language: z.string().nullish(),
-	name: z.string(),
-	url: z.string(),
-});
-export type SiteFont = z.infer<typeof SiteFontSchema>;
-
-const SiteFontListSchema = z.array(SiteFontSchema);
 
 /**
  * The whole typeface library (`GET /api/v1/site-fonts`), not just the two

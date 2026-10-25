@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { lenientArray } from "@/types/lenient";
 
 export const VideoTypeSchema = z.enum(["FILM", "VIDEO_CLIP"]);
 export type VideoType = z.infer<typeof VideoTypeSchema>;
@@ -110,7 +111,7 @@ export const VideoSchema = z.object({
 	sourceUrl: z.string().nullish(),
 	sourceExternalUrl: z.string().nullish(),
 	sourceEmbedUrl: z.string().nullish(),
-	videoClipItems: z.array(VideoClipItemSchema).nullish(),
+	videoClipItems: lenientArray(VideoClipItemSchema, "video clip"),
 	fileFormat: z.string().nullish(),
 	durationSeconds: z.number().nullish(),
 	publishmentDate: z.string().nullish(),
@@ -124,14 +125,14 @@ export const VideoSchema = z.object({
 	keywordsEn: z.array(z.string()).optional(),
 	createdAt: z.string().optional(),
 	updatedAt: z.string().optional(),
-	castMembers: z.array(VideoCastMemberSchema).optional(),
-	highlightClips: z.array(VideoHighlightClipSchema).optional(),
+	castMembers: lenientArray(VideoCastMemberSchema, "cast member"),
+	highlightClips: lenientArray(VideoHighlightClipSchema, "highlight clip"),
 });
 
 export type Video = z.infer<typeof VideoSchema>;
 
 export const VideosPageSchema = z.object({
-	content: z.array(VideoSchema),
+	content: lenientArray(VideoSchema, "video"),
 	totalElements: z.number(),
 	totalPages: z.number(),
 	number: z.number().optional(),

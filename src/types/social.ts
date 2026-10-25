@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { lenientArray } from "@/types/lenient";
 
 export const SocialPlatformSchema = z.enum([
 	"FACEBOOK",
@@ -14,7 +15,7 @@ export const SocialPlatformSchema = z.enum([
 
 export const SocialLinkSchema = z.object({
 	id: z.number(),
-	platform: SocialPlatformSchema,
+	platform: SocialPlatformSchema.catch("OTHER"),
 	url: z.string(),
 	labelCkb: z.string().nullish(),
 	labelKmr: z.string().nullish(),
@@ -22,7 +23,10 @@ export const SocialLinkSchema = z.object({
 	active: z.boolean().optional(),
 });
 
-export const SocialLinkListSchema = z.array(SocialLinkSchema);
+export const SocialLinkListSchema = lenientArray(
+	SocialLinkSchema,
+	"social link",
+);
 
 export type SocialPlatform = z.infer<typeof SocialPlatformSchema>;
 export type SocialLink = z.infer<typeof SocialLinkSchema>;

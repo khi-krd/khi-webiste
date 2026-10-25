@@ -1,5 +1,4 @@
 import "server-only";
-import { z } from "zod";
 import {
 	apiFetch,
 	apiFetchPage,
@@ -20,6 +19,7 @@ import {
 	sortVideos,
 } from "@/lib/video/filter";
 import { resolveVideoCards, resolveVideoDetail } from "@/lib/video/resolve";
+import { lenientArray, reportDropped } from "@/types/lenient";
 import type {
 	FilmReklamVideo,
 	ResolvedVideoCard,
@@ -393,6 +393,9 @@ export async function getVideoById(
 		const parsed = unwrapped
 			? VideoSchema.safeParse(normalizeVideoRecord(unwrapped))
 			: null;
+		if (parsed && !parsed.success) {
+			reportDropped("video detail", unwrapped, parsed.error);
+		}
 
 		if (parsed?.success) {
 			const resolved = resolveVideoDetail(locale, parsed.data, clipNumber);
@@ -418,7 +421,7 @@ export async function getVideoTopics(
 
 	if (getApiBaseUrl()) {
 		const topics = await apiFetch(`${VIDEOS_ENDPOINT}/topics`, {
-			schema: z.array(VideoTopicSchema),
+			schema: lenientArray(VideoTopicSchema, "video topic"),
 			tags: [VIDEOS_TAG],
 			revalidate: DEFAULT_REVALIDATE,
 		});

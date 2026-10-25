@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { lenientArray } from "@/types/lenient";
 
 export const PartnerSchema = z.object({
 	id: z.number(),
@@ -12,6 +13,6 @@ export const PartnerSchema = z.object({
 	active: z.boolean().optional(),
 });
 
-export const PartnerListSchema = z.array(PartnerSchema);
+export const PartnerListSchema = lenientArray(PartnerSchema, "partner");
 
 export type Partner = z.infer<typeof PartnerSchema>;

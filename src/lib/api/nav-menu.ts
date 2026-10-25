@@ -1,6 +1,6 @@
 import "server-only";
-import { z } from "zod";
 import { apiFetch } from "@/lib/api/client";
+import { NavMenuSchema } from "@/types/nav-menu";
 
 /**
  * CMS-managed hamburger menu backgrounds.
@@ -14,15 +14,6 @@ import { apiFetch } from "@/lib/api/client";
 
 const NAV_MENU_ENDPOINT = "/api/v1/nav-menu";
 const NAV_MENU_TAG = "nav-menu";
-
-/** Null-ish because the backend omits null fields rather than sending them. */
-const NavMenuItemSchema = z.object({
-	itemKey: z.string().min(1),
-	imageUrl: z.string().nullish(),
-	active: z.boolean().nullish(),
-});
-
-const NavMenuSchema = z.array(NavMenuItemSchema);
 
 /** A section's CMS content — just the background photo, keyed by itemKey. */
 export type NavMenuOverride = {

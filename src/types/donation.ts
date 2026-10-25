@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { lenientArray } from "@/types/lenient";
 
 export const DonationSettingsSchema = z.object({
 	id: z.number().optional(),
@@ -36,7 +37,10 @@ export const DonationTypeCardSchema = z.object({
 	active: z.boolean().nullish(),
 });
 
-export const DonationTypeCardListSchema = z.array(DonationTypeCardSchema);
+export const DonationTypeCardListSchema = lenientArray(
+	DonationTypeCardSchema,
+	"donation type card",
+);
 
 export const DonationTypeCodeSchema = z.enum(["FINANCIAL", "ARCHIVE"]);
 
@@ -47,7 +51,10 @@ export const DonationTypeSchema = z.object({
 	enabled: z.boolean(),
 });
 
-export const DonationTypeListSchema = z.array(DonationTypeSchema);
+export const DonationTypeListSchema = lenientArray(
+	DonationTypeSchema,
+	"donation type",
+);
 
 export const FinancialDonationStatusSchema = z.enum([
 	"PENDING",

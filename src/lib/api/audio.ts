@@ -1,5 +1,4 @@
 import "server-only";
-import { z } from "zod";
 import {
 	apiFetch,
 	apiFetchPage,
@@ -35,6 +34,7 @@ import {
 	SoundTrackTypeSchema,
 	TrackStateSchema,
 } from "@/types/audio";
+import { lenientArray, reportDropped } from "@/types/lenient";
 
 const SOUND_TRACKS_ENDPOINT = "/api/v1/sound-tracks";
 const SOUND_REKLAM_VIDEO_ENDPOINT = `${SOUND_TRACKS_ENDPOINT}/sound-reklam-video`;
@@ -346,6 +346,9 @@ export async function getAudioTrackById(
 		const parsed = unwrapped
 			? SoundTrackSchema.safeParse(normalizeSoundTrackRecord(unwrapped))
 			: null;
+		if (parsed && !parsed.success) {
+			reportDropped("sound track detail", unwrapped, parsed.error);
+		}
 
 		if (parsed?.success) {
 			const resolved = resolveAudioDetail(locale, parsed.data);
@@ -466,7 +469,7 @@ export async function getAudioTopics(
 
 	if (getApiBaseUrl()) {
 		const topics = await apiFetch(`${SOUND_TRACKS_ENDPOINT}/topics`, {
-			schema: z.array(SoundTopicSchema),
+			schema: lenientArray(SoundTopicSchema, "sound topic"),
 			tags: [SOUND_TRACKS_TAG],
 			revalidate: DEFAULT_REVALIDATE,
 		});
@@ -500,7 +503,7 @@ export async function getAudioSoundTypeLabels(
 	if (!getApiBaseUrl()) return labels;
 
 	const types = await apiFetch(`${SOUND_TRACKS_ENDPOINT}/types`, {
-		schema: z.array(SoundTrackTypeSchema),
+		schema: lenientArray(SoundTrackTypeSchema, "sound type"),
 		tags: [SOUND_TRACKS_TAG],
 		revalidate: DEFAULT_REVALIDATE,
 	});
