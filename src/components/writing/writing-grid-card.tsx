@@ -67,7 +67,7 @@ export function WritingGridCard({
 				<div className="flex flex-1 flex-col gap-1.5 px-4 py-4 sm:px-5 sm:py-5">
 					<h3
 						title={title}
-						className="truncate font-heading text-h3 font-bold leading-snug"
+						className="line-clamp-2 min-w-0 font-heading text-h3 font-bold leading-snug"
 					>
 						{title}
 					</h3>
