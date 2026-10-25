@@ -163,7 +163,7 @@ export default async function WritingsSegmentPage({
 				}
 				topicLabel={t("post.topic")}
 				genreLabel={t("post.genre")}
-				keywordsLabel={t("post.keywords")}
+				pagesLabel={t("post.pages")}
 				formatLabel={t("post.format")}
 				languagesLabel={t("post.languagesLabel")}
 				previewTitle={t("post.preview.title")}

@@ -138,7 +138,6 @@ export async function ActiveFilterChips({
 		{ param: "subject", group: t("facetSubject") },
 		{ param: "genre", group: t("facetGenre") },
 		{ param: "tag", group: t("facetTag") },
-		{ param: "keyword", group: t("facetKeyword") },
 	];
 
 	for (const entry of repeated) {

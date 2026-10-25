@@ -638,13 +638,11 @@ export async function PlatformPostView({
 					...(full.subject ?? hit.subject ?? []),
 					...(full.genre ?? hit.genre ?? []),
 					...(full.tags ?? hit.tags ?? []),
-					...(full.keywords ?? hit.keywords ?? []),
 				].some((value) => value.trim()) ? (
 					<div className="mt-8 flex flex-wrap gap-2">
 						<ChipGroup values={full.subject ?? hit.subject} param="subject" />
 						<ChipGroup values={full.genre ?? hit.genre} param="genre" />
 						<ChipGroup values={full.tags ?? hit.tags} param="tag" />
-						<ChipGroup values={full.keywords ?? hit.keywords} param="keyword" />
 					</div>
 				) : null}
 

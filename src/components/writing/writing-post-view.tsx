@@ -13,7 +13,8 @@ import { WritingGridCard } from "@/components/writing/writing-grid-card";
 import { WritingPdfPreview } from "@/components/writing/writing-pdf-preview";
 import { Link as NavLink } from "@/i18n/navigation";
 import { homeInsetClass } from "@/lib/layout";
-import { writingKeywordHref, writingTagHref } from "@/lib/search/taxonomy-href";
+import { formatCount } from "@/lib/platform/format";
+import { writingTagHref } from "@/lib/search/taxonomy-href";
 import { displayTitleSizeClass } from "@/lib/title-scale";
 import { cn } from "@/lib/utils";
 import { buildWritingGridCards } from "@/lib/writing/catalog";
@@ -44,7 +45,7 @@ type WritingPostViewProps = {
 	seriesVolumeLabel: (order: number, total: number | null) => string;
 	topicLabel: string;
 	genreLabel: string;
-	keywordsLabel: string;
+	pagesLabel: string;
 	formatLabel: string;
 	languagesLabel: string;
 	previewTitle: string;
@@ -69,7 +70,7 @@ export function WritingPostView({
 	seriesVolumeLabel,
 	topicLabel,
 	genreLabel,
-	keywordsLabel,
+	pagesLabel,
 	formatLabel,
 	languagesLabel,
 	previewTitle,
@@ -111,6 +112,14 @@ export function WritingPostView({
 				detail.fileOffers.map((offer) => offer.languageLabel).filter(Boolean),
 			),
 		).join(" · ") || null;
+	const pageCount =
+		detail.fileOffers.find(
+			(offer) =>
+				offer.language === (locale === "ckb" ? "CKB" : "KMR") &&
+				offer.pageCount,
+		)?.pageCount ??
+		detail.fileOffers.find((offer) => offer.pageCount)?.pageCount ??
+		null;
 
 	const stripFields = [
 		detail.writer ? { label: writerLabel, value: detail.writer } : null,
@@ -124,6 +133,7 @@ export function WritingPostView({
 		genreNames.length > 0
 			? { label: genreLabel, value: genreNames.join("، ") }
 			: null,
+		pageCount ? { label: pagesLabel, value: formatCount(locale, pageCount) } : null,
 		formatValue ? { label: formatLabel, value: formatValue, ltr: true } : null,
 		languagesValue ? { label: languagesLabel, value: languagesValue } : null,
 	].filter((field): field is NonNullable<typeof field> => field != null);
@@ -186,22 +196,6 @@ export function WritingPostView({
 							</div>
 						) : null}
 
-						{detail.keywords.length > 0 ? (
-							<div className="mt-4 flex flex-wrap items-baseline gap-x-3 gap-y-2">
-								<span className="text-label font-semibold uppercase tracking-[0.14em] text-muted">
-									{keywordsLabel}
-								</span>
-								{detail.keywords.map((keyword) => (
-									<NavLink
-										key={keyword}
-										href={writingKeywordHref(keyword)}
-										className="text-small text-foreground/80 underline decoration-border underline-offset-4 transition-colors fine-hover:text-foreground"
-									>
-										{keyword}
-									</NavLink>
-								))}
-							</div>
-						) : null}
 					</div>
 
 					{/* Cover plate — shadowed volume, click to enlarge. */}

@@ -36,8 +36,7 @@ type FacetLabelKey =
 	| "facetRegion"
 	| "facetSubject"
 	| "facetGenre"
-	| "facetTag"
-	| "facetKeyword";
+	| "facetTag";
 
 type GroupDef = {
 	facet: keyof PlatformFacets;
@@ -92,11 +91,6 @@ const GROUPS: GroupDef[] = [
 		facet: "tags",
 		labelKey: "facetTag",
 		mode: { kind: "repeated", param: "tag" },
-	},
-	{
-		facet: "keywords",
-		labelKey: "facetKeyword",
-		mode: { kind: "repeated", param: "keyword" },
 	},
 ];
 
