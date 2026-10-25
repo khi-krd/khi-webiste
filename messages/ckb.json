@@ -608,7 +608,17 @@
 			},
 			"by": "نووسینی",
 			"format": "فۆرمات",
-			"languagesLabel": "زمانەکان"
+			"languagesLabel": "زمانەکان",
+			"personRoles": {
+				"WRITER": "نووسەر",
+				"COLLECTOR": "کۆکەرەوە",
+				"TRANSLATOR": "وەرگێڕ",
+				"EDITOR": "سەرنوسەر",
+				"NARRATOR": "گێڕەرەوە",
+				"PHOTOGRAPHER": "وێنەگر",
+				"OWNER": "خاوەن",
+				"OTHER": "ڕۆڵی تر"
+			}
 		},
 		"subcategories": {
 			"literature": {
@@ -1279,7 +1289,7 @@
 		"facetDialect": "شێوەزار",
 		"facetRegion": "ناوچە",
 		"facetSubject": "بابەت",
-		"facetGenre": "ژانر",
+		"facetGenre": "ژانرا",
 		"facetTag": "تاگ",
 		"facetKeyword": "وشەی سەرەکی",
 		"facetPerson": "کەسەکان",
@@ -1299,7 +1309,7 @@
 		"matchedTags": "تاگ",
 		"matchedKeywords": "وشەی سەرەکی",
 		"matchedSubject": "بابەت",
-		"matchedGenre": "ژانر",
+		"matchedGenre": "ژانرا",
 		"matchedPlace": "شوێن",
 		"matchedDescription": "وەسف",
 		"roleSinger": "گۆرانیبێژ",

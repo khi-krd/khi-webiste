@@ -3,12 +3,14 @@ import type {
 	ResolvedSeriesBook,
 	ResolvedWritingCard,
 	ResolvedWritingDetail,
+	ResolvedWritingPerson,
 	SeriesBookSummary,
 	SeriesInfo,
 	TopicInfo,
 	Writing,
 	WritingContent,
 	WritingFileOffer,
+	WritingPerson,
 } from "@/types/writing";
 
 const EXCERPT_MAX_LENGTH = 120;
@@ -199,6 +201,32 @@ function isPartOfSeries(writing: Writing): boolean {
 	return Boolean(seriesId && (totalBooks == null || totalBooks > 1));
 }
 
+/** People attached to a book, locale-picked names; nameless rows are skipped. */
+function resolveWritingPersons(
+	locale: string,
+	persons: WritingPerson[],
+): ResolvedWritingPerson[] {
+	return persons.flatMap((person) => {
+		const name =
+			locale === "ckb"
+				? firstNonBlank(person.nameCkb, person.nameKmr)
+				: firstNonBlank(person.nameKmr, person.nameCkb);
+		if (!name) {
+			return [];
+		}
+		return [
+			{
+				role: person.role,
+				name,
+				nickname:
+					locale === "ckb"
+						? firstNonBlank(person.nicknameCkb, person.nicknameKmr)
+						: firstNonBlank(person.nicknameKmr, person.nicknameCkb),
+			},
+		];
+	});
+}
+
 export function resolveWritingDetail(
 	locale: string,
 	writing: Writing,
@@ -274,6 +302,7 @@ export function resolveWritingDetail(
 			writing.keywords.ckb,
 			writing.keywords.kmr,
 		),
+		persons: resolveWritingPersons(locale, writing.persons ?? []),
 		fileOffers: uniqueOffers,
 		createdAt: writing.createdAt ?? "",
 		updatedAt: writing.updatedAt ?? "",

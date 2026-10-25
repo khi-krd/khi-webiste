@@ -152,6 +152,16 @@ export default async function WritingsSegmentPage({
 				seriesBooks={seriesBooks}
 				related={related}
 				genreLabels={genreLabels}
+				personRoleLabels={{
+					WRITER: t("post.personRoles.WRITER"),
+					COLLECTOR: t("post.personRoles.COLLECTOR"),
+					TRANSLATOR: t("post.personRoles.TRANSLATOR"),
+					EDITOR: t("post.personRoles.EDITOR"),
+					NARRATOR: t("post.personRoles.NARRATOR"),
+					PHOTOGRAPHER: t("post.personRoles.PHOTOGRAPHER"),
+					OWNER: t("post.personRoles.OWNER"),
+					OTHER: t("post.personRoles.OTHER"),
+				}}
 				locale={locale}
 				writerLabel={t("post.writer")}
 				bookLanguageLabel={t("post.bookLanguage")}

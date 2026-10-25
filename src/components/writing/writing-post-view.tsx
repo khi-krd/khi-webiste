@@ -23,6 +23,7 @@ import type {
 	ResolvedSeriesBook,
 	ResolvedWritingCard,
 	ResolvedWritingDetail,
+	WritingPersonRole,
 } from "@/types/writing";
 
 type WritingPostViewProps = {
@@ -36,6 +37,7 @@ type WritingPostViewProps = {
 	seriesBooks: ResolvedSeriesBook[];
 	related: ResolvedWritingCard[];
 	genreLabels: Record<BookGenre, string>;
+	personRoleLabels: Record<WritingPersonRole, string>;
 	writerLabel: string;
 	bookLanguageLabel: string;
 	locationLabel: string;
@@ -62,6 +64,7 @@ export function WritingPostView({
 	seriesBooks,
 	related,
 	genreLabels,
+	personRoleLabels,
 	writerLabel,
 	bookLanguageLabel,
 	locationLabel,
@@ -121,8 +124,25 @@ export function WritingPostView({
 		detail.fileOffers.find((offer) => offer.pageCount)?.pageCount ??
 		null;
 
+	// People rows feed the byline (first WRITER) and the spec strip (each
+	// person becomes a `role: name (nickname)` field). A stored writer string
+	// stays as the fallback for books that predate the people table.
+	const writerPerson = detail.persons.find(
+		(person) => person.role === "WRITER",
+	);
+	const bylineName = detail.writer || writerPerson?.name || "";
+
+	type StripField = { label: string; value: string; ltr?: boolean };
 	const stripFields = [
-		detail.writer ? { label: writerLabel, value: detail.writer } : null,
+		detail.writer && !writerPerson
+			? { label: writerLabel, value: detail.writer }
+			: null,
+		...detail.persons.map((person) => ({
+			label: personRoleLabels[person.role] ?? personRoleLabels.OTHER,
+			value: person.nickname
+				? `${person.name} (${person.nickname})`
+				: person.name,
+		})),
 		detail.location ? { label: locationLabel, value: detail.location } : null,
 		detail.bookLanguage
 			? { label: bookLanguageLabel, value: detail.bookLanguage }
@@ -133,10 +153,12 @@ export function WritingPostView({
 		genreNames.length > 0
 			? { label: genreLabel, value: genreNames.join("، ") }
 			: null,
-		pageCount ? { label: pagesLabel, value: formatCount(locale, pageCount) } : null,
+		pageCount
+			? { label: pagesLabel, value: formatCount(locale, pageCount) }
+			: null,
 		formatValue ? { label: formatLabel, value: formatValue, ltr: true } : null,
 		languagesValue ? { label: languagesLabel, value: languagesValue } : null,
-	].filter((field): field is NonNullable<typeof field> => field != null);
+	].filter((field): field is StripField => field != null);
 
 	return (
 		<article>
@@ -163,12 +185,10 @@ export function WritingPostView({
 							{detail.title}
 						</h1>
 
-						{detail.writer ? (
+						{bylineName ? (
 							<p className="mt-3 text-body text-muted">
 								{byLabel}{" "}
-								<span className="font-bold text-foreground">
-									{detail.writer}
-								</span>
+								<span className="font-bold text-foreground">{bylineName}</span>
 								{volumeLine ? <> · {volumeLine}</> : null}
 							</p>
 						) : volumeLine ? (
@@ -195,7 +215,6 @@ export function WritingPostView({
 								))}
 							</div>
 						) : null}
-
 					</div>
 
 					{/* Cover plate — shadowed volume, click to enlarge. */}

@@ -438,7 +438,7 @@
 			"about": "Derbarê",
 			"topic": "Mijar",
 			"terms": "Zarava / têgîn",
-			"genre": "Janr",
+			"genre": "Janra",
 			"locations": "Cih",
 			"reader": "Xwendevan / hunermend",
 			"directors": "Derhêner",
@@ -538,7 +538,7 @@
 			"reset": "Ji nû ve dest pê bike",
 			"clear": "Filtreyan paqij bike",
 			"active": "Aktîf:",
-			"genreLabel": "Janr",
+			"genreLabel": "Janra",
 			"searchLabel": "Di nivîsan de bigere",
 			"searchClear": "Lêgerînê paqij bike",
 			"keywordLabel": "Peyva sereke",
@@ -561,7 +561,7 @@
 			"back": "Vegere nivîsan",
 			"lightboxClose": "Bigire",
 			"writer": "Nivîskar",
-			"genre": "Janr",
+			"genre": "Janra",
 			"pages": "Rûpel",
 			"bookLanguage": "Zimanê pirtûkê",
 			"location": "Cih",
@@ -608,7 +608,17 @@
 			},
 			"by": "Nivîsîna",
 			"format": "Format",
-			"languagesLabel": "Ziman"
+			"languagesLabel": "Ziman",
+			"personRoles": {
+				"WRITER": "Nivîskar",
+				"COLLECTOR": "Kolekter",
+				"TRANSLATOR": "Wergêr",
+				"EDITOR": "Edîtor",
+				"NARRATOR": "Çîrokbêj",
+				"PHOTOGRAPHER": "Wênegir",
+				"OWNER": "Xwedî",
+				"OTHER": "Rolek din"
+			}
 		},
 		"subcategories": {
 			"literature": {
@@ -1279,7 +1289,7 @@
 		"facetDialect": "Zarava",
 		"facetRegion": "Herêm",
 		"facetSubject": "Mijar",
-		"facetGenre": "Janr",
+		"facetGenre": "Janra",
 		"facetTag": "Etîket",
 		"facetKeyword": "Peyva serekî",
 		"facetPerson": "Kes",
@@ -1299,7 +1309,7 @@
 		"matchedTags": "Etîket",
 		"matchedKeywords": "Peyva serekî",
 		"matchedSubject": "Mijar",
-		"matchedGenre": "Janr",
+		"matchedGenre": "Janra",
 		"matchedPlace": "Cih",
 		"matchedDescription": "Danasîn",
 		"roleSinger": "Stranbêj",

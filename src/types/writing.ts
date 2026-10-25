@@ -57,6 +57,29 @@ export const TopicInfoSchema = z.object({
 	nameKmr: z.string().nullish(),
 });
 
+export const WritingPersonRoleSchema = z
+	.enum([
+		"WRITER",
+		"COLLECTOR",
+		"TRANSLATOR",
+		"EDITOR",
+		"NARRATOR",
+		"PHOTOGRAPHER",
+		"OWNER",
+		"OTHER",
+	])
+	.catch("OTHER");
+
+export const WritingPersonSchema = z.object({
+	id: z.number().nullish(),
+	role: WritingPersonRoleSchema,
+	nameCkb: z.string().nullish(),
+	nameKmr: z.string().nullish(),
+	nicknameCkb: z.string().nullish(),
+	nicknameKmr: z.string().nullish(),
+	sortOrder: z.number().nullish(),
+});
+
 export const SeriesInfoSchema = z
 	.object({
 		seriesId: z.string().nullish(),
@@ -100,6 +123,7 @@ export const WritingSchema = z.object({
 	publishedByInstitute: z.boolean(),
 	tags: BilingualSetSchema,
 	keywords: BilingualSetSchema,
+	persons: lenientArray(WritingPersonSchema, "writing person").optional(),
 	series: SeriesInfoSchema.nullish(),
 	seriesInfo: SeriesInfoSchema.nullish(),
 	createdAt: z.string().optional(),
@@ -108,6 +132,8 @@ export const WritingSchema = z.object({
 
 export type Writing = z.infer<typeof WritingSchema>;
 export type WritingContent = z.infer<typeof WritingContentSchema>;
+export type WritingPerson = z.infer<typeof WritingPersonSchema>;
+export type WritingPersonRole = z.infer<typeof WritingPersonRoleSchema>;
 export type TopicInfo = z.infer<typeof TopicInfoSchema>;
 export type SeriesInfo = z.infer<typeof SeriesInfoSchema>;
 
@@ -175,6 +201,14 @@ export type ResolvedSeriesBook = {
 	isCurrent: boolean;
 };
 
+export type ResolvedWritingPerson = {
+	role: WritingPersonRole;
+	/** Locale-picked display name (falls back to the other script). */
+	name: string;
+	/** Locale-picked nickname; rendered after the name when present. */
+	nickname: string | null;
+};
+
 export type ResolvedWritingDetail = {
 	id: number;
 	title: string;
@@ -195,6 +229,7 @@ export type ResolvedWritingDetail = {
 	isPartOfSeries: boolean;
 	tags: string[];
 	keywords: string[];
+	persons: ResolvedWritingPerson[];
 	fileOffers: WritingFileOffer[];
 	createdAt: string;
 	updatedAt: string;
