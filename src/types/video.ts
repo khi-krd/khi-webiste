@@ -7,8 +7,8 @@ export const VideoContentLanguageSchema = z.enum(["CKB", "KMR"]);
 export type VideoContentLanguage = z.infer<typeof VideoContentLanguageSchema>;
 
 export const VideoContentSchema = z.object({
-	title: z.string().nullable(),
-	description: z.string().nullable(),
+	title: z.string().nullish(),
+	description: z.string().nullish(),
 	location: z.string().nullish(),
 	director: z.string().nullish(),
 	producer: z.string().nullish(),
@@ -40,10 +40,10 @@ export type VideoClipItem = z.infer<typeof VideoClipItemSchema>;
 
 export const VideoCastMemberSchema = z
 	.object({
-		nameCkb: z.string().nullable(),
-		nameKmr: z.string().nullable(),
-		roleCkb: z.string().nullable(),
-		roleKmr: z.string().nullable(),
+		nameCkb: z.string().nullish(),
+		nameKmr: z.string().nullish(),
+		roleCkb: z.string().nullish(),
+		roleKmr: z.string().nullish(),
 		photoUrl: z.string().nullable().optional(),
 		imageUrl: z.string().nullable().optional(),
 	})
@@ -58,9 +58,9 @@ export const VideoCastMemberSchema = z
 export type VideoCastMember = z.infer<typeof VideoCastMemberSchema>;
 
 export const VideoHighlightClipSchema = z.object({
-	titleCkb: z.string().nullable(),
-	titleKmr: z.string().nullable(),
-	thumbnailUrl: z.string().nullable(),
+	titleCkb: z.string().nullish(),
+	titleKmr: z.string().nullish(),
+	thumbnailUrl: z.string().nullish(),
 	startSeconds: z.number().int().nullable().optional(),
 	url: z.string().nullable().optional(),
 	embedUrl: z.string().nullable().optional(),
@@ -71,8 +71,8 @@ export type VideoHighlightClip = z.infer<typeof VideoHighlightClipSchema>;
 
 export const VideoTopicSchema = z.object({
 	id: z.number(),
-	nameCkb: z.string().nullable(),
-	nameKmr: z.string().nullable(),
+	nameCkb: z.string().nullish(),
+	nameKmr: z.string().nullish(),
 	nameEn: z.string().nullable().optional(),
 });
 

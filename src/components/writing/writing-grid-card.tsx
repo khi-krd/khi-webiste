@@ -49,9 +49,7 @@ export function WritingGridCard({
 				className="flex h-full flex-col no-underline text-inherit"
 			>
 				<div className="relative aspect-[4/3] w-full overflow-hidden bg-sunken">
-					{coverUrl ? (
-						<CoverImage src={coverUrl} alt="" />
-					) : null}
+					{coverUrl ? <CoverImage src={coverUrl} alt="" /> : null}
 					{coverUrl ? null : (
 						<div
 							aria-hidden

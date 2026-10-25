@@ -254,8 +254,8 @@ export function resolveWritingDetail(
 		bookLanguage:
 			(locale === "ckb"
 				? writing.bookLanguageCkb || writing.bookLanguageKmr
-				: writing.bookLanguageKmr || writing.bookLanguageCkb)?.trim() ||
-			null,
+				: writing.bookLanguageKmr || writing.bookLanguageCkb
+			)?.trim() || null,
 		description,
 		coverUrl: resolveCoverUrl(locale, writing),
 		hoverCoverUrl: writing.hoverCoverUrl ?? null,
@@ -264,9 +264,9 @@ export function resolveWritingDetail(
 		topicNames: resolveWritingTopicNames(locale, writing),
 		publishedByInstitute: writing.publishedByInstitute,
 		seriesName: seriesInfo.seriesName?.trim() || null,
-		seriesId: seriesInfo.seriesId,
-		seriesOrder: seriesInfo.seriesOrder,
-		seriesTotalBooks: seriesInfo.totalBooks,
+		seriesId: seriesInfo.seriesId ?? null,
+		seriesOrder: seriesInfo.seriesOrder ?? null,
+		seriesTotalBooks: seriesInfo.totalBooks ?? null,
 		isPartOfSeries: isPartOfSeries(writing),
 		tags: resolveBilingualStrings(locale, writing.tags.ckb, writing.tags.kmr),
 		keywords: resolveBilingualStrings(

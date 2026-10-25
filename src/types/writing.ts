@@ -36,9 +36,9 @@ export const WritingFileFormatSchema = z.enum([
 ]);
 
 export const WritingContentSchema = z.object({
-	title: z.string().nullable(),
-	description: z.string().nullable(),
-	writer: z.string().nullable(),
+	title: z.string().nullish(),
+	description: z.string().nullish(),
+	writer: z.string().nullish(),
 	location: z.string().nullish(),
 	fileUrl: z.string().nullish(),
 	fileFormat: WritingFileFormatSchema.nullish(),
@@ -49,17 +49,17 @@ export const WritingContentSchema = z.object({
 
 export const TopicInfoSchema = z.object({
 	id: z.number(),
-	nameCkb: z.string().nullable(),
-	nameKmr: z.string().nullable(),
+	nameCkb: z.string().nullish(),
+	nameKmr: z.string().nullish(),
 });
 
 export const SeriesInfoSchema = z
 	.object({
-		seriesId: z.string().nullable(),
+		seriesId: z.string().nullish(),
 		seriesName: z.string().nullish(),
-		seriesOrder: z.number().nullable(),
+		seriesOrder: z.number().nullish(),
 		parentBookId: z.number().nullable().optional(),
-		totalBooks: z.number().int().nullable(),
+		totalBooks: z.number().int().nullish(),
 		isParent: z.boolean().optional(),
 		parent: z.boolean().optional(),
 	})
@@ -138,7 +138,7 @@ export const SeriesBookSummarySchema = z.object({
 	id: z.number(),
 	titleCkb: z.string().nullish(),
 	titleKmr: z.string().nullish(),
-	seriesOrder: z.number().nullable(),
+	seriesOrder: z.number().nullish(),
 	createdAt: z.string().optional(),
 	ckbContent: z.object({ title: z.string().nullish() }).nullish(),
 	kmrContent: z.object({ title: z.string().nullish() }).nullish(),
@@ -146,8 +146,8 @@ export const SeriesBookSummarySchema = z.object({
 
 export const SeriesResponseSchema = z.object({
 	seriesId: z.string(),
-	seriesName: z.string().nullable(),
-	totalBooks: z.number().int().nullable(),
+	seriesName: z.string().nullish(),
+	totalBooks: z.number().int().nullish(),
 	books: z.array(SeriesBookSummarySchema),
 });
 

@@ -97,8 +97,6 @@ export default async function WritingsSegmentPage({
 					id="writings-content"
 					title={pageData.gridTitle}
 					categorySlug={parsed.slug}
-					categoryCarouselItems={pageData.categoryCarouselItems}
-					carouselNavLabel={t("grid.categoryNavLabel")}
 					cards={pageData.gridCards}
 					currentPage={pageData.listing.currentPage}
 					totalPages={pageData.listing.totalPages}

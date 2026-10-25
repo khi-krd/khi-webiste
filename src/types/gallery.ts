@@ -10,10 +10,10 @@ export const ImageCollectionTypeSchema = z.enum([
 ]);
 
 export const ImageCollectionContentSchema = z.object({
-	title: z.string().nullable(),
-	description: z.string().nullable(),
-	location: z.string().nullable(),
-	collectedBy: z.string().nullable(),
+	title: z.string().nullish(),
+	description: z.string().nullish(),
+	location: z.string().nullish(),
+	collectedBy: z.string().nullish(),
 });
 
 export const ImageAlbumItemSchema = z.object({
@@ -84,8 +84,8 @@ export type ImageCollectionsPage = z.infer<typeof ImageCollectionsPageSchema>;
 
 export const ImageTopicSchema = z.object({
 	id: z.number(),
-	nameCkb: z.string().nullable(),
-	nameKmr: z.string().nullable(),
+	nameCkb: z.string().nullish(),
+	nameKmr: z.string().nullish(),
 });
 
 export type ImageTopic = z.infer<typeof ImageTopicSchema>;

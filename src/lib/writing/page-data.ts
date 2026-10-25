@@ -4,7 +4,6 @@ import {
 	parseWritingsGenre,
 } from "@/lib/api/writings";
 import {
-	buildCategoryCarouselItems,
 	buildWritingGridCards,
 	getCategoryGenreLabels,
 } from "@/lib/writing/catalog";
@@ -76,8 +75,6 @@ export async function loadWritingsPageData(
 
 	const gridCards = buildWritingGridCards(listing.items);
 
-	const categoryCarouselItems = buildCategoryCarouselItems(categoryLabels);
-
 	const gridTitle = categorySlug
 		? categoryLabels[categorySlug]
 		: t("grid.allTitle");
@@ -100,7 +97,6 @@ export async function loadWritingsPageData(
 		activeSort,
 		writers,
 		gridCards,
-		categoryCarouselItems,
 		gridTitle,
 		genreLabels: getCategoryGenreLabels(
 			categorySlug,

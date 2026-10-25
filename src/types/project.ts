@@ -11,16 +11,16 @@ export const ProjectStatusSchema = z.enum([
 export type ProjectStatus = z.infer<typeof ProjectStatusSchema>;
 
 export const ProjectContentSchema = z.object({
-	title: z.string().nullable(),
-	description: z.string().nullable(),
-	location: z.string().nullable(),
+	title: z.string().nullish(),
+	description: z.string().nullish(),
+	location: z.string().nullish(),
 });
 
 export type ProjectContent = z.infer<typeof ProjectContentSchema>;
 
 export const ProjectSchema = z.object({
 	id: z.number(),
-	coverUrl: z.string().nullable(),
+	coverUrl: z.string().nullish(),
 	coverMediaType: CoverMediaTypeSchema.nullable().optional(),
 	coverThumbnailUrl: z.string().nullable().optional(),
 	mediaGallery: z.array(z.unknown()).optional(),

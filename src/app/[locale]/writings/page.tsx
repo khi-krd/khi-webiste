@@ -55,8 +55,6 @@ export default async function WritingsPage({
 			<WritingsShell
 				id="writings-content"
 				title={pageData.gridTitle}
-				categoryCarouselItems={pageData.categoryCarouselItems}
-				carouselNavLabel={t("grid.categoryNavLabel")}
 				cards={pageData.gridCards}
 				currentPage={pageData.listing.currentPage}
 				totalPages={pageData.listing.totalPages}

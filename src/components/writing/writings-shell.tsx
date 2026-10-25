@@ -4,10 +4,6 @@ import {
 	ScrollRevealItem,
 } from "@/components/motion/scroll-reveal";
 import {
-	WritingCategoryCarousel,
-	type WritingCategoryCarouselItem,
-} from "@/components/writing/writing-category-carousel";
-import {
 	WritingGridCard,
 	type WritingGridCardProps,
 } from "@/components/writing/writing-grid-card";
@@ -23,8 +19,6 @@ type WritingsShellProps = {
 	id?: string;
 	title: string;
 	categorySlug?: WritingCategorySlug | null;
-	categoryCarouselItems: WritingCategoryCarouselItem[];
-	carouselNavLabel: string;
 	cards: WritingGridCardProps[];
 	currentPage: number;
 	totalPages: number;
@@ -47,8 +41,6 @@ export function WritingsShell({
 	id = "writings-grid",
 	title,
 	categorySlug,
-	categoryCarouselItems,
-	carouselNavLabel,
 	cards,
 	currentPage,
 	totalPages,
@@ -86,13 +78,6 @@ export function WritingsShell({
 						{title}
 					</h2>
 				</ScrollRevealBlock>
-
-				<WritingCategoryCarousel
-					items={categoryCarouselItems}
-					activeSlug={categorySlug}
-					navLabel={carouselNavLabel}
-					className="mt-8 sm:mt-10"
-				/>
 
 				<WritingsFilterBar
 					categorySlug={categorySlug}

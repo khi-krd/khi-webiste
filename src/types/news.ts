@@ -3,8 +3,8 @@ import { z } from "zod";
 export const ContentLanguageSchema = z.enum(["CKB", "KMR"]);
 
 export const BilingualNameSchema = z.object({
-	ckbName: z.string().nullable(),
-	kmrName: z.string().nullable(),
+	ckbName: z.string().nullish(),
+	kmrName: z.string().nullish(),
 });
 
 export const BilingualSetSchema = z.object({
@@ -13,8 +13,8 @@ export const BilingualSetSchema = z.object({
 });
 
 export const NewsContentSchema = z.object({
-	title: z.string().nullable(),
-	description: z.string().nullable(),
+	title: z.string().nullish(),
+	description: z.string().nullish(),
 	location: z.string().nullish(),
 });
 
@@ -24,11 +24,11 @@ export const CoverMediaTypeSchema = z.enum(["IMAGE", "VIDEO", "AUDIO"]);
 
 export const NewsSchema = z.object({
 	id: z.number(),
-	coverUrl: z.string().nullable(),
+	coverUrl: z.string().nullish(),
 	coverMediaType: CoverMediaTypeSchema.nullable().optional(),
 	coverThumbnailUrl: z.string().nullable().optional(),
 	mediaGallery: z.array(z.unknown()).optional(),
-	datePublished: z.string().nullable(),
+	datePublished: z.string().nullish(),
 	contentLanguages: z.array(ContentLanguageSchema),
 	category: BilingualNameSchema.nullable().optional(),
 	subCategory: BilingualNameSchema.nullable().optional(),
