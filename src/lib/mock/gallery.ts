@@ -402,6 +402,8 @@ export type GalleryPost = {
 	tags: string[];
 	/** CMS cover/thumbnail URL — may differ from album[0]. */
 	coverUrl?: string;
+	/** Alternate cover shown while the print is hovered. */
+	hoverCoverUrl?: string;
 	/** Ordered album — its length IS the photo count (no separate field). */
 	album: GalleryAlbumItem[];
 };

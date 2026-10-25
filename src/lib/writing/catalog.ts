@@ -25,6 +25,7 @@ export function buildWritingGridCards(
 		title: item.title,
 		writer: item.writer,
 		coverUrl: item.coverUrl,
+		hoverCoverUrl: item.hoverCoverUrl,
 		seriesName: item.seriesName,
 		topicName: item.topicName,
 		fileUrl: item.fileUrl,

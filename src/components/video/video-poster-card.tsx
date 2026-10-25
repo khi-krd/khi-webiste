@@ -2,6 +2,7 @@
 
 import { PlayIcon } from "@heroicons/react/24/solid";
 import NextImage from "next/image";
+import { HoverCover } from "@/components/ui/hover-cover";
 import { Link } from "@/components/ui/link";
 import { VideoHoverPreview } from "@/components/video/video-hover-preview";
 import { VideoStillPreview } from "@/components/video/video-still-preview-lazy";
@@ -13,6 +14,7 @@ export type VideoPosterCardProps = {
 	title: string;
 	subtitle?: string | null;
 	coverUrl: string | null;
+	hoverCoverUrl?: string | null;
 	previewVideoUrl?: string | null;
 	durationLabel?: string | null;
 	href?: string;
@@ -36,6 +38,7 @@ export function VideoPosterCard({
 	title,
 	subtitle,
 	coverUrl,
+	hoverCoverUrl = null,
 	previewVideoUrl = null,
 	durationLabel,
 	href,
@@ -110,6 +113,15 @@ export function VideoPosterCard({
 						</span>
 					</div>
 				)}
+
+				{/* The alternate still lands first; the playing preview then
+				    fades in over it once the video actually starts. */}
+				<HoverCover
+					src={hoverCoverUrl}
+					coverSrc={coverUrl}
+					sizes={sizes}
+					className="z-0"
+				/>
 
 				{/* Hover plays the film itself — the sibling dim from
 				    `.spotlight-grid-dark` already isolates it, so the only thing

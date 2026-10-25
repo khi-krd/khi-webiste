@@ -262,6 +262,7 @@ export function resolveGalleryPost(
 			collection.publishmentDate ?? new Date().toISOString().slice(0, 10),
 		tags: resolveTags(locale, collection),
 		coverUrl,
+		hoverCoverUrl: collection.hoverCoverUrl?.trim() || undefined,
 		album,
 	};
 }
@@ -337,6 +338,7 @@ export function resolveImageCollectionItem(
 			url: cover ?? "/menu/1.jpg",
 			alt: title,
 		},
+		hoverImageUrl: collection.hoverCoverUrl?.trim() || null,
 	};
 }
 

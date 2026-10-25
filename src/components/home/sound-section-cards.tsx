@@ -11,6 +11,7 @@ import {
 	ScrollReveal,
 	ScrollRevealItem,
 } from "@/components/motion/scroll-reveal";
+import { HoverCover } from "@/components/ui/hover-cover";
 import { Link } from "@/components/ui/link";
 import { audioDetailHref } from "@/lib/audio/resolve";
 import { cn } from "@/lib/utils";
@@ -22,6 +23,7 @@ export type SoundSectionCardItem = {
 	/** Reader/artist — shown as the "singer" line under the title. */
 	subtitle: string | null;
 	coverUrl: string | null;
+	hoverCoverUrl: string | null;
 	queue: PlayerTrackPayload[];
 };
 
@@ -170,6 +172,13 @@ function SoundSectionCard({ item }: { item: SoundSectionCardItem }) {
 						</span>
 					</div>
 				)}
+
+				<HoverCover
+					src={item.hoverCoverUrl}
+					coverSrc={item.coverUrl}
+					sizes="(max-width: 640px) 46vw, (max-width: 1024px) 32vw, 280px"
+					className="z-0"
+				/>
 
 				{/* Only the foot of the cover is darkened — enough for the play button
 				    to read on a pale sleeve, without washing the artwork out. */}

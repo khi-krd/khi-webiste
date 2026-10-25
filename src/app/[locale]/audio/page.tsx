@@ -66,6 +66,7 @@ export default async function AudioPage({
 		heroCovers.push({
 			id: item.id,
 			coverUrl: item.coverUrl,
+			hoverCoverUrl: item.hoverCoverUrl,
 			title: item.title,
 		});
 		if (heroCovers.length >= 6) {

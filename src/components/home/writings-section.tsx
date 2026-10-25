@@ -28,6 +28,7 @@ export async function WritingsSection() {
 		writer: item.writer,
 		excerpt: item.excerpt,
 		coverUrl: item.coverUrl,
+		hoverCoverUrl: item.hoverCoverUrl,
 		fileUrl: item.fileUrl,
 	}));
 

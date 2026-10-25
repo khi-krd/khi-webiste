@@ -4,6 +4,7 @@ import { PlayIcon } from "@heroicons/react/24/solid";
 import NextImage from "next/image";
 import { type RefObject, useEffect, useMemo, useRef, useState } from "react";
 import { Badge } from "@/components/ui/badge";
+import { HoverCover } from "@/components/ui/hover-cover";
 import { Link } from "@/components/ui/link";
 import { cn } from "@/lib/utils";
 
@@ -22,6 +23,7 @@ export type HomeVideoCardItem = {
 	subtitle: string | null;
 	durationLabel: string | null;
 	coverUrl: string | null;
+	hoverCoverUrl: string | null;
 	coverAlt?: string | null;
 	/** Direct media URL. Without one the card can only link out. */
 	previewVideoUrl: string | null;
@@ -128,6 +130,11 @@ function StageHero({
 					)}
 				</div>
 
+				<HoverCover
+					src={item.hoverCoverUrl}
+					coverSrc={item.coverUrl}
+					sizes="(max-width: 1024px) 100vw, 62vw"
+				/>
 				<div
 					className="pointer-events-none absolute inset-0 z-1 bg-foreground/25 transition-opacity duration-500 ease-out group-fine:bg-foreground/40 motion-reduce:transition-none"
 					aria-hidden
@@ -250,7 +257,7 @@ function PlaylistRow({
 							"motion-reduce:transition-none motion-reduce:group-fine:scale-100",
 						)}
 					/>
-				) : (null)}
+				) : null}
 				{item.coverUrl ? null : (
 					<div
 						aria-hidden
@@ -261,6 +268,12 @@ function PlaylistRow({
 						</span>
 					</div>
 				)}
+				<HoverCover
+					src={item.hoverCoverUrl}
+					coverSrc={item.coverUrl}
+					sizes="(max-width: 640px) 30vw, (max-width: 1024px) 20vw, 260px"
+					className="z-0"
+				/>
 
 				<span
 					aria-hidden

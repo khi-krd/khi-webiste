@@ -1,5 +1,6 @@
 import { ArrowUpRightIcon } from "@heroicons/react/24/outline";
 import NextImage from "next/image";
+import { HoverCover } from "@/components/ui/hover-cover";
 import { Link } from "@/components/ui/link";
 import { galleryDetailHref } from "@/lib/content/href";
 import type { ImageCollectionItem } from "@/lib/mock/image-collection";
@@ -45,6 +46,13 @@ export function ImageCollectionCard({
 					imageEase,
 					"group-fine:scale-[1.05] motion-reduce:transition-none motion-reduce:duration-0 motion-reduce:group-fine:scale-100",
 				)}
+			/>
+
+			<HoverCover
+				src={item.hoverImageUrl}
+				coverSrc={item.image.url}
+				sizes="(max-width: 1023px) 25vw, 12.5vw"
+				className="z-0"
 			/>
 
 			<div

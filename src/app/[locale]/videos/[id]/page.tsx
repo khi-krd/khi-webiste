@@ -93,6 +93,7 @@ export default async function VideoDetailPage({
 			title: card.title,
 			subtitle: card.subtitle,
 			coverUrl: card.coverUrl,
+			hoverCoverUrl: card.hoverCoverUrl,
 			durationLabel: formatDuration(card.durationSeconds),
 			href: videoDetailHref(card.id, card.clipNumber),
 		}))

@@ -7,6 +7,7 @@ import {
 	ScrollReveal,
 	ScrollRevealItem,
 } from "@/components/motion/scroll-reveal";
+import { HoverCover } from "@/components/ui/hover-cover";
 import { Link } from "@/components/ui/link";
 import { audioDetailHref } from "@/lib/audio/resolve";
 import { cn } from "@/lib/utils";
@@ -14,6 +15,7 @@ import { cn } from "@/lib/utils";
 export type AudioStripCover = {
 	id: number;
 	coverUrl: string;
+	hoverCoverUrl?: string | null;
 	title: string;
 };
 
@@ -103,9 +105,15 @@ export function AudioCoverStrip({ covers, className }: AudioCoverStripProps) {
 							priority={index < 3}
 							sizes="(max-width: 640px) 34vw, (max-width: 1024px) 25vw, 20vw"
 							className={cn(
-								"object-cover brightness-[0.96] saturate-[0.88] transition-[filter,scale] duration-700 group-fine/slice:scale-105 group-fine/slice:brightness-100 group-fine/slice:saturate-100",
+								"object-cover brightness-[0.96] saturate-[0.88] transition-[filter,scale] duration-700 group-hover/slice:scale-105 group-hover/slice:brightness-100 group-hover/slice:saturate-100",
 								sliceEase,
 							)}
+						/>
+						<HoverCover
+							src={cover.hoverCoverUrl}
+							coverSrc={cover.coverUrl}
+							sizes="(max-width: 640px) 34vw, (max-width: 1024px) 25vw, 20vw"
+							slice
 						/>
 					</Link>
 				</ScrollRevealItem>

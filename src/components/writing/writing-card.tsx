@@ -1,4 +1,5 @@
 import NextImage from "next/image";
+import { HoverCover } from "@/components/ui/hover-cover";
 import { Link } from "@/components/ui/link";
 import { formatFileSize } from "@/lib/writing/resolve";
 
@@ -36,10 +37,6 @@ export function WritingCard({
 	genreLabels,
 	topicName,
 }: WritingCardProps) {
-	const hasHoverCover =
-		hoverCoverUrl != null &&
-		hoverCoverUrl.length > 0 &&
-		hoverCoverUrl !== coverUrl;
 	const subtitle = genreLabels[0] ?? topicName ?? null;
 
 	return (
@@ -49,11 +46,12 @@ export function WritingCard({
 					{coverUrl ? (
 						<>
 							<CoverImage src={coverUrl} alt="" />
-							{hasHoverCover ? (
-								<div className="absolute inset-0 opacity-0 transition-opacity duration-700 fine-hover:opacity-100">
-									<CoverImage src={hoverCoverUrl} alt="" />
-								</div>
-							) : null}
+							<HoverCover
+								src={hoverCoverUrl}
+								coverSrc={coverUrl}
+								sizes="(max-width: 640px) 82vw, (max-width: 1024px) 48vw, 25vw"
+								className="z-0"
+							/>
 						</>
 					) : (
 						<div

@@ -1,4 +1,5 @@
 import NextImage from "next/image";
+import { HoverCover } from "@/components/ui/hover-cover";
 import { Link } from "@/components/ui/link";
 import { cn } from "@/lib/utils";
 
@@ -7,6 +8,7 @@ export type WritingGridCardProps = {
 	title: string;
 	writer: string;
 	coverUrl: string | null;
+	hoverCoverUrl: string | null;
 	seriesName: string | null;
 	topicName: string | null;
 	fileUrl: string | null;
@@ -30,6 +32,7 @@ export function WritingGridCard({
 	title,
 	writer,
 	coverUrl,
+	hoverCoverUrl,
 	seriesName,
 	topicName,
 	className,
@@ -50,6 +53,11 @@ export function WritingGridCard({
 			>
 				<div className="relative aspect-[4/3] w-full overflow-hidden bg-sunken">
 					{coverUrl ? <CoverImage src={coverUrl} alt="" /> : null}
+					<HoverCover
+						src={hoverCoverUrl}
+						coverSrc={coverUrl}
+						sizes="(max-width: 640px) 50vw, (max-width: 1280px) 25vw, 20vw"
+					/>
 					{coverUrl ? null : (
 						<div
 							aria-hidden

@@ -1,4 +1,5 @@
 import NextImage from "next/image";
+import { HoverCover } from "@/components/ui/hover-cover";
 import { Link } from "@/components/ui/link";
 import { cn } from "@/lib/utils";
 
@@ -8,6 +9,7 @@ export type WritingRowItem = {
 	writer: string;
 	excerpt: string;
 	coverUrl: string | null;
+	hoverCoverUrl: string | null;
 	fileUrl: string | null;
 };
 
@@ -74,6 +76,11 @@ export function WritingRow({ item, className }: WritingRowProps) {
 							</span>
 						</div>
 					)}
+					<HoverCover
+						src={item.hoverCoverUrl}
+						coverSrc={item.coverUrl}
+						sizes="(max-width: 640px) 144px, (max-width: 1024px) 160px, (max-width: 1280px) 176px, (max-width: 1536px) 208px, 224px"
+					/>
 				</div>
 
 				<div className="flex min-w-0 flex-1 flex-col text-start">

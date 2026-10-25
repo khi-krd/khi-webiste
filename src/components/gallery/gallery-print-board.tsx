@@ -1,4 +1,5 @@
 import NextImage from "next/image";
+import { HoverCover } from "@/components/ui/hover-cover";
 import { RichText } from "@/components/ui/rich-text";
 import { Link } from "@/i18n/navigation";
 import type { GalleryPost } from "@/lib/mock/gallery";
@@ -63,6 +64,13 @@ function Print({
 				height={cover.height}
 				sizes="(max-width: 639px) 50vw, (max-width: 1023px) 50vw, 33vw"
 				className="block h-auto w-full"
+			/>
+
+			<HoverCover
+				src={post.hoverCoverUrl}
+				coverSrc={cover.url}
+				sizes="(max-width: 639px) 50vw, (max-width: 1023px) 50vw, 33vw"
+				className="z-0"
 			/>
 
 			{/* Light sheen across the upper-left of the print — over the photo,

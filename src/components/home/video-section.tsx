@@ -44,6 +44,7 @@ export async function VideoSection() {
 		subtitle: card.subtitle ?? (card.excerpt || null),
 		durationLabel: formatDuration(card.durationSeconds),
 		coverUrl: card.coverUrl,
+		hoverCoverUrl: card.hoverCoverUrl,
 		previewVideoUrl: card.previewVideoUrl,
 		categoryLabel: card.topicName ?? t(`typeBadge.${card.videoType}`),
 		href: `/videos/${card.id}`,

@@ -10,6 +10,8 @@ export type ImageCollectionItem = {
 		url: string;
 		alt?: string;
 	};
+	/** Alternate cover shown while the card is hovered (`hoverCoverUrl`). */
+	hoverImageUrl?: string | null;
 };
 
 type ImageBase = {

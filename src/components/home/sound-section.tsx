@@ -30,6 +30,7 @@ export async function SoundSection({
 		title: card.title,
 		subtitle: card.subtitle,
 		coverUrl: card.coverUrl,
+		hoverCoverUrl: card.hoverCoverUrl,
 		queue: card.queue,
 	}));
 

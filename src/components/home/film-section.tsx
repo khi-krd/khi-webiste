@@ -38,6 +38,7 @@ function toFilmItem(
 		topicLabel: card.topicName ?? categoryLabel,
 		durationLabel: formatDuration(card.durationSeconds),
 		coverUrl: card.coverUrl,
+		hoverCoverUrl: card.hoverCoverUrl,
 	};
 }
 

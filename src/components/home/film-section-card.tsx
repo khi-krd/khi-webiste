@@ -1,5 +1,6 @@
 import { PlayIcon } from "@heroicons/react/24/solid";
 import NextImage from "next/image";
+import { HoverCover } from "@/components/ui/hover-cover";
 import { Link } from "@/components/ui/link";
 import { cn } from "@/lib/utils";
 
@@ -11,6 +12,7 @@ export type FilmCardItem = {
 	topicLabel: string | null;
 	durationLabel: string | null;
 	coverUrl: string | null;
+	hoverCoverUrl: string | null;
 };
 
 const imageEase = "ease-[cubic-bezier(0.22,1,0.36,1)]";
@@ -52,6 +54,12 @@ export function FilmCinemaHero({ item }: FilmCinemaHeroProps) {
 						</span>
 					</div>
 				)}
+				<HoverCover
+					src={item.hoverCoverUrl}
+					coverSrc={item.coverUrl}
+					sizes="100vw"
+					className="z-0"
+				/>
 			</div>
 
 			<div
@@ -138,6 +146,13 @@ export function FilmGridCard({ item }: FilmGridCardProps) {
 						</span>
 					</div>
 				)}
+
+				<HoverCover
+					src={item.hoverCoverUrl}
+					coverSrc={item.coverUrl}
+					sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
+					className="z-0"
+				/>
 
 				<div
 					aria-hidden

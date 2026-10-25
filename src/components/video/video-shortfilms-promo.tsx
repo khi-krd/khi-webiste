@@ -31,6 +31,7 @@ function toPoster(card: ResolvedVideoCard): VideoPosterCardProps {
 		title: card.title,
 		subtitle: card.subtitle,
 		coverUrl: card.coverUrl,
+		hoverCoverUrl: card.hoverCoverUrl,
 		previewVideoUrl: card.previewVideoUrl,
 		durationLabel: formatDuration(card.durationSeconds),
 		href: shortFilmDetailHref(card.id),
