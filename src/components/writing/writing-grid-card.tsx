@@ -9,8 +9,6 @@ export type WritingGridCardProps = {
 	writer: string;
 	coverUrl: string | null;
 	hoverCoverUrl: string | null;
-	seriesName: string | null;
-	topicName: string | null;
 	fileUrl: string | null;
 	className?: string;
 };
@@ -33,12 +31,8 @@ export function WritingGridCard({
 	writer,
 	coverUrl,
 	hoverCoverUrl,
-	seriesName,
-	topicName,
 	className,
 }: WritingGridCardProps) {
-	const subtitle = seriesName ?? topicName;
-
 	return (
 		<article
 			className={cn(
@@ -70,16 +64,13 @@ export function WritingGridCard({
 					)}
 				</div>
 
-				<div className="flex flex-1 flex-col gap-1.5 px-4 py-4 sm:px-5 sm:py-5">
+				<div className="flex flex-1 flex-col gap-1 px-4 py-3 sm:px-5 sm:py-3.5">
 					<h3
 						title={title}
 						className="line-clamp-2 min-w-0 font-heading text-h3 font-bold leading-snug"
 					>
 						{title}
 					</h3>
-					{subtitle ? (
-						<p className="text-small italic text-muted">{subtitle}</p>
-					) : null}
 					{writer ? (
 						<p className="text-small text-foreground/80">{writer}</p>
 					) : null}
