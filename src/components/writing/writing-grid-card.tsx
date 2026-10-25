@@ -43,7 +43,7 @@ export function WritingGridCard({
 			<Link
 				href={`/writings/${id}`}
 				variant="nav"
-				className="flex h-full flex-col no-underline text-inherit"
+				className="flex h-full flex-col items-stretch no-underline text-inherit"
 			>
 				<div className="relative aspect-[4/3] w-full overflow-hidden bg-sunken">
 					{coverUrl ? <CoverImage src={coverUrl} alt="" /> : null}
@@ -64,15 +64,17 @@ export function WritingGridCard({
 					)}
 				</div>
 
-				<div className="flex flex-1 flex-col gap-1 px-4 py-3 sm:px-5 sm:py-3.5">
+				<div className="flex-1 space-y-1 px-4 py-3 sm:px-5 sm:py-3.5">
 					<h3
 						title={title}
-						className="line-clamp-2 min-w-0 font-heading text-h3 font-bold leading-snug"
+						className="line-clamp-2 w-full min-w-0 text-start font-heading text-h3 font-bold leading-snug"
 					>
 						{title}
 					</h3>
 					{writer ? (
-						<p className="text-small text-foreground/80">{writer}</p>
+						<p className="w-full text-start text-small text-foreground/80">
+							{writer}
+						</p>
 					) : null}
 				</div>
 			</Link>

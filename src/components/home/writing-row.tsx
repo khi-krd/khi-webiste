@@ -83,7 +83,7 @@ export function WritingRow({ item, className }: WritingRowProps) {
 					/>
 				</div>
 
-				<div className="flex min-w-0 flex-1 flex-col text-start">
+				<div className="min-w-0 flex-1 text-start">
 					<h3
 						title={item.title}
 						className={cn(
@@ -97,7 +97,7 @@ export function WritingRow({ item, className }: WritingRowProps) {
 					</h3>
 
 					{item.excerpt ? (
-						<p className="mt-1.5 line-clamp-2 text-small leading-relaxed text-muted">
+						<p className="mt-1.5 line-clamp-2 w-full text-small leading-relaxed text-muted">
 							{item.excerpt}
 						</p>
 					) : null}

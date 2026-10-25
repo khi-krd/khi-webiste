@@ -63,7 +63,7 @@ export function VideoPosterCard({
 				// the opacity transition makes the beam glide, not flicker.
 				"group spotlight-item relative block w-full overflow-hidden no-underline",
 				"transition-[opacity,border-color,box-shadow] duration-[450ms] ease-[cubic-bezier(0.22,1,0.36,1)]",
-				isCaption && "flex h-full flex-col",
+				isCaption && "flex h-full flex-col items-stretch",
 				dark
 					? "border border-primary-foreground/20 fine-hover:border-primary-foreground/45"
 					: "border border-border bg-sunken fine-hover:border-foreground/30",
