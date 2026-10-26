@@ -49,10 +49,77 @@ export function isWriterRole(role: string | null): boolean {
 	return role != null && WRITER_ROLE_WORDS.has(role.trim().toLowerCase());
 }
 
-/** The book's byline — first writer-role person, else the first person. */
-function writingBylineName(persons: ResolvedWritingPerson[]): string {
+/** "و" joins names in Sorani, "û" in Kurmanji. */
+export function personNameConjunction(locale: string): string {
+	return locale === "ckb" ? " و " : " û ";
+}
+
+/** The book's byline — all writer-role people joined, else the first person. */
+function writingBylineName(
+	locale: string,
+	persons: ResolvedWritingPerson[],
+): string {
 	if (!persons.length) return "";
-	return (persons.find((p) => isWriterRole(p.role)) ?? persons[0]).name;
+	const writers = persons.filter((p) => isWriterRole(p.role));
+	if (writers.length === 0) return persons[0].name;
+	return writers.map((p) => p.name).join(personNameConjunction(locale));
+}
+
+/**
+ * Sorani plural of a role noun: consonant-final takes ان (نووسەر→نووسەران),
+ * vowel-final takes یان — ZWNJ keeps it off joining vowels
+ * (کۆکەرەوە→کۆکەرەوە‌یان). Kurmanji plurals equal the singular.
+ */
+const CKB_JOINING_VOWEL = /[ەوێیۇ]$/u;
+const CKB_VOWEL_FINAL = /[ەاۆوێیۇ]$/u;
+
+export function pluralizeRoleLabel(locale: string, role: string): string {
+	const trimmed = role.trim();
+	if (locale !== "ckb") return trimmed;
+	if (CKB_JOINING_VOWEL.test(trimmed)) return `${trimmed}‌یان`;
+	if (CKB_VOWEL_FINAL.test(trimmed)) return `${trimmed}یان`;
+	return `${trimmed}ان`;
+}
+
+function formatPersonName(person: ResolvedWritingPerson): string {
+	return person.nickname ? `${person.name} (${person.nickname})` : person.name;
+}
+
+/**
+ * People sharing one role collapse into a single plural-labeled row —
+ * "نووسەران: A و B" instead of repeating "نووسەر" per person. A label of
+ * null means "no role typed"; the caller falls back to the writer label.
+ */
+export function personStripEntries(
+	locale: string,
+	persons: ResolvedWritingPerson[],
+): { label: string | null; value: string }[] {
+	const groups = new Map<string, ResolvedWritingPerson[]>();
+	const order: (string | ResolvedWritingPerson)[] = [];
+	for (const person of persons) {
+		const key = person.role?.trim().toLowerCase();
+		if (!key) {
+			order.push(person);
+			continue;
+		}
+		if (!groups.has(key)) {
+			groups.set(key, []);
+			order.push(key);
+		}
+		groups.get(key)!.push(person);
+	}
+	const joiner = personNameConjunction(locale);
+	return order.map((slot) => {
+		if (typeof slot !== "string") {
+			return { label: null, value: formatPersonName(slot) };
+		}
+		const members = groups.get(slot)!;
+		const role = members[0]!.role!.trim();
+		return {
+			label: members.length > 1 ? pluralizeRoleLabel(locale, role) : role,
+			value: members.map(formatPersonName).join(joiner),
+		};
+	});
 }
 
 function truncate(text: string, maxLength: number): string {
@@ -164,6 +231,7 @@ export function resolveWritingCard(
 		id: writing.id,
 		title: content.title,
 		writer: writingBylineName(
+			locale,
 			resolveWritingPersons(locale, writing.persons ?? []),
 		),
 		excerpt: description
@@ -304,7 +372,7 @@ export function resolveWritingDetail(
 	return {
 		id: writing.id,
 		title: content.title,
-		writer: writingBylineName(persons),
+		writer: writingBylineName(locale, persons),
 		location: content.location?.trim() || null,
 		bookLanguage:
 			(locale === "ckb"

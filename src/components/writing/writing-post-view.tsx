@@ -18,6 +18,7 @@ import { writingTagHref } from "@/lib/search/taxonomy-href";
 import { displayTitleSizeClass } from "@/lib/title-scale";
 import { cn } from "@/lib/utils";
 import { buildWritingGridCards } from "@/lib/writing/catalog";
+import { personStripEntries } from "@/lib/writing/resolve";
 import type {
 	BookGenre,
 	ResolvedSeriesBook,
@@ -121,17 +122,15 @@ export function WritingPostView({
 		detail.fileOffers.find((offer) => offer.pageCount)?.pageCount ??
 		null;
 
-	// The byline name is resolved server-side — first writer-role person,
-	// else the first person attached to the book.
+	// The byline names are resolved server-side — writer-role people joined
+	// with the locale conjunction, else the first person attached.
 	const bylineName = detail.writer;
 
 	type StripField = { label: string; value: string; ltr?: boolean };
 	const stripFields = [
-		...detail.persons.map((person) => ({
-			label: person.role || writerLabel,
-			value: person.nickname
-				? `${person.name} (${person.nickname})`
-				: person.name,
+		...personStripEntries(locale, detail.persons).map((entry) => ({
+			label: entry.label || writerLabel,
+			value: entry.value,
 		})),
 		detail.location ? { label: locationLabel, value: detail.location } : null,
 		detail.bookLanguage
