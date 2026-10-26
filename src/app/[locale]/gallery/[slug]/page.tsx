@@ -58,6 +58,7 @@ export default async function GalleryPostPage({
 					coverUrl:
 						entry.coverUrl ??
 						entry.album.find((item) => item.imageUrl)?.imageUrl,
+					hoverCoverUrl: entry.hoverCoverUrl,
 					photosLabel: t("posts.photosCount", { count: entry.album.length }),
 				}))}
 				closeLabel={t("lightbox.close")}

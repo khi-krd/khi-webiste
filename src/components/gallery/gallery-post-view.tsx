@@ -3,6 +3,7 @@ import type { GalleryAlbumMetadataLabels } from "@/components/gallery/gallery-al
 import { galleryPhotoSurfaceClass } from "@/components/gallery/gallery-album-item";
 import { ScrollRevealBlock } from "@/components/motion/scroll-reveal";
 import { BackToIndexLink } from "@/components/ui/back-to-index";
+import { HoverCover } from "@/components/ui/hover-cover";
 
 import { CoverLightbox } from "@/components/ui/cover-lightbox";
 import { Image } from "@/components/ui/image";
@@ -24,6 +25,8 @@ export type GalleryRelatedCard = {
 	id: string;
 	title: string;
 	coverUrl?: string;
+	/** Alternate cover shown while the card is hovered. */
+	hoverCoverUrl?: string | null;
 	/** Pre-translated "{count} photographs" for that collection. */
 	photosLabel: string;
 };
@@ -74,17 +77,24 @@ function RelatedCard({ card }: { card: GalleryRelatedCard }) {
 			href={`/gallery/${card.id}`}
 			className="group flex h-full min-w-0 flex-col border border-border bg-surface no-underline transition-[border-color,box-shadow] duration-300 fine-hover:border-foreground/30 fine-hover:shadow-[0_8px_24px_-12px_rgba(26,24,19,0.12)]"
 		>
-			<Image
-				src={card.coverUrl ?? ""}
-				alt=""
-				aspectRatio="square"
-				sizes="(max-width: 639px) 100vw, 33vw"
-				className="w-full bg-sunken"
-				imageClassName={cn(
-					"brightness-[0.97] saturate-[0.85] transition-[filter,scale] duration-700 group-fine:scale-[1.04] group-fine:brightness-100 group-fine:saturate-100",
-					sliceEase,
-				)}
-			/>
+			<div className="relative">
+				<Image
+					src={card.coverUrl ?? ""}
+					alt=""
+					aspectRatio="square"
+					sizes="(max-width: 639px) 100vw, 33vw"
+					className="w-full bg-sunken"
+					imageClassName={cn(
+						"brightness-[0.97] saturate-[0.85] transition-[filter,scale] duration-700 group-fine:scale-[1.04] group-fine:brightness-100 group-fine:saturate-100",
+						sliceEase,
+					)}
+				/>
+				<HoverCover
+					src={card.hoverCoverUrl}
+					coverSrc={card.coverUrl}
+					sizes="(max-width: 639px) 100vw, 33vw"
+				/>
+			</div>
 			<div className="flex w-full flex-1 flex-col gap-1.5 px-4 py-4 text-start sm:px-5">
 				<p className="label text-muted">{card.photosLabel}</p>
 				<h3 className="font-heading text-h3 font-bold leading-snug text-foreground">
