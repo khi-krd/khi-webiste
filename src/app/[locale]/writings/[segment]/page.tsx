@@ -155,7 +155,7 @@ export default async function WritingsSegmentPage({
 				locale={locale}
 				writerLabel={t("post.writer")}
 				bookLanguageLabel={t("post.bookLanguage")}
-				locationLabel={t("post.location")}
+
 
 				seriesLabel={t("post.series")}
 				seriesVolumeLabel={(order, total) =>

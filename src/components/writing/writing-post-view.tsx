@@ -39,7 +39,7 @@ type WritingPostViewProps = {
 	genreLabels: Record<BookGenre, string>;
 	writerLabel: string;
 	bookLanguageLabel: string;
-	locationLabel: string;
+
 
 	seriesLabel: string;
 	seriesVolumeLabel: (order: number, total: number | null) => string;
@@ -64,7 +64,7 @@ export function WritingPostView({
 	genreLabels,
 	writerLabel,
 	bookLanguageLabel,
-	locationLabel,
+
 
 	seriesLabel,
 	seriesVolumeLabel,
@@ -125,28 +125,32 @@ export function WritingPostView({
 	// with the locale conjunction, else the first person attached.
 	const bylineName = detail.writer;
 
-	type StripField = { label: string; value: string; ltr?: boolean };
-	const stripFields = [
+	type StripField = { label: string | null; value: string; ltr?: boolean };
+	const stripFields: StripField[] = [
 		...personStripEntries(locale, detail.persons).map((entry) => ({
 			label: entry.label || writerLabel,
 			value: entry.value,
 		})),
-		detail.location ? { label: locationLabel, value: detail.location } : null,
-		detail.bookLanguage
-			? { label: bookLanguageLabel, value: detail.bookLanguage }
-			: null,
-		detail.topicNames.length > 0
-			? { label: topicLabel, value: detail.topicNames.join("، ") }
-			: null,
-		genreNames.length > 0
-			? { label: genreLabel, value: genreNames.join("، ") }
-			: null,
-		pageCount
-			? { label: pagesLabel, value: formatCount(locale, pageCount) }
-			: null,
-		formatValue ? { label: formatLabel, value: formatValue, ltr: true } : null,
-		languagesValue ? { label: languagesLabel, value: languagesValue } : null,
-	].filter((field): field is StripField => field != null);
+		...(detail.location ? [{ label: null, value: detail.location }] : []),
+		...(detail.bookLanguage
+			? [{ label: bookLanguageLabel, value: detail.bookLanguage }]
+			: []),
+		...(detail.topicNames.length > 0
+			? [{ label: topicLabel, value: detail.topicNames.join("، ") }]
+			: []),
+		...(genreNames.length > 0
+			? [{ label: genreLabel, value: genreNames.join("، ") }]
+			: []),
+		...(pageCount
+			? [{ label: pagesLabel, value: formatCount(locale, pageCount) }]
+			: []),
+		...(formatValue
+			? [{ label: formatLabel, value: formatValue, ltr: true }]
+			: []),
+		...(languagesValue
+			? [{ label: languagesLabel, value: languagesValue }]
+			: []),
+	];
 
 	return (
 		<article>
@@ -246,9 +250,16 @@ export function WritingPostView({
 					className={cn("border-t border-border bg-sunken", homeInsetClass)}
 				>
 					<dl className="flex flex-wrap items-baseline gap-x-8 gap-y-2.5 py-4 text-start">
-						{stripFields.map((field) => (
-							<div key={field.label} className="flex items-baseline gap-2.5">
-								<dt className="label font-medium text-muted">{field.label}</dt>
+						{stripFields.map((field, index) => (
+							<div
+								key={field.label ?? index}
+								className="flex items-baseline gap-2.5"
+							>
+								{field.label ? (
+									<dt className="label font-medium text-muted">
+										{field.label}
+									</dt>
+								) : null}
 								<dd
 									dir={field.ltr ? "ltr" : undefined}
 									className="text-small font-bold text-foreground"
