@@ -40,8 +40,7 @@ type WritingPostViewProps = {
 	writerLabel: string;
 	bookLanguageLabel: string;
 	locationLabel: string;
-	/** "نووسینی" — byline prefix before the bold writer name. */
-	byLabel: string;
+
 	seriesLabel: string;
 	seriesVolumeLabel: (order: number, total: number | null) => string;
 	topicLabel: string;
@@ -66,7 +65,7 @@ export function WritingPostView({
 	writerLabel,
 	bookLanguageLabel,
 	locationLabel,
-	byLabel,
+
 	seriesLabel,
 	seriesVolumeLabel,
 	topicLabel,
@@ -176,7 +175,6 @@ export function WritingPostView({
 
 						{bylineName ? (
 							<p className="mt-3 text-body text-muted">
-								{byLabel}{" "}
 								<span className="font-bold text-foreground">{bylineName}</span>
 								{volumeLine ? <> · {volumeLine}</> : null}
 							</p>

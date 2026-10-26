@@ -156,7 +156,7 @@ export default async function WritingsSegmentPage({
 				writerLabel={t("post.writer")}
 				bookLanguageLabel={t("post.bookLanguage")}
 				locationLabel={t("post.location")}
-				byLabel={t("post.by")}
+
 				seriesLabel={t("post.series")}
 				seriesVolumeLabel={(order, total) =>
 					t("post.seriesVolume", { order, total: total ?? order })
