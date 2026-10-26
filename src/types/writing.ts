@@ -42,7 +42,6 @@ export const WritingFileFormatSchema = z.enum([
 export const WritingContentSchema = z.object({
 	title: z.string().nullish(),
 	description: z.string().nullish(),
-	writer: z.string().nullish(),
 	location: z.string().nullish(),
 	fileUrl: z.string().nullish(),
 	fileFormat: WritingFileFormatSchema.nullish().catch(null),

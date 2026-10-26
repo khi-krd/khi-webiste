@@ -54,20 +54,6 @@ type WritingPostViewProps = {
 	locale: string;
 };
 
-/** Roles are free text — recognize the writer spellings editors type. */
-const WRITER_ROLE_WORDS = new Set([
-	"writer",
-	"نووسەر",
-	"nivîskar",
-	"niviskar",
-	"nivîsker",
-	"nivisker",
-]);
-
-function isWriterRole(role: string | null): boolean {
-	return role != null && WRITER_ROLE_WORDS.has(role.trim().toLowerCase());
-}
-
 export function WritingPostView({
 	detail,
 	backHref,
@@ -135,21 +121,12 @@ export function WritingPostView({
 		detail.fileOffers.find((offer) => offer.pageCount)?.pageCount ??
 		null;
 
-	// People rows feed the byline (first person marked as a writer) and the
-	// spec strip (each person becomes a `role: name (nickname)` field). Roles
-	// are free text, so the writer is matched loosely across spellings. A
-	// stored writer string stays as the fallback for books that predate the
-	// people table.
-	const writerPerson = detail.persons.find((person) =>
-		isWriterRole(person.role),
-	);
-	const bylineName = detail.writer || writerPerson?.name || "";
+	// The byline name is resolved server-side — first writer-role person,
+	// else the first person attached to the book.
+	const bylineName = detail.writer;
 
 	type StripField = { label: string; value: string; ltr?: boolean };
 	const stripFields = [
-		detail.writer && !writerPerson
-			? { label: writerLabel, value: detail.writer }
-			: null,
 		...detail.persons.map((person) => ({
 			label: person.role || writerLabel,
 			value: person.nickname

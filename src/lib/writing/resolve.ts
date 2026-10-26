@@ -35,6 +35,26 @@ function firstNonBlank(
 	return null;
 }
 
+/** Roles are free text — recognize the writer spellings editors type. */
+export const WRITER_ROLE_WORDS = new Set([
+	"writer",
+	"نووسەر",
+	"nivîskar",
+	"niviskar",
+	"nivîsker",
+	"nivisker",
+]);
+
+export function isWriterRole(role: string | null): boolean {
+	return role != null && WRITER_ROLE_WORDS.has(role.trim().toLowerCase());
+}
+
+/** The book's byline — first writer-role person, else the first person. */
+function writingBylineName(persons: ResolvedWritingPerson[]): string {
+	if (!persons.length) return "";
+	return (persons.find((p) => isWriterRole(p.role)) ?? persons[0]).name;
+}
+
 function truncate(text: string, maxLength: number): string {
 	if (text.length <= maxLength) {
 		return text;
@@ -143,7 +163,9 @@ export function resolveWritingCard(
 	return {
 		id: writing.id,
 		title: content.title,
-		writer: content.writer?.trim() ?? "",
+		writer: writingBylineName(
+			resolveWritingPersons(locale, writing.persons ?? []),
+		),
 		excerpt: description
 			? truncate(plainTextFromRichContent(description), EXCERPT_MAX_LENGTH)
 			: "",
@@ -274,10 +296,12 @@ export function resolveWritingDetail(
 			all.findIndex((item) => item.language === offer.language) === index,
 	);
 
+	const persons = resolveWritingPersons(locale, writing.persons ?? []);
+
 	return {
 		id: writing.id,
 		title: content.title,
-		writer: content.writer?.trim() ?? "",
+		writer: writingBylineName(persons),
 		location: content.location?.trim() || null,
 		bookLanguage:
 			(locale === "ckb"
@@ -302,7 +326,7 @@ export function resolveWritingDetail(
 			writing.keywords.ckb,
 			writing.keywords.kmr,
 		),
-		persons: resolveWritingPersons(locale, writing.persons ?? []),
+		persons,
 		fileOffers: uniqueOffers,
 		createdAt: writing.createdAt ?? "",
 		updatedAt: writing.updatedAt ?? "",

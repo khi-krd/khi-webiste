@@ -87,7 +87,6 @@ function cardToWriting(
 			ckbContent: {
 				title: card.title,
 				description: card.excerpt,
-				writer: card.writer,
 				fileUrl: card.fileUrl,
 				fileFormat: (card.fileFormat ?? "PDF") as "PDF",
 				fileSizeBytes: card.fileSizeBytes,
@@ -98,7 +97,6 @@ function cardToWriting(
 				? {
 						title: card.title,
 						description: card.excerpt,
-						writer: card.writer,
 						fileUrl: card.fileUrl,
 						fileFormat: (card.fileFormat ?? "PDF") as "PDF",
 						fileSizeBytes: card.fileSizeBytes,
@@ -110,6 +108,15 @@ function cardToWriting(
 				? { id: 1, nameCkb: card.topicName, nameKmr: card.topicName }
 				: null,
 			bookGenres: card.genres,
+			persons: card.writer
+				? [
+						{
+							role: "نووسەر",
+							nameCkb: card.writer,
+							nameKmr: hasKmr ? card.writer : null,
+						},
+					]
+				: [],
 			publishedByInstitute: card.publishedByInstitute,
 			tags: { ckb: [], kmr: [] },
 			keywords: { ckb: [], kmr: [] },
