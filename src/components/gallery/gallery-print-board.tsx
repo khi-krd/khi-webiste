@@ -84,7 +84,7 @@ function Print({
 			    Neutral ink scrim — the single green lives on the type chip. */}
 			<span
 				className={cn(
-					"pointer-events-none absolute inset-0 flex flex-col items-start justify-end gap-2 p-4 sm:p-5",
+					"pointer-events-none absolute inset-0 z-10 flex flex-col items-start justify-end gap-2 p-4 sm:p-5",
 					"bg-linear-to-t from-foreground/85 via-foreground/35 to-transparent",
 					"opacity-0 transition-opacity duration-300 group-fine:opacity-100 group-focus-visible:opacity-100",
 				)}

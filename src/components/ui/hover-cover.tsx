@@ -40,7 +40,7 @@ export function HoverCover({
 		<div
 			aria-hidden
 			className={cn(
-				"pointer-events-none absolute inset-0 z-[1] overflow-hidden opacity-0 transition-opacity duration-200 ease-out",
+				"pointer-events-none absolute inset-0 z-0 overflow-hidden opacity-0 transition-opacity duration-200 ease-out",
 				slice
 					? "group-hover/slice:opacity-100 group-hover/slice:duration-700"
 					: "group-fine:opacity-100 group-fine:duration-700 group-has-[:focus-visible]:opacity-100",
