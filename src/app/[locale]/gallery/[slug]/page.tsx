@@ -26,17 +26,6 @@ export async function generateMetadata({
 	};
 }
 
-/** publishmentDate is an ISO LocalDate — format for the active locale. */
-function formatPublishmentDate(locale: string, isoDate: string): string {
-	try {
-		return new Intl.DateTimeFormat(locale, { dateStyle: "long" }).format(
-			new Date(isoDate),
-		);
-	} catch {
-		return isoDate;
-	}
-}
-
 export default async function GalleryPostPage({
 	params,
 }: GalleryPostPageProps) {
@@ -60,8 +49,6 @@ export default async function GalleryPostPage({
 				photosLabel={t("posts.photosCount", {
 					count: detail.post.album.length,
 				})}
-				typeLabel={t(`posts.types.${detail.post.collectionType}`)}
-				dateLabel={formatPublishmentDate(locale, detail.post.publishmentDate)}
 				locationLabel={t("post.location")}
 				collectedByLabel={t("post.collectedBy")}
 				relatedLabel={t("post.related")}

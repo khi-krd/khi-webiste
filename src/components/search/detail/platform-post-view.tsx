@@ -8,7 +8,6 @@ import type { ReactNode } from "react";
 import { PlatformAudioPlayer } from "@/components/search/detail/platform-audio-player";
 import { PlatformRelatedRail } from "@/components/search/detail/platform-related-rail";
 import { PlatformVideoPlayer } from "@/components/search/detail/platform-video-player";
-import { KindIcon } from "@/components/search/kind-icon";
 import { BackToIndexLink } from "@/components/ui/back-to-index";
 import { Badge } from "@/components/ui/badge";
 import { CoverLightbox } from "@/components/ui/cover-lightbox";
@@ -351,7 +350,6 @@ export async function PlatformPostView({
 			? romanizedRaw
 			: null;
 
-	const year = formatYear(locale, hit.dateCreated ?? hit.datePublished);
 
 	const credits = buildCreditRows(t, locale, full);
 	const details = buildDetailRows(t, locale, hit, full);
@@ -411,32 +409,6 @@ export async function PlatformPostView({
 
 				{/* ---- Title block ------------------------------------------------ */}
 				<header className="mt-8 max-w-4xl sm:mt-10">
-					<p className="label flex flex-wrap items-center gap-x-2 gap-y-1 font-medium">
-						<span className="inline-flex items-center gap-1.5 text-foreground">
-							<KindIcon kind={detail.type} className="size-4" />
-							{kindLabel}
-						</span>
-						{projectName ? (
-							<>
-								<span aria-hidden>·</span>
-								<span dir="auto" className="normal-case tracking-normal">
-									{projectName}
-								</span>
-							</>
-						) : null}
-						{year ? (
-							<>
-								<span aria-hidden>·</span>
-								<span className="tabular-nums">{year}</span>
-							</>
-						) : null}
-						{hit.trending ? (
-							<span className="ms-1 inline-flex items-center bg-primary px-1.5 py-0.5 text-label leading-none text-primary-foreground">
-								{tSearch("cardTrending")}
-							</span>
-						) : null}
-					</p>
-
 					<Heading
 						level={1}
 						size="display"

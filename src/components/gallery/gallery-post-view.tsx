@@ -38,10 +38,6 @@ type GalleryPostViewProps = {
 
 	/** Pre-translated "{count} photographs" for THIS post. */
 	photosLabel: string;
-	/** Localized collection-type label (SINGLE / GALLERY / PHOTO_STORY). */
-	typeLabel: string;
-	/** publishmentDate formatted for the active locale (built in the page). */
-	dateLabel?: string;
 	locationLabel: string;
 	collectedByLabel: string;
 	/** Heading over the other-collections row ("وێنەی تر"). */
@@ -113,8 +109,6 @@ export function GalleryPostView({
 	backLabel,
 	backAriaLabel,
 	photosLabel,
-	typeLabel,
-	dateLabel,
 	locationLabel,
 	collectedByLabel,
 	relatedLabel,
@@ -146,17 +140,6 @@ export function GalleryPostView({
 				{/* Catalog spread: typographic header start, offset cover plate end. */}
 				<div className="grid gap-8 lg:grid-cols-[minmax(0,7fr)_minmax(0,5fr)] lg:gap-16">
 					<div>
-						<p className="label flex flex-wrap items-center gap-2 font-medium text-foreground">
-							<span>{typeLabel}</span>
-							<span aria-hidden="true">·</span>
-							<span>{photosLabel}</span>
-							{dateLabel && (
-								<>
-									<span aria-hidden="true">·</span>
-									<span>{dateLabel}</span>
-								</>
-							)}
-						</p>
 						<h1
 							className={cn(
 								"display-title mt-3 max-w-4xl",
