@@ -238,7 +238,10 @@ function resolveWritingPersons(
 		}
 		return [
 			{
-				role: firstNonBlank(person.role ?? undefined) ?? null,
+				role:
+					(locale === "ckb"
+						? firstNonBlank(person.roleCkb, person.roleKmr)
+						: firstNonBlank(person.roleKmr, person.roleCkb)) ?? null,
 				name,
 				nickname:
 					locale === "ckb"

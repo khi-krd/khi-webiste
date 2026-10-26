@@ -58,7 +58,8 @@ export const TopicInfoSchema = z.object({
 
 export const WritingPersonSchema = z.object({
 	id: z.number().nullish(),
-	role: z.string().nullish(),
+	roleCkb: z.string().nullish(),
+	roleKmr: z.string().nullish(),
 	nameCkb: z.string().nullish(),
 	nameKmr: z.string().nullish(),
 	nicknameCkb: z.string().nullish(),

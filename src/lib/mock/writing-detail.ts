@@ -111,7 +111,8 @@ function cardToWriting(
 			persons: card.writer
 				? [
 						{
-							role: "نووسەر",
+							roleCkb: "نووسەر",
+							roleKmr: "Nivîskar",
 							nameCkb: card.writer,
 							nameKmr: hasKmr ? card.writer : null,
 						},
