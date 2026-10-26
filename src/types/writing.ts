@@ -57,22 +57,9 @@ export const TopicInfoSchema = z.object({
 	nameKmr: z.string().nullish(),
 });
 
-export const WritingPersonRoleSchema = z
-	.enum([
-		"WRITER",
-		"COLLECTOR",
-		"TRANSLATOR",
-		"EDITOR",
-		"NARRATOR",
-		"PHOTOGRAPHER",
-		"OWNER",
-		"OTHER",
-	])
-	.catch("OTHER");
-
 export const WritingPersonSchema = z.object({
 	id: z.number().nullish(),
-	role: WritingPersonRoleSchema,
+	role: z.string().nullish(),
 	nameCkb: z.string().nullish(),
 	nameKmr: z.string().nullish(),
 	nicknameCkb: z.string().nullish(),
@@ -133,7 +120,6 @@ export const WritingSchema = z.object({
 export type Writing = z.infer<typeof WritingSchema>;
 export type WritingContent = z.infer<typeof WritingContentSchema>;
 export type WritingPerson = z.infer<typeof WritingPersonSchema>;
-export type WritingPersonRole = z.infer<typeof WritingPersonRoleSchema>;
 export type TopicInfo = z.infer<typeof TopicInfoSchema>;
 export type SeriesInfo = z.infer<typeof SeriesInfoSchema>;
 
@@ -202,7 +188,8 @@ export type ResolvedSeriesBook = {
 };
 
 export type ResolvedWritingPerson = {
-	role: WritingPersonRole;
+	/** Free-text role typed in the dashboard (نووسەر, کۆکەرەوە, ...). */
+	role: string | null;
 	/** Locale-picked display name (falls back to the other script). */
 	name: string;
 	/** Locale-picked nickname; rendered after the name when present. */

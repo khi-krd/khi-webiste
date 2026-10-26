@@ -608,17 +608,7 @@
 			},
 			"by": "Nivîsîna",
 			"format": "Format",
-			"languagesLabel": "Ziman",
-			"personRoles": {
-				"WRITER": "Nivîskar",
-				"COLLECTOR": "Kolekter",
-				"TRANSLATOR": "Wergêr",
-				"EDITOR": "Edîtor",
-				"NARRATOR": "Çîrokbêj",
-				"PHOTOGRAPHER": "Wênegir",
-				"OWNER": "Xwedî",
-				"OTHER": "Rolek din"
-			}
+			"languagesLabel": "Ziman"
 		},
 		"subcategories": {
 			"literature": {

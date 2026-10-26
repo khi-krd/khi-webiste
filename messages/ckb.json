@@ -608,17 +608,7 @@
 			},
 			"by": "نووسینی",
 			"format": "فۆرمات",
-			"languagesLabel": "زمانەکان",
-			"personRoles": {
-				"WRITER": "نووسەر",
-				"COLLECTOR": "کۆکەرەوە",
-				"TRANSLATOR": "وەرگێڕ",
-				"EDITOR": "سەرنوسەر",
-				"NARRATOR": "گێڕەرەوە",
-				"PHOTOGRAPHER": "وێنەگر",
-				"OWNER": "خاوەن",
-				"OTHER": "ڕۆڵی تر"
-			}
+			"languagesLabel": "زمانەکان"
 		},
 		"subcategories": {
 			"literature": {
