@@ -354,6 +354,37 @@ html[data-corners="rounded"]
 		outline: 2px solid var(--color-ring);
 		outline-offset: 2px;
 	}
+
+	/* --- Thin themed scrollbars ------------------------------------------------
+	   Same recipe as the dashboard: a slim translucent thumb over an invisible
+	   track, applied to the document AND every internal scroll box (refine
+	   column, media playlists, dialog bodies, the player settings menu). The
+	   muted warm-gray at low alpha stays quiet on the paper canvas and still
+	   reads on the dark home bands; direction-agnostic — scrollbar geometry is
+	   physical, not logical, so nothing here needs an rtl branch.
+	   In @layer base so utilities keep winning per component: the filter rail's
+	   [scrollbar-width:none] and the filmstrips' scrollbar-none stay hidden,
+	   and the refine column's [scrollbar-width:thin] just re-states this. */
+	* {
+		scrollbar-width: thin;
+		scrollbar-color: color-mix(in oklch, var(--color-muted) 32%, transparent)
+			transparent;
+	}
+	::-webkit-scrollbar {
+		width: 8px;
+		height: 8px;
+	}
+	::-webkit-scrollbar-thumb {
+		background: color-mix(in oklch, var(--color-muted) 32%, transparent);
+		border-radius: 8px;
+	}
+	::-webkit-scrollbar-thumb:hover {
+		background: color-mix(in oklch, var(--color-muted) 52%, transparent);
+	}
+	::-webkit-scrollbar-track,
+	::-webkit-scrollbar-corner {
+		background: transparent;
+	}
 }
 
 /* Accessibility: respect users who reduce motion (Motion is in the stack).
