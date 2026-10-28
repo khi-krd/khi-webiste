@@ -500,7 +500,13 @@ export function SearchHeader({ state }: SearchHeaderProps) {
 					role="listbox"
 					aria-label={t("suggestLabel")}
 					className={cn(
-						"search-pop absolute inset-x-0 top-[calc(100%+0.25rem)] z-30 max-h-[50dvh] overflow-y-auto overscroll-contain",
+						// NOT `overscroll-contain`: the list is capped at 8 rows and
+						// almost never overflows 50dvh — `contain` on a scroll
+						// container with nothing to scroll still swallows the wheel
+						// and refuses to chain, so the page sat dead under the open
+						// popover. Native chaining hands the gesture to the document
+						// whenever the list cannot use it.
+						"search-pop absolute inset-x-0 top-[calc(100%+0.25rem)] z-30 max-h-[50dvh] overflow-y-auto",
 						"border border-border-strong bg-surface py-1",
 						"shadow-[0_16px_40px_-16px_color-mix(in_oklch,var(--color-foreground)_35%,transparent)]",
 					)}

@@ -502,7 +502,12 @@ export function ProjectMediaPlaylist({
 					<ol
 						ref={listRef}
 						aria-label={`${labels.playlist} — ${projectTitle}`}
-						className="max-h-[28rem] flex-1 overflow-y-auto overscroll-contain lg:max-h-none"
+						// NOT `overscroll-contain`: a short playlist fills the rail
+						// without overflowing, and `contain` on a scroll container
+						// with nothing to scroll swallows the wheel and refuses to
+						// chain — the page sat dead under the pointer. Native chaining
+						// scrolls the list while it has room, the page past its ends.
+						className="max-h-[28rem] flex-1 overflow-y-auto lg:max-h-none"
 					>
 						{visible.map(({ item, index }) => {
 							const active = index === selected;

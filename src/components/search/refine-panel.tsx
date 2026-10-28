@@ -471,7 +471,11 @@ export async function RefinePanel({
 			className={cn(
 				"hidden lg:col-start-1 lg:row-start-1 lg:block",
 				"lg:sticky lg:top-[calc(var(--header-h)+1.5rem)] lg:max-h-[calc(100dvh-var(--header-h)-3rem)]",
-				"lg:overflow-y-auto lg:overscroll-contain lg:pe-2 [scrollbar-width:thin]",
+				// NOT `overscroll-contain`: whenever the facets fit inside the
+				// max-height — the common case — the rail has nothing to scroll
+				// yet `contain` still claims the gesture, so a wheel over this
+				// column never reached the page. Chaining must stay native.
+				"lg:overflow-y-auto lg:pe-2 [scrollbar-width:thin]",
 			)}
 		>
 			<div className="flex items-baseline gap-2 border-b border-foreground pb-2.5">

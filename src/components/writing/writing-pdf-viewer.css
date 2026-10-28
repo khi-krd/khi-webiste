@@ -56,8 +56,20 @@
 }
 
 .writing-pdf-viewer__viewport {
-	overscroll-behavior: contain;
+	/* NOT overscroll-behavior:contain — a scroll container with nothing to
+	   scroll still claims the gesture under `contain`: at fit-to-height the
+	   page exactly fills this box, so every wheel over the reader died here
+	   and refused to chain to the document, and the browser latches that for
+	   the whole gesture. With nothing to contain against (the fullscreen
+	   dialog scroll-locks the body anyway) plain chaining is correct: the
+	   wheel scrolls the page whenever the viewport itself cannot. */
 	touch-action: pan-x pan-y;
+}
+
+/* The grab affordance only exists while a drag can actually pan — a fitted
+   page has no overflow, so advertising `grab` on it was a lie that paired
+   with the dead wheel above. `--pannable` is measured off the live box. */
+.writing-pdf-viewer__viewport--pannable {
 	cursor: grab;
 }
 

@@ -518,6 +518,46 @@ function PdfReaderViewport({
 	);
 	const [isPinching, setIsPinching] = useState(false);
 	const [isDragPanning, setIsDragPanning] = useState(false);
+	/** Whether the document currently overflows the viewport — the only state
+	 *  a drag-pan (and its `grab` cursor) can act on. Measured off the live
+	 *  box rather than derived from fit mode: a fitted page fills the box to
+	 *  the pixel, and whether it spills is a layout fact, not a prop. */
+	const [canPan, setCanPan] = useState(false);
+
+	// Re-measure where layout has already settled: the viewport resizing
+	// (fit buttons, fullscreen, window) and the scroll content growing or
+	// shrinking (page render, zoom, spread toggle) both land there.
+	useEffect(() => {
+		const node = viewportRef.current;
+		if (!node) {
+			return;
+		}
+
+		const measure = () => {
+			setCanPan(
+				node.scrollWidth > node.clientWidth + 1 ||
+					node.scrollHeight > node.clientHeight + 1,
+			);
+		};
+
+		const resize = new ResizeObserver(measure);
+		const observeAll = () => {
+			resize.disconnect();
+			resize.observe(node);
+			for (const child of Array.from(node.children)) {
+				resize.observe(child);
+			}
+		};
+		const mutations = new MutationObserver(observeAll);
+
+		measure();
+		observeAll();
+		mutations.observe(node, { childList: true });
+		return () => {
+			resize.disconnect();
+			mutations.disconnect();
+		};
+	}, [viewportRef]);
 
 	useEffect(() => {
 		setRenderedPages(new Set());
@@ -764,6 +804,7 @@ function PdfReaderViewport({
 			ref={viewportRef}
 			className={cn(
 				"writing-pdf-viewer__viewport relative overflow-auto bg-sunken",
+				canPan && "writing-pdf-viewer__viewport--pannable",
 				isPinching && "writing-pdf-viewer__viewport--pinching",
 				isDragPanning && "writing-pdf-viewer__viewport--panning",
 				enableSwipe && "writing-pdf-viewer__viewport--swipeable",
