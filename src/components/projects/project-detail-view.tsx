@@ -1,8 +1,4 @@
 import {
-	ArrowTopRightOnSquareIcon,
-	CheckBadgeIcon,
-} from "@heroicons/react/24/outline";
-import {
 	ScrollReveal,
 	ScrollRevealBlock,
 } from "@/components/motion/scroll-reveal";
@@ -248,23 +244,9 @@ export function ProjectDetailView({
 								href={project.resultUrl}
 								target="_blank"
 								rel="noopener noreferrer"
-								className="group mt-6 flex items-center justify-between gap-4 rounded-xl bg-brand px-5 py-4 text-white shadow-sm transition-all duration-200 hover:shadow-md hover:brightness-110 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand"
+								className="mt-4 inline-flex items-center gap-2 rounded-md border border-primary bg-surface px-4 py-2 text-small font-medium text-foreground transition-colors hover:border-brand hover:bg-brand hover:text-white"
 							>
-								<span className="flex min-w-0 items-center gap-3">
-									<CheckBadgeIcon className="size-7 shrink-0" aria-hidden />
-									<span className="flex min-w-0 flex-col">
-										<span className="text-base font-semibold">
-											{resultLabel}
-										</span>
-										<span dir="ltr" className="truncate text-xs text-white/80">
-											{project.resultUrl}
-										</span>
-									</span>
-								</span>
-								<ArrowTopRightOnSquareIcon
-									className="size-5 shrink-0 transition-transform duration-200 group-hover:-translate-y-0.5 group-hover:translate-x-0.5 rtl:group-hover:-translate-x-0.5"
-									aria-hidden
-								/>
+								{resultLabel}
 							</a>
 						)}
 					</div>
