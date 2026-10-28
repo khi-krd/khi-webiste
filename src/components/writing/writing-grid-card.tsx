@@ -13,14 +13,25 @@ export type WritingGridCardProps = {
 	className?: string;
 };
 
-function CoverImage({ src, alt }: { src: string; alt: string }) {
+function CoverImage({
+	src,
+	alt,
+	fadeOnHover,
+}: {
+	src: string;
+	alt: string;
+	fadeOnHover: boolean;
+}) {
 	return (
 		<NextImage
 			src={src}
 			alt={alt}
 			fill
 			sizes="(max-width: 640px) 50vw, (max-width: 1280px) 25vw, 20vw"
-			className="object-cover brightness-[0.94] saturate-[0.88] transition-[filter,transform] duration-700 ease-[cubic-bezier(0.22,1,0.36,1)] group-fine:scale-[1.04] group-fine:brightness-100 group-fine:saturate-100"
+			className={cn(
+				"object-cover brightness-[0.94] saturate-[0.88] transition-[filter,transform,opacity] duration-700 ease-[cubic-bezier(0.22,1,0.36,1)] group-fine:scale-[1.04] group-fine:brightness-100 group-fine:saturate-100",
+				fadeOnHover && "group-fine:opacity-0",
+			)}
 		/>
 	);
 }
@@ -46,7 +57,13 @@ export function WritingGridCard({
 				className="flex h-full flex-col items-stretch no-underline text-inherit"
 			>
 				<div className="relative aspect-[4/3] w-full overflow-hidden bg-sunken">
-					{coverUrl ? <CoverImage src={coverUrl} alt="" /> : null}
+					{coverUrl ? (
+						<CoverImage
+							src={coverUrl}
+							alt=""
+							fadeOnHover={Boolean(hoverCoverUrl && hoverCoverUrl !== coverUrl)}
+						/>
+					) : null}
 					<HoverCover
 						src={hoverCoverUrl}
 						coverSrc={coverUrl}

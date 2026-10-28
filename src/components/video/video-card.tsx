@@ -35,7 +35,7 @@ export type VideoCardProps = {
 };
 
 const imageBase =
-	"absolute inset-0 size-full object-cover object-center brightness-[0.93] saturate-[0.88] transition-[filter,transform] duration-700 ease-[cubic-bezier(0.22,1,0.36,1)] group-fine:scale-[1.04] group-fine:brightness-100 group-fine:saturate-100 motion-reduce:transition-none motion-reduce:duration-0 motion-reduce:group-fine:scale-100";
+	"absolute inset-0 size-full object-cover object-center brightness-[0.93] saturate-[0.88] transition-[filter,transform,opacity] duration-700 ease-[cubic-bezier(0.22,1,0.36,1)] group-fine:scale-[1.04] group-fine:brightness-100 group-fine:saturate-100 motion-reduce:transition-none motion-reduce:duration-0 motion-reduce:group-fine:scale-100";
 
 /** Square chip with a film-cell sprocket strip — the catalogue's signature mark. */
 function FrameChip({
@@ -126,13 +126,13 @@ function CoverLayer({
 					alt=""
 					fill
 					sizes={sizes}
-					className={imageBase}
+					className={cn(imageBase, showHoverCover && "group-fine:opacity-0")}
 				/>
 			) : previewVideoUrl ? (
 				<VideoStillPreview
 					src={previewVideoUrl}
 					sizes={sizes}
-					className={imageBase}
+					className={cn(imageBase, showHoverCover && "group-fine:opacity-0")}
 				/>
 			) : null}
 			{showHoverCover && hoverCoverUrl ? (

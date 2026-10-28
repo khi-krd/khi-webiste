@@ -3,9 +3,8 @@ import type { GalleryAlbumMetadataLabels } from "@/components/gallery/gallery-al
 import { galleryPhotoSurfaceClass } from "@/components/gallery/gallery-album-item";
 import { ScrollRevealBlock } from "@/components/motion/scroll-reveal";
 import { BackToIndexLink } from "@/components/ui/back-to-index";
-import { HoverCover } from "@/components/ui/hover-cover";
-
 import { CoverLightbox } from "@/components/ui/cover-lightbox";
+import { HoverCover } from "@/components/ui/hover-cover";
 import { Image } from "@/components/ui/image";
 import { RichText } from "@/components/ui/rich-text";
 import { Link } from "@/i18n/navigation";
@@ -85,8 +84,11 @@ function RelatedCard({ card }: { card: GalleryRelatedCard }) {
 					sizes="(max-width: 639px) 100vw, 33vw"
 					className="w-full bg-sunken"
 					imageClassName={cn(
-						"brightness-[0.97] saturate-[0.85] transition-[filter,scale] duration-700 group-fine:scale-[1.04] group-fine:brightness-100 group-fine:saturate-100",
+						"brightness-[0.97] saturate-[0.85] transition-[filter,scale,opacity] duration-700 group-fine:scale-[1.04] group-fine:brightness-100 group-fine:saturate-100",
 						sliceEase,
+						card.hoverCoverUrl &&
+							card.hoverCoverUrl !== card.coverUrl &&
+							"group-fine:opacity-0",
 					)}
 				/>
 				<HoverCover

@@ -105,8 +105,11 @@ export function AudioCoverStrip({ covers, className }: AudioCoverStripProps) {
 							priority={index < 3}
 							sizes="(max-width: 640px) 34vw, (max-width: 1024px) 25vw, 20vw"
 							className={cn(
-								"object-cover brightness-[0.96] saturate-[0.88] transition-[filter,scale] duration-700 group-hover/slice:scale-105 group-hover/slice:brightness-100 group-hover/slice:saturate-100",
+								"object-cover brightness-[0.96] saturate-[0.88] transition-[filter,scale,opacity] duration-700 group-hover/slice:scale-105 group-hover/slice:brightness-100 group-hover/slice:saturate-100",
 								sliceEase,
+								cover.hoverCoverUrl &&
+									cover.hoverCoverUrl !== cover.coverUrl &&
+									"group-hover/slice:opacity-0",
 							)}
 						/>
 						<HoverCover

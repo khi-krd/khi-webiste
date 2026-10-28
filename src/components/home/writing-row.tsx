@@ -53,9 +53,12 @@ export function WritingRow({ item, className }: WritingRowProps) {
 						<div
 							className={cn(
 								"absolute inset-[-5%] origin-center",
-								"transition-transform duration-[1.2s]",
+								"transition-[transform,opacity] duration-[1.2s]",
 								imageEase,
 								"group-fine:scale-[1.05] motion-reduce:transition-none motion-reduce:group-fine:scale-100",
+								item.hoverCoverUrl &&
+									item.hoverCoverUrl !== item.coverUrl &&
+									"group-fine:opacity-0",
 							)}
 						>
 							<NextImage

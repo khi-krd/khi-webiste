@@ -42,9 +42,12 @@ export function ImageCollectionCard({
 				priority={priority}
 				className={cn(
 					"object-cover object-center",
-					"transition-transform duration-[1.2s]",
+					"transition-[transform,opacity] duration-[1.2s]",
 					imageEase,
 					"group-fine:scale-[1.05] motion-reduce:transition-none motion-reduce:duration-0 motion-reduce:group-fine:scale-100",
+					item.hoverImageUrl &&
+						item.hoverImageUrl !== item.image.url &&
+						"group-fine:opacity-0",
 				)}
 			/>
 

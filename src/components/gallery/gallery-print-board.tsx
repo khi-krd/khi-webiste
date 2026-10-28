@@ -63,7 +63,12 @@ function Print({
 				width={cover.width}
 				height={cover.height}
 				sizes="(max-width: 639px) 50vw, (max-width: 1023px) 50vw, 33vw"
-				className="block h-auto w-full"
+				className={cn(
+					"block h-auto w-full transition-opacity duration-500",
+					post.hoverCoverUrl &&
+						post.hoverCoverUrl !== cover.url &&
+						"group-fine:opacity-0",
+				)}
 			/>
 
 			<HoverCover

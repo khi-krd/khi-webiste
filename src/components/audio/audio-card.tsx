@@ -14,14 +14,23 @@ export type AudioCardProps = {
 	className?: string;
 };
 
-function CoverImage({ src }: { src: string }) {
+function CoverImage({
+	src,
+	fadeOnHover,
+}: {
+	src: string;
+	fadeOnHover: boolean;
+}) {
 	return (
 		<NextImage
 			src={src}
 			alt=""
 			fill
 			sizes="(max-width: 640px) 50vw, (max-width: 1280px) 33vw, 25vw"
-			className="object-cover brightness-[0.94] saturate-[0.88] transition-[filter,transform] duration-700 ease-[cubic-bezier(0.22,1,0.36,1)] group-fine:scale-[1.04] group-fine:brightness-100 group-fine:saturate-100"
+			className={cn(
+				"object-cover brightness-[0.94] saturate-[0.88] transition-[filter,transform,opacity] duration-700 ease-[cubic-bezier(0.22,1,0.36,1)] group-fine:scale-[1.04] group-fine:brightness-100 group-fine:saturate-100",
+				fadeOnHover && "group-fine:opacity-0",
+			)}
 		/>
 	);
 }
@@ -53,7 +62,7 @@ export function AudioCard({
 			<div className="relative aspect-square w-full overflow-hidden bg-sunken">
 				{coverUrl ? (
 					<>
-						<CoverImage src={coverUrl} />
+						<CoverImage src={coverUrl} fadeOnHover={showHoverCover} />
 						{showHoverCover && hoverCoverUrl ? (
 							<div
 								aria-hidden

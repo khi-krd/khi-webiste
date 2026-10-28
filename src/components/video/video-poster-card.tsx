@@ -31,7 +31,7 @@ export type VideoPosterCardProps = {
 };
 
 const coverClass =
-	"absolute inset-0 size-full object-cover object-center brightness-[0.92] transition-[filter,transform] duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] group-fine:scale-[1.05] group-fine:brightness-100 motion-reduce:transition-none motion-reduce:duration-0 motion-reduce:group-fine:scale-100";
+	"absolute inset-0 size-full object-cover object-center brightness-[0.92] transition-[filter,transform,opacity] duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] group-fine:scale-[1.05] group-fine:brightness-100 motion-reduce:transition-none motion-reduce:duration-0 motion-reduce:group-fine:scale-100";
 
 export function VideoPosterCard({
 	id,
@@ -87,7 +87,12 @@ export function VideoPosterCard({
 						alt=""
 						fill
 						sizes={sizes}
-						className={coverClass}
+						className={cn(
+							coverClass,
+							hoverCoverUrl &&
+								hoverCoverUrl !== coverUrl &&
+								"group-fine:opacity-0",
+						)}
 					/>
 				) : previewVideoUrl ? (
 					<VideoStillPreview

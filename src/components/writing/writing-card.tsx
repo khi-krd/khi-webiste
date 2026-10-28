@@ -1,6 +1,7 @@
 import NextImage from "next/image";
 import { HoverCover } from "@/components/ui/hover-cover";
 import { Link } from "@/components/ui/link";
+import { cn } from "@/lib/utils";
 import { formatFileSize } from "@/lib/writing/resolve";
 
 export type WritingCardProps = {
@@ -15,14 +16,25 @@ export type WritingCardProps = {
 	fileUrl: string | null;
 };
 
-function CoverImage({ src, alt }: { src: string; alt: string }) {
+function CoverImage({
+	src,
+	alt,
+	fadeOnHover,
+}: {
+	src: string;
+	alt: string;
+	fadeOnHover: boolean;
+}) {
 	return (
 		<NextImage
 			src={src}
 			alt={alt}
 			fill
 			sizes="(max-width: 640px) 82vw, (max-width: 1024px) 48vw, 25vw"
-			className="object-cover brightness-[0.94] saturate-[0.88] transition-[filter,opacity,scale] duration-700 ease-[cubic-bezier(0.22,1,0.36,1)] group-fine:scale-[1.04] group-fine:brightness-100 group-fine:saturate-100"
+			className={cn(
+				"object-cover brightness-[0.94] saturate-[0.88] transition-[filter,opacity,scale] duration-700 ease-[cubic-bezier(0.22,1,0.36,1)] group-fine:scale-[1.04] group-fine:brightness-100 group-fine:saturate-100",
+				fadeOnHover && "group-fine:opacity-0",
+			)}
 		/>
 	);
 }
@@ -45,7 +57,13 @@ export function WritingCard({
 				<div className="absolute inset-0">
 					{coverUrl ? (
 						<>
-							<CoverImage src={coverUrl} alt="" />
+							<CoverImage
+								src={coverUrl}
+								alt=""
+								fadeOnHover={Boolean(
+									hoverCoverUrl && hoverCoverUrl !== coverUrl,
+								)}
+							/>
 							<HoverCover
 								src={hoverCoverUrl}
 								coverSrc={coverUrl}

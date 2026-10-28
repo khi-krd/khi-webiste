@@ -105,9 +105,12 @@ function StageHero({
 				<div
 					className={cn(
 						"absolute inset-[-5%] origin-center",
-						"transition-transform duration-[1.35s]",
+						"transition-[transform,opacity] duration-[1.35s]",
 						imageEase,
 						"group-fine:scale-[1.06] motion-reduce:transition-none motion-reduce:duration-0 motion-reduce:group-fine:scale-100",
+						item.hoverCoverUrl &&
+							item.hoverCoverUrl !== item.coverUrl &&
+							"group-fine:opacity-0",
 					)}
 				>
 					{item.coverUrl ? (
@@ -251,10 +254,13 @@ function PlaylistRow({
 						fill
 						sizes="(max-width: 640px) 30vw, (max-width: 1024px) 20vw, 260px"
 						className={cn(
-							"object-cover transition-[filter,scale] duration-[620ms]",
+							"object-cover transition-[filter,scale,opacity] duration-[620ms]",
 							imageEase,
 							"brightness-[0.9] group-fine:scale-[1.05] group-fine:brightness-100",
 							"motion-reduce:transition-none motion-reduce:group-fine:scale-100",
+							item.hoverCoverUrl &&
+								item.hoverCoverUrl !== item.coverUrl &&
+								"group-fine:opacity-0",
 						)}
 					/>
 				) : null}

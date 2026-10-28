@@ -156,10 +156,13 @@ function SoundSectionCard({ item }: { item: SoundSectionCardItem }) {
 						fill
 						sizes="(max-width: 640px) 46vw, (max-width: 1024px) 32vw, 280px"
 						className={cn(
-							"object-cover transition-[filter,scale] duration-[520ms] ease-[cubic-bezier(0.22,1,0.36,1)]",
+							"object-cover transition-[filter,scale,opacity] duration-[520ms] ease-[cubic-bezier(0.22,1,0.36,1)]",
 							isActive
 								? "brightness-100 saturate-100"
 								: "brightness-[0.88] saturate-[0.92] group-fine:scale-[1.04] group-fine:brightness-100 group-fine:saturate-100",
+							item.hoverCoverUrl &&
+								item.hoverCoverUrl !== item.coverUrl &&
+								"group-fine:opacity-0",
 						)}
 					/>
 				) : (

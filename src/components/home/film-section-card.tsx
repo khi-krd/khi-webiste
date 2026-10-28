@@ -39,9 +39,12 @@ export function FilmCinemaHero({ item }: FilmCinemaHeroProps) {
 						sizes="100vw"
 						className={cn(
 							"object-cover brightness-[0.55] contrast-[1.1] saturate-[0.75]",
-							"transition-transform duration-[1.6s]",
+							"transition-[transform,opacity] duration-[1.6s]",
 							imageEase,
 							"group-fine:scale-[1.03] motion-reduce:transition-none motion-reduce:group-fine:scale-100",
+							item.hoverCoverUrl &&
+								item.hoverCoverUrl !== item.coverUrl &&
+								"group-fine:opacity-0",
 						)}
 					/>
 				) : (
@@ -134,7 +137,12 @@ export function FilmGridCard({ item }: FilmGridCardProps) {
 						alt=""
 						fill
 						sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
-						className="object-cover brightness-[0.78] saturate-[0.8] transition-[filter,transform] duration-700 ease-[cubic-bezier(0.22,1,0.36,1)] group-fine:scale-[1.04] group-fine:brightness-90 group-fine:saturate-95 motion-reduce:transition-none motion-reduce:group-fine:scale-100"
+						className={cn(
+							"object-cover brightness-[0.78] saturate-[0.8] transition-[filter,transform,opacity] duration-700 ease-[cubic-bezier(0.22,1,0.36,1)] group-fine:scale-[1.04] group-fine:brightness-90 group-fine:saturate-95 motion-reduce:transition-none motion-reduce:group-fine:scale-100",
+							item.hoverCoverUrl &&
+								item.hoverCoverUrl !== item.coverUrl &&
+								"group-fine:opacity-0",
+						)}
 					/>
 				) : (
 					<div
