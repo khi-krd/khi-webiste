@@ -133,6 +133,7 @@ export function resolveProjectListItem(
 		projectTypes: resolveProjectTypes(locale, project),
 		status: project.status ?? null,
 		projectDate,
+		resultUrl: firstNonBlank(project.resultUrl),
 		year,
 		tags: resolveTags(locale, project),
 		keywords: resolveKeywords(locale, project),

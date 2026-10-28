@@ -1,3 +1,4 @@
+import { ArrowTopRightOnSquareIcon } from "@heroicons/react/24/outline";
 import {
 	ScrollReveal,
 	ScrollRevealBlock,
@@ -43,6 +44,7 @@ type ProjectDetailViewProps = {
 	statusLabel: string;
 	dateLabel: string;
 	locationLabel: string;
+	resultLabel: string;
 	galleryLabel: string;
 	lightboxCloseLabel: string;
 	statusLabels: Record<string, string>;
@@ -114,6 +116,7 @@ export function ProjectDetailView({
 	statusLabel,
 	dateLabel,
 	locationLabel,
+	resultLabel,
 	galleryLabel,
 	lightboxCloseLabel,
 	statusLabels,
@@ -235,6 +238,18 @@ export function ProjectDetailView({
 									<FactCell label={locationLabel}>{project.location}</FactCell>
 								)}
 							</dl>
+						)}
+
+						{project.resultUrl && (
+							<a
+								href={project.resultUrl}
+								target="_blank"
+								rel="noopener noreferrer"
+								className="mt-4 inline-flex items-center gap-2 rounded-md border border-primary bg-surface px-4 py-2 text-small font-medium text-foreground transition-colors hover:bg-sunken"
+							>
+								{resultLabel}
+								<ArrowTopRightOnSquareIcon className="size-4" aria-hidden />
+							</a>
 						)}
 					</div>
 

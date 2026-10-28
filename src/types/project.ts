@@ -38,6 +38,7 @@ export const ProjectSchema = z.object({
 		.default([]),
 	status: ProjectStatusSchema.nullish().catch(null),
 	projectDate: z.string().nullish(),
+	resultUrl: z.string().nullish(),
 	contentLanguages: z.array(ContentLanguageSchema),
 	ckbContent: ProjectContentSchema.nullish(),
 	kmrContent: ProjectContentSchema.nullish(),

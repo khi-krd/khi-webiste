@@ -20,6 +20,8 @@ export type ProjectListItem = ProjectItem & {
 	projectTypes?: string[];
 	status: ProjectStatus | null;
 	projectDate: string | null;
+	/** Link to the finished project's result — shared across languages. */
+	resultUrl?: string | null;
 	year: string | null;
 	tags: string[];
 	keywords: string[];
