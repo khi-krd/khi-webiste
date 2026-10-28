@@ -37,6 +37,7 @@ export const NewsSchema = z.object({
 	kmrContent: NewsContentSchema.nullish(),
 	tags: BilingualSetSchema.optional(),
 	keywords: BilingualSetSchema.optional(),
+	sortOrder: z.number().int().nullish(),
 	createdAt: z.string().optional(),
 	updatedAt: z.string().optional(),
 });

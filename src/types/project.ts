@@ -45,6 +45,7 @@ export const ProjectSchema = z.object({
 	tagsKmr: z.array(z.string()).optional(),
 	keywordsCkb: z.array(z.string()).optional(),
 	keywordsKmr: z.array(z.string()).optional(),
+	sortOrder: z.number().int().nullish(),
 	createdAt: z.string().optional(),
 	updatedAt: z.string().optional(),
 });

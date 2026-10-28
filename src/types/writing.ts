@@ -113,6 +113,7 @@ export const WritingSchema = z.object({
 	persons: lenientArray(WritingPersonSchema, "writing person").optional(),
 	series: SeriesInfoSchema.nullish(),
 	seriesInfo: SeriesInfoSchema.nullish(),
+	sortOrder: z.number().int().nullish(),
 	createdAt: z.string().optional(),
 	updatedAt: z.string().optional(),
 });
