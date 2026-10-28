@@ -16,7 +16,11 @@ const EXCERPT_MAX_LENGTH = 120;
 /** Locale-ordered file title: titleCkb/titleKmr, then the legacy mirror. */
 function localizedFileTitle(
 	locale: string,
-	file: { title?: string | null; titleCkb?: string | null; titleKmr?: string | null },
+	file: {
+		title?: string | null;
+		titleCkb?: string | null;
+		titleKmr?: string | null;
+	},
 ): string | null {
 	return locale === "ckb"
 		? firstNonBlank(file.titleCkb, file.title, file.titleKmr)
@@ -287,9 +291,11 @@ function resolveFileRow(
 		bitRate: file.bitRate ?? null,
 		sampleRate: file.sampleRate ?? null,
 		audioChannel: file.audioChannel ?? null,
-		form: file.form ?? null,
-		genre: file.genre ?? null,
-		recordingVenue: file.recordingVenue ?? null,
+		form: (locale === "ckb" ? file.formCkb : file.formKmr) ?? null,
+		genre: (locale === "ckb" ? file.genreCkb : file.genreKmr) ?? null,
+		recordingVenue:
+			(locale === "ckb" ? file.recordingVenueCkb : file.recordingVenueKmr) ??
+			null,
 		publishmentYear: file.publishmentYear ?? null,
 		fileFormat: file.fileFormat ?? null,
 	};
@@ -388,11 +394,15 @@ export function resolveAudioDetail(
 		topicNames: resolveAudioTopicNames(locale, track),
 		reader: track.reader ?? null,
 		directors: track.directors,
-		locations: track.locations,
+		locations: locale === "ckb" ? track.locationsCkb : track.locationsKmr,
 		terms: track.terms ?? null,
 		thisProjectOfInstitute: track.thisProjectOfInstitute,
 		contentLanguages: track.contentLanguages,
-		genre: firstNonBlank(...files.map((file) => file.genre)),
+		genre: firstNonBlank(
+			...files.map((file) =>
+				locale === "ckb" ? file.genreCkb : file.genreKmr,
+			),
+		),
 		albumName: track.albumName ?? null,
 		publishmentYear: track.publishmentYear ?? files[0]?.publishmentYear ?? null,
 		cdNumber: track.cdNumber ?? null,

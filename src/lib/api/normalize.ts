@@ -155,11 +155,12 @@ function normalizeSoundFile(raw: unknown): unknown {
 		bitRate: asOptionalString(file.bitRate ?? file.bit_rate),
 		sampleRate: asOptionalString(file.sampleRate ?? file.sample_rate),
 		audioChannel: file.audioChannel ?? file.audio_channel ?? null,
-		form: asOptionalString(file.form),
-		genre: asOptionalString(file.genre),
-		recordingVenue: asOptionalString(
-			file.recordingVenue ?? file.recording_venue,
-		),
+		formCkb: asOptionalString(file.formCkb),
+		formKmr: asOptionalString(file.formKmr),
+		genreCkb: asOptionalString(file.genreCkb),
+		genreKmr: asOptionalString(file.genreKmr),
+		recordingVenueCkb: asOptionalString(file.recordingVenueCkb),
+		recordingVenueKmr: asOptionalString(file.recordingVenueKmr),
 		brochures: Array.isArray(file.brochures)
 			? file.brochures.map((brochure) => {
 					const item = asRecord(brochure);
@@ -194,7 +195,8 @@ export function normalizeSoundTrackRecord(raw: unknown): unknown {
 			? record.files.map(normalizeSoundFile)
 			: [],
 		attachments: Array.isArray(record.attachments) ? record.attachments : [],
-		locations: Array.isArray(record.locations) ? record.locations : [],
+		locationsCkb: Array.isArray(record.locationsCkb) ? record.locationsCkb : [],
+		locationsKmr: Array.isArray(record.locationsKmr) ? record.locationsKmr : [],
 		directors: Array.isArray(record.directors) ? record.directors : [],
 		publishmentYear: record.publishmentYear ?? record.publishment_year ?? null,
 		cdNumber: record.cdNumber ?? record.cd_number ?? null,
