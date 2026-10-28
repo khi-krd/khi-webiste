@@ -16,6 +16,7 @@ import {
 	FilterDivider,
 	FilterGroupLabel,
 	FilterPill,
+	FilterPillRail,
 	FilterSearchBox,
 } from "@/components/ui/filter-bar";
 import { useRouter } from "@/i18n/navigation";
@@ -159,8 +160,10 @@ export function NewsFilterBar({
 			{/* browse axis — subcategories only; categories stay reachable via
 			    ?category= deep links surfaced through the active chips below. */}
 			{subCategoryOptions.length > 0 ? (
-				<>
-					<FilterGroupLabel>{t("filter.subcategories")}</FilterGroupLabel>
+				<FilterPillRail activeKey={activeSubCategory ?? null}>
+					<FilterGroupLabel className="shrink-0">
+						{t("filter.subcategories")}
+					</FilterGroupLabel>
 					{subCategoryOptions.map((subCategory) => {
 						const active = activeSubCategory === subCategory.key;
 						return (
@@ -175,7 +178,7 @@ export function NewsFilterBar({
 							</FilterPill>
 						);
 					})}
-				</>
+				</FilterPillRail>
 			) : null}
 
 			{/* same line — the row's remaining space goes to search */}

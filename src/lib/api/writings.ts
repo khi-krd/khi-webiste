@@ -48,7 +48,7 @@ const WRITINGS_SEARCH_SIZE = 100;
 
 export const WRITINGS_PER_PAGE = 4;
 export const WRITINGS_CAROUSEL_SIZE = 12;
-export const WRITINGS_GRID_PAGE_SIZE = 8;
+export const WRITINGS_GRID_PAGE_SIZE = 300;
 
 export type WritingsListResult = {
 	items: ResolvedWritingCard[];

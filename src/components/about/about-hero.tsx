@@ -167,7 +167,7 @@ export function AboutHero({
 							allowFullScreen
 							className="absolute inset-0 z-20 size-full border-0 bg-foreground"
 						/>
-						<MediaMark className="top-0 bottom-auto z-30" />
+						<MediaMark className="bottom-12 z-30" />
 						<button
 							type="button"
 							onClick={() => setYouTubePlaying(false)}

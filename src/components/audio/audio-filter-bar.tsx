@@ -9,6 +9,7 @@ import {
 	FilterDivider,
 	FilterGroupLabel,
 	FilterPill,
+	FilterPillRail,
 	FilterSearchBox,
 } from "@/components/ui/filter-bar";
 import { Select } from "@/components/ui/select";
@@ -156,24 +157,25 @@ export function AudioFilterBar({
 			pending={isPending}
 			className={className}
 		>
-			{/* primary browse axis — the sound types */}
-			<FilterPill
-				active={!activeType}
-				onClick={() => pushFilters({ type: null })}
-			>
-				{t("filter.all")}
-			</FilterPill>
-			{soundTypes.map((type) => (
+			{/* primary browse axis — the sound types, on a rail of their own */}
+			<FilterPillRail activeKey={activeType}>
 				<FilterPill
-					key={type}
-					active={activeType === type}
-					onClick={() => pushFilters({ type })}
+					active={!activeType}
+					onClick={() => pushFilters({ type: null })}
 				>
-					{typeLabel(type)}
+					{t("filter.all")}
 				</FilterPill>
-			))}
+				{soundTypes.map((type) => (
+					<FilterPill
+						key={type}
+						active={activeType === type}
+						onClick={() => pushFilters({ type })}
+					>
+						{typeLabel(type)}
+					</FilterPill>
+				))}
+			</FilterPillRail>
 
-			<FilterDivider />
 			<FilterGroupLabel>{t("filter.stateLabel")}</FilterGroupLabel>
 			<FilterPill
 				active={!activeState}

@@ -12,8 +12,8 @@ import { DirectionalIcon } from "@/components/ui/directional-icon";
 import { Link } from "@/components/ui/link";
 import { getWritingsCarousel } from "@/lib/api/writings";
 
-/** 3 columns per row on desktop. */
-const HOME_WRITINGS_COUNT = 15;
+/** 3 columns per row on desktop — exactly two rows. */
+const HOME_WRITINGS_COUNT = 6;
 
 export async function WritingsSection() {
 	const locale = await getLocale();

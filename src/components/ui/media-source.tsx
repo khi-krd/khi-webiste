@@ -3,8 +3,8 @@ import {
 	MusicalNoteIcon,
 	PlayIcon,
 } from "@heroicons/react/24/outline";
-import { cn } from "@/lib/utils";
 import { MediaMark } from "@/components/ui/media-mark";
+import { cn } from "@/lib/utils";
 import { toCleanEmbedSrc } from "@/lib/video/source";
 
 /**
@@ -43,7 +43,8 @@ export function MediaEmbedFrame({
 				allowFullScreen
 				className="absolute inset-0 size-full border-0"
 			/>
-			<MediaMark className="top-0 bottom-auto z-10" />
+			{/* Bottom-left, lifted clear of the provider's own control bar. */}
+			<MediaMark className="bottom-12 z-10" />
 		</div>
 	);
 }

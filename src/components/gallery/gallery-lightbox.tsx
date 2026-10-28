@@ -313,7 +313,7 @@ export function GalleryLightbox({
 										className="absolute inset-0 size-full border-0"
 										allowFullScreen
 									/>
-									<MediaMark className="top-0 bottom-auto z-20" />
+									<MediaMark className="bottom-12 z-20" />
 								</>
 							) : (
 								<div className="flex size-full items-center justify-center p-6 text-center text-small text-background/70">

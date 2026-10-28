@@ -40,7 +40,7 @@ const SOUND_TRACKS_ENDPOINT = "/api/v1/sound-tracks";
 const SOUND_REKLAM_VIDEO_ENDPOINT = `${SOUND_TRACKS_ENDPOINT}/sound-reklam-video`;
 const SOUND_TRACKS_TAG = "sound-tracks";
 
-export const AUDIO_GRID_PAGE_SIZE = 12;
+export const AUDIO_GRID_PAGE_SIZE = 300;
 export const AUDIO_MEMORIES_SIZE = 8;
 /** Home album wall: 5 columns × 2 rows at the widest breakpoint. */
 export const SOUND_SECTION_CARD_COUNT = 10;

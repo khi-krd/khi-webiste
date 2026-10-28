@@ -108,9 +108,10 @@ export function VideoPlayer({
 			>
 				<Layout embed={embed} poster={poster} posterAlt={posterAlt} />
 				{/* Brand mark lives inside the player so it survives fullscreen
-				    (the media-player element is what expands); pointer-events-none
-				    keeps every control and the video itself clickable. */}
-				<MediaMark className="top-0 bottom-auto z-20" />
+				    (the media-player element is what expands); bottom-left, lifted
+				    over the dock while it shows (video-player.css); pointer-events-
+				    none keeps every control and the video itself clickable. */}
+				<MediaMark className="khi-player__mark z-20" />
 			</MediaPlayer>
 		</VideoPlayerErrorBoundary>
 	);

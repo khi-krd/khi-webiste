@@ -1,15 +1,21 @@
 "use client";
 
-import { MagnifyingGlassIcon, XMarkIcon } from "@heroicons/react/24/outline";
+import {
+	ChevronLeftIcon,
+	MagnifyingGlassIcon,
+	XMarkIcon,
+} from "@heroicons/react/24/outline";
+import { useEffect, useRef, useState } from "react";
+import { DirectionalIcon } from "@/components/ui/directional-icon";
 import { cn } from "@/lib/utils";
 
 /**
- * Shared single-line filter-bar primitives.
+ * Shared filter-bar primitives.
  *
- * Every listing page composes the SAME continuous row out of these pieces —
- * pills, group labels, selects and the search box all flow in one
- * `flex flex-wrap` line instead of being partitioned into stacked sections.
- * The row wraps naturally on narrow screens; nothing expands or collapses.
+ * Every listing page composes the SAME toolbar out of these pieces: the
+ * primary browse axis sits in a sideways-scrolling `FilterPillRail` on its own
+ * line, and the secondary pills, group labels, selects and the search box flow
+ * in one `flex flex-wrap` row beneath it. Nothing expands or collapses.
  */
 
 /** One wrapping row — the whole filter toolbar lives here. */
@@ -27,7 +33,7 @@ export function FilterBar({
 	return (
 		<div
 			className={cn(
-				"flex flex-wrap items-center gap-2 transition-opacity",
+				"flex flex-wrap items-center gap-x-2 gap-y-3 transition-opacity",
 				pending && "opacity-80",
 				className,
 			)}
@@ -63,6 +69,124 @@ export function FilterPill({
 		>
 			{children}
 		</button>
+	);
+}
+
+/**
+ * The primary browse axis (types, genres, topics) on a row of its own: one
+ * line that scrolls sideways however many pills the CMS grows to, so it never
+ * shoves the sort / select / search controls around. Edges fade where more
+ * pills hide, with a chevron to page through them; touch swipes natively.
+ * The active pill is brought into view whenever the selection changes.
+ */
+export function FilterPillRail({
+	activeKey,
+	className,
+	children,
+}: {
+	/** Changes whenever the selected pill changes — re-centres it. */
+	activeKey?: string | number | null;
+	className?: string;
+	children: React.ReactNode;
+}) {
+	const scrollerRef = useRef<HTMLDivElement>(null);
+	const [edges, setEdges] = useState({ start: false, end: false });
+
+	useEffect(() => {
+		const el = scrollerRef.current;
+		if (!el) return;
+		// |scrollLeft| works in both directions: RTL counts down from 0.
+		const update = () => {
+			const pos = Math.abs(el.scrollLeft);
+			const max = el.scrollWidth - el.clientWidth;
+			const next = { start: pos > 1, end: max - pos > 1 };
+			setEdges((prev) =>
+				prev.start === next.start && prev.end === next.end ? prev : next,
+			);
+		};
+		update();
+		el.addEventListener("scroll", update, { passive: true });
+		const observer = new ResizeObserver(update);
+		observer.observe(el);
+		if (el.firstElementChild) observer.observe(el.firstElementChild);
+		return () => {
+			el.removeEventListener("scroll", update);
+			observer.disconnect();
+		};
+	}, []);
+
+	// biome-ignore lint/correctness/useExhaustiveDependencies: activeKey is the trigger — the active pill is read from the DOM.
+	useEffect(() => {
+		const el = scrollerRef.current;
+		const active = el?.querySelector<HTMLElement>('[aria-pressed="true"]');
+		if (!el || !active) return;
+		const railBox = el.getBoundingClientRect();
+		const pillBox = active.getBoundingClientRect();
+		// Raising scrollLeft reveals content further right in LTR and RTL alike.
+		el.scrollLeft +=
+			pillBox.left + pillBox.width / 2 - (railBox.left + railBox.width / 2);
+	}, [activeKey]);
+
+	const page = (towardEnd: boolean) => {
+		const el = scrollerRef.current;
+		if (!el) return;
+		const rtl = getComputedStyle(el).direction === "rtl";
+		const reduce = window.matchMedia(
+			"(prefers-reduced-motion: reduce)",
+		).matches;
+		el.scrollBy({
+			left: el.clientWidth * 0.75 * (towardEnd !== rtl ? 1 : -1),
+			behavior: reduce ? "auto" : "smooth",
+		});
+	};
+
+	return (
+		<div className={cn("relative w-full min-w-0 basis-full", className)}>
+			<div
+				ref={scrollerRef}
+				className="overflow-x-auto overscroll-x-contain [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+			>
+				<div className="flex w-max items-center gap-2">{children}</div>
+			</div>
+
+			{edges.start ? (
+				<RailEdge side="start" onClick={() => page(false)} />
+			) : null}
+			{edges.end ? <RailEdge side="end" onClick={() => page(true)} /> : null}
+		</div>
+	);
+}
+
+/** Fade + chevron over one end of the rail; pointer convenience only — keyboard users tab along the pills. */
+function RailEdge({
+	side,
+	onClick,
+}: {
+	side: "start" | "end";
+	onClick: () => void;
+}) {
+	return (
+		<div
+			className={cn(
+				"pointer-events-none absolute inset-y-0 flex w-16 items-center from-background from-45% to-transparent",
+				side === "start"
+					? "start-0 justify-start bg-linear-to-r rtl:bg-linear-to-l"
+					: "end-0 justify-end bg-linear-to-l rtl:bg-linear-to-r",
+			)}
+		>
+			<button
+				type="button"
+				tabIndex={-1}
+				aria-hidden="true"
+				onClick={onClick}
+				className="pointer-events-auto flex size-9 items-center justify-center border border-primary bg-background text-foreground transition-colors fine-hover:bg-sunken"
+			>
+				<DirectionalIcon
+					icon={ChevronLeftIcon}
+					className={cn("size-4", side === "end" && "rotate-180")}
+				/>
+			</button>
+		</div>
 	);
 }
 

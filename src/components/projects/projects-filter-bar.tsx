@@ -8,6 +8,7 @@ import {
 	FilterBar,
 	FilterDivider,
 	FilterPill,
+	FilterPillRail,
 	FilterSearchBox,
 } from "@/components/ui/filter-bar";
 import { useRouter } from "@/i18n/navigation";
@@ -117,7 +118,7 @@ export function ProjectsFilterBar({
 		>
 			{/* primary browse axis — the project types */}
 			{types.length > 0 ? (
-				<>
+				<FilterPillRail activeKey={activeType ?? null}>
 					<FilterPill active={!activeType} onClick={() => handleType(null)}>
 						{t("filter.all")}
 					</FilterPill>
@@ -130,8 +131,7 @@ export function ProjectsFilterBar({
 							{type}
 						</FilterPill>
 					))}
-					<FilterDivider />
-				</>
+				</FilterPillRail>
 			) : null}
 
 			{/* same line — the row's remaining space goes to search */}

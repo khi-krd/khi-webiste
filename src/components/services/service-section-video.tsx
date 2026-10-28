@@ -57,7 +57,7 @@ export function ServiceSectionVideo({
 						allowFullScreen
 						className="absolute inset-0 size-full border-0"
 					/>
-					<MediaMark className="top-0 bottom-auto z-20" />
+					<MediaMark className="bottom-12 z-20" />
 				</span>
 			);
 		}

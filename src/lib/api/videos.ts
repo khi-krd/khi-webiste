@@ -49,7 +49,7 @@ const VIDEO_BULK_PAGE_COUNT = Math.ceil(BULK_FETCH_SIZE / VIDEO_MAX_PAGE_SIZE);
 /** A few rows of headroom so one unparseable record cannot void the lead. */
 const FEATURED_LEAD_FETCH_SIZE = 5;
 
-export const VIDEO_GRID_PAGE_SIZE = 12;
+export const VIDEO_GRID_PAGE_SIZE = 300;
 
 export type VideoListResult = {
 	items: ResolvedVideoCard[];

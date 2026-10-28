@@ -116,7 +116,7 @@ export default async function ShortFilmsPage({
 	// and never shrinks the pill row down to the tags of its own selection.
 	const listing = await getVideoListing(locale, {
 		...SHORT_FILM_LISTING_FILTERS,
-		size: 100,
+		size: 300,
 	});
 	const allShort = listing.items;
 

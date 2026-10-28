@@ -46,16 +46,16 @@ type VideoPlayerFrameProps = {
 function PlayerSurface({
 	children,
 	cinema = false,
-	mark = true,
+	mark = "flush",
 }: {
 	children: ReactNode;
 	cinema?: boolean;
 	/**
 	 * Iframe / no-source surfaces get the brand mark here; Vidstack surfaces
 	 * skip it — the player stamps its own mark internally so it survives
-	 * fullscreen.
+	 * fullscreen. `lifted` clears a provider iframe's own control bar.
 	 */
-	mark?: boolean;
+	mark?: "flush" | "lifted" | false;
 }) {
 	return (
 		<div
@@ -65,10 +65,12 @@ function PlayerSurface({
 			)}
 		>
 			{children}
-			{/* Brand mark over every playback surface — top-left so it never
-			    sits on the control bar; pointer-events-none, so controls and
-			    the iframe still take the click. */}
-			{mark ? <MediaMark className="top-0 bottom-auto z-20" /> : null}
+			{/* Brand mark over every playback surface — bottom-left;
+			    pointer-events-none, so controls and the iframe still take the
+			    click. */}
+			{mark ? (
+				<MediaMark className={cn("z-20", mark === "lifted" && "bottom-12")} />
+			) : null}
 		</div>
 	);
 }
@@ -191,7 +193,7 @@ export function VideoPlayerFrame({
 		);
 	} else if (surfaceKind === "iframe" && surfaceSrc) {
 		surface = (
-			<PlayerSurface cinema={isCinema}>
+			<PlayerSurface cinema={isCinema} mark="lifted">
 				<iframe
 					key={`clip-${selectedClipNumber ?? "single"}-${surfaceSrc}`}
 					src={toCleanEmbedSrc(surfaceSrc)}

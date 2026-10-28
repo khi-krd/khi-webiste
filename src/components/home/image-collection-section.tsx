@@ -17,11 +17,11 @@ export async function ImageCollectionSection() {
 		<section
 			// Full-width section: the bento tray bleeds edge to edge, so no canvas
 			// inset here — the header centers itself via HOME_IMAGE_BENTO_HEADER_CLASS's
-			// 2xl padding, matching the other home sections. Full screen-height
-			// band by design (user request: same height), and the body carries no
-			// bottom padding, so the dark tray runs to the section's last pixel
-			// and meets the donate band with NO light gap (user request).
-			className="cv-auto flex h-svh max-h-svh min-h-0 w-full flex-col overflow-hidden border-t border-border bg-background [--cv-intrinsic:100svh]"
+			// 2xl padding, matching the other home sections. At least one screen
+			// tall, growing with the 4×5 grid so no row is clipped under the donate
+			// band; the body carries no bottom padding, so the dark tray runs to
+			// the section's last pixel and meets the donate band with NO light gap.
+			className="cv-auto flex min-h-svh w-full flex-col border-t border-border bg-background [--cv-intrinsic:160svh]"
 			aria-labelledby="image-collection-heading"
 		>
 			<ImageCollectionShowcase

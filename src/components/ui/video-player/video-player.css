@@ -262,6 +262,20 @@
 	pointer-events: none;
 }
 
+/* Brand mark rests in the bottom-left corner and rises above the dock
+   (progress row + button row ≈ 5rem) whenever the dock is on screen, so it
+   never covers a control. */
+.khi-player__mark {
+	transition: translate 0.2s ease-out;
+}
+
+.khi-player:is([data-started]):has(.khi-player__controls[data-visible])
+	.khi-player__mark,
+.khi-player:is([data-started][data-paused]) .khi-player__mark,
+.khi-player:is([data-started][data-ended]) .khi-player__mark {
+	translate: 0 -5rem;
+}
+
 .khi-player__controls::before {
 	content: "";
 	position: absolute;

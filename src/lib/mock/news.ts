@@ -397,7 +397,7 @@ const LOCALE_ITEMS: Record<string, LocaleCopy> = {
 	ckb: withNewsImages(CKB_ITEMS, "ckb"),
 };
 
-export const NEWS_PER_PAGE = 10;
+export const NEWS_PER_PAGE = 300;
 export const SIDEBAR_ITEMS_LIMIT = 3;
 
 export function getNews(locale: string): NewsItem[] {

@@ -63,12 +63,11 @@ export default async function GalleryPage({
 	]);
 
 	const allPosts = filterGalleryPosts(records, q, activeType, activeTopicId);
-	// 12 covers per page — the mosaic pattern needs a full board to read as an
-	// album wall (the old 4-per-page row list left it sparse).
+	// 300 covers per page, then the pager takes over (user request).
 	const { items, totalPages, currentPage } = paginateGalleryPosts(
 		allPosts,
 		page,
-		12,
+		300,
 	);
 	const posts = items.map((post) => ({
 		...post,

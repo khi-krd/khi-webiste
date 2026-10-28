@@ -9,6 +9,7 @@ import {
 	FilterDivider,
 	FilterGroupLabel,
 	FilterPill,
+	FilterPillRail,
 	FilterSearchBox,
 } from "@/components/ui/filter-bar";
 import { Select } from "@/components/ui/select";
@@ -144,23 +145,24 @@ export function GalleryFilterBar({
 			pending={isPending}
 			className={className}
 		>
-			{/* primary browse axis — the collection types */}
-			<FilterPill active={!hasActiveType} onClick={() => handleType(null)}>
-				{t("filter.all")}
-			</FilterPill>
-			{GALLERY_TYPE_OPTIONS.map((type) => (
-				<FilterPill
-					key={type}
-					active={activeType === type}
-					onClick={() => handleType(type)}
-				>
-					{t(`posts.types.${type}`)}
+			{/* primary browse axis — the collection types, on a rail of their own */}
+			<FilterPillRail activeKey={activeType ?? null}>
+				<FilterPill active={!hasActiveType} onClick={() => handleType(null)}>
+					{t("filter.all")}
 				</FilterPill>
-			))}
+				{GALLERY_TYPE_OPTIONS.map((type) => (
+					<FilterPill
+						key={type}
+						active={activeType === type}
+						onClick={() => handleType(type)}
+					>
+						{t(`posts.types.${type}`)}
+					</FilterPill>
+				))}
+			</FilterPillRail>
 
 			{topics.length > 0 ? (
 				<>
-					<FilterDivider />
 					<FilterGroupLabel>{t("filter.topicLabel")}</FilterGroupLabel>
 					<div className="w-44 min-w-36">
 						<Select

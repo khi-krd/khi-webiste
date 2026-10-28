@@ -40,7 +40,7 @@ export type ProjectDetail = ProjectListItem & {
 	next: ProjectListItem | null;
 };
 
-export const PROJECTS_PER_PAGE = 9;
+export const PROJECTS_PER_PAGE = 300;
 
 type LocaleRecords = MockProjectRecord[];
 

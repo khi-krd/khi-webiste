@@ -9,6 +9,7 @@ import {
 	FilterDivider,
 	FilterGroupLabel,
 	FilterPill,
+	FilterPillRail,
 	FilterSearchBox,
 } from "@/components/ui/filter-bar";
 import { Select } from "@/components/ui/select";
@@ -157,18 +158,19 @@ export function VideoFilterBar({
 			)}
 		>
 			<FilterBar label={t("filter.label")} pending={false}>
-				{/* primary browse axis — a film strip of type cells */}
-				{TYPE_OPTIONS.map((option) => (
-					<FilterPill
-						key={option.key}
-						active={(activeType ?? null) === option.value}
-						onClick={() => pushFilters({ type: option.value })}
-					>
-						{t(option.key)}
-					</FilterPill>
-				))}
+				{/* primary browse axis — a film strip of type cells on its own rail */}
+				<FilterPillRail activeKey={activeType ?? null}>
+					{TYPE_OPTIONS.map((option) => (
+						<FilterPill
+							key={option.key}
+							active={(activeType ?? null) === option.value}
+							onClick={() => pushFilters({ type: option.value })}
+						>
+							{t(option.key)}
+						</FilterPill>
+					))}
+				</FilterPillRail>
 
-				<FilterDivider />
 				<FilterGroupLabel>{t("filter.collectionLabel")}</FilterGroupLabel>
 				<FilterPill
 					active={Boolean(activeMemories)}

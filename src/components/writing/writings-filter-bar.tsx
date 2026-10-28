@@ -9,6 +9,7 @@ import {
 	FilterDivider,
 	FilterGroupLabel,
 	FilterPill,
+	FilterPillRail,
 	FilterSearchBox,
 } from "@/components/ui/filter-bar";
 import { Select } from "@/components/ui/select";
@@ -34,9 +35,9 @@ type WritingsFilterBarProps = {
 };
 
 /**
- * All controls on ONE continuous line: genre chips, sort, writer select and
- * the search box flow in a single `flex-wrap` row — no expand panel, no
- * stacked sections. Active-filter chips trail at the row's tail.
+ * Genre chips ride a sideways-scrolling rail; sort, writer select and the
+ * search box flow in one `flex-wrap` row beneath — no expand panel. Active-
+ * filter chips trail at the row's tail.
  */
 export function WritingsFilterBar({
 	categorySlug,
@@ -173,21 +174,22 @@ export function WritingsFilterBar({
 			pending={isPending}
 			className={className}
 		>
-			{/* genre chips — the row's primary browse axis */}
-			<FilterPill active={!activeGenre} onClick={() => handleGenre(null)}>
-				{t("filter.all")}
-			</FilterPill>
-			{availableGenres.map((genre) => (
-				<FilterPill
-					key={genre}
-					active={activeGenre === genre}
-					onClick={() => handleGenre(genre)}
-				>
-					{genreLabels[genre]}
+			{/* genre chips — the primary browse axis, on a rail of its own */}
+			<FilterPillRail activeKey={activeGenre}>
+				<FilterPill active={!activeGenre} onClick={() => handleGenre(null)}>
+					{t("filter.all")}
 				</FilterPill>
-			))}
+				{availableGenres.map((genre) => (
+					<FilterPill
+						key={genre}
+						active={activeGenre === genre}
+						onClick={() => handleGenre(genre)}
+					>
+						{genreLabels[genre]}
+					</FilterPill>
+				))}
+			</FilterPillRail>
 
-			<FilterDivider />
 			<FilterGroupLabel>{t("sort.label")}</FilterGroupLabel>
 			<FilterPill
 				active={activeSort === "newest"}

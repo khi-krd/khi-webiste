@@ -41,7 +41,7 @@ export const DEFAULT_REVALIDATE =
 	CACHE_POLICY.mode === "revalidate" ? CACHE_POLICY.seconds : 0;
 
 export const DEFAULT_PAGE_SIZE = 20;
-export const BULK_FETCH_SIZE = 200;
+export const BULK_FETCH_SIZE = 1000;
 
 /** Ceiling for one upstream CMS call. Renders fetch Railway live (the CMS is
    no-store by default), so a sleeping or hung backend must never stall a page
