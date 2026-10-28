@@ -6,6 +6,7 @@ import {
 	type VideoMimeType,
 } from "@vidstack/react";
 import { useRef } from "react";
+import { MediaMark } from "@/components/ui/media-mark";
 import "@vidstack/react/player/styles/base.css";
 import "@vidstack/react/player/styles/default/controls.css";
 import "@vidstack/react/player/styles/default/poster.css";
@@ -106,6 +107,10 @@ export function VideoPlayer({
 				}
 			>
 				<Layout embed={embed} poster={poster} posterAlt={posterAlt} />
+				{/* Brand mark lives inside the player so it survives fullscreen
+				    (the media-player element is what expands); pointer-events-none
+				    keeps every control and the video itself clickable. */}
+				<MediaMark className="top-0 bottom-auto z-20" />
 			</MediaPlayer>
 		</VideoPlayerErrorBoundary>
 	);

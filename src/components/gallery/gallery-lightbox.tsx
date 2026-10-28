@@ -18,6 +18,7 @@ import {
 import { prefersReducedMotion } from "@/components/motion/scroll-reveal";
 import { DirectionalIcon } from "@/components/ui/directional-icon";
 import { ImageWatermark } from "@/components/ui/image-watermark";
+import { MediaMark } from "@/components/ui/media-mark";
 import { Prose } from "@/components/ui/prose";
 import { useGestureZoom } from "@/lib/use-gesture-zoom";
 import { useScrollLock } from "@/lib/use-scroll-lock";
@@ -305,12 +306,15 @@ export function GalleryLightbox({
 									/>
 								</>
 							) : item.embedUrl ? (
-								<iframe
-									title={item.caption ?? collectionTitle}
-									src={item.embedUrl}
-									className="absolute inset-0 size-full border-0"
-									allowFullScreen
-								/>
+								<>
+									<iframe
+										title={item.caption ?? collectionTitle}
+										src={item.embedUrl}
+										className="absolute inset-0 size-full border-0"
+										allowFullScreen
+									/>
+									<MediaMark className="top-0 bottom-auto z-20" />
+								</>
 							) : (
 								<div className="flex size-full items-center justify-center p-6 text-center text-small text-background/70">
 									{item.externalUrl ? (

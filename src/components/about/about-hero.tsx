@@ -6,6 +6,7 @@ import { useCallback, useEffect, useState } from "react";
 import { preconnect } from "react-dom";
 import { AboutIntroVideoModal } from "@/components/about/about-intro-video-modal";
 import { ScrollRevealBlock } from "@/components/motion/scroll-reveal";
+import { MediaMark } from "@/components/ui/media-mark";
 import { cn } from "@/lib/utils";
 import { parseYouTubeVideoId, toCleanEmbedSrc } from "@/lib/video/source";
 
@@ -166,6 +167,7 @@ export function AboutHero({
 							allowFullScreen
 							className="absolute inset-0 z-20 size-full border-0 bg-foreground"
 						/>
+						<MediaMark className="top-0 bottom-auto z-30" />
 						<button
 							type="button"
 							onClick={() => setYouTubePlaying(false)}

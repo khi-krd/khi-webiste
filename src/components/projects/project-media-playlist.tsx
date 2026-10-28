@@ -8,8 +8,8 @@ import {
 	MusicalNoteIcon,
 	PhotoIcon,
 } from "@heroicons/react/24/outline";
+import dynamic from "next/dynamic";
 import NextImage from "next/image";
-import { MediaMark } from "@/components/ui/media-mark";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { CoverLightbox } from "@/components/ui/cover-lightbox";
 import { DirectionalIcon } from "@/components/ui/directional-icon";
@@ -17,12 +17,12 @@ import {
 	ExternalMediaLink,
 	MediaEmbedFrame,
 } from "@/components/ui/media-source";
-import dynamic from "next/dynamic";
 
 const VideoPlayer = dynamic(
 	() => import("@/components/ui/video-player").then((mod) => mod.VideoPlayer),
 	{ ssr: false },
 );
+
 import { VideoStillPreview } from "@/components/video/video-still-preview-lazy";
 import { cn } from "@/lib/utils";
 import type { MediaItem, MediaKind } from "@/types/media";
@@ -238,7 +238,6 @@ function Stage({
 						variant="full"
 						className="absolute inset-0 size-full"
 					/>
-					<MediaMark className="top-0 bottom-auto z-20" />
 				</div>
 			);
 		}

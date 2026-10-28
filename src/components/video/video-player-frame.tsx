@@ -4,11 +4,11 @@ import { FilmIcon } from "@heroicons/react/24/outline";
 import dynamic from "next/dynamic";
 import NextImage from "next/image";
 import { type ReactNode, useState } from "react";
+import { MediaMark } from "@/components/ui/media-mark";
 import {
 	FilmSceneList,
 	type FilmSceneListLabels,
 } from "@/components/video/film-scene-list";
-import { MediaMark } from "@/components/ui/media-mark";
 import {
 	VideoClipList,
 	type VideoClipListLabels,
@@ -46,9 +46,16 @@ type VideoPlayerFrameProps = {
 function PlayerSurface({
 	children,
 	cinema = false,
+	mark = true,
 }: {
 	children: ReactNode;
 	cinema?: boolean;
+	/**
+	 * Iframe / no-source surfaces get the brand mark here; Vidstack surfaces
+	 * skip it — the player stamps its own mark internally so it survives
+	 * fullscreen.
+	 */
+	mark?: boolean;
 }) {
 	return (
 		<div
@@ -61,7 +68,7 @@ function PlayerSurface({
 			{/* Brand mark over every playback surface — top-left so it never
 			    sits on the control bar; pointer-events-none, so controls and
 			    the iframe still take the click. */}
-			<MediaMark className="top-0 bottom-auto z-20" />
+			{mark ? <MediaMark className="top-0 bottom-auto z-20" /> : null}
 		</div>
 	);
 }
@@ -160,7 +167,7 @@ export function VideoPlayerFrame({
 
 	if (surfaceKind === "vidstack" && surfaceSrc) {
 		surface = (
-			<PlayerSurface cinema={isCinema}>
+			<PlayerSurface cinema={isCinema} mark={false}>
 				{surfacePoster ? (
 					<NextImage
 						src={surfacePoster}

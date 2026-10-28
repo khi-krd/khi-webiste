@@ -4,6 +4,7 @@ import { PlayIcon } from "@heroicons/react/24/solid";
 import dynamic from "next/dynamic";
 import NextImage from "next/image";
 import { useEffect, useState } from "react";
+import { MediaMark } from "@/components/ui/media-mark";
 import type { ServiceVideo } from "@/lib/mock/services";
 import { cn } from "@/lib/utils";
 import { toCleanEmbedSrc } from "@/lib/video/source";
@@ -56,6 +57,7 @@ export function ServiceSectionVideo({
 						allowFullScreen
 						className="absolute inset-0 size-full border-0"
 					/>
+					<MediaMark className="top-0 bottom-auto z-20" />
 				</span>
 			);
 		}
