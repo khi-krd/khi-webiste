@@ -1,12 +1,7 @@
-const DEMO_PDF_PATH = "/writings/java-foundations.pdf";
-const DEFAULT_S3_MEDIA_HOST =
-	"pub-2ed2b741674940688bf1aa254047ad7e.r2.dev";
+const DEFAULT_S3_MEDIA_HOST = "pub-2ed2b741674940688bf1aa254047ad7e.r2.dev";
 
 /** The archive platform's text proxy also serves PDFs the reader opens. */
 const DEFAULT_PLATFORM_HOST = "178.105.87.169";
-
-/** Locale-relative demo PDF used by mock writings (same-origin, no CORS). */
-export const WRITING_DEMO_PDF_URL = DEMO_PDF_PATH;
 
 function getAllowedPdfHosts(): Set<string> {
 	const hosts = new Set<string>();
@@ -43,8 +38,7 @@ export function isAllowedRemotePdfUrl(fileUrl: string): boolean {
 			}
 			const envHost = (() => {
 				try {
-					return new URL(process.env.PLATFORM_API_BASE_URL ?? "")
-						.hostname;
+					return new URL(process.env.PLATFORM_API_BASE_URL ?? "").hostname;
 				} catch {
 					return "";
 				}

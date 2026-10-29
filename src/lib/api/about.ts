@@ -14,12 +14,11 @@ import {
 	DEFAULT_REVALIDATE,
 } from "@/lib/api/client";
 import { getApiBaseUrl } from "@/lib/api/config";
-import {
-	type AboutHeroMedia,
-	type FounderPerson,
-	type OfficeTeam,
-	PARTNERS,
-	type PartnerItem,
+import type {
+	AboutHeroMedia,
+	FounderPerson,
+	OfficeTeam,
+	PartnerItem,
 } from "@/lib/mock/about";
 import { type About, AboutPageSchema, AboutSchema } from "@/types/about";
 import { PartnerListSchema } from "@/types/partner";
@@ -104,6 +103,32 @@ export async function getPrimaryAboutPage(
 // the page with demo people, logos or artwork. There is no mock catalogue to
 // fall back on any more.
 
+/**
+ * Bundled navigation cards that always lead the partners row — links into the
+ * site's own /services and /donate pages, NOT partner records standing in for
+ * the CMS (the page copy lives under `partners.items.*` in messages/*.json).
+ */
+const BUNDLED_PARTNER_CARDS: PartnerItem[] = [
+	{
+		id: "services",
+		slug: "services",
+		image: {
+			url: "/about/services-bg.jpg",
+			alt: "Institute library and research facilities",
+		},
+		href: "/services",
+	},
+	{
+		id: "donate",
+		slug: "donate",
+		image: {
+			url: "/menu/5.jpg",
+			alt: "Outdoor heritage photography exhibition",
+		},
+		href: "/donate",
+	},
+];
+
 export async function getAboutHeroMedia(
 	locale = "ckb",
 ): Promise<AboutHeroMedia> {
@@ -148,7 +173,10 @@ export async function getAboutPartners(locale: string): Promise<PartnerItem[]> {
 	// The bundled services/donate cards always lead; CMS partner rows follow
 	// (the پەیوەندی row today, more later). A CMS row used to REPLACE the
 	// bundled cards, which collapsed the section to a single card.
-	return [...PARTNERS, ...resolvePartnerItems(locale, await getPartners())];
+	return [
+		...BUNDLED_PARTNER_CARDS,
+		...resolvePartnerItems(locale, await getPartners()),
+	];
 }
 
 export async function getTeamMembers() {
