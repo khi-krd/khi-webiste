@@ -155,21 +155,10 @@ export default async function AboutPage({
 					sectionTitle={t("partners.title")}
 					getPartnerCopy={(id) => {
 						const partner = partners.find((item) => item.id === id);
-						if (partner?.title) {
-							return {
-								title: partner.title,
-								description: partner.description ?? "",
-								// CMS partners share one CTA label — a per-record
-								// `items.<id>.cta` key only exists for the bundled
-								// cards, so an id lookup rendered the raw key.
-								cta: t("partners.more"),
-							};
-						}
-
 						return {
-							title: t(`partners.items.${id}.title`),
-							description: t(`partners.items.${id}.description`),
-							cta: t(`partners.items.${id}.cta`),
+							title: partner?.title ?? partner?.slug ?? "",
+							description: partner?.description ?? "",
+							cta: t("partners.more"),
 						};
 					}}
 				/>
