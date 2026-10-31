@@ -41,8 +41,11 @@ export function filterWritings(
 
 	const trimmedWriter = writer?.trim().toLowerCase();
 	if (trimmedWriter) {
-		result = result.filter((item) =>
-			item.writer.toLowerCase().includes(trimmedWriter),
+		result = result.filter(
+			(item) =>
+				item.personNames.some((name) =>
+					name.toLowerCase().includes(trimmedWriter),
+				) || item.writer.toLowerCase().includes(trimmedWriter),
 		);
 	}
 

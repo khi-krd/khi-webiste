@@ -226,14 +226,13 @@ export function resolveWritingCard(
 	const seriesInfo = resolveWritingSeriesInfo(writing);
 	const seriesOrder = seriesInfo.seriesOrder ?? 1;
 	const description = content.description?.trim() ?? "";
+	const persons = resolveWritingPersons(locale, writing.persons ?? []);
 
 	return {
 		id: writing.id,
 		title: content.title,
-		writer: writingBylineName(
-			locale,
-			resolveWritingPersons(locale, writing.persons ?? []),
-		),
+		writer: writingBylineName(locale, persons),
+		personNames: persons.map((person) => person.name),
 		excerpt: description
 			? truncate(plainTextFromRichContent(description), EXCERPT_MAX_LENGTH)
 			: "",

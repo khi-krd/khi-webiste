@@ -173,13 +173,17 @@ export const getAllWritings = cache(
 	},
 );
 
-/** Writer names offered by the listing filter, deduped across the catalogue. */
+/** Writer names offered by the listing filter, deduped across the catalogue.
+ *  Options are per-person — a book credited to "A و B" lists A and B as two
+ *  choices, each of which still matches the book. */
 export async function getWritingWriters(locale: string): Promise<string[]> {
 	const names = new Set<string>();
 	for (const item of await getAllWritings(locale)) {
-		const name = item.writer.trim();
-		if (name) {
-			names.add(name);
+		for (const name of item.personNames) {
+			const trimmed = name.trim();
+			if (trimmed) {
+				names.add(trimmed);
+			}
 		}
 	}
 	return [...names].sort((a, b) => a.localeCompare(b));
