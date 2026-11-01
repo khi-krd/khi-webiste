@@ -44,7 +44,7 @@ const SERVICES_TAG = "services";
  */
 const SERVICES_FILTER_PAGE_SIZE = 100;
 
-/** CMS order: `sortOrder` ascending with unset last, then newest published. */
+/** CMS order: `sortOrder` ascending with unset last, then newest added. */
 function sortServiceRecords(records: Service[]): Service[] {
 	return [...records].sort((a, b) => {
 		const ao =
@@ -52,6 +52,9 @@ function sortServiceRecords(records: Service[]): Service[] {
 		const bo =
 			typeof b.sortOrder === "number" ? b.sortOrder : Number.POSITIVE_INFINITY;
 		if (ao !== bo) return ao - bo;
+		const ac = a.createdAt ? Date.parse(a.createdAt) : 0;
+		const bc = b.createdAt ? Date.parse(b.createdAt) : 0;
+		if (bc !== ac) return bc - ac;
 		const ap = a.publishedAt ? Date.parse(a.publishedAt) : 0;
 		const bp = b.publishedAt ? Date.parse(b.publishedAt) : 0;
 		return bp - ap;

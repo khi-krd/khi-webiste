@@ -323,8 +323,8 @@ export async function getRelatedNews(
 				return b.score - a.score;
 			}
 			return (
-				new Date(b.entry.publishedAt).getTime() -
-				new Date(a.entry.publishedAt).getTime()
+				new Date(b.entry.createdAt ?? b.entry.publishedAt).getTime() -
+				new Date(a.entry.createdAt ?? a.entry.publishedAt).getTime()
 			);
 		});
 

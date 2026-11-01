@@ -161,6 +161,7 @@ export function resolveNewsItem(locale: string, news: News): NewsItem | null {
 		subCategoryLabel: subCategoryLabel ?? undefined,
 		publishedAt:
 			news.datePublished ?? news.createdAt ?? new Date().toISOString(),
+		createdAt: news.createdAt ?? undefined,
 		coverMediaType: parseMediaKind(news.coverMediaType, coverUrl),
 		coverUrl: coverUrl ?? "/menu/1.jpg",
 		coverThumbnailUrl: news.coverThumbnailUrl ?? null,

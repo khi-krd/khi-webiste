@@ -247,4 +247,5 @@ export type ResolvedWritingCard = {
 	fileFormat: string | null;
 	pageCount: number | null;
 	fileSizeBytes: number | null;
+	createdAt: string;
 };

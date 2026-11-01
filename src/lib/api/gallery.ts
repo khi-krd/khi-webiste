@@ -103,7 +103,7 @@ async function fetchAllCollections(options: GalleryListingOptions = {}) {
 					(b.sortOrder ?? Number.MAX_SAFE_INTEGER);
 				return orderDiff !== 0
 					? orderDiff
-					: (b.publishmentDate ?? "").localeCompare(a.publishmentDate ?? "");
+					: (b.createdAt ?? "").localeCompare(a.createdAt ?? "");
 			})
 		: null;
 

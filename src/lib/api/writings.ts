@@ -515,7 +515,10 @@ export async function getRelatedWritings(
 			if (b.score !== a.score) {
 				return b.score - a.score;
 			}
-			return b.entry.id - a.entry.id;
+			return (
+				b.entry.createdAt.localeCompare(a.entry.createdAt) ||
+				b.entry.id - a.entry.id
+			);
 		});
 
 	const results: ResolvedWritingCard[] = [];

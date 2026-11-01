@@ -90,7 +90,10 @@ export function sortWritings(
 			a.title.localeCompare(b.title, undefined, { sensitivity: "base" }),
 		);
 	} else {
-		sorted.sort((a, b) => b.id - a.id);
+		sorted.sort(
+			(a, b) =>
+				b.createdAt.localeCompare(a.createdAt) || b.id - a.id,
+		);
 	}
 	return sorted;
 }

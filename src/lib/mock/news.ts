@@ -30,6 +30,9 @@ export type NewsItem = {
 	subCategory?: string;
 	subCategoryLabel?: string;
 	publishedAt: string;
+	/** When the record was added — the ordering date; `publishedAt` is the
+	 * displayed editorial date and can differ for back-dated articles. */
+	createdAt?: string;
 	featured?: boolean;
 	author?: string;
 	/** Where the news happened / was reported from — rendered in the masthead. */

@@ -82,7 +82,8 @@ export function NewsShell({
 		})
 		.sort(
 			(a, b) =>
-				new Date(b.publishedAt).getTime() - new Date(a.publishedAt).getTime(),
+				new Date(b.createdAt ?? b.publishedAt).getTime() -
+				new Date(a.createdAt ?? a.publishedAt).getTime(),
 		)
 		.slice(0, 6);
 

@@ -250,6 +250,7 @@ export function resolveWritingCard(
 		fileFormat: content.fileFormat ?? null,
 		pageCount: content.pageCount ?? null,
 		fileSizeBytes: content.fileSizeBytes ?? null,
+		createdAt: writing.createdAt ?? "",
 	};
 }
 
