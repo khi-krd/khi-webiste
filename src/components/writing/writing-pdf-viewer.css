@@ -41,13 +41,13 @@
 	margin-inline: auto;
 }
 
-.writing-pdf-viewer .react-pdf__Page__canvas {
+.writing-pdf-viewer .writing-pdf-viewer__page .react-pdf__Page__canvas {
 	display: block;
 	margin-inline: auto;
-	border: 1px solid var(--color-border);
-	border-radius: var(--radius-md);
-	background: var(--color-background);
-	box-shadow: 0 1px 2px rgb(26 24 19 / 6%);
+	background: white;
+	box-shadow:
+		0 1px 2px rgb(26 24 19 / 8%),
+		0 6px 20px rgb(26 24 19 / 8%);
 }
 
 .writing-pdf-viewer .react-pdf__Page__textContent,
@@ -90,105 +90,105 @@
 	touch-action: pan-x pan-y;
 }
 
-.writing-pdf-scrubber__range {
-	display: block;
-	width: 100%;
-	height: 2.25rem;
-	margin: 0;
-	appearance: none;
-	background: transparent;
-	cursor: pointer;
-	touch-action: none;
+/* Reader chrome — modelled on the reference design: a warm toolbar, a
+   thumbnail rail on the left, the page floating on a recessed canvas. */
+.writing-pdf-reader {
+	--reader-active: #a3262b;
+	box-shadow: 0 1px 2px rgb(26 24 19 / 5%), 0 8px 28px rgb(26 24 19 / 6%);
 }
 
-@media (min-width: 640px) {
-	.writing-pdf-scrubber__range {
-		height: 1.75rem;
+.writing-pdf-toolbar__page-input {
+	width: 2.75rem;
+	height: 2.25rem;
+	border: 1px solid var(--color-border);
+	border-radius: 0.5rem;
+	background: var(--color-background);
+	color: var(--color-foreground);
+	font-family: var(--font-heading);
+	font-size: var(--text-small);
+	font-weight: 600;
+	text-align: center;
+	box-shadow: inset 0 1px 1px rgb(26 24 19 / 4%);
+}
+
+.writing-pdf-toolbar__page-input:focus-visible {
+	outline: 2px solid var(--color-ring);
+	outline-offset: 1px;
+}
+
+.writing-pdf-rail {
+	width: 8.75rem;
+	flex-shrink: 0;
+	flex-direction: column;
+	align-items: center;
+	gap: 0.875rem;
+	overflow-y: auto;
+	padding: 0.875rem 0.625rem;
+	border-inline-end: 1px solid var(--color-border);
+	background: var(--color-surface);
+	scrollbar-width: thin;
+}
+
+.writing-pdf-thumb {
+	position: relative;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	gap: 0.375rem;
+	padding: 0.375rem 0.375rem 0;
+	border: 2px solid transparent;
+	border-radius: 0.625rem;
+	background: transparent;
+	cursor: pointer;
+	transition:
+		border-color 150ms ease,
+		background-color 150ms ease;
+}
+
+@media (hover: hover) and (pointer: fine) {
+	.writing-pdf-thumb:not(.writing-pdf-thumb--active):hover {
+		border-color: var(--color-border);
 	}
 }
 
-.writing-pdf-scrubber__range:focus-visible {
+.writing-pdf-thumb:focus-visible {
 	outline: 2px solid var(--color-ring);
 	outline-offset: 2px;
 }
 
-.writing-pdf-scrubber__range::-webkit-slider-runnable-track {
-	height: 4px;
-	border-radius: var(--radius-full);
-	background: var(--color-border-strong);
+.writing-pdf-thumb__page {
+	display: block;
+	overflow: hidden;
+	background: white;
+	box-shadow: 0 1px 3px rgb(26 24 19 / 14%);
 }
 
-.writing-pdf-scrubber__range::-webkit-slider-thumb {
-	appearance: none;
-	width: 1.375rem;
-	height: 1.375rem;
-	margin-top: -0.5625rem;
-	border: 2px solid var(--color-background);
-	border-radius: var(--radius-full);
-	background: var(--color-foreground);
-	box-shadow: 0 1px 3px rgb(26 24 19 / 18%);
+.writing-pdf-thumb__page .react-pdf__Page,
+.writing-pdf-thumb__page canvas {
+	display: block;
 }
 
-.writing-pdf-scrubber__range::-moz-range-track {
-	height: 4px;
-	border: 0;
-	border-radius: var(--radius-full);
-	background: var(--color-border-strong);
+.writing-pdf-thumb__number {
+	min-width: 1.75rem;
+	padding: 0.125rem 0.5rem;
+	margin-bottom: -2px;
+	border-radius: 0.25rem 0.25rem 0 0;
+	color: var(--color-foreground);
+	font-family: var(--font-heading);
+	font-size: var(--text-small);
+	font-weight: 700;
+	line-height: 1.4;
+	text-align: center;
+	font-variant-numeric: tabular-nums;
 }
 
-.writing-pdf-scrubber__range::-moz-range-thumb {
-	width: 1.375rem;
-	height: 1.375rem;
-	border: 2px solid var(--color-background);
-	border-radius: var(--radius-full);
-	background: var(--color-foreground);
-	box-shadow: 0 1px 3px rgb(26 24 19 / 18%);
+.writing-pdf-thumb--active {
+	border-color: var(--reader-active);
 }
 
-.writing-pdf-scrubber__track {
-	display: flex;
-	align-items: center;
-	justify-content: space-between;
-	gap: 3px;
-	min-height: 1.25rem;
-	padding-block: 0.25rem;
-	cursor: grab;
-	touch-action: none;
-	user-select: none;
-}
-
-.writing-pdf-scrubber__track--dragging {
-	cursor: grabbing;
-}
-
-.writing-pdf-scrubber__dot {
-	flex-shrink: 0;
-	width: 4px;
-	height: 4px;
-	padding: 0;
-	border: 0;
-	border-radius: var(--radius-full);
-	background: var(--color-border-strong);
-	transition:
-		width 150ms ease,
-		height 150ms ease,
-		background-color 150ms ease;
-}
-
-.writing-pdf-scrubber__dot--passed {
-	background: color-mix(in srgb, var(--color-foreground) 35%, transparent);
-}
-
-.writing-pdf-scrubber__dot--active {
-	width: 9px;
-	height: 9px;
-	background: var(--color-foreground);
-}
-
-.writing-pdf-scrubber__dot--preview {
-	width: 9px;
-	height: 9px;
-	background: color-mix(in srgb, var(--color-foreground) 55%, transparent);
+.writing-pdf-thumb--active .writing-pdf-thumb__number {
+	background: var(--reader-active);
+	color: white;
 }
 
 .writing-pdf-launch__overlay {

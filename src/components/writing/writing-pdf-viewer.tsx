@@ -1,13 +1,17 @@
 "use client";
 
 import {
+	ArrowDownTrayIcon,
+	ArrowLeftIcon,
+	ArrowRightIcon,
 	ArrowsPointingInIcon,
 	ArrowsPointingOutIcon,
 	BookOpenIcon,
 	DocumentTextIcon,
 	MagnifyingGlassMinusIcon,
 	MagnifyingGlassPlusIcon,
-	Square2StackIcon,
+	MinusIcon,
+	PlusIcon,
 } from "@heroicons/react/24/outline";
 import NextImage from "next/image";
 import { useTranslations } from "next-intl";
@@ -25,15 +29,11 @@ import "react-pdf/dist/Page/TextLayer.css";
 import { EmptyState } from "@/components/ui/empty-state";
 import { ErrorState } from "@/components/ui/error-state";
 import { Spinner } from "@/components/ui/spinner";
-import { PdfPageScrubber } from "@/components/writing/writing-pdf-page-scrubber";
 import { useIsMobile } from "@/lib/use-is-mobile";
 import { useScrollLock } from "@/lib/use-scroll-lock";
 import { cn } from "@/lib/utils";
 import { getPdfFileOffers, pickDefaultPdfOffer } from "@/lib/writing/pdf-offer";
-import {
-	spreadStartPage,
-	visibleSpreadPages,
-} from "@/lib/writing/pdf-page-range";
+import { visibleSpreadPages } from "@/lib/writing/pdf-page-range";
 import { resolvePdfViewerUrl } from "@/lib/writing/pdf-url";
 import type { WritingFileOffer } from "@/types/writing";
 import "./writing-pdf-viewer.css";
@@ -52,6 +52,7 @@ const VIEWPORT_PADDING_X_MOBILE = 8;
 const SWIPE_THRESHOLD_PX = 48;
 const DRAG_PAN_THRESHOLD_PX = 4;
 const SPREAD_PAGE_GAP = 12;
+const THUMB_WIDTH = 92;
 
 function clampZoom(value: number): number {
 	return Math.min(MAX_ZOOM, Math.max(MIN_ZOOM, value));
@@ -67,11 +68,16 @@ function touchDistance(
 const INLINE_VIEWPORT_CLASS =
 	"h-[72dvh] min-h-[28rem] sm:h-[82dvh] sm:min-h-[38rem] sm:max-h-[64rem]";
 const FULLSCREEN_VIEWPORT_CLASS = "min-h-0 flex-1";
+const READER_VIEWPORT_CLASS = "h-full min-w-0 flex-1";
 
 type FitMode = "width" | "height";
 
-const navButtonClass =
-	"inline-flex size-9 items-center justify-center border border-border-strong text-foreground transition-colors fine-hover:bg-sunken disabled:pointer-events-none disabled:opacity-40";
+type PdfDocument = Parameters<
+	NonNullable<React.ComponentProps<typeof Document>["onLoadSuccess"]>
+>[0];
+
+const iconButtonClass =
+	"inline-flex size-9 shrink-0 items-center justify-center rounded-lg text-foreground transition-colors fine-hover:bg-sunken disabled:pointer-events-none disabled:opacity-35";
 
 type WritingPdfViewerProps = {
 	fileOffers: WritingFileOffer[];
@@ -95,7 +101,7 @@ function PdfReaderLaunch({
 	onStart,
 }: PdfReaderLaunchProps) {
 	return (
-		<div className="border border-border bg-background">
+		<div className="overflow-hidden rounded-2xl border border-border bg-background">
 			<div
 				className={cn(
 					"writing-pdf-launch relative overflow-hidden bg-sunken",
@@ -237,157 +243,373 @@ function resolvePageRenderSize({
 }
 
 type PdfReaderToolbarProps = {
+	pageNumber: number;
+	numPages: number;
 	fitMode: FitMode;
 	zoom: number;
-	twoPageSpread: boolean;
 	isFullscreen?: boolean;
 	isMobile?: boolean;
+	downloadHref: string | null;
+	downloadName: string;
+	onPrevious: () => void;
+	onNext: () => void;
+	onSelectPage: (page: number) => void;
 	onZoomOut: () => void;
 	onZoomIn: () => void;
-	onFitWidth: () => void;
-	onFitHeight: () => void;
-	onToggleSpread: () => void;
+	onToggleFit: () => void;
 	onToggleFullscreen: () => void;
 	labels: {
 		zoomIn: string;
 		zoomOut: string;
 		fitWidth: string;
 		fitHeight: string;
-		twoPageSpread: string;
-		singlePage: string;
 		fullSize: string;
 		exitFullSize: string;
+		previousPage: string;
+		nextPage: string;
+		pageNumber: string;
+		download: string;
 	};
 };
 
-const fitButtonClass =
-	"h-9 min-w-9 border border-border-strong px-2.5 font-heading text-small font-medium transition-colors fine-hover:bg-sunken disabled:pointer-events-none disabled:opacity-40";
+const toolbarDivider = (
+	<span className="mx-1 h-6 w-px shrink-0 bg-border sm:mx-2" aria-hidden />
+);
+
+/** Western digits for the page box, whatever numeral set the reader typed. */
+function toLatinDigits(value: string): string {
+	return value
+		.replace(/[٠-٩]/g, (digit) => String(digit.charCodeAt(0) - 0x0660))
+		.replace(/[۰-۹]/g, (digit) => String(digit.charCodeAt(0) - 0x06f0));
+}
+
+function PdfPageNumberInput({
+	pageNumber,
+	numPages,
+	onSelectPage,
+	label,
+}: {
+	pageNumber: number;
+	numPages: number;
+	onSelectPage: (page: number) => void;
+	label: string;
+}) {
+	const [draft, setDraft] = useState(String(pageNumber));
+
+	useEffect(() => {
+		setDraft(String(pageNumber));
+	}, [pageNumber]);
+
+	const commit = () => {
+		const parsed = Number.parseInt(toLatinDigits(draft), 10);
+		if (!Number.isFinite(parsed) || numPages < 1) {
+			setDraft(String(pageNumber));
+			return;
+		}
+		const clamped = Math.min(Math.max(parsed, 1), numPages);
+		setDraft(String(clamped));
+		onSelectPage(clamped);
+	};
+
+	return (
+		<div className="flex items-center gap-1.5 tabular-nums">
+			<input
+				type="text"
+				inputMode="numeric"
+				value={draft}
+				aria-label={label}
+				onChange={(event) => setDraft(event.currentTarget.value)}
+				onFocus={(event) => event.currentTarget.select()}
+				onBlur={commit}
+				onKeyDown={(event) => {
+					if (event.key === "Enter") {
+						event.preventDefault();
+						commit();
+					}
+				}}
+				className="writing-pdf-toolbar__page-input"
+			/>
+			<span className="font-heading text-small font-semibold text-foreground">
+				/ {numPages || "–"}
+			</span>
+		</div>
+	);
+}
 
 function PdfReaderToolbar({
+	pageNumber,
+	numPages,
 	fitMode,
 	zoom,
-	twoPageSpread,
 	isFullscreen = false,
 	isMobile = false,
+	downloadHref,
+	downloadName,
+	onPrevious,
+	onNext,
+	onSelectPage,
 	onZoomOut,
 	onZoomIn,
-	onFitWidth,
-	onFitHeight,
-	onToggleSpread,
+	onToggleFit,
 	onToggleFullscreen,
 	labels,
 }: PdfReaderToolbarProps) {
-	const isBaseZoom = Math.abs(zoom - 1) < FIT_EPSILON;
-	const showZoomLabel = !isBaseZoom;
-	const activeFitMode = isMobile ? "width" : fitMode;
-	const touchButtonClass = isMobile
-		? "inline-flex size-11 items-center justify-center border border-border-strong text-foreground transition-colors fine-hover:bg-sunken disabled:pointer-events-none disabled:opacity-40"
-		: navButtonClass;
-	const touchFitButtonClass = isMobile
-		? "h-11 min-w-11 border border-border-strong px-3 font-heading text-small font-medium transition-colors fine-hover:bg-sunken disabled:pointer-events-none disabled:opacity-40"
-		: fitButtonClass;
+	const isFitWidth = isMobile || fitMode === "width";
 
 	return (
-		<div className="flex flex-wrap items-center justify-end gap-1.5 border-b border-border px-3 py-2.5 sm:gap-2 sm:px-5 sm:py-3">
-			<button
-				type="button"
-				className={touchButtonClass}
-				onClick={onZoomOut}
-				disabled={zoom <= MIN_ZOOM}
-				aria-label={labels.zoomOut}
-			>
-				<MagnifyingGlassMinusIcon className="size-4" aria-hidden />
-			</button>
-			{showZoomLabel ? (
-				<span className="label min-w-9 text-center font-medium tabular-nums">
-					{Math.round(zoom * 100)}%
-				</span>
-			) : null}
-			<button
-				type="button"
-				className={touchButtonClass}
-				onClick={onZoomIn}
-				disabled={zoom >= MAX_ZOOM}
-				aria-label={labels.zoomIn}
-			>
-				<MagnifyingGlassPlusIcon className="size-4" aria-hidden />
-			</button>
-			<button
-				type="button"
-				onClick={onFitWidth}
-				aria-label={labels.fitWidth}
-				aria-pressed={activeFitMode === "width" && isBaseZoom}
-				className={cn(
-					touchFitButtonClass,
-					activeFitMode === "width" && isBaseZoom && "bg-sunken",
-				)}
-			>
-				{labels.fitWidth}
-			</button>
-			{!isMobile ? (
+		<div
+			dir="ltr"
+			className="writing-pdf-toolbar flex items-center gap-0.5 border-b border-border bg-surface px-2 py-2 sm:gap-1 sm:px-4 sm:py-2.5"
+		>
+			<div className="flex items-center gap-0.5 sm:gap-1">
+				{downloadHref ? (
+					<a
+						href={downloadHref}
+						download={downloadName}
+						className={iconButtonClass}
+						aria-label={labels.download}
+						title={labels.download}
+					>
+						<ArrowDownTrayIcon className="size-5" aria-hidden />
+					</a>
+				) : null}
 				<button
 					type="button"
-					onClick={onFitHeight}
-					aria-label={labels.fitHeight}
-					aria-pressed={fitMode === "height" && isBaseZoom}
-					className={cn(
-						touchFitButtonClass,
-						fitMode === "height" && isBaseZoom && "bg-sunken",
+					className={iconButtonClass}
+					onClick={onToggleFullscreen}
+					aria-label={isFullscreen ? labels.exitFullSize : labels.fullSize}
+					title={isFullscreen ? labels.exitFullSize : labels.fullSize}
+				>
+					{isFullscreen ? (
+						<ArrowsPointingInIcon className="size-5" aria-hidden />
+					) : (
+						<ArrowsPointingOutIcon className="size-5" aria-hidden />
 					)}
-				>
-					{labels.fitHeight}
 				</button>
-			) : null}
-			{!isMobile ? (
+			</div>
+
+			{toolbarDivider}
+			<span className="flex-1" aria-hidden />
+
+			<div className="flex items-center gap-1 sm:gap-2">
 				<button
 					type="button"
-					onClick={onToggleSpread}
-					aria-label={twoPageSpread ? labels.singlePage : labels.twoPageSpread}
-					aria-pressed={twoPageSpread}
-					className={cn(touchFitButtonClass, twoPageSpread && "bg-sunken")}
+					className={iconButtonClass}
+					onClick={onPrevious}
+					disabled={pageNumber <= 1}
+					aria-label={labels.previousPage}
+					title={labels.previousPage}
 				>
-					<Square2StackIcon className="size-4" aria-hidden />
+					<ArrowLeftIcon className="size-5" aria-hidden />
 				</button>
-			) : null}
-			<button
-				type="button"
-				className={touchButtonClass}
-				onClick={onToggleFullscreen}
-				aria-label={isFullscreen ? labels.exitFullSize : labels.fullSize}
-			>
-				{isFullscreen ? (
-					<ArrowsPointingInIcon className="size-4" aria-hidden />
-				) : (
-					<ArrowsPointingOutIcon className="size-4" aria-hidden />
-				)}
-			</button>
+				<PdfPageNumberInput
+					pageNumber={pageNumber}
+					numPages={numPages}
+					onSelectPage={onSelectPage}
+					label={labels.pageNumber}
+				/>
+				<button
+					type="button"
+					className={iconButtonClass}
+					onClick={onNext}
+					disabled={pageNumber >= numPages}
+					aria-label={labels.nextPage}
+					title={labels.nextPage}
+				>
+					<ArrowRightIcon className="size-5" aria-hidden />
+				</button>
+			</div>
+
+			<span className="flex-1" aria-hidden />
+
+			<div className="hidden items-center sm:flex">
+				{toolbarDivider}
+				<div className="flex items-center gap-1">
+					<button
+						type="button"
+						className={iconButtonClass}
+						onClick={onZoomOut}
+						disabled={zoom <= MIN_ZOOM}
+						aria-label={labels.zoomOut}
+						title={labels.zoomOut}
+					>
+						<MinusIcon className="size-5" aria-hidden />
+					</button>
+					<span className="min-w-12 text-center font-heading text-small font-semibold tabular-nums text-foreground">
+						{Math.round(zoom * 100)}%
+					</span>
+					<button
+						type="button"
+						className={iconButtonClass}
+						onClick={onZoomIn}
+						disabled={zoom >= MAX_ZOOM}
+						aria-label={labels.zoomIn}
+						title={labels.zoomIn}
+					>
+						<PlusIcon className="size-5" aria-hidden />
+					</button>
+				</div>
+				{!isMobile ? (
+					<>
+						{toolbarDivider}
+						<button
+							type="button"
+							className={iconButtonClass}
+							onClick={onToggleFit}
+							aria-label={isFitWidth ? labels.fitHeight : labels.fitWidth}
+							title={isFitWidth ? labels.fitHeight : labels.fitWidth}
+						>
+							{isFitWidth ? (
+								<MagnifyingGlassMinusIcon className="size-5" aria-hidden />
+							) : (
+								<MagnifyingGlassPlusIcon className="size-5" aria-hidden />
+							)}
+						</button>
+					</>
+				) : null}
+			</div>
 		</div>
+	);
+}
+
+function PdfThumbnail({
+	pdf,
+	page,
+	active,
+	label,
+	onSelect,
+}: {
+	pdf: PdfDocument;
+	page: number;
+	active: boolean;
+	label: string;
+	onSelect: (page: number) => void;
+}) {
+	const buttonRef = useRef<HTMLButtonElement>(null);
+	const [inView, setInView] = useState(false);
+
+	// Thumbnails render lazily: a full-length book must not rasterise every
+	// page up front just to fill a rail the reader may never scroll.
+	useEffect(() => {
+		if (inView) {
+			return;
+		}
+		const node = buttonRef.current;
+		if (!node) {
+			return;
+		}
+		const observer = new IntersectionObserver(
+			([entry]) => {
+				if (entry?.isIntersecting) {
+					setInView(true);
+					observer.disconnect();
+				}
+			},
+			{ root: node.parentElement, rootMargin: "240px 0px" },
+		);
+		observer.observe(node);
+		return () => observer.disconnect();
+	}, [inView]);
+
+	return (
+		<button
+			ref={buttonRef}
+			type="button"
+			data-page={page}
+			onClick={() => onSelect(page)}
+			aria-label={label}
+			aria-current={active ? "page" : undefined}
+			className={cn("writing-pdf-thumb", active && "writing-pdf-thumb--active")}
+		>
+			<span
+				className="writing-pdf-thumb__page"
+				style={{ width: THUMB_WIDTH, minHeight: inView ? undefined : 124 }}
+			>
+				{inView ? (
+					<Page
+						pdf={pdf}
+						pageNumber={page}
+						width={THUMB_WIDTH}
+						renderTextLayer={false}
+						renderAnnotationLayer={false}
+						loading={null}
+						error={null}
+					/>
+				) : null}
+			</span>
+			<span className="writing-pdf-thumb__number">{page}</span>
+		</button>
+	);
+}
+
+function PdfThumbnailRail({
+	pdf,
+	numPages,
+	pageNumber,
+	onSelectPage,
+	labels,
+}: {
+	pdf: PdfDocument;
+	numPages: number;
+	pageNumber: number;
+	onSelectPage: (page: number) => void;
+	labels: { navLabel: string; goToPage: (page: number) => string };
+}) {
+	const railRef = useRef<HTMLElement>(null);
+
+	useEffect(() => {
+		railRef.current
+			?.querySelector(`[data-page="${pageNumber}"]`)
+			?.scrollIntoView({ block: "nearest" });
+	}, [pageNumber]);
+
+	return (
+		<nav
+			ref={railRef}
+			aria-label={labels.navLabel}
+			className="writing-pdf-rail hidden md:flex"
+		>
+			{Array.from({ length: numPages }, (_, index) => index + 1).map((page) => (
+				<PdfThumbnail
+					key={page}
+					pdf={pdf}
+					page={page}
+					active={page === pageNumber}
+					label={labels.goToPage(page)}
+					onSelect={onSelectPage}
+				/>
+			))}
+		</nav>
 	);
 }
 
 type PdfReaderFrameProps = {
 	toolbar: ReactNode;
+	rail: ReactNode;
 	viewport: ReactNode;
-	scrubber: ReactNode;
+	bodyClassName: string;
 	className?: string;
 };
 
 function PdfReaderFrame({
 	toolbar,
+	rail,
 	viewport,
-	scrubber,
+	bodyClassName,
 	className,
 }: PdfReaderFrameProps) {
 	return (
 		<div
 			className={cn(
-				"flex min-h-0 flex-col border border-border bg-background",
+				"writing-pdf-reader flex min-h-0 flex-col overflow-hidden rounded-2xl border border-border bg-surface",
 				className,
 			)}
 		>
 			{toolbar}
-			{viewport}
-			{scrubber}
+			<div dir="ltr" className={cn("flex min-h-0", bodyClassName)}>
+				{rail}
+				{viewport}
+			</div>
 		</div>
 	);
 }
@@ -409,7 +631,7 @@ type PdfReaderViewportProps = {
 	onSwipeNavigate?: (direction: 1 | -1) => void;
 	enableSwipe?: boolean;
 	isMobile?: boolean;
-	onLoadSuccess: (total: number) => void;
+	onLoadSuccess: (pdf: PdfDocument) => void;
 	onLoadError: () => void;
 	onInitialDisplayReady: () => void;
 	initialDisplayComplete?: boolean;
@@ -605,9 +827,9 @@ function PdfReaderViewport({
 			) {
 				return;
 			}
-			const rtl = document.documentElement.dir === "rtl";
-			const forward = deltaX < 0;
-			onSwipeNavigate(forward === rtl ? -1 : 1);
+			// The reader is laid out left-to-right (← previous, → next), so a
+			// leftward swipe always turns forward.
+			onSwipeNavigate(deltaX < 0 ? 1 : -1);
 		},
 		[enableSwipe, onSwipeNavigate],
 	);
@@ -637,9 +859,7 @@ function PdfReaderViewport({
 				}
 				lastWheelNavAtRef.current = now;
 				event.preventDefault();
-				const rtl = document.documentElement.dir === "rtl";
-				const forward = event.deltaX > 0;
-				onSwipeNavigate(forward === rtl ? -1 : 1);
+				onSwipeNavigate(event.deltaX > 0 ? 1 : -1);
 			}
 		},
 		[enableSwipe, onSwipeNavigate, onZoomChange],
@@ -852,7 +1072,7 @@ function PdfReaderViewport({
 						<Document
 							key={pdfSrc}
 							file={pdfSrc}
-							onLoadSuccess={({ numPages: total }) => onLoadSuccess(total)}
+							onLoadSuccess={onLoadSuccess}
 							onLoadError={onLoadError}
 							loading={null}
 							error={null}
@@ -894,6 +1114,11 @@ function PdfReaderViewport({
 	);
 }
 
+function downloadFileName(title: string): string {
+	const safe = title.replace(/[\\/:*?"<>|]+/g, " ").trim();
+	return `${safe || "document"}.pdf`;
+}
+
 export function WritingPdfViewer({
 	fileOffers,
 	locale,
@@ -911,8 +1136,8 @@ export function WritingPdfViewer({
 
 	const [pageNumber, setPageNumber] = useState(1);
 	const [numPages, setNumPages] = useState(0);
+	const [pdfDoc, setPdfDoc] = useState<PdfDocument | null>(null);
 	const [fitMode, setFitMode] = useState<FitMode>("height");
-	const [twoPageSpread, setTwoPageSpread] = useState(false);
 	const [zoom, setZoom] = useState(1);
 	const [loadError, setLoadError] = useState(false);
 	const [documentReady, setDocumentReady] = useState(false);
@@ -946,21 +1171,20 @@ export function WritingPdfViewer({
 			zoomOut: t("zoomOut"),
 			fitWidth: t("fitWidth"),
 			fitHeight: t("fitHeight"),
-			twoPageSpread: t("twoPageSpread"),
-			singlePage: t("singlePage"),
 			fullSize: t("fullSize"),
 			exitFullSize: t("exitFullSize"),
+			previousPage: t("previousPage"),
+			nextPage: t("nextPage"),
+			pageNumber: t("pageNumber"),
+			download: t("download"),
 		}),
 		[t],
 	);
 
-	const scrubberLabels = useMemo(
+	const railLabels = useMemo(
 		() => ({
 			navLabel: t("pageNavLabel"),
-			previousPage: t("previousPage"),
-			nextPage: t("nextPage"),
-			pageOf: (page: number, total: number) => t("pageOf", { page, total }),
-			pagesRemaining: (count: number) => t("pagesRemaining", { count }),
+			goToPage: (page: number) => t("goToPage", { page }),
 		}),
 		[t],
 	);
@@ -978,53 +1202,36 @@ export function WritingPdfViewer({
 	useEffect(() => {
 		setPageNumber(1);
 		setNumPages(0);
+		setPdfDoc(null);
 		setLoadError(false);
 		setDocumentReady(false);
 		setIsDisplayReady(false);
 		setIsReaderActive(false);
 		setFitMode("height");
-		setTwoPageSpread(false);
 		setZoom(1);
 		stablePageRenderSizeRef.current = {};
 	}, [defaultOffer]);
 
 	useScrollLock(isFullscreen);
 
-	const effectiveTwoPageSpread = twoPageSpread && !isMobile;
 	const effectiveFitMode: FitMode = isMobile ? "width" : fitMode;
-	const navigateStep = effectiveTwoPageSpread ? 2 : 1;
 	const canSwipeNavigate = Math.abs(zoom - 1) < FIT_EPSILON;
 
 	const goToPage = useCallback(
 		(delta: number) => {
-			setPageNumber((current) => {
-				const next = Math.min(
-					Math.max(current + delta * navigateStep, 1),
-					Math.max(numPages, 1),
-				);
-				return next;
-			});
+			setPageNumber((current) =>
+				Math.min(Math.max(current + delta, 1), Math.max(numPages, 1)),
+			);
 		},
-		[numPages, navigateStep],
+		[numPages],
 	);
 
 	const goToPageNumber = useCallback(
 		(page: number) => {
-			const clamped = Math.min(Math.max(page, 1), Math.max(numPages, 1));
-			setPageNumber(spreadStartPage(clamped, effectiveTwoPageSpread));
+			setPageNumber(Math.min(Math.max(page, 1), Math.max(numPages, 1)));
 		},
-		[numPages, effectiveTwoPageSpread],
+		[numPages],
 	);
-
-	const toggleSpread = useCallback(() => {
-		setTwoPageSpread((current) => {
-			const next = !current;
-			if (next) {
-				setPageNumber((page) => spreadStartPage(page, true));
-			}
-			return next;
-		});
-	}, []);
 
 	useEffect(() => {
 		if (!isReaderActive || loadError || numPages <= 1) {
@@ -1042,12 +1249,12 @@ export function WritingPdfViewer({
 				return;
 			}
 
-			const rtl = document.documentElement.dir === "rtl";
-			if (event.key === (rtl ? "ArrowLeft" : "ArrowRight")) {
+			// Matches the toolbar arrows: → next, ← previous.
+			if (event.key === "ArrowRight") {
 				event.preventDefault();
 				goToPage(1);
 			}
-			if (event.key === (rtl ? "ArrowRight" : "ArrowLeft")) {
+			if (event.key === "ArrowLeft") {
 				event.preventDefault();
 				goToPage(-1);
 			}
@@ -1060,23 +1267,29 @@ export function WritingPdfViewer({
 		return () => window.removeEventListener("keydown", handleKeyDown);
 	}, [isReaderActive, loadError, numPages, goToPage, isFullscreen]);
 
+	// Switching frames remounts the <Document>, which destroys the old proxy;
+	// drop it so the rail never renders against a dead document.
 	const openFullscreen = useCallback(() => {
+		setPdfDoc(null);
 		setIsFullscreen(true);
 		queueMicrotask(() => dialogRef.current?.showModal());
 	}, []);
 
 	const closeFullscreen = useCallback(() => {
+		setPdfDoc(null);
 		dialogRef.current?.close();
 		setIsFullscreen(false);
 	}, []);
 
-	const handleDocumentLoadSuccess = useCallback((total: number) => {
-		setNumPages(total);
+	const handleDocumentLoadSuccess = useCallback((pdf: PdfDocument) => {
+		setNumPages(pdf.numPages);
+		setPdfDoc(pdf);
 		setLoadError(false);
 		setDocumentReady(true);
 	}, []);
 
 	const handleDocumentLoadError = useCallback(() => {
+		setPdfDoc(null);
 		setLoadError(true);
 		setDocumentReady(false);
 	}, []);
@@ -1090,13 +1303,7 @@ export function WritingPdfViewer({
 		: inlineViewportSize;
 	const isViewportReady =
 		activeViewportSize.width > 0 && activeViewportSize.height > 0;
-	const pagesToShow = visibleSpreadPages(
-		pageNumber,
-		numPages,
-		effectiveTwoPageSpread,
-	);
-	const spreadColumns =
-		effectiveTwoPageSpread && pagesToShow.length > 1 ? 2 : 1;
+	const pagesToShow = visibleSpreadPages(pageNumber, numPages, false);
 	const viewportPaddingX = isMobile
 		? VIEWPORT_PADDING_X_MOBILE
 		: VIEWPORT_PADDING_X;
@@ -1118,7 +1325,7 @@ export function WritingPdfViewer({
 			zoom,
 			containerWidth: availableWidth,
 			viewportHeight,
-			spreadColumns,
+			spreadColumns: 1,
 			chromeHeight: viewportPaddingY,
 		});
 
@@ -1140,7 +1347,6 @@ export function WritingPdfViewer({
 		effectiveFitMode,
 		isViewportReady,
 		zoom,
-		spreadColumns,
 		viewportPaddingX,
 		viewportPaddingY,
 	]);
@@ -1165,7 +1371,6 @@ export function WritingPdfViewer({
 					readLabel={t("readButton")}
 					onStart={() => {
 						setFitMode("height");
-						setTwoPageSpread(false);
 						setZoom(1);
 						setIsReaderActive(true);
 					}}
@@ -1175,34 +1380,33 @@ export function WritingPdfViewer({
 	}
 
 	const toolbarProps = {
+		pageNumber,
+		numPages,
 		fitMode,
 		zoom,
-		twoPageSpread,
-		onToggleSpread: toggleSpread,
+		isMobile,
+		downloadHref: pdfSrc,
+		downloadName: downloadFileName(title),
+		onPrevious: () => goToPage(-1),
+		onNext: () => goToPage(1),
+		onSelectPage: goToPageNumber,
 		onZoomOut: () => setZoom((current) => clampZoom(current - ZOOM_STEP)),
-		onFitWidth: () => {
-			setFitMode("width");
-			setZoom(1);
-		},
-		onFitHeight: () => {
-			setFitMode("height");
-			setZoom(1);
-		},
 		onZoomIn: () => setZoom((current) => clampZoom(current + ZOOM_STEP)),
+		onToggleFit: () => {
+			setFitMode((current) => (current === "height" ? "width" : "height"));
+			setZoom(1);
+		},
 		labels: toolbarLabels,
 	};
 
-	const scrubber =
-		!loadError && numPages > 1 ? (
-			<PdfPageScrubber
-				pageNumber={pageNumber}
+	const rail =
+		pdfDoc && !loadError && numPages > 0 ? (
+			<PdfThumbnailRail
+				pdf={pdfDoc}
 				numPages={numPages}
-				twoPageSpread={effectiveTwoPageSpread}
+				pageNumber={pageNumber}
 				onSelectPage={goToPageNumber}
-				onPrevious={() => goToPage(-1)}
-				onNext={() => goToPage(1)}
-				isMobile={isMobile}
-				labels={scrubberLabels}
+				labels={railLabels}
 			/>
 		) : null;
 
@@ -1211,7 +1415,7 @@ export function WritingPdfViewer({
 				title,
 				pdfSrc,
 				visiblePages: pagesToShow,
-				twoPageSpread: effectiveTwoPageSpread,
+				twoPageSpread: false,
 				pageRenderSize,
 				documentReady,
 				isViewportReady,
@@ -1226,74 +1430,63 @@ export function WritingPdfViewer({
 				onInitialDisplayReady: handleInitialDisplayReady,
 				initialDisplayComplete: isDisplayReady,
 				labels: viewportLabels,
+				viewportClassName: READER_VIEWPORT_CLASS,
+				pageContainerClassName: "max-w-none",
 			}
 		: null;
-
-	const pageContainerClassName = isMobile
-		? "max-w-none"
-		: effectiveTwoPageSpread
-			? "max-w-4xl sm:max-w-5xl lg:max-w-6xl"
-			: "max-w-none";
 
 	return (
 		<div className={cn("writing-pdf-viewer", className)}>
 			{!isFullscreen ? (
 				<PdfReaderFrame
+					bodyClassName={INLINE_VIEWPORT_CLASS}
 					toolbar={
 						<PdfReaderToolbar
 							{...toolbarProps}
-							isMobile={isMobile}
 							onToggleFullscreen={openFullscreen}
 						/>
 					}
+					rail={rail}
 					viewport={
 						viewportProps ? (
 							<PdfReaderViewport
 								{...viewportProps}
-								viewportClassName={INLINE_VIEWPORT_CLASS}
-								pageContainerClassName={pageContainerClassName}
 								viewportRef={inlineViewportRef}
 							/>
 						) : null
 					}
-					scrubber={scrubber}
 				/>
 			) : null}
 
 			<dialog
 				ref={dialogRef}
-				onClose={() => setIsFullscreen(false)}
+				onClose={() => {
+					setPdfDoc(null);
+					setIsFullscreen(false);
+				}}
 				aria-label={title}
 				className="m-0 h-svh max-h-svh w-svw max-w-none border-0 bg-background p-0 text-foreground backdrop:bg-foreground/85 open:flex open:flex-col"
 			>
 				{isFullscreen ? (
 					<PdfReaderFrame
-						className="h-full min-h-0 flex-1 border-0"
+						className="h-full min-h-0 flex-1 rounded-none border-0"
+						bodyClassName={FULLSCREEN_VIEWPORT_CLASS}
 						toolbar={
 							<PdfReaderToolbar
 								{...toolbarProps}
 								isFullscreen
-								isMobile={isMobile}
 								onToggleFullscreen={closeFullscreen}
 							/>
 						}
+						rail={rail}
 						viewport={
 							viewportProps ? (
 								<PdfReaderViewport
 									{...viewportProps}
-									viewportClassName={FULLSCREEN_VIEWPORT_CLASS}
-									pageContainerClassName={
-										isMobile
-											? "max-w-none"
-											: effectiveTwoPageSpread
-												? "max-w-6xl xl:max-w-7xl"
-												: "max-w-none"
-									}
 									viewportRef={fullscreenViewportRef}
 								/>
 							) : null
 						}
-						scrubber={scrubber}
 					/>
 				) : null}
 			</dialog>

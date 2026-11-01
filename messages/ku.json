@@ -605,7 +605,9 @@
 				"errorTitle": "Belge nehat barkirin",
 				"errorDescription": "Dibe ku pel ne berdest be an ji hêla geroka te ve were astengkirin. Paşê dîsa biceribîne.",
 				"unavailableTitle": "Pêşdîtin tune",
-				"unavailableDescription": "Ev nivîs PDFek ji bo nîşandanê tune."
+				"unavailableDescription": "Ev nivîs PDFek ji bo nîşandanê tune.",
+				"download": "Daxistin",
+				"pageNumber": "Hejmara rûpelê"
 			},
 			"by": "Nivîsîna",
 			"format": "Format",
