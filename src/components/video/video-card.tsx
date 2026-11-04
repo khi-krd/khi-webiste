@@ -20,6 +20,8 @@ export type VideoCardProps = {
 	subtitle: string | null;
 	coverUrl: string | null;
 	previewVideoUrl?: string | null;
+	/** File or YouTube source for hover play — falls back to previewVideoUrl. */
+	hoverVideoSrc?: string | null;
 	hoverCoverUrl: string | null;
 	videoType: VideoType;
 	/** Translated type word ("Film" / "Clip"). */
@@ -93,12 +95,14 @@ function PlayMark({ large = false }: { large?: boolean }) {
 function CoverLayer({
 	coverUrl,
 	previewVideoUrl = null,
+	hoverVideoSrc = null,
 	hoverCoverUrl,
 	title,
 	sizes,
 }: {
 	coverUrl: string | null;
 	previewVideoUrl?: string | null;
+	hoverVideoSrc?: string | null;
 	hoverCoverUrl: string | null;
 	title: string;
 	sizes: string;
@@ -152,7 +156,9 @@ function CoverLayer({
 				</div>
 			) : null}
 			{/* Beat 4 (~450ms+): real motion, keyed to the video's `playing` event. */}
-			{previewVideoUrl ? <VideoHoverPreview src={previewVideoUrl} /> : null}
+			{hoverVideoSrc || previewVideoUrl ? (
+				<VideoHoverPreview src={hoverVideoSrc ?? previewVideoUrl ?? ""} />
+			) : null}
 		</>
 	);
 }
@@ -163,6 +169,7 @@ export function VideoCard({
 	subtitle,
 	coverUrl,
 	previewVideoUrl = null,
+	hoverVideoSrc = null,
 	hoverCoverUrl,
 	videoType,
 	typeLabel,
@@ -220,6 +227,7 @@ export function VideoCard({
 					<CoverLayer
 						coverUrl={coverUrl}
 						previewVideoUrl={previewVideoUrl}
+						hoverVideoSrc={hoverVideoSrc}
 						hoverCoverUrl={hoverCoverUrl}
 						title={title}
 						sizes="100vw"
@@ -269,6 +277,7 @@ export function VideoCard({
 				<CoverLayer
 					coverUrl={coverUrl}
 					previewVideoUrl={previewVideoUrl}
+					hoverVideoSrc={hoverVideoSrc}
 					hoverCoverUrl={hoverCoverUrl}
 					title={title}
 					sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"

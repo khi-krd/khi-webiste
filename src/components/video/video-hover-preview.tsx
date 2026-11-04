@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { cn } from "@/lib/utils";
-import { isDirectMediaFileUrl } from "@/lib/video/source";
+import { isDirectMediaFileUrl, parseYouTubeVideoId } from "@/lib/video/source";
 
 type VideoHoverPreviewProps = {
 	src: string;
@@ -49,6 +49,11 @@ export function VideoHoverPreview({
 	const resumeAtRef = useRef<number | null>(null);
 	const [mounted, setMounted] = useState(false);
 	const [failed, setFailed] = useState(false);
+
+	// YouTube sources preview through a muted autoplaying embed; direct files
+	// keep the native <video> path below.
+	const youTubeId = parseYouTubeVideoId(src);
+	const isFile = isDirectMediaFileUrl(src);
 
 	useEffect(() => {
 		const wrapper = wrapperRef.current;
@@ -105,6 +110,12 @@ export function VideoHoverPreview({
 				video.pause();
 			}
 			host.removeAttribute("data-previewing");
+			// An iframe can't be paused from outside — hover-out drops it, so a
+			// hidden embed never burns bandwidth. Re-hover reloads it.
+			if (youTubeId && !isFile) {
+				setMounted(false);
+				return;
+			}
 			idleTimerRef.current = window.setTimeout(() => {
 				idleTimerRef.current = null;
 				setMounted(false);
@@ -126,7 +137,7 @@ export function VideoHoverPreview({
 			}
 			host.removeAttribute("data-previewing");
 		};
-	}, [failed, intentDelayMs]);
+	}, [failed, intentDelayMs, youTubeId, isFile]);
 
 	// First mount lands after the intent timer already fired — start playback
 	// here (only if the pointer is still inside the host).
@@ -140,7 +151,7 @@ export function VideoHoverPreview({
 		}
 	}, [mounted]);
 
-	if (!isDirectMediaFileUrl(src) || failed) {
+	if ((!isFile && !youTubeId) || failed) {
 		return null;
 	}
 
@@ -150,7 +161,39 @@ export function VideoHoverPreview({
 			aria-hidden
 			className="pointer-events-none absolute inset-0 z-1 opacity-0 transition-opacity duration-[400ms] ease-[cubic-bezier(0.22,1,0.36,1)] group-data-[previewing]:opacity-100 motion-reduce:hidden"
 		>
-			{mounted ? (
+			{mounted && youTubeId && !isFile ? (
+				<iframe
+					src={`https://www.youtube-nocookie.com/embed/${youTubeId}?${new URLSearchParams(
+						{
+							autoplay: "1",
+							mute: "1",
+							controls: "0",
+							disablekb: "1",
+							fs: "0",
+							modestbranding: "1",
+							rel: "0",
+							iv_load_policy: "3",
+							playsinline: "1",
+							loop: "1",
+							playlist: youTubeId,
+						},
+					)}`}
+					title=""
+					tabIndex={-1}
+					allow="autoplay; encrypted-media"
+					referrerPolicy="strict-origin-when-cross-origin"
+					onLoad={() => {
+						// Document load isn't playback — give the player a beat before
+						// revealing, and skip if the pointer already left.
+						window.setTimeout(() => {
+							if (engagedRef.current) {
+								hostRef.current?.setAttribute("data-previewing", "");
+							}
+						}, 700);
+					}}
+					className={cn("size-full object-cover object-center", className)}
+				/>
+			) : mounted ? (
 				<video
 					ref={videoRef}
 					src={src}

@@ -171,6 +171,9 @@ export type ResolvedVideoCard = {
 	coverUrl: string | null;
 	/** Direct media URL used as a thumbnail when `coverUrl` is missing. */
 	previewVideoUrl: string | null;
+	/** Hover-play source — a direct media file, or a YouTube URL the preview
+	 *  layer embeds muted. Null keeps the still layers. */
+	hoverVideoSrc: string | null;
 	hoverCoverUrl: string | null;
 	videoType: VideoType;
 	albumOfMemories: boolean;

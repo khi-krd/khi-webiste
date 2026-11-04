@@ -90,6 +90,31 @@ export function resolveVideoPreviewUrl(video: Video): string | null {
 	return null;
 }
 
+/**
+ * The hover-play source: a direct file plays natively; when none exists the
+ * first YouTube-capable source is returned and the preview layer embeds it
+ * muted. Records with neither stay on their still layers.
+ */
+export function resolveVideoHoverSrc(video: Video): string | null {
+	const direct = resolveVideoPreviewUrl(video);
+	if (direct) {
+		return direct;
+	}
+
+	const clips = sortedClips(video) ?? [];
+	for (const candidate of [
+		video.sourceUrl,
+		video.sourceExternalUrl,
+		...clips.map((clip) => resolveClipUrl(clip)),
+	]) {
+		if (candidate && parseYouTubeVideoId(candidate)) {
+			return candidate.trim();
+		}
+	}
+
+	return null;
+}
+
 export function resolveVideoTopicName(
 	locale: string,
 	video: Video,
@@ -404,6 +429,7 @@ export function resolveVideoCard(
 		coverUrl:
 			resolveVideoCoverUrl(locale, video) ?? resolveVideoYouTubePoster(video),
 		previewVideoUrl: resolveVideoPreviewUrl(video),
+		hoverVideoSrc: resolveVideoHoverSrc(video),
 		hoverCoverUrl: video.hoverCoverUrl ?? null,
 		videoType: video.videoType,
 		albumOfMemories: video.albumOfMemories,
@@ -460,6 +486,12 @@ export function resolveVideoCards(
 			title: clip.title || base.title,
 			durationSeconds: clip.durationSeconds,
 			coverUrl: clip.coverUrl ?? base.coverUrl,
+			// A clip previews its own source; unplayable clip URLs keep the
+			// parent-level pick.
+			hoverVideoSrc:
+				isDirectMediaFileUrl(clip.url) || parseYouTubeVideoId(clip.url)
+					? clip.url
+					: base.hoverVideoSrc,
 			clipCount: null,
 			clipNumber: clip.clipNumber,
 		}));

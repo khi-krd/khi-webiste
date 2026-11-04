@@ -71,6 +71,7 @@ export async function VideoShell({
 		subtitle: card.subtitle,
 		coverUrl: card.coverUrl,
 		previewVideoUrl: card.previewVideoUrl,
+		hoverVideoSrc: card.hoverVideoSrc,
 		hoverCoverUrl: card.hoverCoverUrl,
 		videoType: card.videoType,
 		typeLabel: t(`typeBadge.${card.videoType}`),
