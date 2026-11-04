@@ -5,7 +5,16 @@ import {
 	WRITING_CATEGORY_SLUGS,
 	type WritingCategorySlug,
 } from "@/lib/writing/categories";
-import type { BookGenre, ResolvedWritingCard } from "@/types/writing";
+import type {
+	BookGenre,
+	ResolvedSeriesBook,
+	ResolvedWritingCard,
+} from "@/types/writing";
+
+export type WritingSeriesCard = WritingGridCardProps & {
+	order: number;
+	current: boolean;
+};
 
 export function buildCategoryCarouselItems(
 	labels: Record<WritingCategorySlug, string>,
@@ -28,6 +37,32 @@ export function buildWritingGridCards(
 		hoverCoverUrl: item.hoverCoverUrl,
 		fileUrl: item.fileUrl,
 	}));
+}
+
+/**
+ * Series volumes as full catalogue cards — the /series endpoint only carries
+ * id, title and position, so the card's cover/writer data is joined from the
+ * (request-memoized) catalogue. A member missing from the catalogue still
+ * renders, just without a cover.
+ */
+export function buildSeriesGridCards(
+	books: ResolvedSeriesBook[],
+	catalogue: ResolvedWritingCard[],
+): WritingSeriesCard[] {
+	const byId = new Map(catalogue.map((entry) => [entry.id, entry]));
+	return books.map((book) => {
+		const card = byId.get(book.id);
+		return {
+			id: book.id,
+			title: card?.title ?? book.title,
+			writer: card?.writer ?? "",
+			coverUrl: card?.coverUrl ?? null,
+			hoverCoverUrl: card?.hoverCoverUrl ?? null,
+			fileUrl: card?.fileUrl ?? null,
+			order: book.seriesOrder,
+			current: book.isCurrent,
+		};
+	});
 }
 
 /**

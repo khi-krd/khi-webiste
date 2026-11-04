@@ -4,11 +4,13 @@ import { getTranslations, setRequestLocale } from "next-intl/server";
 import { WritingPostView } from "@/components/writing/writing-post-view";
 import { WritingsShell } from "@/components/writing/writings-shell";
 import {
+	getAllWritings,
 	getRelatedWritings,
 	getWritingById,
 	getWritingSeriesBooks,
 } from "@/lib/api/writings";
 import { localeAlternates } from "@/lib/seo/metadata";
+import { buildSeriesGridCards } from "@/lib/writing/catalog";
 import {
 	WRITING_CATEGORY_NAV_KEYS,
 	type WritingCategorySlug,
@@ -133,6 +135,13 @@ export default async function WritingsSegmentPage({
 			? await getWritingSeriesBooks(locale, detail.seriesId, detail.id)
 			: [];
 
+	// The /series endpoint carries only position + title — the covers and
+	// writer lines come from the catalogue (memoized per request, so the join
+	// costs no extra fetch).
+	const seriesCards = seriesBooks.length
+		? buildSeriesGridCards(seriesBooks, await getAllWritings(locale))
+		: [];
+
 	const related = await getRelatedWritings(locale, detail);
 
 	// Every genre a record can carry — CMS names overlaid on the built-in
@@ -149,18 +158,17 @@ export default async function WritingsSegmentPage({
 				backHref="/writings"
 				backLabel={navT("menuWritings")}
 				backAriaLabel={t("post.back")}
-				seriesBooks={seriesBooks}
+				seriesCards={seriesCards}
 				related={related}
 				genreLabels={genreLabels}
 				locale={locale}
 				writerLabel={t("post.writer")}
 				bookLanguageLabel={t("post.bookLanguage")}
-
-
 				seriesLabel={t("post.series")}
 				seriesVolumeLabel={(order, total) =>
 					t("post.seriesVolume", { order, total: total ?? order })
 				}
+				seriesCurrentLabel={t("post.seriesCurrent")}
 				topicLabel={t("post.topic")}
 				genreLabel={t("post.genre")}
 				pagesLabel={t("post.pages")}

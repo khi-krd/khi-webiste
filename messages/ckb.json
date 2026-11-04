@@ -569,6 +569,7 @@
 			"topic": "بابەت",
 			"series": "زنجیرە",
 			"seriesVolume": "بەندی {order} لە {total}",
+			"seriesCurrent": "ئەم کتێبە",
 			"tags": "تاگ",
 			"keywords": "وشە سەرەکییەکان",
 			"downloads": "داگرتن",

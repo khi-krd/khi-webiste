@@ -5,9 +5,7 @@ import {
 	ScrollRevealItem,
 } from "@/components/motion/scroll-reveal";
 import { BackToIndexLink } from "@/components/ui/back-to-index";
-import { Badge } from "@/components/ui/badge";
 import { CoverLightbox } from "@/components/ui/cover-lightbox";
-import { Link } from "@/components/ui/link";
 import { RichText } from "@/components/ui/rich-text";
 import { WritingGridCard } from "@/components/writing/writing-grid-card";
 import { WritingPdfPreview } from "@/components/writing/writing-pdf-preview";
@@ -17,11 +15,13 @@ import { formatCount } from "@/lib/platform/format";
 import { writingTagHref } from "@/lib/search/taxonomy-href";
 import { displayTitleSizeClass } from "@/lib/title-scale";
 import { cn } from "@/lib/utils";
-import { buildWritingGridCards } from "@/lib/writing/catalog";
+import {
+	buildWritingGridCards,
+	type WritingSeriesCard,
+} from "@/lib/writing/catalog";
 import { personStripEntries } from "@/lib/writing/resolve";
 import type {
 	BookGenre,
-	ResolvedSeriesBook,
 	ResolvedWritingCard,
 	ResolvedWritingDetail,
 } from "@/types/writing";
@@ -34,15 +34,15 @@ type WritingPostViewProps = {
 	backLabel: string;
 	backAriaLabel?: string;
 
-	seriesBooks: ResolvedSeriesBook[];
+	seriesCards: WritingSeriesCard[];
 	related: ResolvedWritingCard[];
 	genreLabels: Record<BookGenre, string>;
 	writerLabel: string;
 	bookLanguageLabel: string;
 
-
 	seriesLabel: string;
 	seriesVolumeLabel: (order: number, total: number | null) => string;
+	seriesCurrentLabel: string;
 	topicLabel: string;
 	genreLabel: string;
 	pagesLabel: string;
@@ -59,15 +59,15 @@ export function WritingPostView({
 	backHref,
 	backLabel,
 	backAriaLabel,
-	seriesBooks,
+	seriesCards,
 	related,
 	genreLabels,
 	writerLabel,
 	bookLanguageLabel,
 
-
 	seriesLabel,
 	seriesVolumeLabel,
+	seriesCurrentLabel,
 	topicLabel,
 	genreLabel,
 	pagesLabel,
@@ -297,7 +297,7 @@ export function WritingPostView({
 				</section>
 			</ScrollRevealBlock>
 
-			{seriesBooks.length > 0 ? (
+			{seriesCards.length > 0 ? (
 				<ScrollRevealBlock>
 					<section
 						className={cn(
@@ -308,41 +308,27 @@ export function WritingPostView({
 					>
 						<h2
 							id="writing-series-heading"
-							className="font-heading text-h2 font-bold"
+							className="font-heading text-h2 font-bold text-balance"
 						>
-							{seriesLabel}
+							{detail.seriesName
+								? `${seriesLabel}: ${detail.seriesName}`
+								: seriesLabel}
 						</h2>
-						<ol className="mt-6 divide-y divide-border border border-border">
-							{seriesBooks.map((book) => (
-								<li key={book.id}>
-									{book.isCurrent ? (
-										<div className="flex items-center justify-between gap-4 bg-sunken px-5 py-4 sm:px-6">
-											<span className="font-heading text-body font-semibold">
-												{String(Math.round(book.seriesOrder)).padStart(2, "0")}.{" "}
-												{book.title}
-											</span>
-											<Badge variant="outline" size="sm">
-												{seriesVolumeLabel(
-													Math.round(book.seriesOrder),
-													detail.seriesTotalBooks,
-												)}
-											</Badge>
-										</div>
-									) : (
-										<Link
-											href={`/writings/${book.id}`}
-											variant="nav"
-											className="flex items-center justify-between gap-4 px-5 py-4 no-underline transition-colors fine-hover:bg-sunken sm:px-6"
-										>
-											<span className="font-heading text-body font-medium text-foreground">
-												{String(Math.round(book.seriesOrder)).padStart(2, "0")}.{" "}
-												{book.title}
-											</span>
-										</Link>
-									)}
-								</li>
+						<ScrollReveal className="mt-6 grid grid-cols-1 gap-3 sm:grid-cols-2 sm:gap-4 lg:grid-cols-4">
+							{seriesCards.map((card) => (
+								<ScrollRevealItem key={card.id}>
+									<WritingGridCard
+										{...card}
+										badgeLabel={seriesVolumeLabel(
+											Math.round(card.order),
+											detail.seriesTotalBooks,
+										)}
+										currentLabel={card.current ? seriesCurrentLabel : null}
+										isCurrent={card.current}
+									/>
+								</ScrollRevealItem>
 							))}
-						</ol>
+						</ScrollReveal>
 					</section>
 				</ScrollRevealBlock>
 			) : null}
