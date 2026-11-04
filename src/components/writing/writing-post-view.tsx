@@ -1,4 +1,5 @@
 import NextImage from "next/image";
+import { Fragment } from "react";
 import {
 	ScrollReveal,
 	ScrollRevealBlock,
@@ -19,9 +20,12 @@ import {
 	buildWritingGridCards,
 	type WritingSeriesCard,
 } from "@/lib/writing/catalog";
-import { personStripEntries } from "@/lib/writing/resolve";
+import {
+	personNameConjunction,
+	personStripEntries,
+} from "@/lib/writing/resolve";
+import { buildWritingsHref } from "@/lib/writings-url";
 import type {
-	BookGenre,
 	ResolvedWritingCard,
 	ResolvedWritingDetail,
 } from "@/types/writing";
@@ -36,7 +40,6 @@ type WritingPostViewProps = {
 
 	seriesCards: WritingSeriesCard[];
 	related: ResolvedWritingCard[];
-	genreLabels: Record<BookGenre, string>;
 	writerLabel: string;
 	bookLanguageLabel: string;
 
@@ -44,10 +47,8 @@ type WritingPostViewProps = {
 	seriesVolumeLabel: (order: number, total: number | null) => string;
 	seriesCurrentLabel: string;
 	topicLabel: string;
-	genreLabel: string;
 	pagesLabel: string;
 	formatLabel: string;
-	languagesLabel: string;
 	previewTitle: string;
 	relatedLabel: string;
 	lightboxCloseLabel: string;
@@ -61,7 +62,6 @@ export function WritingPostView({
 	backAriaLabel,
 	seriesCards,
 	related,
-	genreLabels,
 	writerLabel,
 	bookLanguageLabel,
 
@@ -69,25 +69,14 @@ export function WritingPostView({
 	seriesVolumeLabel,
 	seriesCurrentLabel,
 	topicLabel,
-	genreLabel,
 	pagesLabel,
 	formatLabel,
-	languagesLabel,
 	previewTitle,
 	relatedLabel,
 	lightboxCloseLabel,
 	locale,
 }: WritingPostViewProps) {
 	const relatedCards = buildWritingGridCards(related);
-
-	// Genre chips — the first reads as the record's primary class (solid
-	// brand), the rest as quieter outlined qualifiers, per the house mock.
-	// A slug with no label (a genre deleted from the CMS mid-flight) is
-	// skipped rather than drawn blank.
-	const genreNames = detail.genres.flatMap((genre) => {
-		const label = genreLabels[genre];
-		return label ? [label] : [];
-	});
 
 	const volumeLine =
 		detail.seriesName && detail.isPartOfSeries
@@ -106,12 +95,6 @@ export function WritingPostView({
 					.filter(Boolean),
 			),
 		).join(" · ") || null;
-	const languagesValue =
-		Array.from(
-			new Set(
-				detail.fileOffers.map((offer) => offer.languageLabel).filter(Boolean),
-			),
-		).join(" · ") || null;
 	const pageCount =
 		detail.fileOffers.find(
 			(offer) =>
@@ -125,30 +108,58 @@ export function WritingPostView({
 	// with the locale conjunction, else the first person attached.
 	const bylineName = detail.writer;
 
-	type StripField = { label: string | null; value: string; ltr?: boolean };
+	// Linked values are plain GET links into the writings index — people hit
+	// the exact writer filter, topic/location ride the text search (both are
+	// in its haystack).
+	type StripField = {
+		label: string | null;
+		value?: string;
+		links?: { text: string; href: string }[];
+		linkSep?: string;
+		ltr?: boolean;
+	};
 	const stripFields: StripField[] = [
 		...personStripEntries(locale, detail.persons).map((entry) => ({
 			label: entry.label || writerLabel,
-			value: entry.value,
+			links: entry.members.map((member) => ({
+				text: member.display,
+				href: buildWritingsHref({ writer: member.name }),
+			})),
+			linkSep: personNameConjunction(locale),
 		})),
-		...(detail.location ? [{ label: null, value: detail.location }] : []),
+		...(detail.location
+			? [
+					{
+						label: null,
+						links: [
+							{
+								text: detail.location,
+								href: buildWritingsHref({ q: detail.location }),
+							},
+						],
+					},
+				]
+			: []),
 		...(detail.bookLanguage
 			? [{ label: bookLanguageLabel, value: detail.bookLanguage }]
 			: []),
 		...(detail.topicNames.length > 0
-			? [{ label: topicLabel, value: detail.topicNames.join("، ") }]
-			: []),
-		...(genreNames.length > 0
-			? [{ label: genreLabel, value: genreNames.join("، ") }]
+			? [
+					{
+						label: topicLabel,
+						links: detail.topicNames.map((name) => ({
+							text: name,
+							href: buildWritingsHref({ q: name }),
+						})),
+						linkSep: "، ",
+					},
+				]
 			: []),
 		...(pageCount
 			? [{ label: pagesLabel, value: formatCount(locale, pageCount) }]
 			: []),
 		...(formatValue
 			? [{ label: formatLabel, value: formatValue, ltr: true }]
-			: []),
-		...(languagesValue
-			? [{ label: languagesLabel, value: languagesValue }]
 			: []),
 	];
 
@@ -264,7 +275,19 @@ export function WritingPostView({
 									dir={field.ltr ? "ltr" : undefined}
 									className="text-small font-bold text-foreground"
 								>
-									{field.value}
+									{field.links
+										? field.links.map((link, index) => (
+												<Fragment key={`${link.href}-${index}`}>
+													{index > 0 ? (field.linkSep ?? "، ") : null}
+													<NavLink
+														href={link.href}
+														className="text-foreground no-underline transition-colors fine-hover:text-brand"
+													>
+														{link.text}
+													</NavLink>
+												</Fragment>
+											))
+										: field.value}
 								</dd>
 							</div>
 						))}

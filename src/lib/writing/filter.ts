@@ -68,6 +68,7 @@ export function filterWritings(
 				item.excerpt,
 				item.seriesName,
 				item.topicName,
+				item.location,
 				...item.topicNames,
 			]
 				.filter(Boolean)
@@ -91,8 +92,7 @@ export function sortWritings(
 		);
 	} else {
 		sorted.sort(
-			(a, b) =>
-				b.createdAt.localeCompare(a.createdAt) || b.id - a.id,
+			(a, b) => b.createdAt.localeCompare(a.createdAt) || b.id - a.id,
 		);
 	}
 	return sorted;

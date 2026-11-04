@@ -93,7 +93,12 @@ function formatPersonName(person: ResolvedWritingPerson): string {
 export function personStripEntries(
 	locale: string,
 	persons: ResolvedWritingPerson[],
-): { label: string | null; value: string }[] {
+): {
+	label: string | null;
+	value: string;
+	/** Raw member data per joined name — display carries the nickname, name is the filterable bare name. */
+	members: { display: string; name: string }[];
+}[] {
 	const groups = new Map<string, ResolvedWritingPerson[]>();
 	const order: (string | ResolvedWritingPerson)[] = [];
 	for (const person of persons) {
@@ -111,13 +116,21 @@ export function personStripEntries(
 	const joiner = personNameConjunction(locale);
 	return order.map((slot) => {
 		if (typeof slot !== "string") {
-			return { label: null, value: formatPersonName(slot) };
+			return {
+				label: null,
+				value: formatPersonName(slot),
+				members: [{ display: formatPersonName(slot), name: slot.name }],
+			};
 		}
 		const members = groups.get(slot)!;
 		const role = members[0]!.role!.trim();
 		return {
 			label: members.length > 1 ? pluralizeRoleLabel(locale, role) : role,
 			value: members.map(formatPersonName).join(joiner),
+			members: members.map((member) => ({
+				display: formatPersonName(member),
+				name: member.name,
+			})),
 		};
 	});
 }
@@ -233,6 +246,7 @@ export function resolveWritingCard(
 		title: content.title,
 		writer: writingBylineName(locale, persons),
 		personNames: persons.map((person) => person.name),
+		location: content.location?.trim() || null,
 		excerpt: description
 			? truncate(plainTextFromRichContent(description), EXCERPT_MAX_LENGTH)
 			: "",

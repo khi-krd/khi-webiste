@@ -15,7 +15,6 @@ import {
 	WRITING_CATEGORY_NAV_KEYS,
 	type WritingCategorySlug,
 } from "@/lib/writing/categories";
-import { getWritingGenreLabelSets } from "@/lib/writing/genre-labels";
 import { loadWritingsPageData } from "@/lib/writing/page-data";
 import { parseWritingSegment } from "@/lib/writing/segment";
 
@@ -144,13 +143,6 @@ export default async function WritingsSegmentPage({
 
 	const related = await getRelatedWritings(locale, detail);
 
-	// Every genre a record can carry — CMS names overlaid on the built-in
-	// translations, so editor renames and new genres label correctly here.
-	const { labelLookup: genreLabels } = await getWritingGenreLabelSets(
-		locale,
-		t,
-	);
-
 	return (
 		<main className="bg-background">
 			<WritingPostView
@@ -160,7 +152,6 @@ export default async function WritingsSegmentPage({
 				backAriaLabel={t("post.back")}
 				seriesCards={seriesCards}
 				related={related}
-				genreLabels={genreLabels}
 				locale={locale}
 				writerLabel={t("post.writer")}
 				bookLanguageLabel={t("post.bookLanguage")}
@@ -170,10 +161,8 @@ export default async function WritingsSegmentPage({
 				}
 				seriesCurrentLabel={t("post.seriesCurrent")}
 				topicLabel={t("post.topic")}
-				genreLabel={t("post.genre")}
 				pagesLabel={t("post.pages")}
 				formatLabel={t("post.format")}
-				languagesLabel={t("post.languagesLabel")}
 				previewTitle={t("post.preview.title")}
 				relatedLabel={t("post.related")}
 				lightboxCloseLabel={t("post.lightboxClose")}

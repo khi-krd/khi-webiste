@@ -30,7 +30,11 @@ describe("personStripEntries", () => {
 			person("نووسەر", "ئیبراهیم باجەڵان"),
 		]);
 		expect(entries).toEqual([
-			{ label: "نووسەر", value: "ئیبراهیم باجەڵان" },
+			{
+				label: "نووسەر",
+				value: "ئیبراهیم باجەڵان",
+				members: [{ display: "ئیبراهیم باجەڵان", name: "ئیبراهیم باجەڵان" }],
+			},
 		]);
 	});
 
@@ -43,6 +47,10 @@ describe("personStripEntries", () => {
 			{
 				label: "نووسەران",
 				value: "ئیبراهیم باجەڵان و هەردەوێڵ کاکەیی",
+				members: [
+					{ display: "ئیبراهیم باجەڵان", name: "ئیبراهیم باجەڵان" },
+					{ display: "هەردەوێڵ کاکەیی", name: "هەردەوێڵ کاکەیی" },
+				],
 			},
 		]);
 	});
@@ -53,7 +61,14 @@ describe("personStripEntries", () => {
 			person("Nivîskar", "Ala"),
 		]);
 		expect(entries).toEqual([
-			{ label: "Nivîskar", value: "Eyþan û Ala" },
+			{
+				label: "Nivîskar",
+				value: "Eyþan û Ala",
+				members: [
+					{ display: "Eyþan", name: "Eyþan" },
+					{ display: "Ala", name: "Ala" },
+				],
+			},
 		]);
 	});
 
@@ -64,8 +79,19 @@ describe("personStripEntries", () => {
 			person("  نووسەر  ", "جا"),
 		]);
 		expect(entries).toEqual([
-			{ label: "نووسەران", value: "ئا و جا" },
-			{ label: "کۆکەرەوە", value: "با" },
+			{
+				label: "نووسەران",
+				value: "ئا و جا",
+				members: [
+					{ display: "ئا", name: "ئا" },
+					{ display: "جا", name: "جا" },
+				],
+			},
+			{
+				label: "کۆکەرەوە",
+				value: "با",
+				members: [{ display: "با", name: "با" }],
+			},
 		]);
 	});
 
@@ -75,8 +101,16 @@ describe("personStripEntries", () => {
 			person(null, "با"),
 		]);
 		expect(entries).toEqual([
-			{ label: null, value: "ئا" },
-			{ label: null, value: "با" },
+			{
+				label: null,
+				value: "ئا",
+				members: [{ display: "ئا", name: "ئا" }],
+			},
+			{
+				label: null,
+				value: "با",
+				members: [{ display: "با", name: "با" }],
+			},
 		]);
 	});
 
@@ -86,7 +120,14 @@ describe("personStripEntries", () => {
 			person("نووسەر", "هەردەوێڵ"),
 		]);
 		expect(entries).toEqual([
-			{ label: "نووسەران", value: "ئیبراهیم (مام ئیبرا) و هەردەوێڵ" },
+			{
+				label: "نووسەران",
+				value: "ئیبراهیم (مام ئیبرا) و هەردەوێڵ",
+				members: [
+					{ display: "ئیبراهیم (مام ئیبرا)", name: "ئیبراهیم" },
+					{ display: "هەردەوێڵ", name: "هەردەوێڵ" },
+				],
+			},
 		]);
 	});
 });

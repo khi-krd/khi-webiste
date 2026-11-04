@@ -227,6 +227,7 @@ export type ResolvedWritingCard = {
 	id: number;
 	title: string;
 	writer: string;
+	location: string | null;
 	/** Individual person names (un-joined) — the writer filter lists these, not
 	 *  the byline, so a book credited to two people offers both separately. */
 	personNames: string[];
