@@ -152,7 +152,7 @@ function FooterNavPanel({ title, links, resolveLabel }: FooterNavPanelProps) {
 									target="_blank"
 									rel="noreferrer"
 									className={cn(
-										"group flex w-full items-center justify-between gap-4 py-3.5",
+										"group flex w-full items-center justify-between gap-4 py-2.5",
 										"font-heading text-[1.25rem] font-medium leading-snug text-primary-foreground/75 lg:text-[1.375rem]",
 										"no-underline transition-colors duration-200 fine-hover:text-primary-foreground",
 									)}
@@ -179,7 +179,7 @@ function FooterNavPanel({ title, links, resolveLabel }: FooterNavPanelProps) {
 								href={item.href}
 								variant="nav"
 								className={cn(
-									"group flex w-full items-center justify-between gap-4 py-3.5",
+									"group flex w-full items-center justify-between gap-4 py-2.5",
 									"font-heading text-[1.25rem] font-medium leading-snug text-primary-foreground/75 lg:text-[1.375rem]",
 									"transition-colors duration-200 fine-hover:text-primary-foreground",
 								)}
@@ -281,11 +281,11 @@ export async function Footer() {
 					/>
 				</div>
 
-				<div className="relative z-10 pb-8 pt-14 sm:pt-16 lg:pt-20">
+				<div className="relative z-10 pb-6 pt-10.5 sm:pt-12 lg:pt-15">
 					<Container className="max-w-none 2xl:max-w-[var(--canvas)]">
 						<FooterReveal>
 							<FooterRevealItem>
-								<div className="flex flex-wrap items-center justify-between gap-8">
+								<div className="flex flex-wrap items-center justify-between gap-6">
 									<Logo className="text-primary-foreground" reverse />
 									<FooterSocialIcons links={socialLinks} />
 								</div>
@@ -294,7 +294,7 @@ export async function Footer() {
 							    equal tracks pushed the two lists to opposite page edges.
 							    justify-center centers the block under the watermark while
 							    each column keeps its own intrinsic width. */}
-								<div className="mt-12 flex flex-wrap justify-center gap-x-20 gap-y-8 sm:gap-x-32 lg:mt-14 lg:gap-x-40">
+								<div className="mt-9 flex flex-wrap justify-center gap-x-20 gap-y-6 sm:gap-x-32 lg:mt-10.5 lg:gap-x-40">
 									{navPanels.map((panel) => (
 										<FooterNavPanel
 											key={panel.key}
@@ -305,7 +305,7 @@ export async function Footer() {
 									))}
 								</div>
 
-								<div className="mt-10 flex flex-col-reverse gap-3 border-t border-primary-foreground/10 pt-6 sm:mt-12 sm:flex-row sm:items-center sm:justify-between">
+								<div className="mt-7.5 flex flex-col-reverse gap-3 border-t border-primary-foreground/10 pt-4.5 sm:mt-9 sm:flex-row sm:items-center sm:justify-between">
 									<p className="text-small leading-relaxed text-primary-foreground/50">
 										{t("copyright")}
 									</p>
