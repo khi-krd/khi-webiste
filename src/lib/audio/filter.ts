@@ -28,9 +28,7 @@ export function filterAudioTracks(
 
 	if (topicId != null) {
 		result = result.filter((item) =>
-			(item.topicIds.length ? item.topicIds : [item.topicId]).includes(
-				topicId,
-			),
+			(item.topicIds.length ? item.topicIds : [item.topicId]).includes(topicId),
 		);
 	}
 
@@ -54,6 +52,7 @@ export function filterAudioTracks(
 				item.soundType,
 				...item.topicNames,
 				...item.soundTypes,
+				...item.locations,
 				...item.tags,
 				...item.keywords,
 			]

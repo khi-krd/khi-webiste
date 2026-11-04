@@ -16,6 +16,7 @@ import { homeInsetClass } from "@/lib/layout";
 import { videoTagHref, videoTopicHref } from "@/lib/search/taxonomy-href";
 import { cn } from "@/lib/utils";
 import { formatDuration, formatFileSizeMb } from "@/lib/video/format";
+import { buildVideoHref } from "@/lib/video-url";
 import type { ResolvedVideoDetail } from "@/types/video";
 
 type VideoDetailViewProps = {
@@ -54,7 +55,17 @@ export async function VideoDetailView({
 			? { label: t("detail.producer"), value: detail.producer }
 			: null,
 		detail.location
-			? { label: t("detail.location"), value: detail.location }
+			? {
+					label: t("detail.location"),
+					value: (
+						<Link
+							href={buildVideoHref({ q: detail.location })}
+							className="underline decoration-border underline-offset-2 transition-colors fine-hover:text-brand fine-hover:decoration-brand"
+						>
+							{detail.location}
+						</Link>
+					),
+				}
 			: null,
 		detail.topicNames.length > 0
 			? {
@@ -64,11 +75,11 @@ export async function VideoDetailView({
 							{detail.topicNames.map((name, index) => {
 								const id = detail.topicIds[index];
 								return (
-									<span key={`${name}-${index}`}>
+									<span key={id ?? name}>
 										{id != null ? (
 											<Link
 												href={videoTopicHref(id)}
-												className="underline decoration-border underline-offset-2 transition-colors fine-hover:decoration-foreground"
+												className="underline decoration-border underline-offset-2 transition-colors fine-hover:text-brand fine-hover:decoration-brand"
 											>
 												{name}
 											</Link>

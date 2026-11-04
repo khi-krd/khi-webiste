@@ -223,6 +223,7 @@ export type ResolvedAudioCard = {
 	topicName: string | null;
 	topicIds: number[];
 	topicNames: string[];
+	locations: string[];
 	totalDurationSeconds: number | null;
 	totalTracks: number | null;
 	publishmentYear: number | null;

@@ -112,6 +112,7 @@ export function filterGalleryPosts(
 
 		return (
 			item.title.toLowerCase().includes(trimmedQuery) ||
+			(item.location ?? "").toLowerCase().includes(trimmedQuery) ||
 			item.tags.some((tag) => tag.toLowerCase().includes(trimmedQuery)) ||
 			item.topicName?.toLowerCase().includes(trimmedQuery)
 		);

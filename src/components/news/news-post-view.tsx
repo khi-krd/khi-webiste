@@ -12,6 +12,7 @@ import { RichText } from "@/components/ui/rich-text";
 import { Link } from "@/i18n/navigation";
 import { homeInsetClass } from "@/lib/layout";
 import { type NewsItem, newsItemBadgeLabel } from "@/lib/mock/news";
+import { buildNewsHref } from "@/lib/news-url";
 import { isRichTextEmpty } from "@/lib/rich-text";
 import { newsTagHref } from "@/lib/search/taxonomy-href";
 import { cn } from "@/lib/utils";
@@ -132,7 +133,12 @@ export function NewsPostView({
 								</svg>
 								<span>
 									{locationLabel ? `${locationLabel}: ` : ""}
-									{item.location}
+									<Link
+										href={buildNewsHref({ q: item.location })}
+										className="text-muted no-underline transition-colors fine-hover:text-brand"
+									>
+										{item.location}
+									</Link>
 								</span>
 							</p>
 						) : null}

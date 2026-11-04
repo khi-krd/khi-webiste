@@ -153,6 +153,7 @@ export function filterNews(
 			(item) =>
 				item.title.toLowerCase().includes(q) ||
 				item.excerpt.toLowerCase().includes(q) ||
+				(item.location ?? "").toLowerCase().includes(q) ||
 				(item.tags ?? []).some((tag) => tag.toLowerCase().includes(q)),
 		);
 	}

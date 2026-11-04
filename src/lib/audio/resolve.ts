@@ -241,6 +241,7 @@ export function resolveAudioCard(
 		topicName: resolveAudioTopicName(locale, track),
 		topicIds: resolveAudioTopicIds(track),
 		topicNames: resolveAudioTopicNames(locale, track),
+		locations: locale === "ckb" ? track.locationsCkb : track.locationsKmr,
 		totalDurationSeconds: track.totalDurationSeconds ?? null,
 		totalTracks:
 			track.totalTracks ??

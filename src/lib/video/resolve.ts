@@ -430,6 +430,7 @@ export function resolveVideoCard(
 			resolveVideoCoverUrl(locale, video) ?? resolveVideoYouTubePoster(video),
 		previewVideoUrl: resolveVideoPreviewUrl(video),
 		hoverVideoSrc: resolveVideoHoverSrc(video),
+		location: firstNonBlank(content.location),
 		hoverCoverUrl: video.hoverCoverUrl ?? null,
 		videoType: video.videoType,
 		albumOfMemories: video.albumOfMemories,

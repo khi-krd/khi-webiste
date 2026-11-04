@@ -277,7 +277,7 @@ export function WritingPostView({
 								>
 									{field.links
 										? field.links.map((link, index) => (
-												<Fragment key={`${link.href}-${index}`}>
+												<Fragment key={link.href}>
 													{index > 0 ? (field.linkSep ?? "، ") : null}
 													<NavLink
 														href={link.href}

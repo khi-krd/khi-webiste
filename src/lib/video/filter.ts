@@ -20,9 +20,7 @@ export function filterVideos(
 
 	if (topicId != null) {
 		result = result.filter((item) =>
-			(item.topicIds.length ? item.topicIds : [item.topicId]).includes(
-				topicId,
-			),
+			(item.topicIds.length ? item.topicIds : [item.topicId]).includes(topicId),
 		);
 	}
 
@@ -47,6 +45,7 @@ export function filterVideos(
 				item.subtitle,
 				item.excerpt,
 				item.topicName,
+				item.location,
 				...item.topicNames,
 				...item.tags,
 				...item.keywords,

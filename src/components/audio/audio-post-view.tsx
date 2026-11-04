@@ -21,6 +21,7 @@ import { Link } from "@/components/ui/link";
 import { RichText } from "@/components/ui/rich-text";
 import { Link as NavLink } from "@/i18n/navigation";
 import { formatDuration, formatFileSize } from "@/lib/audio/format";
+import { buildAudioHref } from "@/lib/audio-url";
 import { homeInsetClass } from "@/lib/layout";
 import { audioTagHref, audioTopicHref } from "@/lib/search/taxonomy-href";
 import { displayTitleSizeClass } from "@/lib/title-scale";
@@ -265,11 +266,11 @@ export async function AudioPostView({
 													{detail.topicNames.map((name, index) => {
 														const id = detail.topicIds[index];
 														return (
-															<span key={`${name}-${index}`}>
+															<span key={id ?? name}>
 																{id != null ? (
 																	<Link
 																		href={audioTopicHref(id)}
-																		className="underline decoration-border underline-offset-2 transition-colors fine-hover:decoration-foreground"
+																		className="underline decoration-border underline-offset-2 transition-colors fine-hover:text-brand fine-hover:decoration-brand"
 																	>
 																		{name}
 																	</Link>
@@ -297,7 +298,19 @@ export async function AudioPostView({
 										) : null}
 										{detail.locations.length > 0 ? (
 											<MetaCell label={t("post.locations")}>
-												{detail.locations.join(" · ")}
+												<span className="inline-flex flex-wrap items-center gap-x-1">
+													{detail.locations.map((location, index) => (
+														<span key={location}>
+															<Link
+																href={buildAudioHref({ q: location })}
+																className="underline decoration-border underline-offset-2 transition-colors fine-hover:text-brand fine-hover:decoration-brand"
+															>
+																{location}
+															</Link>
+															{index < detail.locations.length - 1 ? " · " : ""}
+														</span>
+													))}
+												</span>
 											</MetaCell>
 										) : null}
 										{detail.reader ? (

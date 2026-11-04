@@ -10,6 +10,7 @@ import { RichText } from "@/components/ui/rich-text";
 import { Link } from "@/i18n/navigation";
 import { homeInsetClass } from "@/lib/layout";
 import type { ProjectDetail } from "@/lib/mock/projects";
+import { projectsHref } from "@/lib/projects-url";
 import { isRichTextEmpty } from "@/lib/rich-text";
 import { projectTagHref } from "@/lib/search/taxonomy-href";
 import { cn } from "@/lib/utils";
@@ -234,7 +235,14 @@ export function ProjectDetailView({
 									</FactCell>
 								)}
 								{project.location && (
-									<FactCell label={locationLabel}>{project.location}</FactCell>
+									<FactCell label={locationLabel}>
+										<Link
+											href={projectsHref({ q: project.location })}
+											className="no-underline transition-colors fine-hover:text-brand"
+										>
+											{project.location}
+										</Link>
+									</FactCell>
 								)}
 							</dl>
 						)}

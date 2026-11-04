@@ -114,6 +114,7 @@ export function filterProjects(
 			(item) =>
 				item.title.toLowerCase().includes(q) ||
 				item.excerpt.toLowerCase().includes(q) ||
+				(item.location ?? "").toLowerCase().includes(q) ||
 				(item.projectType ?? "").toLowerCase().includes(q) ||
 				(item.projectTypes ?? []).some((type) =>
 					type.toLowerCase().includes(q),

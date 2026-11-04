@@ -16,6 +16,7 @@ import { homeInsetClass } from "@/lib/layout";
 import { videoTagHref, videoTopicHref } from "@/lib/search/taxonomy-href";
 import { cn } from "@/lib/utils";
 import { formatDuration, formatFileSizeMb } from "@/lib/video/format";
+import { buildVideoHref } from "@/lib/video-url";
 import type {
 	ResolvedVideoCastMember,
 	ResolvedVideoDetail,
@@ -33,7 +34,7 @@ function MetaRow({
 	ltr = false,
 }: {
 	label: string;
-	value: string;
+	value: React.ReactNode;
 	ltr?: boolean;
 }) {
 	return (
@@ -218,7 +219,17 @@ export async function ShortFilmDetailView({
 			? { label: t("detail.producer"), value: producerLabel }
 			: null,
 		detail.location
-			? { label: t("detail.location"), value: detail.location }
+			? {
+					label: t("detail.location"),
+					value: (
+						<Link
+							href={buildVideoHref({ q: detail.location })}
+							className="underline decoration-primary-foreground/25 underline-offset-2 transition-colors fine-hover:text-brand fine-hover:decoration-brand"
+						>
+							{detail.location}
+						</Link>
+					),
+				}
 			: null,
 	].filter((row): row is NonNullable<typeof row> => row != null);
 
@@ -307,14 +318,11 @@ export async function ShortFilmDetailView({
 										{detail.topicNames.map((name, index) => {
 											const id = detail.topicIds[index];
 											return (
-												<span key={`${name}-${index}`}>
+												<span key={id ?? name}>
 													{id != null ? (
 														<Link
-															href={videoTopicHref(
-																id,
-																"/videos/shortfilms",
-															)}
-															className="w-fit text-label text-primary-foreground/55 underline decoration-primary-foreground/25 underline-offset-2 transition-colors fine-hover:text-primary-foreground/80 fine-hover:decoration-primary-foreground/50"
+															href={videoTopicHref(id, "/videos/shortfilms")}
+															className="w-fit text-label text-primary-foreground/55 underline decoration-primary-foreground/25 underline-offset-2 transition-colors fine-hover:text-brand fine-hover:decoration-brand"
 														>
 															{name}
 														</Link>

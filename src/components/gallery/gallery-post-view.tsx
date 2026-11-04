@@ -8,6 +8,7 @@ import { HoverCover } from "@/components/ui/hover-cover";
 import { Image } from "@/components/ui/image";
 import { RichText } from "@/components/ui/rich-text";
 import { Link } from "@/i18n/navigation";
+import { buildGalleryHref } from "@/lib/gallery-url";
 import { homeInsetClass } from "@/lib/layout";
 import type { GalleryPostDetail } from "@/lib/mock/gallery";
 import { galleryTagHref } from "@/lib/search/taxonomy-href";
@@ -185,7 +186,14 @@ export function GalleryPostView({
 						{hasCredits && (
 							<dl className="mt-6 flex flex-wrap gap-x-10 gap-y-3">
 								{post.location && (
-									<CreditPair label={locationLabel}>{post.location}</CreditPair>
+									<CreditPair label={locationLabel}>
+										<Link
+											href={buildGalleryHref({ q: post.location })}
+											className="no-underline transition-colors fine-hover:text-brand"
+										>
+											{post.location}
+										</Link>
+									</CreditPair>
 								)}
 								{post.collectedBy && (
 									<CreditPair label={collectedByLabel}>

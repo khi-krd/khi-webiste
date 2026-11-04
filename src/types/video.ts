@@ -174,6 +174,7 @@ export type ResolvedVideoCard = {
 	/** Hover-play source — a direct media file, or a YouTube URL the preview
 	 *  layer embeds muted. Null keeps the still layers. */
 	hoverVideoSrc: string | null;
+	location: string | null;
 	hoverCoverUrl: string | null;
 	videoType: VideoType;
 	albumOfMemories: boolean;
