@@ -166,6 +166,7 @@ export function ListSelect({
 					{options.map((option, index) => {
 						const isSelected = option.value === value;
 						const isActive = index === activeIndex;
+						const green = isSelected || isActive;
 						return (
 							<button
 								key={option.value || "__empty__"}
@@ -178,18 +179,16 @@ export function ListSelect({
 								onClick={() => pick(option)}
 								className={cn(
 									"flex w-full cursor-pointer items-center justify-between gap-2 px-3 py-2 text-start text-body transition-colors duration-100",
-									isSelected
-										? "bg-primary/12 font-medium text-primary"
-										: isActive
-											? "bg-primary/10 text-foreground"
-											: "text-foreground",
-									!isSelected && isActive && "bg-primary/10",
+									green
+										? "bg-primary font-medium text-primary-foreground"
+										: "text-foreground",
 								)}
 							>
 								<span className="min-w-0 flex-1 truncate">{option.label}</span>
 								<CheckIcon
 									className={cn(
-										"size-4 shrink-0 text-primary transition-opacity",
+										"size-4 shrink-0 transition-opacity",
+										green ? "text-primary-foreground" : "text-primary",
 										isSelected ? "opacity-100" : "opacity-0",
 									)}
 									aria-hidden
