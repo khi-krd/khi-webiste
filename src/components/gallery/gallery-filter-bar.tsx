@@ -12,7 +12,7 @@ import {
 	FilterPillRail,
 	FilterSearchBox,
 } from "@/components/ui/filter-bar";
-import { Select } from "@/components/ui/select";
+import { ListSelect } from "@/components/ui/list-select";
 import { useRouter } from "@/i18n/navigation";
 import {
 	buildGalleryHref,
@@ -165,20 +165,18 @@ export function GalleryFilterBar({
 				<>
 					<FilterGroupLabel>{t("filter.topicLabel")}</FilterGroupLabel>
 					<div className="w-44 min-w-36">
-						<Select
-							aria-label={t("filter.topicLabel")}
+						<ListSelect
+							label={t("filter.topicLabel")}
 							value={activeTopicId != null ? String(activeTopicId) : ""}
-							onChange={(event) =>
-								handleTopic(parseGalleryTopicId(event.target.value))
-							}
-						>
-							<option value="">{t("filter.topicAll")}</option>
-							{topics.map((topic) => (
-								<option key={topic.id} value={topic.id}>
-									{topic.name}
-								</option>
-							))}
-						</Select>
+							onChange={(v) => handleTopic(parseGalleryTopicId(v))}
+							options={[
+								{ value: "", label: t("filter.topicAll") },
+								...topics.map((topic) => ({
+									value: String(topic.id),
+									label: topic.name,
+								})),
+							]}
+						/>
 					</div>
 				</>
 			) : null}

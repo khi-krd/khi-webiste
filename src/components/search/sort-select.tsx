@@ -1,9 +1,9 @@
 "use client";
 
-import { ChevronDownIcon } from "@heroicons/react/24/outline";
 import { useTranslations } from "next-intl";
-import { useId, useTransition } from "react";
+import { useTransition } from "react";
 import { useSearchTransition } from "@/components/search/search-transition";
+import { ListSelect } from "@/components/ui/list-select";
 import { useRouter } from "@/i18n/navigation";
 import { PLATFORM_SORTS, type PlatformSort } from "@/lib/platform/constants";
 import {
@@ -40,7 +40,6 @@ export function SortSelect({
 	const router = useRouter();
 	const [localPending, startTransition] = useTransition();
 	const shared = useSearchTransition();
-	const id = useId();
 	const pending = shared?.pending ?? localPending;
 
 	const value = PLATFORM_SORTS.includes(appliedSort as PlatformSort)
@@ -54,19 +53,16 @@ export function SortSelect({
 				"transition-colors fine-hover:border-foreground/40 focus-within:border-foreground lg:h-10",
 			)}
 		>
-			<label
-				htmlFor={id}
-				className="sr-only sm:not-sr-only sm:ps-3 sm:text-label sm:text-muted"
-			>
+			<span className="sr-only sm:not-sr-only sm:ps-3 sm:text-label sm:text-muted">
 				{t("sortLabel")}
-			</label>
-			<select
-				id={id}
+			</span>
+			<ListSelect
+				label={t("sortLabel")}
 				value={value}
 				disabled={pending}
-				data-focus-key="sort"
-				onChange={(event) => {
-					const sort = event.target.value as PlatformSort;
+				focusKey="sort"
+				onChange={(next) => {
+					const sort = next as PlatformSort;
 					const href = buildSearchHref({ ...state, sort, page: 1 });
 					if (shared) {
 						shared.navigate(href, { focusKey: "sort" });
@@ -76,20 +72,12 @@ export function SortSelect({
 						router.push(href, { scroll: false });
 					});
 				}}
-				className={cn(
-					"h-full cursor-pointer appearance-none bg-transparent ps-3 pe-8 text-small font-medium text-foreground",
-					"focus-visible:outline-none disabled:opacity-60",
-				)}
-			>
-				{PLATFORM_SORTS.map((sort) => (
-					<option key={sort} value={sort}>
-						{t(SORT_LABEL_KEYS[sort])}
-					</option>
-				))}
-			</select>
-			<ChevronDownIcon
-				aria-hidden
-				className="pointer-events-none absolute end-2.5 size-4 text-muted"
+				options={PLATFORM_SORTS.map((sort) => ({
+					value: sort,
+					label: t(SORT_LABEL_KEYS[sort]),
+				}))}
+				className="h-full"
+				buttonClassName="h-full rounded-none border-0 bg-transparent py-0 ps-3 pe-8 text-small font-medium fine-hover:border-0"
 			/>
 		</div>
 	);

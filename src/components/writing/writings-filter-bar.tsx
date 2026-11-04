@@ -12,7 +12,7 @@ import {
 	FilterPillRail,
 	FilterSearchBox,
 } from "@/components/ui/filter-bar";
-import { Select } from "@/components/ui/select";
+import { ListSelect } from "@/components/ui/list-select";
 import { useRouter } from "@/i18n/navigation";
 import { useScrollToSection } from "@/lib/use-scroll-to-section";
 import type { WritingCategorySlug } from "@/lib/writing/categories";
@@ -209,18 +209,18 @@ export function WritingsFilterBar({
 					<FilterDivider />
 					<FilterGroupLabel>{t("filter.writerLabel")}</FilterGroupLabel>
 					<div className="w-44 min-w-36">
-						<Select
-							aria-label={t("filter.writerLabel")}
+						<ListSelect
+							label={t("filter.writerLabel")}
 							value={activeWriter ?? ""}
-							onChange={(event) => handleWriter(event.target.value)}
-						>
-							<option value="">{t("filter.writerAll")}</option>
-							{writers.map((writer) => (
-								<option key={writer} value={writer}>
-									{writer}
-								</option>
-							))}
-						</Select>
+							onChange={handleWriter}
+							options={[
+								{ value: "", label: t("filter.writerAll") },
+								...writers.map((writer) => ({
+									value: writer,
+									label: writer,
+								})),
+							]}
+						/>
 					</div>
 				</>
 			) : null}

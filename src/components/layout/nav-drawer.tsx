@@ -214,12 +214,24 @@ export function NavDrawer({
 		() => mergeNavItems(NAV_ITEMS, navMenu, t),
 		[navMenu, t],
 	);
-	const bgKey = hoveredKey ?? primaryNavItems[0]?.key ?? "default";
+	// The CMS "search" row owns the photo behind the search overlay — same
+	// nav-menu mechanism as the sections, keyed out of the item list.
+	const searchImageSrc =
+		navMenu.find((o) => o.itemKey === "search")?.imageSrc || null;
+
+	const bgKey =
+		view === "search"
+			? "search"
+			: (hoveredKey ?? primaryNavItems[0]?.key ?? "default");
 	const bgItem =
 		primaryNavItems.find((item) => item.key === bgKey) ?? primaryNavItems[0];
 	// Truthy check, not `??` — an item may legitimately carry no image, and an
-	// empty string would reach next/image and throw.
-	const bgSrc = bgItem?.imageSrc || null;
+	// empty string would reach next/image and throw. The search view falls back
+	// to the nav background while no search photo is chosen.
+	const bgSrc =
+		view === "search"
+			? searchImageSrc || bgItem?.imageSrc || null
+			: bgItem?.imageSrc || null;
 
 	const close = useCallback(() => {
 		onOpenChange(false);

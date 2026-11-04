@@ -12,7 +12,7 @@ import {
 	FilterPillRail,
 	FilterSearchBox,
 } from "@/components/ui/filter-bar";
-import { Select } from "@/components/ui/select";
+import { ListSelect } from "@/components/ui/list-select";
 import { useRouter } from "@/i18n/navigation";
 import { soundTypeLabel } from "@/lib/audio/sound-types";
 import { buildAudioHref } from "@/lib/audio-url";
@@ -201,24 +201,22 @@ export function AudioFilterBar({
 					<FilterDivider />
 					<FilterGroupLabel>{t("filter.topicLabel")}</FilterGroupLabel>
 					<div className="w-44 min-w-36">
-						<Select
-							aria-label={t("filter.topicLabel")}
+						<ListSelect
+							label={t("filter.topicLabel")}
 							value={activeTopicId != null ? String(activeTopicId) : ""}
-							onChange={(event) =>
+							onChange={(v) =>
 								pushFilters({
-									topic: event.target.value
-										? Number.parseInt(event.target.value, 10)
-										: null,
+									topic: v ? Number.parseInt(v, 10) : null,
 								})
 							}
-						>
-							<option value="">{t("filter.topicAll")}</option>
-							{topics.map((topic) => (
-								<option key={topic.id} value={topic.id}>
-									{topic.name}
-								</option>
-							))}
-						</Select>
+							options={[
+								{ value: "", label: t("filter.topicAll") },
+								...topics.map((topic) => ({
+									value: String(topic.id),
+									label: topic.name,
+								})),
+							]}
+						/>
 					</div>
 				</>
 			) : null}
