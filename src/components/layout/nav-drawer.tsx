@@ -472,7 +472,7 @@ export function NavDrawer({
 									</div>
 
 									{view === "nav" && (
-										<footer className="relative z-10 mt-auto shrink-0 border-t border-primary-foreground/15 bg-foreground/90 backdrop-blur-md">
+										<footer className="relative z-10 mt-auto shrink-0">
 											<Container className="max-w-none py-4">
 												<div className="flex items-center justify-between gap-4">
 													<LanguageSwitcher
