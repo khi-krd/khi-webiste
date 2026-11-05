@@ -356,7 +356,6 @@ export function NavDrawer({
 									{/* Legibility scrim — stronger where text sits, photos still show through elsewhere. */}
 									<div className="absolute inset-0 bg-foreground/50" />
 									<div className="absolute inset-0 bg-linear-to-r from-foreground/80 from-0% via-foreground/45 via-50% to-transparent to-100% rtl:bg-linear-to-l" />
-									<div className="absolute inset-x-0 bottom-0 h-16 bg-linear-to-t from-foreground from-35% via-foreground/80 via-60% to-transparent sm:h-20" />
 								</div>
 
 								<div className="relative z-10 flex min-h-0 flex-1 flex-col">
