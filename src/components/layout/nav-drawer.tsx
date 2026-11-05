@@ -475,8 +475,9 @@ export function NavDrawer({
 									</div>
 
 									{view === "nav" && (
-										// Water-glass tray — the photo shows through, frosted like glass.
-										<footer className="relative z-10 mt-auto shrink-0 border-t border-primary-foreground/10 bg-primary-foreground/5 backdrop-blur-2xl backdrop-saturate-150">
+										// Water tray — a wet, see-through blue glass: the photo blurs
+										// behind a translucent water tint, light catching the top edge.
+										<footer className="relative z-10 mt-auto shrink-0 border-t border-sky-200/25 bg-sky-400/20 backdrop-blur-2xl backdrop-saturate-150">
 											<Container className="max-w-none py-4">
 												<div className="flex items-center justify-between gap-4">
 													<LanguageSwitcher
