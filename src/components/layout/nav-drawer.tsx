@@ -124,7 +124,10 @@ function NavBackground({
 				fill
 				sizes="100vw"
 				priority={priority}
-				className="object-cover"
+				// Contain, not cover: menu photos are designed collages (e.g. the
+				// 1920×1080 photo-strips piece) and must show in full — never crop.
+				// Mismatched aspect ratios letterbox against the dark backdrop.
+				className="object-contain"
 			/>
 		</motion.div>
 	);
@@ -472,7 +475,8 @@ export function NavDrawer({
 									</div>
 
 									{view === "nav" && (
-										<footer className="relative z-10 mt-auto shrink-0">
+										// Water-glass tray — the photo shows through, frosted like glass.
+										<footer className="relative z-10 mt-auto shrink-0 border-t border-primary-foreground/10 bg-primary-foreground/5 backdrop-blur-2xl backdrop-saturate-150">
 											<Container className="max-w-none py-4">
 												<div className="flex items-center justify-between gap-4">
 													<LanguageSwitcher
