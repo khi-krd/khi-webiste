@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { getTranslations, setRequestLocale } from "next-intl/server";
+import { DonateArchiveVideos } from "@/components/donate/donate-archive-videos";
 import { DonateFormsSection } from "@/components/donate/donate-forms-section";
 import { DonateHero } from "@/components/donate/donate-hero";
 import { DonateParticipation } from "@/components/donate/donate-participation";
@@ -33,7 +34,7 @@ export default async function DonatePage({
 	setRequestLocale(locale);
 
 	const t = await getTranslations("Donate");
-	const { heroMedia, heroCopy, typeCards, visibility } =
+	const { heroMedia, heroCopy, typeCards, archiveVideos, visibility } =
 		await getDonatePageDataFromApi(locale);
 	const amountPresets = getAmountPresets();
 
@@ -74,6 +75,15 @@ export default async function DonatePage({
 				closing={t("participate.closing")}
 				showArchive={visibility.archive}
 				showFinancial={visibility.financial}
+				archiveVideos={
+					archiveVideos.length > 0 ? (
+						<DonateArchiveVideos
+							heading={t("archiveVideos.heading")}
+							playLabel={t("archiveVideos.play")}
+							items={archiveVideos}
+						/>
+					) : null
+				}
 			/>
 
 			<DonateFormsSection

@@ -22,6 +22,9 @@ type DonateParticipationProps = {
 	closing: string;
 	showArchive?: boolean;
 	showFinancial?: boolean;
+	/** Archive-donor clips — drawn between the path cards and the closing
+	    note. Absent entirely when the table has no active videos. */
+	archiveVideos?: React.ReactNode;
 };
 
 export function DonateParticipation({
@@ -32,6 +35,7 @@ export function DonateParticipation({
 	closing,
 	showArchive = true,
 	showFinancial = true,
+	archiveVideos,
 }: DonateParticipationProps) {
 	return (
 		<HomeSection
@@ -76,6 +80,8 @@ export function DonateParticipation({
 						) : null}
 					</ScrollReveal>
 				) : null}
+
+				{archiveVideos}
 
 				<ScrollRevealBlock className="mt-8 border border-border bg-background p-6 sm:mt-10 sm:p-8">
 					<p className="max-w-3xl text-justify text-body leading-relaxed text-foreground">

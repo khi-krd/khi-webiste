@@ -1,4 +1,5 @@
 import "server-only";
+import type { DonateArchiveVideoItem } from "@/components/donate/donate-archive-videos";
 import { apiFetch, apiPost, DEFAULT_REVALIDATE } from "@/lib/api/client";
 import { getApiBaseUrl } from "@/lib/api/config";
 import { preferLocaleText } from "@/lib/api/locale-text";
@@ -11,9 +12,12 @@ import {
 	type DonateVisibility,
 	resolveDonateVisibility,
 } from "@/lib/donate/resolve";
+import { getYouTubePosterUrl, parseYouTubeVideoId } from "@/lib/video/source";
 import {
 	ArchiveDonationResponseSchema,
 	type ArchiveDonationSubmission,
+	type DonationArchiveVideo,
+	DonationArchiveVideoListSchema,
 	DonationSettingsSchema,
 	type DonationTypeCard,
 	DonationTypeCardListSchema,
@@ -25,6 +29,7 @@ import {
 const DONATIONS_SETTINGS_ENDPOINT = "/api/v1/donations/settings";
 const DONATIONS_TYPES_ENDPOINT = "/api/v1/donations/types";
 const DONATIONS_TYPE_CARDS_ENDPOINT = "/api/v1/donations/type-cards";
+const DONATIONS_ARCHIVE_VIDEOS_ENDPOINT = "/api/v1/donations/archive-videos";
 const DONATIONS_FINANCIAL_ENDPOINT = "/api/v1/donations/financial";
 const DONATIONS_ARCHIVE_ENDPOINT = "/api/v1/donations/archive";
 const DONATIONS_TAG = "donations";
@@ -35,6 +40,8 @@ export type DonatePageData = {
 	/** CMS cards — when non-empty, the page draws these and nothing else. */
 	/** The editor's cards. Empty means the section does not render. */
 	typeCards: DonateTypeCardData[];
+	/** Archive-donor clips. Empty means the section does not render. */
+	archiveVideos: DonateArchiveVideoItem[];
 	payment: DonatePaymentDetails;
 	visibility: DonateVisibility;
 };
@@ -79,6 +86,74 @@ export async function getDonationTypeCards(): Promise<DonationTypeCard[]> {
 	// A missing endpoint (not deployed yet), a failed request and an empty table
 	// all resolve to [] — the page then falls back to the hardcoded card set.
 	return cards ?? [];
+}
+
+export async function getDonationArchiveVideos(): Promise<
+	DonationArchiveVideo[]
+> {
+	if (!getApiBaseUrl()) {
+		return [];
+	}
+
+	const videos = await apiFetch(DONATIONS_ARCHIVE_VIDEOS_ENDPOINT, {
+		schema: DonationArchiveVideoListSchema,
+		tags: [DONATIONS_TAG, "donation-archive-videos"],
+		revalidate: DEFAULT_REVALIDATE,
+	});
+
+	// Endpoint missing (older backend), a failed request and an empty table all
+	// resolve to [] — the section simply does not render.
+	return videos ?? [];
+}
+
+/**
+ * Archive-donor clips → drawable cards in the active locale, sorted by
+ * displayOrder. A record without a playable URL or without a title in either
+ * language cannot be drawn and is skipped rather than rendered broken. The
+ * poster falls back to the YouTube thumbnail when the editor set none, so a
+ * YouTube clip never shows a bare gradient when a still exists for free.
+ */
+export function resolveDonateArchiveVideos(
+	locale: string,
+	records: DonationArchiveVideo[],
+): DonateArchiveVideoItem[] {
+	const isCkb = locale === "ckb";
+
+	return records
+		.filter((record) => record.active !== false)
+		.map((record) => {
+			const videoUrl = record.videoUrl?.trim() ?? "";
+			const youTubeId = parseYouTubeVideoId(videoUrl);
+			return {
+				record,
+				title: preferLocaleText(isCkb, record.titleCkb, record.titleKmr) ?? "",
+				description: preferLocaleText(
+					isCkb,
+					record.descriptionCkb,
+					record.descriptionKmr,
+				),
+				videoUrl,
+				posterUrl:
+					record.posterUrl?.trim() ||
+					(youTubeId ? getYouTubePosterUrl(youTubeId) : null),
+			};
+		})
+		.filter(
+			(item): item is typeof item & { videoUrl: string } =>
+				item.title.length > 0 && item.videoUrl.length > 0,
+		)
+		.sort(
+			(a, b) =>
+				(a.record.displayOrder ?? 0) - (b.record.displayOrder ?? 0) ||
+				a.record.id - b.record.id,
+		)
+		.map(({ record, title, description, videoUrl, posterUrl }) => ({
+			id: record.id,
+			title,
+			description,
+			videoUrl,
+			posterUrl,
+		}));
 }
 
 /**
@@ -204,17 +279,21 @@ function resolvePaymentDetails(
 export async function getDonatePageDataFromApi(
 	locale: string,
 ): Promise<DonatePageData> {
-	const [settings, types, cardRecords] = await Promise.all([
-		getDonationSettings(),
-		getDonationTypes(),
-		getDonationTypeCards(),
-	]);
+	const [settings, types, cardRecords, archiveVideoRecords] = await Promise.all(
+		[
+			getDonationSettings(),
+			getDonationTypes(),
+			getDonationTypeCards(),
+			getDonationArchiveVideos(),
+		],
+	);
 	const visibility = resolveDonateVisibility(settings, types);
 
 	return {
 		heroMedia: resolveHeroMedia(settings),
 		heroCopy: resolveDonateHeroCopy(locale, settings),
 		typeCards: resolveDonateTypeCards(locale, cardRecords),
+		archiveVideos: resolveDonateArchiveVideos(locale, archiveVideoRecords),
 		payment: resolvePaymentDetails(settings),
 		visibility,
 	};

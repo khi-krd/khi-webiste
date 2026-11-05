@@ -1146,6 +1146,10 @@
 			"body": "Hemû tişt û agahiyên ku hûn pêşkêş dikin, bi navê we di arşîva enstîtuyê de tê tomar kirin. Wek rêz, navê hemû piştgir di lîsteya fermî ya \"Dostên Kulturê\" de tê nivîsandin.",
 			"closing": "Spas ji bo ku hûn beşek ji vê tevgera neteweyî dibin."
 		},
+		"archiveVideos": {
+			"heading": "Ew ku arşîva xwe ji bo me anîn",
+			"play": "Lêdina vîdyoyê"
+		},
 		"forms": {
 			"sectionHeading": "Agahiyên xwe bişîne",
 			"sectionDescription": "Yek ji du rêyan hilbijêre — şandina arşîvê an tomar kirina piştgiriya darayî.",

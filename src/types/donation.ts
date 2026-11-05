@@ -42,6 +42,28 @@ export const DonationTypeCardListSchema = lenientArray(
 	"donation type card",
 );
 
+/**
+ * One clip of the donate page's archive-donors section — a person handing
+ * their archive material over to the institute. `videoUrl` may be an uploaded
+ * file URL or a YouTube link; the site's player resolves both.
+ */
+export const DonationArchiveVideoSchema = z.object({
+	id: z.number(),
+	titleCkb: z.string().nullish(),
+	titleKmr: z.string().nullish(),
+	descriptionCkb: z.string().nullish(),
+	descriptionKmr: z.string().nullish(),
+	videoUrl: z.string().nullish(),
+	posterUrl: z.string().nullish(),
+	displayOrder: z.number().nullish(),
+	active: z.boolean().nullish(),
+});
+
+export const DonationArchiveVideoListSchema = lenientArray(
+	DonationArchiveVideoSchema,
+	"donation archive video",
+);
+
 export const DonationTypeCodeSchema = z.enum(["FINANCIAL", "ARCHIVE"]);
 
 export const DonationTypeSchema = z.object({
@@ -110,6 +132,7 @@ export const ArchiveDonationResponseSchema =
 export type DonationSettings = z.infer<typeof DonationSettingsSchema>;
 export type DonationType = z.infer<typeof DonationTypeSchema>;
 export type DonationTypeCard = z.infer<typeof DonationTypeCardSchema>;
+export type DonationArchiveVideo = z.infer<typeof DonationArchiveVideoSchema>;
 export type ArchiveMaterialType = z.infer<typeof ArchiveMaterialTypeSchema>;
 export type FinancialDonationSubmission = z.infer<
 	typeof FinancialDonationSubmissionSchema
