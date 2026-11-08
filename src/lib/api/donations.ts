@@ -124,7 +124,14 @@ export function resolveDonateArchiveVideos(
 		.map((record) => {
 			const videoUrl = record.videoUrl?.trim() ?? "";
 			const youTubeId = parseYouTubeVideoId(videoUrl);
-			const isImage = /\.(jpe?g|png|webp|avif|gif)(\?|#|$)/i.test(videoUrl);
+			// Uploads land under …/donations/images|videos/ in the bucket; the
+			// folder is the reliable signal, extension is the fallback.
+			const isImage =
+				!youTubeId &&
+				(/\/images\//i.test(videoUrl) ||
+					/\.(jpe?g|png|webp|avif|gif|svg|bmp|tiff?|jfif|heic|heif)(\?|#|$)/i.test(
+						videoUrl,
+					));
 			return {
 				record,
 				title: preferLocaleText(isCkb, record.titleCkb, record.titleKmr) ?? "",
@@ -138,10 +145,7 @@ export function resolveDonateArchiveVideos(
 					record.posterUrl?.trim() ||
 					(youTubeId ? getYouTubePosterUrl(youTubeId) : null) ||
 					(isImage ? videoUrl : null),
-				mediaKind: /\.(jpe?g|png|webp|avif|gif)(\?|#|$)/i.test(videoUrl)
-					? "image"
-					: "video",
-
+				mediaKind: isImage ? ("image" as const) : ("video" as const),
 			};
 		})
 		.filter(
@@ -153,12 +157,13 @@ export function resolveDonateArchiveVideos(
 				(a.record.displayOrder ?? 0) - (b.record.displayOrder ?? 0) ||
 				a.record.id - b.record.id,
 		)
-		.map(({ record, title, description, videoUrl, posterUrl }) => ({
+		.map(({ record, title, description, videoUrl, posterUrl, mediaKind }) => ({
 			id: record.id,
 			title,
 			description,
 			videoUrl,
 			posterUrl,
+			mediaKind,
 		}));
 }
 
