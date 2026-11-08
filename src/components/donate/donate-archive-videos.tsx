@@ -15,6 +15,7 @@ const VideoPlayer = dynamic(
 );
 
 export type DonateArchiveVideoItem = {
+	mediaKind?: "video" | "image";
 	id: number;
 	title: string;
 	description: string | null;
@@ -71,8 +72,9 @@ function ArchiveVideoCard({
 	playLabel: string;
 }) {
 	const [playing, setPlaying] = useState(false);
+	const isImage = item.mediaKind === "image";
 
-	if (playing) {
+	if (playing && !isImage) {
 		return (
 			<figure className="overflow-hidden rounded-2xl border border-border/60 bg-foreground shadow-lg">
 				<div className="relative aspect-video">
@@ -93,8 +95,8 @@ function ArchiveVideoCard({
 			{/* Video half — lands on the right in RTL. */}
 			<button
 				type="button"
-				onClick={() => setPlaying(true)}
-				aria-label={playLabel}
+				onClick={() => !isImage && setPlaying(true)}
+				aria-label={isImage ? item.title : playLabel}
 				className="relative block w-1/2 min-h-44 cursor-pointer self-stretch bg-foreground"
 			>
 				{item.posterUrl ? (

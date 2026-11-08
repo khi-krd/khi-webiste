@@ -124,6 +124,7 @@ export function resolveDonateArchiveVideos(
 		.map((record) => {
 			const videoUrl = record.videoUrl?.trim() ?? "";
 			const youTubeId = parseYouTubeVideoId(videoUrl);
+			const isImage = /\.(jpe?g|png|webp|avif|gif)(\?|#|$)/i.test(videoUrl);
 			return {
 				record,
 				title: preferLocaleText(isCkb, record.titleCkb, record.titleKmr) ?? "",
@@ -135,7 +136,12 @@ export function resolveDonateArchiveVideos(
 				videoUrl,
 				posterUrl:
 					record.posterUrl?.trim() ||
-					(youTubeId ? getYouTubePosterUrl(youTubeId) : null),
+					(youTubeId ? getYouTubePosterUrl(youTubeId) : null) ||
+					(isImage ? videoUrl : null),
+				mediaKind: /\.(jpe?g|png|webp|avif|gif)(\?|#|$)/i.test(videoUrl)
+					? "image"
+					: "video",
+
 			};
 		})
 		.filter(
