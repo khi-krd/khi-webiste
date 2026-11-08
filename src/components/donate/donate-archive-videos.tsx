@@ -73,9 +73,9 @@ function ArchiveVideoCard({
 	const [playing, setPlaying] = useState(false);
 
 	return (
-		<figure className="group overflow-hidden rounded-xl border border-border bg-surface shadow-sm transition-shadow hover:shadow-md">
-			<div className="relative aspect-video bg-sunken">
-				{playing ? (
+		<figure className="group relative overflow-hidden rounded-2xl border border-border/60 bg-surface shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-xl hover:shadow-foreground/10">
+			{playing ? (
+				<div className="relative aspect-video bg-foreground">
 					<VideoPlayer
 						src={item.videoUrl}
 						title={item.title}
@@ -83,49 +83,53 @@ function ArchiveVideoCard({
 						autoPlay
 						className="size-full"
 					/>
-				) : (
-					<button
-						type="button"
-						onClick={() => setPlaying(true)}
-						aria-label={playLabel}
-						className="relative block size-full cursor-pointer text-start"
-					>
-						{item.posterUrl ? (
-							<NextImage
-								src={item.posterUrl}
-								alt=""
-								fill
-								sizes="(min-width: 1024px) 22vw, 50vw"
-								className="object-cover"
-							/>
-						) : (
-							<span
-								aria-hidden
-								className="absolute inset-0 bg-gradient-to-br from-primary/25 via-sunken to-foreground/10"
-							/>
-						)}
+				</div>
+			) : (
+				<button
+					type="button"
+					onClick={() => setPlaying(true)}
+					aria-label={playLabel}
+					className="relative block aspect-[4/5] w-full cursor-pointer text-start"
+				>
+					{item.posterUrl ? (
+						<NextImage
+							src={item.posterUrl}
+							alt=""
+							fill
+							sizes="(min-width: 1024px) 22vw, 50vw"
+							className="object-cover transition-transform duration-500 group-hover:scale-105"
+						/>
+					) : (
 						<span
 							aria-hidden
-							className="absolute inset-0 bg-gradient-to-t from-black/45 via-transparent to-transparent transition-opacity group-hover:from-black/55"
+							className="absolute inset-0 bg-gradient-to-br from-accent/30 via-sunken to-foreground/15"
 						/>
-						<span className="absolute inset-0 grid place-items-center">
-							<span className="grid size-11 place-items-center rounded-full bg-accent text-white shadow-lg ring-2 ring-white/30 transition-transform duration-200 group-hover:scale-110">
-								<PlayIcon className="size-5 translate-x-px" />
-							</span>
+					)}
+					{/* Cinematic scrim — deepens at the bottom where the caption lives. */}
+					<span
+						aria-hidden
+						className="absolute inset-0 bg-gradient-to-t from-black/75 via-black/20 to-black/5 transition-opacity duration-300 group-hover:from-black/80"
+					/>
+					<span
+						aria-hidden
+						className="absolute inset-0 grid place-items-center"
+					>
+						<span className="grid size-14 place-items-center rounded-full border border-white/35 bg-white/15 text-white shadow-xl backdrop-blur-md transition-all duration-300 group-hover:scale-110 group-hover:bg-accent group-hover:border-accent">
+							<PlayIcon className="size-6 translate-x-px" />
 						</span>
-					</button>
-				)}
-			</div>
-			<figcaption className="p-3">
-				<p className="text-sm font-semibold leading-snug text-foreground">
-					{item.title}
-				</p>
-				{item.description ? (
-					<p className="mt-1 text-small leading-relaxed text-muted">
-						{item.description}
-					</p>
-				) : null}
-			</figcaption>
+					</span>
+					<figcaption className="absolute inset-x-0 bottom-0 p-4">
+						<p className="text-sm font-semibold leading-snug text-white">
+							{item.title}
+						</p>
+						{item.description ? (
+							<p className="mt-1 line-clamp-2 text-xs leading-relaxed text-white/80">
+								{item.description}
+							</p>
+						) : null}
+					</figcaption>
+				</button>
+			)}
 		</figure>
 	);
 }
