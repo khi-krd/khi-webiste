@@ -1148,7 +1148,10 @@
 		},
 		"archiveVideos": {
 			"heading": "Ew ku arşîva xwe ji bo me anîn",
-			"play": "Lêdina vîdyoyê"
+			"play": "Lêdina vîdyoyê",
+			"playlist": "Lîsteya vîdyoyan",
+			"previous": "Berê",
+			"next": "Paşê"
 		},
 		"forms": {
 			"sectionHeading": "Agahiyên xwe bişîne",
