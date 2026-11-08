@@ -52,7 +52,7 @@ export function DonateArchiveVideos({
 			<h3 className="font-heading text-h3 font-semibold text-foreground">
 				{heading}
 			</h3>
-			<ScrollReveal className="mt-5 grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4">
+			<ScrollReveal className="mt-5 grid grid-cols-1 gap-5 lg:grid-cols-2">
 				{items.map((item) => (
 					<ScrollRevealItem key={item.id}>
 						<ArchiveVideoCard item={item} playLabel={playLabel} />
@@ -72,10 +72,10 @@ function ArchiveVideoCard({
 }) {
 	const [playing, setPlaying] = useState(false);
 
-	return (
-		<figure className="group relative overflow-hidden rounded-2xl border border-border/60 bg-surface shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-xl hover:shadow-foreground/10">
-			{playing ? (
-				<div className="relative aspect-video bg-foreground">
+	if (playing) {
+		return (
+			<figure className="overflow-hidden rounded-2xl border border-border/60 bg-foreground shadow-lg">
+				<div className="relative aspect-video">
 					<VideoPlayer
 						src={item.videoUrl}
 						title={item.title}
@@ -84,52 +84,54 @@ function ArchiveVideoCard({
 						className="size-full"
 					/>
 				</div>
-			) : (
-				<button
-					type="button"
-					onClick={() => setPlaying(true)}
-					aria-label={playLabel}
-					className="relative block aspect-[4/5] w-full cursor-pointer text-start"
-				>
-					{item.posterUrl ? (
-						<NextImage
-							src={item.posterUrl}
-							alt=""
-							fill
-							sizes="(min-width: 1024px) 22vw, 50vw"
-							className="object-cover transition-transform duration-500 group-hover:scale-105"
-						/>
-					) : (
-						<span
-							aria-hidden
-							className="absolute inset-0 bg-gradient-to-br from-accent/30 via-sunken to-foreground/15"
-						/>
-					)}
-					{/* Cinematic scrim — deepens at the bottom where the caption lives. */}
-					<span
-						aria-hidden
-						className="absolute inset-0 bg-gradient-to-t from-black/75 via-black/20 to-black/5 transition-opacity duration-300 group-hover:from-black/80"
+			</figure>
+		);
+	}
+
+	return (
+		<figure className="group flex overflow-hidden rounded-2xl border border-border/60 bg-surface shadow-md transition-shadow duration-300 hover:shadow-xl">
+			{/* Video half — lands on the right in RTL. */}
+			<button
+				type="button"
+				onClick={() => setPlaying(true)}
+				aria-label={playLabel}
+				className="relative block w-1/2 min-h-44 cursor-pointer self-stretch bg-foreground"
+			>
+				{item.posterUrl ? (
+					<NextImage
+						src={item.posterUrl}
+						alt=""
+						fill
+						sizes="(min-width: 1024px) 24vw, 100vw"
+						className="object-cover opacity-90 transition-opacity duration-300 group-hover:opacity-100"
 					/>
-					<span
-						aria-hidden
-						className="absolute inset-0 grid place-items-center"
-					>
-						<span className="grid size-14 place-items-center rounded-full border border-white/35 bg-white/15 text-white shadow-xl backdrop-blur-md transition-all duration-300 group-hover:scale-110 group-hover:bg-accent group-hover:border-accent">
-							<PlayIcon className="size-6 translate-x-px" />
-						</span>
+				) : (
+					<span aria-hidden className="absolute inset-0 bg-foreground" />
+				)}
+				<span aria-hidden className="absolute inset-0 grid place-items-center">
+					<span className="grid size-14 place-items-center rounded-full border border-white/30 bg-accent text-white shadow-xl backdrop-blur-sm transition-transform duration-300 group-hover:scale-110">
+						<PlayIcon className="size-6 translate-x-px" />
 					</span>
-					<figcaption className="absolute inset-x-0 bottom-0 p-4">
-						<p className="text-sm font-semibold leading-snug text-white">
-							{item.title}
-						</p>
-						{item.description ? (
-							<p className="mt-1 line-clamp-2 text-xs leading-relaxed text-white/80">
-								{item.description}
-							</p>
-						) : null}
-					</figcaption>
-				</button>
-			)}
+				</span>
+				<NextImage
+					src="/logo.png"
+					alt=""
+					width={44}
+					height={44}
+					className="absolute bottom-3 left-3 size-11 rounded-full bg-white/90 object-contain p-1 shadow-md"
+				/>
+			</button>
+			{/* Text half — paper panel on the left. */}
+			<figcaption className="flex w-1/2 flex-col justify-center gap-3 bg-background p-5 sm:p-6">
+				<p className="font-heading text-h5 font-bold leading-snug text-foreground">
+					{item.title}
+				</p>
+				{item.description ? (
+					<p className="text-small leading-relaxed text-muted">
+						{item.description}
+					</p>
+				) : null}
+			</figcaption>
 		</figure>
 	);
 }
