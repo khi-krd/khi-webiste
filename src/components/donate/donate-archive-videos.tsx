@@ -52,7 +52,7 @@ export function DonateArchiveVideos({
 			<h3 className="font-heading text-h3 font-semibold text-foreground">
 				{heading}
 			</h3>
-			<ScrollReveal className="mt-5 grid grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-5">
+			<ScrollReveal className="mt-5 grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4">
 				{items.map((item) => (
 					<ScrollRevealItem key={item.id}>
 						<ArchiveVideoCard item={item} playLabel={playLabel} />
@@ -73,7 +73,7 @@ function ArchiveVideoCard({
 	const [playing, setPlaying] = useState(false);
 
 	return (
-		<figure className="group overflow-hidden border border-border bg-surface">
+		<figure className="group overflow-hidden rounded-xl border border-border bg-surface shadow-sm transition-shadow hover:shadow-md">
 			<div className="relative aspect-video bg-sunken">
 				{playing ? (
 					<VideoPlayer
@@ -95,7 +95,7 @@ function ArchiveVideoCard({
 								src={item.posterUrl}
 								alt=""
 								fill
-								sizes="(min-width: 640px) 45vw, 100vw"
+								sizes="(min-width: 1024px) 22vw, 50vw"
 								className="object-cover"
 							/>
 						) : (
@@ -109,15 +109,15 @@ function ArchiveVideoCard({
 							className="absolute inset-0 bg-gradient-to-t from-black/45 via-transparent to-transparent transition-opacity group-hover:from-black/55"
 						/>
 						<span className="absolute inset-0 grid place-items-center">
-							<span className="grid size-14 place-items-center rounded-full bg-brand text-white shadow-lg transition-transform duration-200 group-hover:scale-110">
-								<PlayIcon className="size-6 rtl:-scale-x-100" />
+							<span className="grid size-11 place-items-center rounded-full bg-accent text-white shadow-lg ring-2 ring-white/30 transition-transform duration-200 group-hover:scale-110">
+								<PlayIcon className="size-5 translate-x-px" />
 							</span>
 						</span>
 					</button>
 				)}
 			</div>
-			<figcaption className="p-4">
-				<p className="text-body font-semibold leading-snug text-foreground">
+			<figcaption className="p-3">
+				<p className="text-sm font-semibold leading-snug text-foreground">
 					{item.title}
 				</p>
 				{item.description ? (
