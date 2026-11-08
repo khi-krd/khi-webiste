@@ -93,7 +93,7 @@
 /* Reader chrome — modelled on the reference design: a warm toolbar, a
    thumbnail rail on the left, the page floating on a recessed canvas. */
 .writing-pdf-reader {
-	--reader-active: #a3262b;
+	--reader-active: var(--color-accent);
 	box-shadow: 0 1px 2px rgb(26 24 19 / 5%), 0 8px 28px rgb(26 24 19 / 6%);
 }
 

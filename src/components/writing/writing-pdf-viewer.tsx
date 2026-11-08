@@ -1,7 +1,6 @@
 "use client";
 
 import {
-	ArrowDownTrayIcon,
 	ArrowLeftIcon,
 	ArrowRightIcon,
 	ArrowsPointingInIcon,
@@ -343,8 +342,6 @@ function PdfReaderToolbar({
 	zoom,
 	isFullscreen = false,
 	isMobile = false,
-	downloadHref,
-	downloadName,
 	onPrevious,
 	onNext,
 	onSelectPage,
@@ -362,17 +359,6 @@ function PdfReaderToolbar({
 			className="writing-pdf-toolbar flex items-center gap-0.5 border-b border-border bg-surface px-2 py-2 sm:gap-1 sm:px-4 sm:py-2.5"
 		>
 			<div className="flex items-center gap-0.5 sm:gap-1">
-				{downloadHref ? (
-					<a
-						href={downloadHref}
-						download={downloadName}
-						className={iconButtonClass}
-						aria-label={labels.download}
-						title={labels.download}
-					>
-						<ArrowDownTrayIcon className="size-5" aria-hidden />
-					</a>
-				) : null}
 				<button
 					type="button"
 					className={iconButtonClass}
