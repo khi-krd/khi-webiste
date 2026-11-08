@@ -1240,6 +1240,9 @@
 					"submitFailed": "Tomarkirina bexşê bi ser neket. Ji kerema xwe dîsa biceribînin."
 				}
 			}
+		},
+		"archiveImages": {
+			"heading": "Wêneyên arşîva beşdarên"
 		}
 	},
 	"Search": {

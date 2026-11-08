@@ -79,6 +79,7 @@ export default async function DonatePage({
 					archiveVideos.length > 0 ? (
 						<DonateArchiveVideos
 							heading={t("archiveVideos.heading")}
+							imagesHeading={t("archiveImages.heading")}
 							playLabel={t("archiveVideos.play")}
 							items={archiveVideos}
 						/>
