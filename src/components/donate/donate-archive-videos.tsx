@@ -70,7 +70,7 @@ const donateCardKeyframes = `
 	to { opacity: 1; }
 }
 @keyframes donate-caption-in {
-	from { opacity: 0; transform: translateY(-14px); }
+	from { opacity: 0; transform: translateY(-16px); }
 	to { opacity: 1; transform: translateY(0); }
 }`;
 
@@ -86,39 +86,26 @@ function ArchiveVideoCard({
 	const playingVideo = playing && !isImage;
 
 	return (
-		<figure
-			className={`group flex overflow-hidden rounded-2xl border border-border/60 bg-surface shadow-md transition-shadow duration-300 hover:shadow-xl ${
-				playingVideo ? "flex-col" : "flex-row"
-			}`}
-		>
+		<figure className="group flex flex-wrap overflow-hidden rounded-2xl border border-border/60 bg-surface shadow-md transition-shadow duration-300 hover:shadow-xl">
 			<style>{donateCardKeyframes}</style>
-			{/* Media — right half at rest, full-width player on top while playing. */}
-			{playingVideo ? (
-				<div
-					className="relative aspect-video w-full bg-foreground"
-					style={{ animation: "donate-media-in 0.45s ease-out" }}
-				>
-					<VideoPlayer
-						src={item.videoUrl}
-						title={item.title}
-						poster={item.posterUrl ?? undefined}
-						autoPlay
-						className="size-full"
-					/>
-					<NextImage
-						src="/logo.png"
-						alt=""
-						width={44}
-						height={44}
-						className="absolute bottom-3 left-3 z-10 size-11 rounded-full bg-white/90 object-contain p-1 shadow-md"
-					/>
-				</div>
-			) : (
+			{/*
+			 * Media panel — right half at rest; on play it eases to full width and
+			 * the caption wraps beneath it, so the card visibly rearranges itself
+			 * instead of swapping layouts.
+			 */}
+			<div
+				className={`relative overflow-hidden bg-foreground transition-[width] duration-500 ease-out ${
+					playingVideo ? "aspect-video w-full" : "min-h-44 w-1/2 self-stretch"
+				}`}
+			>
 				<button
 					type="button"
 					onClick={() => !isImage && setPlaying(true)}
 					aria-label={isImage ? item.title : playLabel}
-					className="relative block min-h-44 w-1/2 cursor-pointer self-stretch bg-foreground"
+					tabIndex={playingVideo ? -1 : 0}
+					className={`absolute inset-0 block w-full cursor-pointer transition-opacity duration-300 ${
+						playingVideo ? "pointer-events-none opacity-0" : "opacity-100"
+					}`}
 				>
 					{item.posterUrl ? (
 						<NextImage
@@ -141,23 +128,37 @@ function ArchiveVideoCard({
 							</span>
 						</span>
 					) : null}
-					<NextImage
-						src="/logo.png"
-						alt=""
-						width={44}
-						height={44}
-						className="absolute bottom-3 left-3 size-11 rounded-full bg-white/90 object-contain p-1 shadow-md"
-					/>
 				</button>
-			)}
-			{/* Text — left half at rest, slides in under the video while playing. */}
+				{playingVideo ? (
+					<div
+						className="absolute inset-0"
+						style={{ animation: "donate-media-in 0.45s ease-out 0.08s both" }}
+					>
+						<VideoPlayer
+							src={item.videoUrl}
+							title={item.title}
+							poster={item.posterUrl ?? undefined}
+							autoPlay
+							className="size-full"
+						/>
+					</div>
+				) : null}
+				<NextImage
+					src="/logo.png"
+					alt=""
+					width={44}
+					height={44}
+					className="absolute bottom-3 left-3 z-10 size-11 rounded-full bg-white/90 object-contain p-1 shadow-md"
+				/>
+			</div>
+			{/* Text — left half at rest; slides in under the video while playing. */}
 			<figcaption
-				className={`flex flex-col justify-center gap-3 bg-background p-5 sm:p-6 ${
+				className={`flex flex-col justify-center gap-3 bg-background p-5 transition-[width] duration-500 ease-out sm:p-6 ${
 					playingVideo ? "w-full" : "w-1/2"
 				}`}
 				style={
 					playingVideo
-						? { animation: "donate-caption-in 0.5s ease-out 0.12s both" }
+						? { animation: "donate-caption-in 0.5s ease-out 0.18s both" }
 						: undefined
 				}
 			>
