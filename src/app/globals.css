@@ -462,6 +462,18 @@ html[data-corners="rounded"]
 		overflow: hidden;
 	}
 
+	/* Donation copy is editorial content: show every paragraph and let the
+	   hero grow with it, rather than borrowing the carousel's three-line cap. */
+	.donate-hero-description {
+		display: block;
+		-webkit-line-clamp: unset;
+		overflow: visible;
+		text-align: justify;
+		text-align-last: start;
+		overflow-wrap: anywhere;
+		line-height: 1.9;
+	}
+
 	.hero-slide-cta {
 		font-size: var(--text-small);
 		font-weight: 600;
@@ -478,6 +490,43 @@ html[data-corners="rounded"]
 	.group:hover .hero-slide-cta,
 	.group:focus-visible .hero-slide-cta {
 		border-block-end-color: color-mix(in oklch, white 85%, transparent);
+	}
+}
+
+/* All action controls share the institute-green hover surface. This is outside
+   Tailwind's layers so legacy utility colours cannot override the site policy.
+   Button-shaped links and explicitly marked actions join native/ARIA buttons;
+   editorial links and linked content cards keep their own treatments. */
+@media (hover: hover) and (pointer: fine) {
+	html body :is(button, [role="button"], .site-action, a.inline-flex.border, a.bg-primary, a.draw-border-host):not(:disabled, [aria-disabled="true"], [data-disabled], .absolute.inset-0, .vpl-image-open):hover {
+		background-color: var(--color-brand);
+		border-color: var(--color-brand);
+		color: #fff;
+		opacity: 1;
+	}
+
+	/* Wipe animations use the same fill as ordinary controls. */
+	html body .site-action:hover::before {
+		background-color: var(--color-brand);
+	}
+
+	html body :is(button, [role="button"], .site-action, a.inline-flex.border, a.bg-primary, a.draw-border-host):not(:disabled, [aria-disabled="true"], [data-disabled]):hover > :is(span, svg) {
+		color: inherit;
+	}
+
+	/* Full-cover media triggers need a translucent tint so the photo or video
+	   remains visible. Their central play control receives the solid green. */
+	html body :is(button, a, [role="button"]).absolute.inset-0:not(:disabled, [aria-disabled="true"], [data-disabled]):hover {
+		background-color: color-mix(in srgb, var(--color-brand) 25%, transparent);
+		color: #fff;
+	}
+	html body .vpl-image-open:hover {
+		background-color: transparent;
+		box-shadow: inset 0 0 0 3px var(--color-brand);
+	}
+	html body button:hover .vpl-bigplay {
+		background-color: var(--color-brand);
+		color: #fff;
 	}
 }
 

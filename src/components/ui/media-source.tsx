@@ -73,7 +73,7 @@ export function ExternalMediaLink({
 			target="_blank"
 			rel="noopener noreferrer"
 			className={cn(
-				"flex min-h-28 w-full flex-col items-center justify-center gap-2 border border-border bg-surface p-5 text-center transition-colors fine-hover:bg-sunken",
+				"site-action flex min-h-28 w-full flex-col items-center justify-center gap-2 border border-border bg-surface p-5 text-center transition-colors",
 				className,
 			)}
 		>

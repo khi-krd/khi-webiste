@@ -179,7 +179,7 @@ function FacetRow({
 				aria-current={active ? "true" : undefined}
 				data-focus-key={focusKey}
 				className={cn(
-					"flex min-h-11 w-full items-center gap-2.5 py-1 text-small transition-colors lg:min-h-9",
+					"site-action flex min-h-11 w-full items-center gap-2.5 py-1 text-small transition-colors lg:min-h-9",
 					active
 						? "text-foreground"
 						: "text-muted fine-hover:text-foreground fine-hover:[&_[data-square]]:border-foreground/50",

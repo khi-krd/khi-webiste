@@ -27,9 +27,9 @@ const base =
 	"[&_svg]:shrink-0 [&>:not(svg)]:relative [&>:not(svg)]:z-1";
 
 const variants: Record<Variant, string> = {
-	primary: "bg-primary text-primary-foreground hover:opacity-90",
-	secondary: "border border-primary bg-surface text-foreground hover:bg-sunken",
-	ghost: "text-foreground hover:bg-sunken",
+	primary: "bg-primary text-primary-foreground",
+	secondary: "border border-primary bg-surface text-foreground",
+	ghost: "text-foreground",
 };
 
 const sizes: Record<Size, string> = {

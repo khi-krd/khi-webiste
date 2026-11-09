@@ -12,7 +12,7 @@ import { cn } from "@/lib/utils";
  * green rises from the baseline; `motion-reduce` swaps it for an instant fill.
  */
 export const viewAllCtaClass = cn(
-	"group/viewall relative inline-flex h-10 w-fit shrink-0 items-center gap-2.5 overflow-hidden",
+	"site-action group/viewall relative inline-flex h-10 w-fit shrink-0 items-center gap-2.5 overflow-hidden",
 	"border border-foreground px-5 font-heading text-small font-semibold text-foreground no-underline",
 	"transition-[color,gap,box-shadow,border-color] duration-300 ease-out",
 	"before:absolute before:inset-0 before:z-0 before:origin-bottom before:scale-y-0 before:bg-brand",
@@ -29,7 +29,7 @@ export const viewAllCtaClass = cn(
  * text so every زیاتر across the site behaves identically.
  */
 export const viewAllCtaOnDarkClass = cn(
-	"group/viewall relative inline-flex h-10 w-fit shrink-0 items-center gap-2.5 overflow-hidden",
+	"site-action group/viewall relative inline-flex h-10 w-fit shrink-0 items-center gap-2.5 overflow-hidden",
 	"border border-primary-foreground/70 bg-primary-foreground/10 px-5",
 	"font-heading text-small font-semibold text-primary-foreground no-underline backdrop-blur-[2px]",
 	"transition-[color,gap,box-shadow,background-color,border-color] duration-300 ease-out",
@@ -44,18 +44,16 @@ export const viewAllCtaOnDarkClass = cn(
 
 /**
  * Same CTA sitting directly on a brand-green surface (the footer donate
- * band): filling to `bg-brand` on hover — like the two variants above — would
- * vanish into a green backdrop, so this wipes to white with brand-green text
- * instead. Mechanics (wipe timing, gap growth, shadow lift) stay identical.
+ * band). A white outline keeps the green hover fill distinct from its backdrop.
  */
 export const viewAllCtaOnBrandClass = cn(
-	"group/viewall relative inline-flex h-10 w-fit shrink-0 items-center gap-2.5 overflow-hidden",
+	"site-action group/viewall relative inline-flex h-10 w-fit shrink-0 items-center gap-2.5 overflow-hidden",
 	"border border-white/70 bg-white/10 px-5",
 	"font-heading text-small font-semibold text-white no-underline backdrop-blur-[2px]",
 	"transition-[color,gap,box-shadow,background-color,border-color] duration-300 ease-out",
-	"before:absolute before:inset-0 before:z-0 before:origin-bottom before:scale-y-0 before:bg-white",
+	"before:absolute before:inset-0 before:z-0 before:origin-bottom before:scale-y-0 before:bg-brand",
 	"before:transition-transform before:duration-300 before:ease-[cubic-bezier(0.22,1,0.36,1)]",
-	"fine-hover:gap-3.5 fine-hover:border-white fine-hover:text-brand",
+	"fine-hover:gap-3.5 fine-hover:text-white fine-hover:outline fine-hover:outline-white/70 fine-hover:outline-offset-2",
 	"fine-hover:shadow-[0_12px_36px_-14px_rgba(0,0,0,0.55)]",
 	"fine-hover:before:scale-y-100",
 	"focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white",
