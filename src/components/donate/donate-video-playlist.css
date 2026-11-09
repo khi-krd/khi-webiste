@@ -79,7 +79,7 @@
 	position: relative;
 	width: 100%;
 	aspect-ratio: 1 / 1;
-	border-radius: 28px;
+	border-radius: 0;
 	overflow: hidden;
 	background: var(--vpl-surface);
 	box-shadow:
@@ -103,18 +103,15 @@
 }
 .vpl-logo {
 	/* Brand mark: pinned to the physical bottom-left corner always, in both
-	   locales — a fixed anchor point, not a reading-direction one. */
+	   locales — a fixed anchor point, not a reading-direction one. Shown as
+	   the mark's own artwork, no added frame. */
 	position: absolute;
 	bottom: 18px;
 	left: 18px;
 	z-index: 3;
-	width: 46px;
-	height: 46px;
-	padding: 4px;
-	border-radius: 50%;
-	background: rgba(255, 255, 255, 0.92);
+	width: 72px;
+	height: 72px;
 	object-fit: contain;
-	box-shadow: 0 8px 20px -8px rgba(0, 0, 0, 0.6);
 	pointer-events: none;
 }
 
@@ -185,27 +182,6 @@
 	display: flex;
 	flex-direction: column;
 	gap: 18px;
-}
-.vpl-side-head {
-	align-self: flex-start;
-	display: inline-flex;
-	align-items: center;
-	gap: 8px;
-	padding: 9px 16px;
-	border-radius: 999px;
-	border: 1px solid rgba(255, 255, 255, 0.1);
-	background: rgba(255, 255, 255, 0.06);
-	color: color-mix(in srgb, var(--vpl-text) 85%, transparent);
-}
-.vpl-side-head svg {
-	width: 15px;
-	height: 15px;
-	color: var(--vpl-accent);
-}
-.vpl-side-head-label {
-	font-family: var(--font-heading);
-	font-size: 13px;
-	font-weight: 700;
 }
 .vpl-side-body {
 	flex: 1;
@@ -459,12 +435,9 @@
 	.vpl-row {
 		gap: 28px;
 	}
-	.vpl-stage {
-		border-radius: 22px;
-	}
 	.vpl-logo {
-		width: 38px;
-		height: 38px;
+		width: 56px;
+		height: 56px;
 	}
 	.vpl-bigplay {
 		width: 76px;

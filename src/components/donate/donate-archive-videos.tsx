@@ -5,7 +5,6 @@ import {
 	ChevronLeftIcon,
 	ChevronRightIcon,
 	ChevronUpIcon,
-	QueueListIcon,
 	XMarkIcon,
 } from "@heroicons/react/24/outline";
 import { PlayIcon } from "@heroicons/react/24/solid";
@@ -284,8 +283,8 @@ function VideoDial({
 							<NextImage
 								src="/logo.png"
 								alt=""
-								width={46}
-								height={46}
+								width={72}
+								height={72}
 								className="vpl-logo"
 								aria-hidden
 							/>
@@ -301,10 +300,6 @@ function VideoDial({
 
 					{n > 1 ? (
 						<div ref={sideRef} className="vpl-side">
-							<div className="vpl-side-head">
-								<QueueListIcon className="size-4" />
-								<span className="vpl-side-head-label">{playlistLabel}</span>
-							</div>
 							<div className="vpl-side-body">
 								<ul className="vpl-dial">
 									{dialItems.map(({ it, i, on, style }) => (
@@ -601,24 +596,25 @@ function ImageFan({
 				>
 					<XMarkIcon className="size-5" />
 				</button>
-				{item.posterUrl ? (
+				<div className="ipl-lightbox-frame">
+					{item.posterUrl ? (
+						// biome-ignore lint/performance/noImgElement: unknown aspect ratio — the frame must hug the image's own rendered box so the logo lands on it, which next/image's `fill` (forced inset:0) can't do.
+						<img
+							key={`lightbox-${item.id}`}
+							src={item.posterUrl}
+							alt={item.title}
+							className="ipl-lightbox-img"
+						/>
+					) : null}
 					<NextImage
-						key={`lightbox-${item.id}`}
-						src={item.posterUrl}
-						alt={item.title}
-						fill
-						sizes="100vw"
-						className="object-contain"
+						src="/logo.png"
+						alt=""
+						width={72}
+						height={72}
+						className="ipl-logo"
+						aria-hidden
 					/>
-				) : null}
-				<NextImage
-					src="/logo.png"
-					alt=""
-					width={46}
-					height={46}
-					className="ipl-logo"
-					aria-hidden
-				/>
+				</div>
 			</dialog>
 		</div>
 	);

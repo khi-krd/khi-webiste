@@ -127,19 +127,17 @@
 }
 
 .ipl-logo {
-	/* Brand mark: pinned to the physical bottom-left corner always, in both
-	   locales — a fixed anchor point, not a reading-direction one. */
+	/* Brand mark: pinned to the physical bottom-left corner of the actual
+	   photo — not the lightbox viewport — so it lands on the image itself
+	   whatever its aspect ratio (9:16, 16:9, 1:1, …). Shown as the mark's own
+	   artwork, no added frame. */
 	position: absolute;
 	bottom: 18px;
 	left: 18px;
 	z-index: 3;
-	width: 42px;
-	height: 42px;
-	padding: 4px;
-	border-radius: 50%;
-	background: rgba(255, 255, 255, 0.92);
+	width: 72px;
+	height: 72px;
 	object-fit: contain;
-	box-shadow: 0 8px 20px -8px rgba(0, 0, 0, 0.35);
 	pointer-events: none;
 }
 
@@ -300,8 +298,8 @@
 		filter: blur(30px) saturate(1.2);
 	}
 	.ipl-logo {
-		width: 34px;
-		height: 34px;
+		width: 52px;
+		height: 52px;
 	}
 	.ipl-arrow {
 		width: 44px;
@@ -354,6 +352,9 @@
 .ipl-lightbox {
 	position: fixed;
 	inset: 0;
+	display: flex;
+	align-items: center;
+	justify-content: center;
 	width: 100vw;
 	height: 100vh;
 	max-width: none;
@@ -366,8 +367,20 @@
 .ipl-lightbox::backdrop {
 	background: transparent;
 }
-.ipl-lightbox img {
-	object-fit: contain;
+/* Hugs the photo's own rendered box (whatever its aspect ratio) so the logo,
+   positioned inside it, always lands on the image — never in the letterboxed
+   space around it. */
+.ipl-lightbox-frame {
+	position: relative;
+	display: inline-block;
+	line-height: 0;
+}
+.ipl-lightbox-img {
+	display: block;
+	max-width: calc(100vw - 96px);
+	max-height: calc(100vh - 96px);
+	width: auto;
+	height: auto;
 }
 .ipl-lightbox-close {
 	position: absolute;
