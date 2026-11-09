@@ -1,0 +1,349 @@
+/* ============ Donor ImagePlaylist — "Fan" ============
+   Ported from the playlist reference; colours come from the site tokens
+   (paper surface, institute ink, institute green accent, site fonts). */
+.ipl-wrap {
+	container-type: inline-size;
+}
+.ipl {
+	--ipl-accent: var(--color-accent);
+	--ipl-bg: var(--color-surface);
+	--ipl-ink: var(--color-foreground);
+	--ipl-body: color-mix(in oklch, var(--color-foreground) 78%, transparent);
+	--ipl-muted: var(--color-muted);
+	--ipl-paper: var(--color-surface);
+	--ipl-empty: var(--color-sunken);
+	--ipl-ease: cubic-bezier(0.2, 0.8, 0.2, 1);
+
+	position: relative;
+	overflow: hidden;
+	display: flex;
+	flex-direction: column;
+	gap: 44px;
+	padding: 56px 64px 48px;
+	border: 1px solid var(--color-border);
+	border-radius: 28px;
+	background: var(--ipl-bg);
+	color: var(--ipl-ink);
+	font-family: var(--font-sans);
+	outline: none;
+}
+.ipl *,
+.ipl *::before,
+.ipl *::after {
+	box-sizing: border-box;
+}
+.ipl:focus-visible {
+	box-shadow: inset 0 0 0 3px var(--ipl-accent);
+}
+
+.ipl-top {
+	display: flex;
+	align-items: center;
+	gap: 56px;
+}
+
+/* ---------- main image ---------- */
+.ipl-stagewrap {
+	position: relative;
+	flex: none;
+	width: min(680px, 62%);
+	aspect-ratio: 3 / 2;
+}
+/* soft colored shadow made from the image itself */
+.ipl-glow {
+	position: absolute;
+	inset-inline-end: 6%;
+	top: 13%;
+	width: 88%;
+	height: 92%;
+	overflow: hidden;
+	border-radius: 56px;
+	filter: blur(46px) saturate(1.2);
+	opacity: 0.45;
+	pointer-events: none;
+}
+.ipl-glow img {
+	object-fit: cover;
+}
+.ipl-stage {
+	position: relative;
+	width: 100%;
+	height: 100%;
+	border-radius: 24px;
+	overflow: hidden;
+	background: var(--ipl-empty);
+	box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+	touch-action: pan-y;
+	user-select: none;
+	-webkit-user-select: none;
+}
+.ipl-img {
+	display: block;
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+	animation: ipl-in 0.6s var(--ipl-ease) both;
+}
+
+.ipl-counter {
+	position: absolute;
+	top: 20px;
+	inset-inline-start: 20px;
+	margin: 0;
+	height: 38px;
+	padding: 0 16px;
+	border-radius: 999px;
+	background: color-mix(in srgb, var(--ipl-paper) 74%, transparent);
+	-webkit-backdrop-filter: blur(12px);
+	backdrop-filter: blur(12px);
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	font-family: var(--font-heading);
+	font-size: 13px;
+	font-weight: 700;
+	color: var(--ipl-ink);
+}
+.ipl-counter-sep {
+	color: var(--ipl-muted);
+}
+.ipl-counter-total {
+	color: var(--ipl-muted);
+}
+
+.ipl-arrow {
+	position: absolute;
+	top: 50%;
+	width: 56px;
+	height: 56px;
+	margin-top: -28px;
+	padding: 0;
+	border-radius: 50%;
+	border: 1px solid rgba(255, 255, 255, 0.6);
+	background: color-mix(in srgb, var(--ipl-paper) 74%, transparent);
+	-webkit-backdrop-filter: blur(12px);
+	backdrop-filter: blur(12px);
+	color: var(--ipl-ink);
+	display: grid;
+	place-items: center;
+	cursor: pointer;
+	box-shadow: 0 10px 24px -10px rgba(0, 0, 0, 0.35);
+	transition:
+		transform 0.25s var(--ipl-ease),
+		background-color 0.2s ease;
+}
+.ipl-arrow:hover {
+	transform: scale(1.06);
+	background: color-mix(in srgb, var(--ipl-paper) 92%, transparent);
+}
+.ipl-arrow--prev {
+	inset-inline-start: 20px;
+}
+.ipl-arrow--next {
+	inset-inline-end: 20px;
+}
+
+/* ---------- caption ---------- */
+.ipl-caption {
+	flex: 1;
+	min-width: 0;
+	display: flex;
+	flex-direction: column;
+	gap: 16px;
+	animation: ipl-cap 0.5s ease both;
+}
+.ipl-title {
+	margin: 0;
+	font-family: var(--font-heading);
+	font-weight: 700;
+	font-size: 28px;
+	line-height: 1.55;
+	color: var(--ipl-ink);
+}
+.ipl-desc {
+	margin: 0;
+	font-size: 16px;
+	line-height: 2;
+	color: var(--ipl-body);
+	text-wrap: pretty;
+}
+.ipl-lead {
+	font-weight: 600;
+	color: var(--ipl-ink);
+}
+
+/* ---------- fan of thumbnails ---------- */
+.ipl-fan {
+	position: relative;
+	height: 230px;
+	margin: 0;
+	padding: 0;
+	list-style: none;
+}
+.ipl-fan-item {
+	position: absolute;
+	inset-inline-start: 50%;
+	top: 48px;
+	width: 124px;
+	height: 124px;
+	margin-inline-start: -62px;
+	transform-origin: 50% 100%;
+	transition:
+		transform 0.65s var(--ipl-ease),
+		opacity 0.5s ease;
+}
+.ipl-card {
+	position: relative;
+	display: block;
+	width: 100%;
+	height: 100%;
+	padding: 0;
+	border: 5px solid var(--ipl-paper);
+	border-radius: 18px;
+	overflow: hidden;
+	background: var(--ipl-empty);
+	cursor: pointer;
+	box-shadow: 0 12px 24px -14px rgba(0, 0, 0, 0.35);
+	outline: 3px solid transparent;
+	outline-offset: 3px;
+	transition:
+		box-shadow 0.5s ease,
+		outline-color 0.3s ease,
+		transform 0.3s var(--ipl-ease);
+}
+.ipl-card:hover:not(.is-active) {
+	transform: translateY(-6px);
+}
+.ipl-card.is-active {
+	box-shadow: 0 26px 44px -16px rgba(0, 0, 0, 0.4);
+	outline-color: var(--ipl-accent);
+}
+.ipl-card img {
+	display: block;
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+	border-radius: 13px;
+	pointer-events: none;
+}
+
+/* focus rings */
+.ipl button:focus-visible {
+	outline: 3px solid var(--ipl-accent);
+	outline-offset: 3px;
+}
+
+@keyframes ipl-in {
+	from {
+		opacity: 0;
+		transform: scale(1.03);
+	}
+	to {
+		opacity: 1;
+		transform: none;
+	}
+}
+@keyframes ipl-cap {
+	from {
+		opacity: 0;
+		transform: translateY(8px);
+	}
+	to {
+		opacity: 1;
+		transform: none;
+	}
+}
+
+/* ---------- narrow container: caption under the image ---------- */
+@container (max-width: 900px) {
+	.ipl {
+		gap: 32px;
+		padding: 40px 24px 36px;
+	}
+	.ipl-top {
+		flex-direction: column;
+		align-items: stretch;
+		gap: 28px;
+	}
+	.ipl-stagewrap {
+		width: 100%;
+	}
+	.ipl-fan {
+		height: 200px;
+	}
+	.ipl-fan-item {
+		width: 104px;
+		height: 104px;
+		margin-inline-start: -52px;
+		top: 40px;
+	}
+}
+
+/* ---------- phone ---------- */
+@container (max-width: 560px) {
+	.ipl {
+		gap: 24px;
+		padding: 24px 16px 28px;
+	}
+	.ipl-top {
+		gap: 20px;
+	}
+	.ipl-stage {
+		border-radius: 18px;
+	}
+	.ipl-glow {
+		filter: blur(30px) saturate(1.2);
+	}
+	.ipl-counter {
+		top: 12px;
+		inset-inline-start: 12px;
+		height: 32px;
+		padding: 0 12px;
+		font-size: 12px;
+	}
+	.ipl-arrow {
+		width: 44px;
+		height: 44px;
+		margin-top: -22px;
+	}
+	.ipl-arrow--prev {
+		inset-inline-start: 12px;
+	}
+	.ipl-arrow--next {
+		inset-inline-end: 12px;
+	}
+	.ipl-title {
+		font-size: 21px;
+	}
+	.ipl-desc {
+		font-size: 14px;
+	}
+	.ipl-fan {
+		height: 140px;
+	}
+	.ipl-fan-item {
+		width: 72px;
+		height: 72px;
+		margin-inline-start: -36px;
+		top: 32px;
+	}
+	.ipl-card {
+		border-width: 3px;
+		border-radius: 12px;
+	}
+	.ipl-card img {
+		border-radius: 9px;
+	}
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.ipl-fan-item,
+	.ipl-card,
+	.ipl-arrow {
+		transition: none !important;
+	}
+	.ipl-img,
+	.ipl-caption {
+		animation: none !important;
+	}
+}

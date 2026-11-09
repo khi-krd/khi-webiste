@@ -1,16 +1,29 @@
 "use client";
 
 import {
+	ChevronDownIcon,
 	ChevronLeftIcon,
 	ChevronRightIcon,
+	ChevronUpIcon,
 	QueueListIcon,
 } from "@heroicons/react/24/outline";
 import { PlayIcon } from "@heroicons/react/24/solid";
 import dynamic from "next/dynamic";
 import NextImage from "next/image";
-import { useState } from "react";
+import { useLocale } from "next-intl";
+import {
+	type CSSProperties,
+	type PointerEvent,
+	useCallback,
+	useEffect,
+	useRef,
+	useState,
+} from "react";
 import { DirectionalIcon } from "@/components/ui/directional-icon";
 import { cn } from "@/lib/utils";
+import "./donate-video-playlist.css";
+import "./donate-image-playlist.css";
+import { useContainerWidth } from "./use-container-width";
 
 const VideoPlayer = dynamic(
 	() => import("@/components/ui/video-player").then((mod) => mod.VideoPlayer),
@@ -42,24 +55,17 @@ type NavLabels = { previousLabel: string; nextLabel: string };
 
 const pad = (n: number) => String(n).padStart(2, "0");
 
-const keyframes = `
-@keyframes donate-fade-up {
-	from { opacity: 0; transform: translateY(10px); }
-	to { opacity: 1; transform: translateY(0); }
-}
-@keyframes donate-fade {
-	from { opacity: 0; }
-	to { opacity: 1; }
-}
-@keyframes donate-eq {
-	0%, 100% { transform: scaleY(0.3); }
-	50% { transform: scaleY(1); }
-}`;
+/** Signed distance on a loop of n items: result is in [-floor(n/2), ceil(n/2) - 1]. */
+const loopRel = (k: number, n: number) => {
+	const h = Math.floor(n / 2);
+	return ((((k + h) % n) + n) % n) - h;
+};
 
 /**
- * The archive-donors showcase on the donate page. Videos play in a cinema
- * playlist (stage + numbered queue), images in a gallery stage with a
- * filmstrip — each block renders only when it has records.
+ * The archive-donors showcase on the donate page. Videos play in a "Dial"
+ * playlist (stage + a curved, scroll-through queue), images in a "Fan"
+ * gallery (stage + a hand of thumbnails) — each block renders only when it
+ * has records.
  */
 export function DonateArchiveVideos({
 	heading,
@@ -79,11 +85,10 @@ export function DonateArchiveVideos({
 
 	return (
 		<div className="mt-10 space-y-14 sm:mt-12">
-			<style>{keyframes}</style>
 			{videos.length > 0 ? (
 				<section>
 					<SectionHeading title={heading} count={videos.length} />
-					<VideoPlaylist
+					<VideoDial
 						items={videos}
 						playLabel={playLabel}
 						playlistLabel={playlistLabel}
@@ -95,7 +100,7 @@ export function DonateArchiveVideos({
 			{images.length > 0 ? (
 				<section>
 					<SectionHeading title={imagesHeading} count={images.length} />
-					<ImageGallery
+					<ImageFan
 						items={images}
 						previousLabel={previousLabel}
 						nextLabel={nextLabel}
@@ -120,21 +125,6 @@ function SectionHeading({ title, count }: { title: string; count: number }) {
 	);
 }
 
-function LogoBadge({ className }: { className?: string }) {
-	return (
-		<NextImage
-			src="/logo.png"
-			alt=""
-			width={44}
-			height={44}
-			className={cn(
-				"pointer-events-none absolute bottom-3 left-3 z-20 size-11 rounded-[50%] bg-white/90 object-contain p-1 shadow-lg ring-1 ring-black/5",
-				className,
-			)}
-		/>
-	);
-}
-
 /**
  * First-frame still for an uploaded clip with no poster — the browser fetches
  * only the metadata + one frame. YouTube clips always resolve a thumbnail
@@ -149,69 +139,16 @@ function VideoStill({ src, className }: { src: string; className?: string }) {
 			playsInline
 			tabIndex={-1}
 			aria-hidden
-			className={cn(
-				"pointer-events-none absolute inset-0 size-full object-cover",
-				className,
-			)}
+			className={cn("pointer-events-none size-full object-cover", className)}
 		/>
 	);
 }
 
-function StepButtons({
-	index,
-	total,
-	onStep,
-	previousLabel,
-	nextLabel,
-	tone,
-}: NavLabels & {
-	index: number;
-	total: number;
-	onStep: (delta: number) => void;
-	tone: "dark" | "light";
-}) {
-	const btn = cn(
-		"grid size-9 place-items-center rounded-[50%] border transition-colors duration-200 disabled:opacity-30",
-		tone === "dark"
-			? "border-white/15 text-white hover:border-accent hover:bg-accent"
-			: "border-border bg-background text-foreground hover:border-accent hover:bg-accent hover:text-white",
-	);
-	return (
-		<div className="flex items-center gap-2">
-			<button
-				type="button"
-				className={btn}
-				onClick={() => onStep(-1)}
-				disabled={index === 0}
-				aria-label={previousLabel}
-			>
-				<DirectionalIcon icon={ChevronLeftIcon} className="size-4" />
-			</button>
-			<span
-				className={cn(
-					"min-w-14 text-center font-heading text-small font-bold tabular-nums",
-					tone === "dark" ? "text-white" : "text-foreground",
-				)}
-			>
-				{pad(index + 1)}
-				<span className="opacity-40"> / {pad(total)}</span>
-			</span>
-			<button
-				type="button"
-				className={btn}
-				onClick={() => onStep(1)}
-				disabled={index === total - 1}
-				aria-label={nextLabel}
-			>
-				<DirectionalIcon icon={ChevronRightIcon} className="size-4" />
-			</button>
-		</div>
-	);
-}
+/* ─────────────────────────── Video: "Dial" playlist ─────────────────────────── */
 
-/* ─────────────────────────── Video: cinema playlist ─────────────────────────── */
+const DIAL_OPACITY = [1, 0.62, 0.34, 0.12];
 
-function VideoPlaylist({
+function VideoDial({
 	items,
 	playLabel,
 	playlistLabel,
@@ -222,360 +159,445 @@ function VideoPlaylist({
 	playLabel: string;
 	playlistLabel: string;
 }) {
-	const [index, setIndex] = useState(0);
-	const [playing, setPlaying] = useState(false);
-	const active = items[index];
+	const locale = useLocale();
+	const dir: "rtl" | "ltr" = locale === "ckb" ? "rtl" : "ltr";
+	const n = items.length;
 
-	const select = (next: number, autoplay: boolean) => {
-		setIndex(Math.max(0, Math.min(items.length - 1, next)));
-		setPlaying(autoplay);
-	};
+	const [nav, setNav] = useState({ active: 0, prev: 0 });
+	const { active, prev } = nav;
+	const [playing, setPlaying] = useState(false);
+
+	const sideRef = useRef<HTMLDivElement>(null);
+	const sideWidth = useContainerWidth(sideRef);
+	const compact = sideWidth > 0 && sideWidth < 460;
+
+	const go = useCallback(
+		(i: number, play: boolean) => {
+			if (!n) return;
+			setPlaying(play);
+			setNav((s) => {
+				const next = ((i % n) + n) % n;
+				return next === s.active ? s : { prev: s.active, active: next };
+			});
+		},
+		[n],
+	);
+
+	// Turn the dial with the mouse wheel / trackpad (non-passive so the page does not scroll).
+	const activeRef = useRef(active);
+	activeRef.current = active;
+	const playingRef = useRef(playing);
+	playingRef.current = playing;
+	const lastWheel = useRef(0);
+	useEffect(() => {
+		const el = sideRef.current;
+		if (!el || n < 2) return undefined;
+		const onWheel = (e: WheelEvent) => {
+			if (Math.abs(e.deltaY) < 4) return;
+			e.preventDefault();
+			const now = Date.now();
+			if (now - lastWheel.current < 420) return;
+			lastWheel.current = now;
+			go(activeRef.current + (e.deltaY > 0 ? 1 : -1), playingRef.current);
+		};
+		el.addEventListener("wheel", onWheel, { passive: false });
+		return () => el.removeEventListener("wheel", onWheel);
+	}, [go, n]);
+
+	if (!n) return null;
+	const activeItem = items[active];
+
+	/* ---------- dial geometry ---------- */
+	const firstGap = compact ? 88 : 112; // distance from the centre item to its neighbours
+	const gap = compact ? 74 : 92; // distance between the other items
+	const radius = compact ? 420 : 560; // radius of the curve the items follow
+	const shift = loopRel(prev - active, n);
+
+	const dialItems = items.map((it, i) => {
+		const rel = loopRel(i - active, n);
+		const prel = loopRel(i - prev, n);
+		const m = Math.abs(rel);
+		const jumped = rel - prel !== shift; // wrapped around the loop: move without animating
+		const d = rel === 0 ? 0 : Math.sign(rel) * (firstGap + (m - 1) * gap);
+		const xMag = radius - Math.sqrt(Math.max(0, radius * radius - d * d));
+		const x = dir === "rtl" ? -xMag : xMag;
+		const rotMag =
+			((Math.asin(Math.max(-1, Math.min(1, d / radius))) * 180) / Math.PI) *
+			0.35;
+		const rot = dir === "rtl" ? rotMag : -rotMag;
+		const scale = 1 - 0.06 * Math.min(m, 4);
+		return {
+			it,
+			i,
+			on: rel === 0,
+			style: {
+				top: `calc(50% + ${d}px)`,
+				transform: `translate(${x.toFixed(1)}px, -50%) rotate(${rot.toFixed(2)}deg) scale(${scale.toFixed(3)})`,
+				opacity: m < DIAL_OPACITY.length ? DIAL_OPACITY[m] : 0,
+				zIndex: 10 - m,
+				visibility: m > 3 ? "hidden" : "visible",
+				transition: jumped ? "none" : undefined,
+			} as CSSProperties,
+		};
+	});
 
 	return (
-		<div className="relative overflow-hidden rounded-3xl bg-[#0f1411] p-3 shadow-2xl sm:p-4 lg:p-5">
-			{/* Ambient glow — the active poster bleeds softly behind the stage. */}
-			{active.posterUrl ? (
-				<NextImage
-					key={`glow-${active.id}`}
-					src={active.posterUrl}
-					alt=""
-					fill
-					sizes="100vw"
-					className="scale-125 object-cover opacity-25 blur-3xl"
-					style={{ animation: "donate-fade 0.8s ease-out" }}
-				/>
-			) : null}
-			<span
-				aria-hidden
-				className="pointer-events-none absolute -top-24 left-1/3 size-72 rounded-[50%] bg-accent/30 blur-3xl"
-			/>
+		<div className="vpl-wrap">
+			<section dir={dir} className="vpl" aria-label={playlistLabel}>
+				{activeItem.posterUrl ? (
+					<div key={`glow-${activeItem.id}`} className="vpl-glow" aria-hidden>
+						<NextImage
+							src={activeItem.posterUrl}
+							alt=""
+							fill
+							sizes="100vw"
+							className="size-full"
+						/>
+					</div>
+				) : null}
+				<span aria-hidden className="vpl-glow-tint" />
 
-			<div className="relative grid grid-cols-[minmax(0,1fr)] gap-4 lg:grid-cols-[minmax(0,1fr)_22rem] lg:gap-5">
-				{/* Stage */}
-				<div className="min-w-0">
-					<div className="relative aspect-video overflow-hidden rounded-2xl bg-black shadow-xl ring-1 ring-white/10">
+				<div className="vpl-main">
+					<div className="vpl-stage">
 						{playing ? (
-							<div
-								key={`player-${active.id}`}
-								className="absolute inset-0"
-								style={{ animation: "donate-fade 0.4s ease-out" }}
-							>
+							<div key={`player-${activeItem.id}`} className="vpl-embed">
 								<VideoPlayer
-									src={active.videoUrl}
-									title={active.title}
-									poster={active.posterUrl ?? undefined}
+									src={activeItem.videoUrl}
+									title={activeItem.title}
+									poster={activeItem.posterUrl ?? undefined}
 									autoPlay
 									className="size-full"
 								/>
 							</div>
 						) : (
 							<button
-								key={`poster-${active.id}`}
 								type="button"
 								onClick={() => setPlaying(true)}
-								aria-label={`${playLabel}: ${active.title}`}
-								className="group absolute inset-0 block cursor-pointer"
-								style={{ animation: "donate-fade 0.5s ease-out" }}
+								aria-label={`${playLabel}: ${activeItem.title}`}
+								className="absolute inset-0 block size-full cursor-pointer border-0 p-0"
 							>
-								{active.posterUrl ? (
+								{activeItem.posterUrl ? (
 									<NextImage
-										src={active.posterUrl}
+										key={`poster-${activeItem.id}`}
+										src={activeItem.posterUrl}
 										alt=""
 										fill
-										sizes="(min-width: 1024px) 60vw, 100vw"
-										className="object-cover transition-transform duration-700 group-hover:scale-[1.03]"
+										sizes="(min-width: 1024px) 40vw, 100vw"
+										className="vpl-poster"
 									/>
 								) : (
 									<VideoStill
-										src={active.videoUrl}
-										className="transition-transform duration-700 group-hover:scale-[1.03]"
+										src={activeItem.videoUrl}
+										className="vpl-poster"
 									/>
 								)}
-								<span className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-black/20" />
-								<span className="absolute inset-0 grid place-items-center">
-									<span className="relative grid size-20 place-items-center">
-										<span className="absolute inset-0 animate-ping rounded-[50%] bg-accent/40 [animation-duration:2.2s]" />
-										<span className="relative grid size-20 place-items-center rounded-[50%] bg-accent text-white shadow-2xl ring-4 ring-white/20 transition-transform duration-300 group-hover:scale-110">
-											<PlayIcon className="size-8 translate-x-0.5" />
-										</span>
-									</span>
+								<NextImage
+									src="/logo.png"
+									alt=""
+									width={46}
+									height={46}
+									className="vpl-logo"
+									aria-hidden
+								/>
+								<span className="vpl-bigplay">
+									<PlayIcon className="size-9 translate-x-0.5" />
 								</span>
 							</button>
 						)}
-						{!playing ? <LogoBadge /> : null}
 					</div>
 
-					{/* Now-playing caption */}
-					<div
-						key={`caption-${active.id}`}
-						className="mt-4 flex flex-col gap-3 px-1 sm:flex-row sm:items-start sm:justify-between"
-						style={{ animation: "donate-fade-up 0.5s ease-out" }}
-					>
-						<div className="min-w-0">
-							<p className="font-heading text-h4 font-bold leading-snug text-white">
-								{active.title}
-							</p>
-							{active.description ? (
-								<p className="mt-2 max-w-3xl text-small leading-relaxed text-white/65">
-									{active.description}
-								</p>
-							) : null}
-						</div>
-						{items.length > 1 ? (
-							<div className="shrink-0">
-								<StepButtons
-									index={index}
-									total={items.length}
-									onStep={(d) => select(index + d, playing)}
-									previousLabel={previousLabel}
-									nextLabel={nextLabel}
-									tone="dark"
-								/>
-							</div>
+					<div key={`info-${activeItem.id}`} className="vpl-info">
+						<h3 className="vpl-title">{activeItem.title}</h3>
+						{activeItem.description ? (
+							<p className="vpl-desc">{activeItem.description}</p>
 						) : null}
 					</div>
 				</div>
 
-				{/* Queue */}
-				{items.length > 1 ? (
-					<aside className="flex min-h-0 min-w-0 flex-col rounded-2xl bg-white/[0.04] ring-1 ring-white/10 backdrop-blur-sm lg:max-h-[32rem] lg:self-start">
-						<div className="flex items-center gap-2 border-b border-white/10 px-4 py-3 text-white/80">
-							<QueueListIcon className="size-5 text-accent" />
-							<span className="font-heading text-small font-bold">
-								{playlistLabel}
-							</span>
-							<span className="ms-auto text-caption tabular-nums text-white/40">
-								{pad(items.length)}
-							</span>
+				{n > 1 ? (
+					<div ref={sideRef} className="vpl-side">
+						<div className="vpl-side-head">
+							<QueueListIcon className="size-4" />
+							<span className="vpl-side-head-label">{playlistLabel}</span>
+							<span className="vpl-side-head-count">{pad(n)}</span>
 						</div>
-						<ol className="flex gap-2 overflow-x-auto p-2 lg:flex-col lg:overflow-y-auto lg:overflow-x-hidden [scrollbar-width:thin]">
-							{items.map((item, i) => {
-								const isActive = i === index;
-								return (
-									<li key={item.id} className="shrink-0 lg:shrink">
+						<div className="vpl-side-body">
+							<ul className="vpl-dial">
+								{dialItems.map(({ it, i, on, style }) => (
+									<li key={it.id} className="vpl-item" style={style}>
 										<button
 											type="button"
-											onClick={() => select(i, true)}
-											aria-current={isActive ? "true" : undefined}
-											className={cn(
-												"group relative flex w-64 items-center gap-3 rounded-xl p-2 text-start transition-all duration-300 lg:w-full",
-												isActive
-													? "bg-white/10 ring-1 ring-accent/60"
-													: "hover:bg-white/[0.06]",
-											)}
+											className={cn("vpl-track", on && "is-active")}
+											onClick={() => go(i, true)}
+											aria-current={on ? "true" : undefined}
+											aria-label={`${it.title}`}
+											tabIndex={Math.abs(loopRel(i - active, n)) > 3 ? -1 : 0}
 										>
-											{isActive ? (
-												<span className="absolute inset-y-2 start-0 w-1 rounded-[999px] bg-accent" />
-											) : null}
-											<span className="grid w-7 shrink-0 place-items-center">
-												{isActive && playing ? (
-													<span className="flex h-4 items-end gap-0.5">
-														{[0, 0.2, 0.4].map((delay) => (
-															<span
-																key={delay}
-																className="h-full w-1 origin-bottom rounded-[999px] bg-accent"
-																style={{
-																	animation: `donate-eq 0.9s ease-in-out ${delay}s infinite`,
-																}}
-															/>
-														))}
-													</span>
-												) : (
-													<span
-														className={cn(
-															"font-heading text-small font-bold tabular-nums",
-															isActive ? "text-accent" : "text-white/35",
-														)}
-													>
-														{pad(i + 1)}
-													</span>
-												)}
-											</span>
-											<span className="relative aspect-video w-24 shrink-0 overflow-hidden rounded-lg bg-black ring-1 ring-white/10">
-												{item.posterUrl ? (
+											<span className="vpl-thumb">
+												{it.posterUrl ? (
 													<NextImage
-														src={item.posterUrl}
+														src={it.posterUrl}
 														alt=""
 														fill
 														sizes="96px"
-														className={cn(
-															"object-cover transition-all duration-500",
-															isActive
-																? "opacity-100"
-																: "opacity-70 group-hover:opacity-100",
-														)}
 													/>
 												) : (
-													<VideoStill
-														src={item.videoUrl}
-														className={
-															isActive
-																? "opacity-100"
-																: "opacity-70 group-hover:opacity-100"
-														}
-													/>
+													<VideoStill src={it.videoUrl} />
 												)}
-												<span className="absolute inset-0 grid place-items-center opacity-0 transition-opacity duration-300 group-hover:opacity-100">
-													<span className="grid size-7 place-items-center rounded-[50%] bg-accent/90 text-white">
-														<PlayIcon className="size-3.5 translate-x-px" />
+												{on ? (
+													<span
+														className={cn("vpl-eq", playing && "is-playing")}
+														aria-hidden="true"
+													>
+														<span />
+														<span />
+														<span />
 													</span>
-												</span>
+												) : null}
 											</span>
-											<span
-												className={cn(
-													"line-clamp-2 min-w-0 text-small font-semibold leading-snug transition-colors",
-													isActive
-														? "text-white"
-														: "text-white/70 group-hover:text-white",
-												)}
-											>
-												{item.title}
+											<span className="vpl-track-text">
+												<span className="vpl-meta">
+													<span className="vpl-num">{pad(i + 1)}</span>
+												</span>
+												<span className="vpl-track-title">{it.title}</span>
 											</span>
 										</button>
 									</li>
-								);
-							})}
-						</ol>
-					</aside>
+								))}
+							</ul>
+
+							<div className="vpl-nav">
+								<button
+									type="button"
+									className="vpl-round"
+									onClick={() => go(active - 1, playing)}
+									aria-label={previousLabel}
+								>
+									<ChevronUpIcon className="size-5" />
+								</button>
+								<span className="vpl-count-cur">{pad(active + 1)}</span>
+								<span className="vpl-count-line" aria-hidden="true" />
+								<span className="vpl-count-total">{pad(n)}</span>
+								<button
+									type="button"
+									className="vpl-round"
+									onClick={() => go(active + 1, playing)}
+									aria-label={nextLabel}
+								>
+									<ChevronDownIcon className="size-5" />
+								</button>
+							</div>
+						</div>
+					</div>
 				) : null}
-			</div>
+			</section>
 		</div>
 	);
 }
 
-/* ─────────────────────────── Image: gallery stage ─────────────────────────── */
+/* ─────────────────────────── Image: "Fan" gallery ─────────────────────────── */
 
-function ImageGallery({
+const FAN_OPACITY = [1, 0.92, 0.78, 0.55];
+
+function ImageFan({
 	items,
 	previousLabel,
 	nextLabel,
 }: NavLabels & { items: DonateArchiveVideoItem[] }) {
-	const [index, setIndex] = useState(0);
-	const active = items[index];
-	const step = (delta: number) =>
-		setIndex((i) => Math.max(0, Math.min(items.length - 1, i + delta)));
+	const locale = useLocale();
+	const dir: "rtl" | "ltr" = locale === "ckb" ? "rtl" : "ltr";
+	const n = items.length;
+
+	const [nav, setNav] = useState({ active: 0, prev: 0 });
+	const { active, prev } = nav;
+
+	const wrapRef = useRef<HTMLDivElement>(null);
+	const width = useContainerWidth(wrapRef);
+	const mid = width > 0 && width < 900;
+	const compact = width > 0 && width < 560;
+	const swipe = useRef<{ x: number; y: number } | null>(null);
+
+	const go = useCallback(
+		(i: number) => {
+			if (!n) return;
+			setNav((s) => {
+				const next = ((i % n) + n) % n;
+				return next === s.active ? s : { prev: s.active, active: next };
+			});
+		},
+		[n],
+	);
+
+	// Preload the neighbours so switching feels instant.
+	useEffect(() => {
+		if (n < 2) return;
+		for (const k of [active + 1, active - 1]) {
+			const it = items[((k % n) + n) % n];
+			if (it?.posterUrl) {
+				const img = new Image();
+				img.src = it.posterUrl;
+			}
+		}
+	}, [active, items, n]);
+
+	if (!n) return null;
+	const item = items[active];
+
+	const onPointerDown = (e: PointerEvent) => {
+		swipe.current = { x: e.clientX, y: e.clientY };
+	};
+	const onPointerUp = (e: PointerEvent) => {
+		const s = swipe.current;
+		swipe.current = null;
+		if (!s) return;
+		const dx = e.clientX - s.x;
+		const dy = e.clientY - s.y;
+		if (Math.abs(dx) < 50 || Math.abs(dx) < Math.abs(dy)) return;
+		const forward = dir === "rtl" ? dx > 0 : dx < 0;
+		go(forward ? active + 1 : active - 1);
+	};
+
+	/* ---------- fan geometry ---------- */
+	const spread = compact ? 68 : mid ? 120 : 150; // horizontal distance between cards
+	const drop = compact ? 4 : mid ? 6 : 7; // how much the cards dip toward the edges
+	const lift = compact ? -10 : -16; // how far the selected card rises
+	const maxVisible = compact ? 2 : 3;
+	const shift = loopRel(prev - active, n);
+	const sign = dir === "rtl" ? -1 : 1;
+
+	const fan = items.map((it, i) => {
+		const rel = loopRel(i - active, n);
+		const prel = loopRel(i - prev, n);
+		const m = Math.abs(rel);
+		const on = rel === 0;
+		const jumped = rel - prel !== shift; // wrapped around the loop: move without animating
+		const x = sign * -rel * spread;
+		const y = on ? lift : rel * rel * drop;
+		const r = sign * -rel * 5;
+		const s = on ? 1.2 : 1 - 0.04 * m;
+		const visible = m <= maxVisible;
+		return {
+			it,
+			i,
+			on,
+			visible,
+			style: {
+				transform: `translateX(${x}px) translateY(${y}px) rotate(${r}deg) scale(${s.toFixed(3)})`,
+				opacity: visible ? FAN_OPACITY[m] : 0,
+				zIndex: 10 - m,
+				pointerEvents: visible ? undefined : "none",
+				transition: jumped ? "none" : undefined,
+			} as CSSProperties,
+		};
+	});
 
 	return (
-		<div className="rounded-3xl border border-border/60 bg-surface p-3 shadow-xl sm:p-4 lg:p-5">
-			<div className="grid grid-cols-[minmax(0,1fr)] gap-4 lg:grid-cols-[minmax(0,1fr)_20rem] lg:gap-6">
-				{/* Stage — full photo on its own blurred bleed, never cropped. */}
-				<div className="relative aspect-[4/3] overflow-hidden rounded-2xl bg-foreground sm:aspect-[16/10]">
-					{active.posterUrl ? (
+		<div ref={wrapRef} className="ipl-wrap">
+			<section dir={dir} className="ipl">
+				<div className="ipl-top">
+					<div className="ipl-stagewrap">
+						{item.posterUrl ? (
+							<div className="ipl-glow" aria-hidden>
+								<NextImage
+									key={`glow-${item.id}`}
+									src={item.posterUrl}
+									alt=""
+									fill
+									sizes="100vw"
+									className="size-full"
+								/>
+							</div>
+						) : null}
 						<div
-							key={`stage-${active.id}`}
-							className="absolute inset-0"
-							style={{ animation: "donate-fade 0.6s ease-out" }}
+							className="ipl-stage"
+							onPointerDown={onPointerDown}
+							onPointerUp={onPointerUp}
+							onPointerCancel={() => {
+								swipe.current = null;
+							}}
 						>
-							<NextImage
-								src={active.posterUrl}
-								alt=""
-								fill
-								sizes="100vw"
-								className="scale-110 object-cover opacity-50 blur-2xl"
-							/>
-							<NextImage
-								src={active.posterUrl}
-								alt={active.title}
-								fill
-								sizes="(min-width: 1024px) 60vw, 100vw"
-								className="object-contain p-3 drop-shadow-2xl sm:p-5"
-							/>
-						</div>
-					) : null}
-					<LogoBadge />
-					{items.length > 1 ? (
-						<>
-							<button
-								type="button"
-								onClick={() => step(-1)}
-								disabled={index === 0}
-								aria-label={previousLabel}
-								className="absolute start-3 top-1/2 z-20 grid size-11 -translate-y-1/2 place-items-center rounded-[50%] bg-white/85 text-foreground shadow-lg backdrop-blur transition hover:bg-accent hover:text-white disabled:opacity-0"
-							>
-								<DirectionalIcon icon={ChevronLeftIcon} className="size-5" />
-							</button>
-							<button
-								type="button"
-								onClick={() => step(1)}
-								disabled={index === items.length - 1}
-								aria-label={nextLabel}
-								className="absolute end-3 top-1/2 z-20 grid size-11 -translate-y-1/2 place-items-center rounded-[50%] bg-white/85 text-foreground shadow-lg backdrop-blur transition hover:bg-accent hover:text-white disabled:opacity-0"
-							>
-								<DirectionalIcon icon={ChevronRightIcon} className="size-5" />
-							</button>
-						</>
-					) : null}
-				</div>
+							{item.posterUrl ? (
+								<NextImage
+									key={`stage-${item.id}`}
+									src={item.posterUrl}
+									alt={item.title}
+									fill
+									sizes="(min-width: 1024px) 60vw, 100vw"
+									className="ipl-img"
+									draggable={false}
+								/>
+							) : null}
 
-				{/* Caption column */}
-				<div className="flex min-w-0 flex-col">
-					<div
-						key={`caption-${active.id}`}
-						className="grow"
-						style={{ animation: "donate-fade-up 0.5s ease-out" }}
-					>
-						<span className="font-heading text-[3.5rem] font-black leading-none tabular-nums text-accent/15">
-							{pad(index + 1)}
-						</span>
-						<p className="-mt-3 font-heading text-h4 font-bold leading-snug text-foreground">
-							{active.title}
-						</p>
-						<span className="mt-3 block h-1 w-12 rounded-[999px] bg-accent" />
-						{active.description ? (
-							<p className="mt-4 text-small leading-relaxed text-muted">
-								{active.description}
+							<p className="ipl-counter" aria-live="polite">
+								<span>{pad(active + 1)}</span>
+								<span className="ipl-counter-sep">/</span>
+								<span className="ipl-counter-total">{pad(n)}</span>
 							</p>
+
+							{n > 1 ? (
+								<>
+									<button
+										type="button"
+										className="ipl-arrow ipl-arrow--prev"
+										onClick={() => go(active - 1)}
+										aria-label={previousLabel}
+									>
+										<DirectionalIcon
+											icon={ChevronRightIcon}
+											className="size-5"
+										/>
+									</button>
+									<button
+										type="button"
+										className="ipl-arrow ipl-arrow--next"
+										onClick={() => go(active + 1)}
+										aria-label={nextLabel}
+									>
+										<DirectionalIcon
+											icon={ChevronLeftIcon}
+											className="size-5"
+										/>
+									</button>
+								</>
+							) : null}
+						</div>
+					</div>
+
+					<div key={`caption-${item.id}`} className="ipl-caption">
+						<h3 className="ipl-title">{item.title}</h3>
+						{item.description ? (
+							<p className="ipl-desc">{item.description}</p>
 						) : null}
 					</div>
-					{items.length > 1 ? (
-						<div className="mt-5">
-							<StepButtons
-								index={index}
-								total={items.length}
-								onStep={step}
-								previousLabel={previousLabel}
-								nextLabel={nextLabel}
-								tone="light"
-							/>
-						</div>
-					) : null}
 				</div>
-			</div>
 
-			{/* Filmstrip */}
-			{items.length > 1 ? (
-				<ol className="mt-4 flex gap-3 overflow-x-auto px-1 pb-2 pt-1 [scrollbar-width:thin]">
-					{items.map((item, i) => {
-						const isActive = i === index;
-						return (
-							<li key={item.id} className="shrink-0">
+				{n > 1 ? (
+					<ul className="ipl-fan">
+						{fan.map(({ it, i, on, visible, style }) => (
+							<li key={it.id} className="ipl-fan-item" style={style}>
 								<button
 									type="button"
-									onClick={() => setIndex(i)}
-									aria-label={item.title}
-									aria-current={isActive ? "true" : undefined}
-									className={cn(
-										"relative block aspect-[4/3] w-28 overflow-hidden rounded-xl bg-foreground transition-all duration-300 sm:w-32",
-										isActive
-											? "-translate-y-1 shadow-lg ring-2 ring-accent ring-offset-2 ring-offset-surface"
-											: "opacity-60 hover:opacity-100",
-									)}
+									className={cn("ipl-card", on && "is-active")}
+									onClick={() => go(i)}
+									aria-current={on ? "true" : undefined}
+									aria-label={it.title}
+									tabIndex={visible ? 0 : -1}
 								>
-									{item.posterUrl ? (
+									{it.posterUrl ? (
 										<NextImage
-											src={item.posterUrl}
+											src={it.posterUrl}
 											alt=""
 											fill
-											sizes="128px"
-											className="object-cover"
+											sizes="124px"
+											draggable={false}
 										/>
 									) : null}
 								</button>
 							</li>
-						);
-					})}
-				</ol>
-			) : null}
+						))}
+					</ul>
+				) : null}
+			</section>
 		</div>
 	);
 }

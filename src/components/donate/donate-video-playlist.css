@@ -1,0 +1,537 @@
+/* ============ Donor VideoPlaylist — "Dial" ============
+   Ported from the playlist reference; colours come from the site tokens
+   (institute green accent, admin-configurable dark band, site fonts). */
+.vpl-wrap {
+	container-type: inline-size;
+}
+.vpl {
+	--vpl-accent: var(--color-accent);
+	--vpl-bg: var(--site-band-bg, #121613);
+	--vpl-surface: color-mix(in srgb, var(--vpl-bg) 82%, #fff 6%);
+	--vpl-text: #f4f1ea;
+	--vpl-body: color-mix(in srgb, #f4f1ea 70%, transparent);
+	--vpl-muted: color-mix(in srgb, #f4f1ea 55%, transparent);
+	--vpl-ease: cubic-bezier(0.2, 0.8, 0.2, 1);
+
+	position: relative;
+	overflow: hidden;
+	display: flex;
+	align-items: flex-start;
+	gap: 64px;
+	padding: 64px;
+	border-radius: 28px;
+	background: var(--vpl-bg);
+	color: var(--vpl-text);
+	font-family: var(--font-sans);
+	box-shadow: 0 40px 80px -40px rgba(0, 0, 0, 0.55);
+}
+.vpl *,
+.vpl *::before,
+.vpl *::after {
+	box-sizing: border-box;
+}
+
+/* soft coloured light behind the player, made from the current poster */
+.vpl-glow {
+	position: absolute;
+	top: 10px;
+	inset-inline-start: 10px;
+	width: 640px;
+	height: 640px;
+	max-width: 100%;
+	overflow: hidden;
+	filter: blur(90px) saturate(1.5);
+	opacity: 0.55;
+	pointer-events: none;
+}
+.vpl-glow img {
+	object-fit: cover;
+}
+.vpl-glow-tint {
+	position: absolute;
+	top: -120px;
+	inset-inline-start: 120px;
+	width: 420px;
+	height: 420px;
+	border-radius: 50%;
+	background: var(--vpl-accent);
+	filter: blur(120px);
+	opacity: 0.35;
+	pointer-events: none;
+}
+
+/* ---------- player ---------- */
+.vpl-main {
+	position: relative;
+	z-index: 1;
+	flex: none;
+	width: 500px;
+	display: flex;
+	flex-direction: column;
+	gap: 28px;
+}
+.vpl-stage {
+	position: relative;
+	width: 100%;
+	aspect-ratio: 1 / 1;
+	border-radius: 28px;
+	overflow: hidden;
+	background: var(--vpl-surface);
+	box-shadow:
+		0 40px 80px -30px rgba(0, 0, 0, 0.8),
+		0 0 0 1px rgba(255, 255, 255, 0.07);
+}
+.vpl-video,
+.vpl-poster {
+	position: absolute;
+	inset: 0;
+	display: block;
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+	background: var(--vpl-surface);
+	cursor: pointer;
+}
+.vpl-embed {
+	position: absolute;
+	inset: 0;
+}
+.vpl-logo {
+	position: absolute;
+	bottom: 18px;
+	inset-inline-start: 18px;
+	z-index: 3;
+	width: 46px;
+	height: 46px;
+	padding: 4px;
+	border-radius: 50%;
+	background: rgba(255, 255, 255, 0.92);
+	object-fit: contain;
+	box-shadow: 0 8px 20px -8px rgba(0, 0, 0, 0.6);
+	pointer-events: none;
+}
+
+.vpl-bigplay {
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	z-index: 2;
+	width: 96px;
+	height: 96px;
+	margin: -48px 0 0 -48px;
+	padding: 0;
+	border-radius: 50%;
+	border: 1px solid rgba(255, 255, 255, 0.35);
+	background: color-mix(in srgb, var(--vpl-accent) 55%, transparent);
+	-webkit-backdrop-filter: blur(14px);
+	backdrop-filter: blur(14px);
+	color: #fff;
+	display: grid;
+	place-items: center;
+	cursor: pointer;
+	box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.5);
+	transition:
+		transform 0.25s var(--vpl-ease),
+		background-color 0.25s ease;
+}
+.vpl-bigplay:hover {
+	transform: scale(1.06);
+	background: color-mix(in srgb, var(--vpl-accent) 80%, transparent);
+}
+
+/* title + description under the video */
+.vpl-info {
+	display: flex;
+	flex-direction: column;
+	gap: 12px;
+	padding: 0 4px;
+	animation: vpl-fade 0.5s ease both;
+}
+.vpl-title {
+	margin: 0;
+	font-family: var(--font-heading);
+	font-weight: 700;
+	font-size: 26px;
+	line-height: 1.55;
+	color: var(--vpl-text);
+}
+.vpl-desc {
+	margin: 0;
+	font-size: 15px;
+	line-height: 1.95;
+	color: var(--vpl-body);
+	text-wrap: pretty;
+}
+
+/* ---------- dial ---------- */
+.vpl-side {
+	position: relative;
+	z-index: 1;
+	flex: 1;
+	min-width: 0;
+	height: 500px;
+	display: flex;
+	flex-direction: column;
+	gap: 18px;
+}
+.vpl-side-head {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	padding-inline: 4px;
+	color: var(--vpl-muted);
+}
+.vpl-side-head-label {
+	font-family: var(--font-heading);
+	font-size: 13px;
+	font-weight: 700;
+	color: color-mix(in srgb, var(--vpl-text) 80%, transparent);
+}
+.vpl-side-head-count {
+	margin-inline-start: auto;
+	font-family: var(--font-heading);
+	font-size: 12px;
+	font-variant-numeric: tabular-nums;
+}
+.vpl-side-body {
+	flex: 1;
+	min-height: 0;
+	display: flex;
+	align-items: center;
+	gap: 24px;
+}
+.vpl-dial {
+	position: relative;
+	flex: 1;
+	align-self: stretch;
+	min-height: 100%;
+	margin: 0;
+	padding: 0;
+	list-style: none;
+	-webkit-mask-image: linear-gradient(
+		to bottom,
+		transparent 0,
+		#000 16%,
+		#000 84%,
+		transparent 100%
+	);
+	mask-image: linear-gradient(
+		to bottom,
+		transparent 0,
+		#000 16%,
+		#000 84%,
+		transparent 100%
+	);
+}
+.vpl-item {
+	position: absolute;
+	inset-inline-start: 0;
+	width: min(440px, calc(100% - 70px));
+	transition:
+		transform 0.6s var(--vpl-ease),
+		top 0.6s var(--vpl-ease),
+		opacity 0.6s ease;
+}
+.vpl[dir="rtl"] .vpl-item {
+	transform-origin: 100% 50%;
+}
+.vpl[dir="ltr"] .vpl-item {
+	transform-origin: 0 50%;
+}
+.vpl-track {
+	width: 100%;
+	display: flex;
+	align-items: center;
+	gap: 18px;
+	padding: 10px;
+	border-radius: 24px;
+	border: 1px solid transparent;
+	background: transparent;
+	color: inherit;
+	font: inherit;
+	text-align: start;
+	cursor: pointer;
+	transition:
+		background-color 0.6s ease,
+		border-color 0.6s ease,
+		padding 0.6s var(--vpl-ease),
+		box-shadow 0.6s ease;
+}
+.vpl-track:hover {
+	background: rgba(255, 255, 255, 0.04);
+}
+.vpl-track.is-active {
+	padding: 14px;
+	border-color: color-mix(in srgb, var(--vpl-accent) 55%, rgba(255, 255, 255, 0.14));
+	background: rgba(255, 255, 255, 0.07);
+	box-shadow: 0 24px 48px -24px rgba(0, 0, 0, 0.7);
+}
+
+.vpl-thumb {
+	position: relative;
+	flex: none;
+	width: 68px;
+	height: 68px;
+	border-radius: 16px;
+	overflow: hidden;
+	background: var(--vpl-surface);
+	transition:
+		width 0.6s var(--vpl-ease),
+		height 0.6s var(--vpl-ease);
+}
+.is-active .vpl-thumb {
+	width: 96px;
+	height: 96px;
+}
+.vpl-thumb img,
+.vpl-thumb video {
+	display: block;
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+	pointer-events: none;
+}
+
+/* "now playing" bars on the selected thumbnail */
+.vpl-eq {
+	position: absolute;
+	inset: 0;
+	display: flex;
+	align-items: flex-end;
+	justify-content: center;
+	gap: 4px;
+	padding-bottom: 18px;
+	background: rgba(0, 0, 0, 0.38);
+}
+.vpl-eq span {
+	width: 4px;
+	height: 24px;
+	border-radius: 2px;
+	background: var(--vpl-accent);
+	transform-origin: 50% 100%;
+	animation: vpl-eq 0.9s ease-in-out infinite;
+	animation-play-state: paused;
+}
+.vpl-eq span:nth-child(2) {
+	animation-delay: -0.3s;
+}
+.vpl-eq span:nth-child(3) {
+	animation-delay: -0.6s;
+}
+.vpl-eq.is-playing span {
+	animation-play-state: running;
+}
+
+.vpl-track-text {
+	flex: 1;
+	min-width: 0;
+	display: flex;
+	flex-direction: column;
+	gap: 2px;
+}
+.vpl-meta {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	font-family: var(--font-heading);
+	font-size: 12px;
+	font-weight: 700;
+	color: var(--vpl-muted);
+}
+.is-active .vpl-num {
+	color: color-mix(in srgb, var(--vpl-accent) 60%, #fff);
+}
+.vpl-track-title {
+	font-family: var(--font-heading);
+	font-size: 16px;
+	font-weight: 700;
+	line-height: 1.6;
+	color: var(--vpl-text);
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	transition: font-size 0.6s var(--vpl-ease);
+}
+.is-active .vpl-track-title {
+	font-size: 19px;
+	white-space: normal;
+	display: -webkit-box;
+	-webkit-line-clamp: 2;
+	-webkit-box-orient: vertical;
+}
+
+/* up / down + counter */
+.vpl-nav {
+	flex: none;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	gap: 14px;
+}
+.vpl-round {
+	width: 52px;
+	height: 52px;
+	padding: 0;
+	border-radius: 50%;
+	border: 1px solid rgba(255, 255, 255, 0.16);
+	background: rgba(255, 255, 255, 0.06);
+	color: var(--vpl-text);
+	display: grid;
+	place-items: center;
+	cursor: pointer;
+	transition:
+		background-color 0.2s ease,
+		border-color 0.2s ease;
+}
+.vpl-round:hover:not(:disabled) {
+	background: var(--vpl-accent);
+	border-color: var(--vpl-accent);
+}
+.vpl-round:disabled {
+	opacity: 0.3;
+	cursor: default;
+}
+.vpl-count-cur {
+	font-family: var(--font-heading);
+	font-size: 14px;
+	font-weight: 800;
+	color: color-mix(in srgb, var(--vpl-accent) 60%, #fff);
+}
+.vpl-count-line {
+	width: 1px;
+	height: 28px;
+	background: rgba(255, 255, 255, 0.2);
+}
+.vpl-count-total {
+	font-family: var(--font-heading);
+	font-size: 13px;
+	font-weight: 600;
+	color: var(--vpl-muted);
+}
+
+.vpl button:focus-visible {
+	outline: 2px solid var(--vpl-accent);
+	outline-offset: 2px;
+}
+
+@keyframes vpl-eq {
+	0%,
+	100% {
+		transform: scaleY(0.3);
+	}
+	50% {
+		transform: scaleY(1);
+	}
+}
+@keyframes vpl-fade {
+	from {
+		opacity: 0;
+		transform: translateY(8px);
+	}
+	to {
+		opacity: 1;
+		transform: none;
+	}
+}
+
+/* ---------- narrow container: stack the dial under the player ---------- */
+@container (max-width: 1000px) {
+	.vpl {
+		flex-direction: column;
+		align-items: stretch;
+		gap: 40px;
+		padding: 44px 24px;
+	}
+	.vpl-main {
+		width: 100%;
+		max-width: 560px;
+		margin-inline: auto;
+	}
+	.vpl-side {
+		flex: none;
+		width: 100%;
+		max-width: 640px;
+		margin-inline: auto;
+	}
+	.vpl-glow {
+		inset-inline-start: 50%;
+		transform: translateX(50%);
+	}
+}
+
+/* ---------- phone ---------- */
+@container (max-width: 600px) {
+	.vpl {
+		gap: 28px;
+		padding: 20px 14px 32px;
+		border-radius: 22px;
+	}
+	.vpl-main {
+		gap: 22px;
+	}
+	.vpl-stage {
+		border-radius: 22px;
+	}
+	.vpl-logo {
+		width: 38px;
+		height: 38px;
+	}
+	.vpl-bigplay {
+		width: 76px;
+		height: 76px;
+		margin: -38px 0 0 -38px;
+	}
+	.vpl-title {
+		font-size: 21px;
+	}
+	.vpl-desc {
+		font-size: 14px;
+	}
+	.vpl-side {
+		height: 420px;
+	}
+	.vpl-side-body {
+		gap: 10px;
+	}
+	.vpl-item {
+		width: calc(100% - 58px);
+	}
+	.vpl-track {
+		gap: 12px;
+	}
+	.vpl-track.is-active {
+		padding: 10px;
+	}
+	.vpl-thumb {
+		width: 52px;
+		height: 52px;
+		border-radius: 12px;
+	}
+	.is-active .vpl-thumb {
+		width: 72px;
+		height: 72px;
+	}
+	.vpl-track-title {
+		font-size: 14px;
+	}
+	.is-active .vpl-track-title {
+		font-size: 16px;
+	}
+	.vpl-round {
+		width: 44px;
+		height: 44px;
+	}
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.vpl-item,
+	.vpl-track,
+	.vpl-thumb,
+	.vpl-track-title {
+		transition: none !important;
+	}
+	.vpl-eq span,
+	.vpl-info {
+		animation: none !important;
+	}
+}
