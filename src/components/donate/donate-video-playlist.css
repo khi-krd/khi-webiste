@@ -229,6 +229,7 @@
 .vpl-queue {
 	flex: 1;
 	min-height: 0;
+	max-height: none;
 	margin: 0;
 	padding: 4px 4px 8px;
 	list-style: none;
@@ -244,6 +245,12 @@
 		transparent 100%
 	);
 	mask-image: linear-gradient(to bottom, #000 92%, transparent 100%);
+}
+/* Sharing the column with the gallery: the queue gives way and scrolls
+   internally instead of pushing the images below the fold. */
+.vpl-side:has(.vpl-gallery) .vpl-queue {
+	flex: 0 1 auto;
+	max-height: 320px;
 }
 .vpl-track {
 	width: 100%;
@@ -366,6 +373,163 @@
 	display: -webkit-box;
 	-webkit-line-clamp: 2;
 	-webkit-box-orient: vertical;
+}
+
+/* ---------- embedded image gallery (side column) ---------- */
+.vpl-gallery {
+	display: flex;
+	flex-direction: column;
+	gap: 14px;
+	margin-top: 8px;
+	padding-top: 22px;
+	border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+/* When the queue is missing (single video) the gallery heads the column. */
+.vpl-side > .vpl-gallery:first-child {
+	margin-top: 0;
+	padding-top: 0;
+	border-top: 0;
+}
+
+.vpl-igstage {
+	position: relative;
+	width: 100%;
+	aspect-ratio: 4 / 3;
+	border-radius: 0;
+	overflow: hidden;
+	background: var(--vpl-surface);
+	box-shadow:
+		0 28px 56px -26px rgba(0, 0, 0, 0.75),
+		0 0 0 1px rgba(255, 255, 255, 0.07);
+	cursor: pointer;
+	touch-action: pan-y;
+	user-select: none;
+	-webkit-user-select: none;
+}
+.vpl-igimg {
+	position: absolute;
+	inset: 0;
+	display: block;
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+	animation: vpl-fade 0.5s ease both;
+}
+.vpl-iglogo {
+	/* Same physical bottom-left anchor as the video stage. */
+	position: absolute;
+	bottom: 12px;
+	left: 12px;
+	z-index: 3;
+	width: 56px;
+	height: 56px;
+	object-fit: contain;
+	pointer-events: none;
+}
+.vpl-igarrow {
+	position: absolute;
+	top: 50%;
+	z-index: 2;
+	width: 38px;
+	height: 38px;
+	margin-top: -19px;
+	padding: 0;
+	border-radius: 50%;
+	border: 1px solid rgba(255, 255, 255, 0.22);
+	background: rgba(0, 0, 0, 0.38);
+	-webkit-backdrop-filter: blur(10px);
+	backdrop-filter: blur(10px);
+	color: #fff;
+	display: grid;
+	place-items: center;
+	cursor: pointer;
+	transition:
+		background-color 0.2s ease,
+		border-color 0.2s ease,
+		transform 0.25s var(--vpl-ease);
+}
+.vpl-igarrow:hover {
+	background: var(--vpl-accent);
+	border-color: var(--vpl-accent);
+	transform: scale(1.07);
+}
+.vpl-igarrow--prev {
+	inset-inline-start: 10px;
+}
+.vpl-igarrow--next {
+	inset-inline-end: 10px;
+}
+
+.vpl-ithumbs {
+	display: flex;
+	gap: 8px;
+	margin: 0;
+	padding: 2px;
+	list-style: none;
+	overflow-x: auto;
+	scrollbar-width: thin;
+	scrollbar-color: rgba(255, 255, 255, 0.18) transparent;
+}
+.vpl-ithumbs > li {
+	flex: none;
+}
+.vpl-ithumb {
+	position: relative;
+	display: block;
+	width: 56px;
+	height: 56px;
+	padding: 0;
+	border: 0;
+	border-radius: 0;
+	overflow: hidden;
+	background: var(--vpl-surface);
+	cursor: pointer;
+	opacity: 0.5;
+	outline: 2px solid transparent;
+	outline-offset: 2px;
+	transition:
+		opacity 0.3s ease,
+		outline-color 0.3s ease;
+}
+.vpl-ithumb:hover {
+	opacity: 0.85;
+}
+.vpl-ithumb.is-active {
+	opacity: 1;
+	outline-color: var(--vpl-accent);
+}
+.vpl-ithumb img {
+	display: block;
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+	pointer-events: none;
+}
+
+.vpl-iginfo {
+	display: flex;
+	flex-direction: column;
+	gap: 6px;
+	padding: 0 4px;
+	animation: vpl-fade 0.5s ease both;
+}
+.vpl-igtitle {
+	margin: 0;
+	font-family: var(--font-heading);
+	font-weight: 700;
+	font-size: 16px;
+	line-height: 1.6;
+	color: var(--vpl-text);
+}
+.vpl-igdesc {
+	margin: 0;
+	font-size: 13px;
+	line-height: 1.8;
+	color: var(--vpl-body);
+	display: -webkit-box;
+	-webkit-line-clamp: 3;
+	-webkit-box-orient: vertical;
+	overflow: hidden;
 }
 
 /* up / down */
@@ -509,6 +673,17 @@
 	}
 	.is-active .vpl-track-title {
 		font-size: 16px;
+	}
+	.vpl-ithumb {
+		width: 48px;
+		height: 48px;
+	}
+	.vpl-iglogo {
+		width: 44px;
+		height: 44px;
+	}
+	.vpl-igtitle {
+		font-size: 15px;
 	}
 	.vpl-round {
 		width: 44px;
