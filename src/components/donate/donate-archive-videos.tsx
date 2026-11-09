@@ -1,10 +1,8 @@
 "use client";
 
 import {
-	ChevronDownIcon,
 	ChevronLeftIcon,
 	ChevronRightIcon,
-	ChevronUpIcon,
 	PhotoIcon,
 	QueueListIcon,
 	XMarkIcon,
@@ -69,8 +67,8 @@ const loopRel = (k: number, n: number) => {
 
 /**
  * The archive-donors showcase on the donate page. Videos play on a big stage
- * above its queue in the right panel, with an independent image gallery in
- * the left panel. An images-only archive falls back to the standalone "Fan"
+ * below its queue in the right panel, with an independent image gallery and
+ * its own top queue in the left panel. An images-only archive uses the "Fan"
  * gallery. Each block renders only when it has records.
  */
 export function DonateArchiveVideos({
@@ -156,6 +154,131 @@ function VideoStill({ src, className }: { src: string; className?: string }) {
 
 /* ─────────────────────────── Video: queue playlist ─────────────────────────── */
 
+function PlaylistHeader({
+	heading,
+	kind,
+	active,
+	total,
+	num,
+	previousLabel,
+	nextLabel,
+	onPrevious,
+	onNext,
+}: NavLabels & {
+	heading: string;
+	kind: "video" | "image";
+	active: number;
+	total: number;
+	num: (value: string | number) => string;
+	onPrevious: () => void;
+	onNext: () => void;
+}) {
+	const Icon = kind === "video" ? QueueListIcon : PhotoIcon;
+	return (
+		<header className="vpl-panel-heading vpl-queue-head">
+			<Icon className="vpl-queue-icon" aria-hidden />
+			<h3 className="vpl-queue-label">{heading}</h3>
+			<div className="vpl-list-controls">
+				<span className="vpl-queue-count">
+					{num(pad(active + 1))}
+					<span className="vpl-queue-sep">/</span>
+					<span className="vpl-queue-total">{num(pad(total))}</span>
+				</span>
+				<button
+					type="button"
+					className="vpl-round"
+					onClick={onPrevious}
+					disabled={total < 2}
+					aria-label={previousLabel}
+				>
+					<DirectionalIcon icon={ChevronLeftIcon} className="size-4" />
+				</button>
+				<button
+					type="button"
+					className="vpl-round"
+					onClick={onNext}
+					disabled={total < 2}
+					aria-label={nextLabel}
+				>
+					<DirectionalIcon icon={ChevronRightIcon} className="size-4" />
+				</button>
+			</div>
+		</header>
+	);
+}
+
+function PlaylistItems({
+	items,
+	active,
+	num,
+	onSelect,
+	playing = false,
+}: {
+	items: DonateArchiveVideoItem[];
+	active: number;
+	num: (value: string | number) => string;
+	onSelect: (index: number) => void;
+	playing?: boolean;
+}) {
+	const listRef = useRef<HTMLOListElement>(null);
+
+	// Keep the selected tile visible when the header arrows change the item,
+	// without scrolling the surrounding page.
+	useEffect(() => {
+		const list = listRef.current;
+		const selected = list?.children[active];
+		if (!list || !selected) return;
+		const bounds = list.getBoundingClientRect();
+		const tile = selected.getBoundingClientRect();
+		const left =
+			tile.left < bounds.left
+				? tile.left - bounds.left
+				: tile.right > bounds.right
+					? tile.right - bounds.right
+					: 0;
+		list.scrollBy({
+			left,
+			behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches
+				? "instant"
+				: "smooth",
+		});
+	}, [active]);
+
+	return (
+		<ol ref={listRef} className="vpl-queue vpl-top-list">
+			{items.map((item, index) => (
+				<li key={item.id}>
+					<button
+						type="button"
+						className={cn("vpl-track", index === active && "is-active")}
+						onClick={() => onSelect(index)}
+						aria-current={index === active ? "true" : undefined}
+					>
+						<span className="vpl-num">{num(pad(index + 1))}</span>
+						<span className="vpl-thumb">
+							{item.posterUrl ? (
+								<NextImage src={item.posterUrl} alt="" fill sizes="76px" />
+							) : (
+								<VideoStill src={item.videoUrl} />
+							)}
+							{index === active && playing ? (
+								<span className="vpl-eq is-playing" aria-hidden>
+									<span />
+									<span />
+									<span />
+								</span>
+							) : null}
+						</span>
+						<span className="vpl-track-text">
+							<span className="vpl-track-title">{item.title}</span>
+						</span>
+					</button>
+				</li>
+			))}
+		</ol>
+	);
+}
+
 function VideoQueue({
 	items,
 	images,
@@ -215,11 +338,24 @@ function VideoQueue({
 
 				<div className={cn("vpl-row", images.length > 0 && "vpl-row--split")}>
 					<div className="vpl-main" dir={dir}>
-						<header className="vpl-panel-heading">
-							<QueueListIcon className="size-5" aria-hidden />
-							<h3>{playlistLabel}</h3>
-							<span>{num(pad(n))}</span>
-						</header>
+						<PlaylistHeader
+							heading={playlistLabel}
+							kind="video"
+							active={active}
+							total={n}
+							num={num}
+							previousLabel={previousLabel}
+							nextLabel={nextLabel}
+							onPrevious={() => go(active - 1, playing)}
+							onNext={() => go(active + 1, playing)}
+						/>
+						<PlaylistItems
+							items={items}
+							active={active}
+							num={num}
+							playing={playing}
+							onSelect={(index) => go(index, true)}
+						/>
 						<div className="vpl-stage">
 							{playing ? (
 								<div key={`player-${activeItem.id}`} className="vpl-embed">
@@ -278,89 +414,6 @@ function VideoQueue({
 								<p className="vpl-desc">{activeItem.description}</p>
 							) : null}
 						</div>
-						{n > 1 ? (
-							<aside className="vpl-side">
-								{n > 1 ? (
-									<>
-										<header className="vpl-queue-head">
-											<QueueListIcon
-												className="vpl-queue-icon"
-												aria-hidden="true"
-											/>
-											<span className="vpl-queue-label">{playlistLabel}</span>
-											<span className="vpl-queue-count">
-												{num(pad(active + 1))}
-												<span className="vpl-queue-sep">/</span>
-												<span className="vpl-queue-total">{num(pad(n))}</span>
-											</span>
-											<button
-												type="button"
-												className="vpl-round"
-												onClick={() => go(active - 1, playing)}
-												aria-label={previousLabel}
-											>
-												<ChevronUpIcon className="size-4" />
-											</button>
-											<button
-												type="button"
-												className="vpl-round"
-												onClick={() => go(active + 1, playing)}
-												aria-label={nextLabel}
-											>
-												<ChevronDownIcon className="size-4" />
-											</button>
-										</header>
-										<ol className="vpl-queue">
-											{items.map((it, i) => {
-												const on = i === active;
-												return (
-													<li key={it.id}>
-														<button
-															type="button"
-															className={cn("vpl-track", on && "is-active")}
-															onClick={() => go(i, true)}
-															aria-current={on ? "true" : undefined}
-														>
-															<span className="vpl-num">{num(pad(i + 1))}</span>
-															<span className="vpl-thumb">
-																{it.posterUrl ? (
-																	<NextImage
-																		src={it.posterUrl}
-																		alt=""
-																		fill
-																		sizes="96px"
-																	/>
-																) : (
-																	<VideoStill src={it.videoUrl} />
-																)}
-																{on ? (
-																	<span
-																		className={cn(
-																			"vpl-eq",
-																			playing && "is-playing",
-																		)}
-																		aria-hidden="true"
-																	>
-																		<span />
-																		<span />
-																		<span />
-																	</span>
-																) : null}
-															</span>
-															<span className="vpl-track-text">
-																<span className="vpl-track-title">
-																	{it.title}
-																</span>
-															</span>
-														</button>
-													</li>
-												);
-											})}
-										</ol>
-									</>
-								) : null}
-							</aside>
-						) : null}
 					</div>
 					{images.length > 0 ? (
 						<ImagePanel
@@ -446,35 +499,18 @@ function ImagePanel({
 
 	return (
 		<div className="vpl-gallery" dir={dir}>
-			<header className="vpl-queue-head">
-				<PhotoIcon className="vpl-queue-icon" aria-hidden="true" />
-				<h3 className="vpl-queue-label">{heading}</h3>
-				<span className="vpl-queue-count">
-					{num(pad(active + 1))}
-					<span className="vpl-queue-sep">/</span>
-					<span className="vpl-queue-total">{num(pad(n))}</span>
-				</span>
-				{n > 1 ? (
-					<>
-						<button
-							type="button"
-							className="vpl-round"
-							onClick={() => go(active - 1)}
-							aria-label={previousLabel}
-						>
-							<DirectionalIcon icon={ChevronRightIcon} className="size-4" />
-						</button>
-						<button
-							type="button"
-							className="vpl-round"
-							onClick={() => go(active + 1)}
-							aria-label={nextLabel}
-						>
-							<DirectionalIcon icon={ChevronLeftIcon} className="size-4" />
-						</button>
-					</>
-				) : null}
-			</header>
+			<PlaylistHeader
+				heading={heading}
+				kind="image"
+				active={active}
+				total={n}
+				num={num}
+				previousLabel={previousLabel}
+				nextLabel={nextLabel}
+				onPrevious={() => go(active - 1)}
+				onNext={() => go(active + 1)}
+			/>
+			<PlaylistItems items={items} active={active} num={num} onSelect={go} />
 
 			<div
 				className="vpl-igstage"
@@ -503,28 +539,6 @@ function ImagePanel({
 						draggable={false}
 					/>
 				) : null}
-				{n > 1 ? (
-					<>
-						<button
-							type="button"
-							className="vpl-igarrow vpl-igarrow--prev"
-							onClick={() => go(active - 1)}
-							onPointerDown={(e) => e.stopPropagation()}
-							aria-label={previousLabel}
-						>
-							<DirectionalIcon icon={ChevronRightIcon} className="size-4" />
-						</button>
-						<button
-							type="button"
-							className="vpl-igarrow vpl-igarrow--next"
-							onClick={() => go(active + 1)}
-							onPointerDown={(e) => e.stopPropagation()}
-							aria-label={nextLabel}
-						>
-							<DirectionalIcon icon={ChevronLeftIcon} className="size-4" />
-						</button>
-					</>
-				) : null}
 				<NextImage
 					src="/logo.png"
 					alt=""
@@ -534,32 +548,6 @@ function ImagePanel({
 					aria-hidden
 				/>
 			</div>
-
-			{n > 1 ? (
-				<ol className="vpl-ithumbs">
-					{items.map((it, i) => (
-						<li key={it.id}>
-							<button
-								type="button"
-								className={cn("vpl-ithumb", i === active && "is-active")}
-								onClick={() => go(i)}
-								aria-current={i === active ? "true" : undefined}
-								aria-label={it.title}
-							>
-								{it.posterUrl ? (
-									<NextImage
-										src={it.posterUrl}
-										alt=""
-										fill
-										sizes="56px"
-										draggable={false}
-									/>
-								) : null}
-							</button>
-						</li>
-					))}
-				</ol>
-			) : null}
 
 			<div key={`iginfo-${item.id}`} className="vpl-iginfo">
 				<h4 className="vpl-igtitle">{item.title}</h4>
