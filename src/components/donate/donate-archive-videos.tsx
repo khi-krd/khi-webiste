@@ -276,19 +276,19 @@ function VideoDial({
 											className="vpl-poster"
 										/>
 									)}
-									<NextImage
-										src="/logo.png"
-										alt=""
-										width={46}
-										height={46}
-										className="vpl-logo"
-										aria-hidden
-									/>
 									<span className="vpl-bigplay">
 										<PlayIcon className="size-9 translate-x-0.5" />
 									</span>
 								</button>
 							)}
+							<NextImage
+								src="/logo.png"
+								alt=""
+								width={46}
+								height={46}
+								className="vpl-logo"
+								aria-hidden
+							/>
 						</div>
 					</div>
 
@@ -516,15 +516,6 @@ function ImageFan({
 									/>
 								) : null}
 
-								<NextImage
-									src="/logo.png"
-									alt=""
-									width={46}
-									height={46}
-									className="ipl-logo"
-									aria-hidden
-								/>
-
 								{n > 1 ? (
 									<>
 										<button
@@ -620,6 +611,14 @@ function ImageFan({
 						className="object-contain"
 					/>
 				) : null}
+				<NextImage
+					src="/logo.png"
+					alt=""
+					width={46}
+					height={46}
+					className="ipl-logo"
+					aria-hidden
+				/>
 			</dialog>
 		</div>
 	);
