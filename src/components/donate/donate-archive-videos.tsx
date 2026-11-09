@@ -5,6 +5,7 @@ import {
 	ChevronLeftIcon,
 	ChevronRightIcon,
 	ChevronUpIcon,
+	QueueListIcon,
 	XMarkIcon,
 } from "@heroicons/react/24/outline";
 import { PlayIcon } from "@heroicons/react/24/solid";
@@ -56,6 +57,8 @@ type DonateArchiveVideosProps = {
 type NavLabels = { previousLabel: string; nextLabel: string };
 
 const pad = (n: number) => String(n).padStart(2, "0");
+const KU_DIGITS = "٠١٢٣٤٥٦٧٨٩";
+const toKu = (v: string) => v.replace(/[0-9]/g, (d) => KU_DIGITS[Number(d)]);
 
 /** Signed distance on a loop of n items: result is in [-floor(n/2), ceil(n/2) - 1]. */
 const loopRel = (k: number, n: number) => {
@@ -91,7 +94,7 @@ export function DonateArchiveVideos({
 			{videos.length > 0 ? (
 				<section>
 					<SectionHeading title={heading} count={videos.length} />
-					<VideoDial
+					<VideoQueue
 						items={videos}
 						playLabel={playLabel}
 						playlistLabel={playlistLabel}
@@ -148,11 +151,9 @@ function VideoStill({ src, className }: { src: string; className?: string }) {
 	);
 }
 
-/* ─────────────────────────── Video: "Dial" playlist ─────────────────────────── */
+/* ─────────────────────────── Video: queue playlist ─────────────────────────── */
 
-const DIAL_OPACITY = [1, 0.62, 0.34, 0.12];
-
-function VideoDial({
+function VideoQueue({
 	items,
 	playLabel,
 	playlistLabel,
@@ -167,62 +168,26 @@ function VideoDial({
 	const dir: "rtl" | "ltr" = locale === "ckb" ? "rtl" : "ltr";
 	const n = items.length;
 
-	const [nav, setNav] = useState({ active: 0, prev: 0 });
-	const { active, prev } = nav;
+	const [active, setActive] = useState(0);
 	const [playing, setPlaying] = useState(false);
 
 	const sideRef = useRef<HTMLDivElement>(null);
-	const sideWidth = useContainerWidth(sideRef);
-	const compact = sideWidth > 0 && sideWidth < 460;
+	const num = useCallback(
+		(v: string | number) => (dir === "rtl" ? toKu(String(v)) : String(v)),
+		[dir],
+	);
 
 	const go = useCallback(
 		(i: number, play: boolean) => {
 			if (!n) return;
 			setPlaying(play);
-			setNav((s) => {
-				const next = ((i % n) + n) % n;
-				return next === s.active ? s : { prev: s.active, active: next };
-			});
+			setActive(((i % n) + n) % n);
 		},
 		[n],
 	);
 
 	if (!n) return null;
 	const activeItem = items[active];
-
-	/* ---------- dial geometry ---------- */
-	const firstGap = compact ? 88 : 112; // distance from the centre item to its neighbours
-	const gap = compact ? 74 : 92; // distance between the other items
-	const radius = compact ? 420 : 560; // radius of the curve the items follow
-	const shift = loopRel(prev - active, n);
-
-	const dialItems = items.map((it, i) => {
-		const rel = loopRel(i - active, n);
-		const prel = loopRel(i - prev, n);
-		const m = Math.abs(rel);
-		const jumped = rel - prel !== shift; // wrapped around the loop: move without animating
-		const d = rel === 0 ? 0 : Math.sign(rel) * (firstGap + (m - 1) * gap);
-		const xMag = radius - Math.sqrt(Math.max(0, radius * radius - d * d));
-		const x = dir === "rtl" ? -xMag : xMag;
-		const rotMag =
-			((Math.asin(Math.max(-1, Math.min(1, d / radius))) * 180) / Math.PI) *
-			0.35;
-		const rot = dir === "rtl" ? rotMag : -rotMag;
-		const scale = 1 - 0.06 * Math.min(m, 4);
-		return {
-			it,
-			i,
-			on: rel === 0,
-			style: {
-				top: `calc(50% + ${d}px)`,
-				transform: `translate(${x.toFixed(1)}px, -50%) rotate(${rot.toFixed(2)}deg) scale(${scale.toFixed(3)})`,
-				opacity: m < DIAL_OPACITY.length ? DIAL_OPACITY[m] : 0,
-				zIndex: 10 - m,
-				visibility: m > 3 ? "hidden" : "visible",
-				transition: jumped ? "none" : undefined,
-			} as CSSProperties,
-		};
-	});
 
 	return (
 		<div className="vpl-wrap">
@@ -293,29 +258,54 @@ function VideoDial({
 								/>
 							) : null}
 						</div>
-					</div>
 
-					<div key={`info-${activeItem.id}`} className="vpl-info">
-						<h3 className="vpl-title">{activeItem.title}</h3>
-						{activeItem.description ? (
-							<p className="vpl-desc">{activeItem.description}</p>
-						) : null}
+						<div key={`info-${activeItem.id}`} className="vpl-info">
+							<h3 className="vpl-title">{activeItem.title}</h3>
+							{activeItem.description ? (
+								<p className="vpl-desc">{activeItem.description}</p>
+							) : null}
+						</div>
 					</div>
 
 					{n > 1 ? (
-						<div ref={sideRef} className="vpl-side">
-							<div className="vpl-side-body">
-								<ul className="vpl-dial">
-									{dialItems.map(({ it, i, on, style }) => (
-										<li key={it.id} className="vpl-item" style={style}>
+						<aside ref={sideRef} className="vpl-side">
+							<header className="vpl-queue-head">
+								<QueueListIcon className="vpl-queue-icon" aria-hidden="true" />
+								<span className="vpl-queue-label">{playlistLabel}</span>
+								<span className="vpl-queue-count">
+									{num(pad(active + 1))}
+									<span className="vpl-queue-sep">/</span>
+									<span className="vpl-queue-total">{num(pad(n))}</span>
+								</span>
+								<button
+									type="button"
+									className="vpl-round"
+									onClick={() => go(active - 1, playing)}
+									aria-label={previousLabel}
+								>
+									<ChevronUpIcon className="size-4" />
+								</button>
+								<button
+									type="button"
+									className="vpl-round"
+									onClick={() => go(active + 1, playing)}
+									aria-label={nextLabel}
+								>
+									<ChevronDownIcon className="size-4" />
+								</button>
+							</header>
+							<ol className="vpl-queue">
+								{items.map((it, i) => {
+									const on = i === active;
+									return (
+										<li key={it.id}>
 											<button
 												type="button"
 												className={cn("vpl-track", on && "is-active")}
 												onClick={() => go(i, true)}
 												aria-current={on ? "true" : undefined}
-												aria-label={`${it.title}`}
-												tabIndex={Math.abs(loopRel(i - active, n)) > 3 ? -1 : 0}
 											>
+												<span className="vpl-num">{num(pad(i + 1))}</span>
 												<span className="vpl-thumb">
 													{it.posterUrl ? (
 														<NextImage
@@ -343,29 +333,10 @@ function VideoDial({
 												</span>
 											</button>
 										</li>
-									))}
-								</ul>
-
-								<div className="vpl-nav">
-									<button
-										type="button"
-										className="vpl-round"
-										onClick={() => go(active - 1, playing)}
-										aria-label={previousLabel}
-									>
-										<ChevronUpIcon className="size-5" />
-									</button>
-									<button
-										type="button"
-										className="vpl-round"
-										onClick={() => go(active + 1, playing)}
-										aria-label={nextLabel}
-									>
-										<ChevronDownIcon className="size-5" />
-									</button>
-								</div>
-							</div>
-						</div>
+									);
+								})}
+							</ol>
+						</aside>
 					) : null}
 				</div>
 			</section>

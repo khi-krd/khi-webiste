@@ -74,6 +74,9 @@
 	z-index: 1;
 	flex: none;
 	width: 460px;
+	display: flex;
+	flex-direction: column;
+	gap: 28px;
 }
 .vpl-stage {
 	position: relative;
@@ -143,16 +146,12 @@
 	background: color-mix(in srgb, var(--vpl-accent) 80%, transparent);
 }
 
-/* title + description beside the video */
+/* title + description under the video */
 .vpl-info {
-	position: relative;
-	z-index: 1;
-	flex: 1;
-	min-width: 220px;
-	align-self: center;
 	display: flex;
 	flex-direction: column;
-	gap: 16px;
+	gap: 14px;
+	padding: 0 4px;
 	animation: vpl-fade 0.5s ease both;
 }
 .vpl-title {
@@ -172,61 +171,79 @@
 	text-wrap: pretty;
 }
 
-/* ---------- dial ---------- */
+/* ---------- queue ---------- */
 .vpl-side {
 	position: relative;
 	z-index: 1;
 	flex: 1;
-	min-width: 0;
-	height: 500px;
+	min-width: 280px;
+	max-width: 430px;
+	align-self: stretch;
 	display: flex;
 	flex-direction: column;
-	gap: 18px;
+	gap: 14px;
 }
-.vpl-side-body {
-	flex: 1;
-	min-height: 0;
+.vpl-queue-head {
 	display: flex;
 	align-items: center;
-	gap: 24px;
+	gap: 12px;
+	padding: 0 4px;
 }
-.vpl-dial {
-	position: relative;
+.vpl-queue-icon {
+	width: 22px;
+	height: 22px;
+	color: var(--vpl-accent);
+	flex: none;
+}
+.vpl-queue-label {
+	font-family: var(--font-heading);
+	font-size: 15px;
+	font-weight: 700;
+	color: var(--vpl-text);
+	white-space: nowrap;
+}
+.vpl-queue-count {
+	margin-inline-start: auto;
+	display: flex;
+	align-items: baseline;
+	gap: 6px;
+	font-family: var(--font-heading);
+	font-size: 14px;
+	font-weight: 800;
+	color: color-mix(in srgb, var(--vpl-accent) 60%, #fff);
+}
+.vpl-queue-sep {
+	opacity: 0.4;
+}
+.vpl-queue-total {
+	font-size: 12px;
+	font-weight: 600;
+	color: var(--vpl-muted);
+}
+.vpl-queue-head .vpl-round {
+	flex: none;
+	width: 38px;
+	height: 38px;
+}
+
+.vpl-queue {
 	flex: 1;
-	align-self: stretch;
-	min-height: 100%;
+	min-height: 0;
 	margin: 0;
-	padding: 0;
+	padding: 4px 4px 8px;
 	list-style: none;
+	display: flex;
+	flex-direction: column;
+	gap: 10px;
+	overflow-y: auto;
+	scrollbar-width: thin;
+	scrollbar-color: rgba(255, 255, 255, 0.18) transparent;
 	-webkit-mask-image: linear-gradient(
 		to bottom,
-		transparent 0,
-		#000 16%,
-		#000 84%,
+		#000 92%,
 		transparent 100%
 	);
-	mask-image: linear-gradient(
-		to bottom,
-		transparent 0,
-		#000 16%,
-		#000 84%,
-		transparent 100%
-	);
-}
-.vpl-item {
-	position: absolute;
-	inset-inline-start: 0;
-	width: min(440px, calc(100% - 70px));
-	transition:
-		transform 0.6s var(--vpl-ease),
-		top 0.6s var(--vpl-ease),
-		opacity 0.6s ease;
-}
-.vpl[dir="rtl"] .vpl-item {
-	transform-origin: 100% 50%;
-}
-.vpl[dir="ltr"] .vpl-item {
-	transform-origin: 0 50%;
+	mask-image: linear-gradient(to bottom, #000 92%, transparent 100%);
 }
 .vpl-track {
 	width: 100%;
@@ -312,6 +329,19 @@
 	animation-play-state: running;
 }
 
+.vpl-num {
+	flex: none;
+	width: 22px;
+	text-align: center;
+	font-family: var(--font-heading);
+	font-size: 13px;
+	font-weight: 700;
+	color: var(--vpl-muted);
+	transition: color 0.3s ease;
+}
+.is-active .vpl-num {
+	color: color-mix(in srgb, var(--vpl-accent) 60%, #fff);
+}
 .vpl-track-text {
 	flex: 1;
 	min-width: 0;
@@ -339,13 +369,6 @@
 }
 
 /* up / down */
-.vpl-nav {
-	flex: none;
-	display: flex;
-	flex-direction: column;
-	align-items: center;
-	gap: 16px;
-}
 .vpl-round {
 	width: 52px;
 	height: 52px;
@@ -421,6 +444,19 @@
 		max-width: 640px;
 		margin-inline: auto;
 	}
+	/* Queue runs as a horizontal strip under the player on narrow widths. */
+	.vpl-queue {
+		flex-direction: row;
+		overflow-x: auto;
+		overflow-y: hidden;
+		padding-bottom: 10px;
+		-webkit-mask-image: linear-gradient(to left, #000 92%, transparent 100%);
+		mask-image: linear-gradient(to left, #000 92%, transparent 100%);
+	}
+	.vpl-queue > li {
+		flex: none;
+		width: min(280px, 78%);
+	}
 	.vpl-glow {
 		inset-inline-start: 50%;
 		transform: translateX(50%);
@@ -450,14 +486,8 @@
 	.vpl-desc {
 		font-size: 14px;
 	}
-	.vpl-side {
-		height: 420px;
-	}
-	.vpl-side-body {
-		gap: 10px;
-	}
-	.vpl-item {
-		width: calc(100% - 58px);
+	.vpl-queue > li {
+		width: min(240px, 82%);
 	}
 	.vpl-track {
 		gap: 12px;
@@ -487,7 +517,6 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-	.vpl-item,
 	.vpl-track,
 	.vpl-thumb,
 	.vpl-track-title {
