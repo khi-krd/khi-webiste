@@ -69,9 +69,8 @@ const loopRel = (k: number, n: number) => {
 
 /**
  * The archive-donors showcase on the donate page. Videos play on a big stage
- * beside a scrollable queue; when donor images exist too, they share the same
- * dark band as a compact gallery under the queue — so the left column never
- * sits empty. An images-only archive falls back to the standalone "Fan"
+ * above its queue in the right panel, with an independent image gallery in
+ * the left panel. An images-only archive falls back to the standalone "Fan"
  * gallery. Each block renders only when it has records.
  */
 export function DonateArchiveVideos({
@@ -181,7 +180,6 @@ function VideoQueue({
 	const [active, setActive] = useState(0);
 	const [playing, setPlaying] = useState(false);
 
-	const sideRef = useRef<HTMLDivElement>(null);
 	const num = useCallback(
 		(v: string | number) => (dir === "rtl" ? toKu(String(v)) : String(v)),
 		[dir],
@@ -215,8 +213,13 @@ function VideoQueue({
 				) : null}
 				<span aria-hidden className="vpl-glow-tint" />
 
-				<div className="vpl-row">
-					<div className="vpl-main">
+				<div className={cn("vpl-row", images.length > 0 && "vpl-row--split")}>
+					<div className="vpl-main" dir={dir}>
+						<header className="vpl-panel-heading">
+							<QueueListIcon className="size-5" aria-hidden />
+							<h3>{playlistLabel}</h3>
+							<span>{num(pad(n))}</span>
+						</header>
 						<div className="vpl-stage">
 							{playing ? (
 								<div key={`player-${activeItem.id}`} className="vpl-embed">
@@ -275,100 +278,99 @@ function VideoQueue({
 								<p className="vpl-desc">{activeItem.description}</p>
 							) : null}
 						</div>
-					</div>
-
-					{n > 1 || images.length > 0 ? (
-						<aside ref={sideRef} className="vpl-side">
-							{n > 1 ? (
-								<>
-									<header className="vpl-queue-head">
-										<QueueListIcon
-											className="vpl-queue-icon"
-											aria-hidden="true"
-										/>
-										<span className="vpl-queue-label">{playlistLabel}</span>
-										<span className="vpl-queue-count">
-											{num(pad(active + 1))}
-											<span className="vpl-queue-sep">/</span>
-											<span className="vpl-queue-total">{num(pad(n))}</span>
-										</span>
-										<button
-											type="button"
-											className="vpl-round"
-											onClick={() => go(active - 1, playing)}
-											aria-label={previousLabel}
-										>
-											<ChevronUpIcon className="size-4" />
-										</button>
-										<button
-											type="button"
-											className="vpl-round"
-											onClick={() => go(active + 1, playing)}
-											aria-label={nextLabel}
-										>
-											<ChevronDownIcon className="size-4" />
-										</button>
-									</header>
-									<ol className="vpl-queue">
-										{items.map((it, i) => {
-											const on = i === active;
-											return (
-												<li key={it.id}>
-													<button
-														type="button"
-														className={cn("vpl-track", on && "is-active")}
-														onClick={() => go(i, true)}
-														aria-current={on ? "true" : undefined}
-													>
-														<span className="vpl-num">{num(pad(i + 1))}</span>
-														<span className="vpl-thumb">
-															{it.posterUrl ? (
-																<NextImage
-																	src={it.posterUrl}
-																	alt=""
-																	fill
-																	sizes="96px"
-																/>
-															) : (
-																<VideoStill src={it.videoUrl} />
-															)}
-															{on ? (
-																<span
-																	className={cn(
-																		"vpl-eq",
-																		playing && "is-playing",
-																	)}
-																	aria-hidden="true"
-																>
-																	<span />
-																	<span />
-																	<span />
-																</span>
-															) : null}
-														</span>
-														<span className="vpl-track-text">
-															<span className="vpl-track-title">
-																{it.title}
+						{n > 1 ? (
+							<aside className="vpl-side">
+								{n > 1 ? (
+									<>
+										<header className="vpl-queue-head">
+											<QueueListIcon
+												className="vpl-queue-icon"
+												aria-hidden="true"
+											/>
+											<span className="vpl-queue-label">{playlistLabel}</span>
+											<span className="vpl-queue-count">
+												{num(pad(active + 1))}
+												<span className="vpl-queue-sep">/</span>
+												<span className="vpl-queue-total">{num(pad(n))}</span>
+											</span>
+											<button
+												type="button"
+												className="vpl-round"
+												onClick={() => go(active - 1, playing)}
+												aria-label={previousLabel}
+											>
+												<ChevronUpIcon className="size-4" />
+											</button>
+											<button
+												type="button"
+												className="vpl-round"
+												onClick={() => go(active + 1, playing)}
+												aria-label={nextLabel}
+											>
+												<ChevronDownIcon className="size-4" />
+											</button>
+										</header>
+										<ol className="vpl-queue">
+											{items.map((it, i) => {
+												const on = i === active;
+												return (
+													<li key={it.id}>
+														<button
+															type="button"
+															className={cn("vpl-track", on && "is-active")}
+															onClick={() => go(i, true)}
+															aria-current={on ? "true" : undefined}
+														>
+															<span className="vpl-num">{num(pad(i + 1))}</span>
+															<span className="vpl-thumb">
+																{it.posterUrl ? (
+																	<NextImage
+																		src={it.posterUrl}
+																		alt=""
+																		fill
+																		sizes="96px"
+																	/>
+																) : (
+																	<VideoStill src={it.videoUrl} />
+																)}
+																{on ? (
+																	<span
+																		className={cn(
+																			"vpl-eq",
+																			playing && "is-playing",
+																		)}
+																		aria-hidden="true"
+																	>
+																		<span />
+																		<span />
+																		<span />
+																	</span>
+																) : null}
 															</span>
-														</span>
-													</button>
-												</li>
-											);
-										})}
-									</ol>
-								</>
-							) : null}
-							{images.length > 0 ? (
-								<SideImageGallery
-									items={images}
-									heading={imagesHeading}
-									previousLabel={previousLabel}
-									nextLabel={nextLabel}
-									closeLabel={closeLabel}
-									num={num}
-								/>
-							) : null}
-						</aside>
+															<span className="vpl-track-text">
+																<span className="vpl-track-title">
+																	{it.title}
+																</span>
+															</span>
+														</button>
+													</li>
+												);
+											})}
+										</ol>
+									</>
+								) : null}
+							</aside>
+						) : null}
+					</div>
+					{images.length > 0 ? (
+						<ImagePanel
+							items={images}
+							heading={imagesHeading}
+							previousLabel={previousLabel}
+							nextLabel={nextLabel}
+							closeLabel={closeLabel}
+							num={num}
+						/>
 					) : null}
 				</div>
 			</section>
@@ -377,12 +379,9 @@ function VideoQueue({
 }
 
 /**
- * Compact donor-image gallery that lives inside the video band's side column —
- * a small stage with arrows + swipe, a thumbnail strip, and the same lightbox
- * as the standalone fan gallery. Keeps the image records visible even when the
- * queue only holds a couple of clips.
+ * Independent image panel with swipe, thumbnails, full captions and a lightbox.
  */
-function SideImageGallery({
+function ImagePanel({
 	items,
 	heading,
 	previousLabel,
@@ -399,18 +398,14 @@ function SideImageGallery({
 	const dir: "rtl" | "ltr" = locale === "ckb" ? "rtl" : "ltr";
 	const n = items.length;
 
-	const [nav, setNav] = useState({ active: 0, prev: 0 });
-	const { active } = nav;
+	const [active, setActive] = useState(0);
 	const swipe = useRef<{ x: number; y: number } | null>(null);
 	const lightboxRef = useRef<HTMLDialogElement>(null);
 
 	const go = useCallback(
 		(i: number) => {
 			if (!n) return;
-			setNav((s) => {
-				const next = ((i % n) + n) % n;
-				return next === s.active ? s : { prev: s.active, active: next };
-			});
+			setActive(((i % n) + n) % n);
 		},
 		[n],
 	);
@@ -450,10 +445,10 @@ function SideImageGallery({
 	};
 
 	return (
-		<div className="vpl-gallery">
+		<div className="vpl-gallery" dir={dir}>
 			<header className="vpl-queue-head">
 				<PhotoIcon className="vpl-queue-icon" aria-hidden="true" />
-				<span className="vpl-queue-label">{heading}</span>
+				<h3 className="vpl-queue-label">{heading}</h3>
 				<span className="vpl-queue-count">
 					{num(pad(active + 1))}
 					<span className="vpl-queue-sep">/</span>
@@ -489,6 +484,14 @@ function SideImageGallery({
 					swipe.current = null;
 				}}
 			>
+				<button
+					type="button"
+					className="vpl-image-open"
+					aria-label={item.title}
+					onClick={(event) => {
+						if (event.detail === 0) lightboxRef.current?.showModal();
+					}}
+				/>
 				{item.posterUrl ? (
 					<NextImage
 						key={`igstage-${item.id}`}

@@ -1,4 +1,4 @@
-/* ============ Donor VideoPlaylist — "Dial" ============
+/* ============ Donor media panels ============
    Ported from the playlist reference; colours come from the site tokens
    (institute green accent, admin-configurable dark band, site fonts). */
 .vpl-wrap {
@@ -698,7 +698,188 @@
 		transition: none !important;
 	}
 	.vpl-eq span,
-	.vpl-info {
+	.vpl-info,
+	.vpl-igimg,
+	.vpl-iginfo {
 		animation: none !important;
+	}
+}
+
+/* Equal, independent panels: images physically left, videos physically right. */
+.vpl {
+	padding: clamp(24px, 4vw, 64px);
+}
+.vpl-row {
+	display: grid;
+	grid-template-columns: minmax(0, 1fr);
+	gap: clamp(28px, 4vw, 64px);
+	direction: ltr;
+	max-width: 1440px;
+}
+.vpl-row--split {
+	grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+.vpl-main,
+.vpl-gallery {
+	width: 100%;
+	min-width: 0;
+	max-width: none;
+	margin: 0;
+	gap: 24px;
+}
+.vpl-main {
+	grid-column: 2;
+	grid-row: 1;
+}
+.vpl-row:not(.vpl-row--split) .vpl-main {
+	grid-column: 1;
+	max-width: 800px;
+	margin-inline: auto;
+}
+.vpl-gallery {
+	grid-column: 1;
+	grid-row: 1;
+	padding: 0;
+	border: 0;
+}
+.vpl-panel-heading,
+.vpl-gallery > .vpl-queue-head {
+	display: flex;
+	align-items: center;
+	gap: 12px;
+	min-height: 72px;
+	padding: 0 0 16px;
+	border-bottom: 1px solid rgba(255, 255, 255, 0.16);
+}
+.vpl-panel-heading h3,
+.vpl-gallery .vpl-queue-label {
+	margin: 0;
+	font-family: var(--font-heading);
+	font-size: clamp(16px, 1.4vw, 21px);
+	font-weight: 700;
+	white-space: normal;
+}
+.vpl-panel-heading > span {
+	margin-inline-start: auto;
+	color: var(--vpl-muted);
+	font-variant-numeric: tabular-nums;
+}
+.vpl-panel-heading > svg {
+	color: var(--vpl-accent);
+	flex: none;
+}
+.vpl-gallery > .vpl-queue-head > .vpl-round {
+	display: none;
+}
+.vpl-stage,
+.vpl-igstage {
+	aspect-ratio: 4 / 3;
+	background: rgba(0, 0, 0, 0.24);
+}
+.vpl-poster,
+.vpl-igimg {
+	object-fit: contain;
+}
+.vpl-image-open {
+	position: absolute;
+	inset: 0;
+	z-index: 1;
+	width: 100%;
+	height: 100%;
+	border: 0;
+	background: transparent;
+	cursor: zoom-in;
+}
+.vpl-info {
+	max-width: none;
+	padding: 0;
+}
+.vpl-iginfo {
+	order: 2;
+	padding: 0;
+	gap: 14px;
+}
+.vpl-ithumbs {
+	order: 3;
+	gap: 12px;
+	padding: 4px;
+}
+.vpl-ithumb {
+	width: 76px;
+	height: 64px;
+}
+.vpl-title,
+.vpl-igtitle {
+	font-size: clamp(21px, 2vw, 28px);
+	line-height: 1.6;
+}
+.vpl-desc,
+.vpl-igdesc {
+	display: block;
+	overflow: visible;
+	-webkit-line-clamp: unset;
+	font-size: 15px;
+	line-height: 1.95;
+	white-space: pre-line;
+	text-align: start;
+}
+.vpl-side {
+	width: 100%;
+	max-width: none;
+	min-width: 0;
+	padding-top: 20px;
+	border-top: 1px solid rgba(255, 255, 255, 0.12);
+}
+.vpl-queue {
+	flex: none;
+	flex-direction: column;
+	max-height: 300px;
+	overflow-x: hidden;
+	overflow-y: auto;
+	mask-image: none;
+	-webkit-mask-image: none;
+}
+.vpl-queue > li {
+	width: 100%;
+}
+.vpl-track,
+.vpl-track.is-active {
+	gap: 16px;
+	padding: 10px;
+	border-radius: 0;
+	box-shadow: none;
+}
+.vpl-thumb,
+.is-active .vpl-thumb {
+	width: 76px;
+	height: 58px;
+	border-radius: 0;
+}
+.vpl-track-title,
+.is-active .vpl-track-title {
+	font-size: 16px;
+}
+@container (max-width: 760px) {
+	.vpl-row--split {
+		grid-template-columns: minmax(0, 1fr);
+		gap: 48px;
+	}
+	.vpl-main,
+	.vpl-gallery {
+		grid-column: 1;
+		grid-row: auto;
+	}
+	.vpl-gallery {
+		padding-top: 28px;
+		border-top: 1px solid rgba(255, 255, 255, 0.16);
+	}
+	.vpl {
+		padding: 24px 16px 36px;
+	}
+	.vpl-gallery > .vpl-queue-head {
+		flex-wrap: wrap;
+	}
+	.vpl-gallery .vpl-queue-label {
+		flex: 1;
 	}
 }

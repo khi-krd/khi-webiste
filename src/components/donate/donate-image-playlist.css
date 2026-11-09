@@ -349,6 +349,9 @@
 }
 
 /* ---------- full-image lightbox ---------- */
+.ipl-lightbox:not([open]) {
+	display: none;
+}
 .ipl-lightbox {
 	position: fixed;
 	inset: 0;
