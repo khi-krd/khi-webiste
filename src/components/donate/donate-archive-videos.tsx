@@ -280,14 +280,18 @@ function VideoDial({
 									</span>
 								</button>
 							)}
-							<NextImage
-								src="/logo.png"
-								alt=""
-								width={72}
-								height={72}
-								className="vpl-logo"
-								aria-hidden
-							/>
+							{/* While playing, the player draws its own mark
+							    (khi-player__mark) — the badge would double it. */}
+							{!playing ? (
+								<NextImage
+									src="/logo.png"
+									alt=""
+									width={72}
+									height={72}
+									className="vpl-logo"
+									aria-hidden
+								/>
+							) : null}
 						</div>
 					</div>
 
