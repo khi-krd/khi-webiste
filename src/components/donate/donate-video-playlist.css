@@ -15,17 +15,23 @@
 
 	position: relative;
 	overflow: hidden;
+	width: 100%;
+	padding: 64px;
+	border-radius: 0;
+	background: var(--vpl-bg);
+	color: var(--vpl-text);
+	font-family: var(--font-sans);
+}
+/* The dark band bleeds full-width; the player + dial stay a sane, centered
+   measure inside it instead of stretching across the whole band. */
+.vpl-row {
+	position: relative;
+	z-index: 1;
 	display: flex;
 	align-items: flex-start;
 	gap: 56px;
 	max-width: 1160px;
 	margin-inline: auto;
-	padding: 64px;
-	border-radius: 28px;
-	background: var(--vpl-bg);
-	color: var(--vpl-text);
-	font-family: var(--font-sans);
-	box-shadow: 0 40px 80px -40px rgba(0, 0, 0, 0.55);
 }
 .vpl *,
 .vpl *::before,
@@ -414,10 +420,12 @@
 /* ---------- narrow container: stack the dial under the player ---------- */
 @container (max-width: 1000px) {
 	.vpl {
+		padding: 44px 24px;
+	}
+	.vpl-row {
 		flex-direction: column;
 		align-items: stretch;
 		gap: 40px;
-		padding: 44px 24px;
 	}
 	.vpl-main {
 		width: 100%;
@@ -439,9 +447,10 @@
 /* ---------- phone ---------- */
 @container (max-width: 600px) {
 	.vpl {
-		gap: 28px;
 		padding: 20px 14px 32px;
-		border-radius: 22px;
+	}
+	.vpl-row {
+		gap: 28px;
 	}
 	.vpl-main {
 		gap: 22px;

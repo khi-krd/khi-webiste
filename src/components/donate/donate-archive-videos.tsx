@@ -236,132 +236,134 @@ function VideoDial({
 				) : null}
 				<span aria-hidden className="vpl-glow-tint" />
 
-				<div className="vpl-main">
-					<div className="vpl-stage">
-						{playing ? (
-							<div key={`player-${activeItem.id}`} className="vpl-embed">
-								<VideoPlayer
-									src={activeItem.videoUrl}
-									title={activeItem.title}
-									poster={activeItem.posterUrl ?? undefined}
-									autoPlay
-									className="size-full"
-								/>
-							</div>
-						) : (
-							<button
-								type="button"
-								onClick={() => setPlaying(true)}
-								aria-label={`${playLabel}: ${activeItem.title}`}
-								className="absolute inset-0 block size-full cursor-pointer border-0 p-0"
-							>
-								{activeItem.posterUrl ? (
-									<NextImage
-										key={`poster-${activeItem.id}`}
-										src={activeItem.posterUrl}
-										alt=""
-										fill
-										sizes="(min-width: 1024px) 40vw, 100vw"
-										className="vpl-poster"
-									/>
-								) : (
-									<VideoStill
+				<div className="vpl-row">
+					<div className="vpl-main">
+						<div className="vpl-stage">
+							{playing ? (
+								<div key={`player-${activeItem.id}`} className="vpl-embed">
+									<VideoPlayer
 										src={activeItem.videoUrl}
-										className="vpl-poster"
+										title={activeItem.title}
+										poster={activeItem.posterUrl ?? undefined}
+										autoPlay
+										className="size-full"
 									/>
-								)}
-								<NextImage
-									src="/logo.png"
-									alt=""
-									width={46}
-									height={46}
-									className="vpl-logo"
-									aria-hidden
-								/>
-								<span className="vpl-bigplay">
-									<PlayIcon className="size-9 translate-x-0.5" />
-								</span>
-							</button>
-						)}
-					</div>
-
-					<div key={`info-${activeItem.id}`} className="vpl-info">
-						<h3 className="vpl-title">{activeItem.title}</h3>
-						{activeItem.description ? (
-							<p className="vpl-desc">{activeItem.description}</p>
-						) : null}
-					</div>
-				</div>
-
-				{n > 1 ? (
-					<div ref={sideRef} className="vpl-side">
-						<div className="vpl-side-head">
-							<QueueListIcon className="size-4" />
-							<span className="vpl-side-head-label">{playlistLabel}</span>
+								</div>
+							) : (
+								<button
+									type="button"
+									onClick={() => setPlaying(true)}
+									aria-label={`${playLabel}: ${activeItem.title}`}
+									className="absolute inset-0 block size-full cursor-pointer border-0 p-0"
+								>
+									{activeItem.posterUrl ? (
+										<NextImage
+											key={`poster-${activeItem.id}`}
+											src={activeItem.posterUrl}
+											alt=""
+											fill
+											sizes="(min-width: 1024px) 40vw, 100vw"
+											className="vpl-poster"
+										/>
+									) : (
+										<VideoStill
+											src={activeItem.videoUrl}
+											className="vpl-poster"
+										/>
+									)}
+									<NextImage
+										src="/logo.png"
+										alt=""
+										width={46}
+										height={46}
+										className="vpl-logo"
+										aria-hidden
+									/>
+									<span className="vpl-bigplay">
+										<PlayIcon className="size-9 translate-x-0.5" />
+									</span>
+								</button>
+							)}
 						</div>
-						<div className="vpl-side-body">
-							<ul className="vpl-dial">
-								{dialItems.map(({ it, i, on, style }) => (
-									<li key={it.id} className="vpl-item" style={style}>
-										<button
-											type="button"
-											className={cn("vpl-track", on && "is-active")}
-											onClick={() => go(i, true)}
-											aria-current={on ? "true" : undefined}
-											aria-label={`${it.title}`}
-											tabIndex={Math.abs(loopRel(i - active, n)) > 3 ? -1 : 0}
-										>
-											<span className="vpl-thumb">
-												{it.posterUrl ? (
-													<NextImage
-														src={it.posterUrl}
-														alt=""
-														fill
-														sizes="96px"
-													/>
-												) : (
-													<VideoStill src={it.videoUrl} />
-												)}
-												{on ? (
-													<span
-														className={cn("vpl-eq", playing && "is-playing")}
-														aria-hidden="true"
-													>
-														<span />
-														<span />
-														<span />
-													</span>
-												) : null}
-											</span>
-											<span className="vpl-track-text">
-												<span className="vpl-track-title">{it.title}</span>
-											</span>
-										</button>
-									</li>
-								))}
-							</ul>
 
-							<div className="vpl-nav">
-								<button
-									type="button"
-									className="vpl-round"
-									onClick={() => go(active - 1, playing)}
-									aria-label={previousLabel}
-								>
-									<ChevronUpIcon className="size-5" />
-								</button>
-								<button
-									type="button"
-									className="vpl-round"
-									onClick={() => go(active + 1, playing)}
-									aria-label={nextLabel}
-								>
-									<ChevronDownIcon className="size-5" />
-								</button>
+						<div key={`info-${activeItem.id}`} className="vpl-info">
+							<h3 className="vpl-title">{activeItem.title}</h3>
+							{activeItem.description ? (
+								<p className="vpl-desc">{activeItem.description}</p>
+							) : null}
+						</div>
+					</div>
+
+					{n > 1 ? (
+						<div ref={sideRef} className="vpl-side">
+							<div className="vpl-side-head">
+								<QueueListIcon className="size-4" />
+								<span className="vpl-side-head-label">{playlistLabel}</span>
+							</div>
+							<div className="vpl-side-body">
+								<ul className="vpl-dial">
+									{dialItems.map(({ it, i, on, style }) => (
+										<li key={it.id} className="vpl-item" style={style}>
+											<button
+												type="button"
+												className={cn("vpl-track", on && "is-active")}
+												onClick={() => go(i, true)}
+												aria-current={on ? "true" : undefined}
+												aria-label={`${it.title}`}
+												tabIndex={Math.abs(loopRel(i - active, n)) > 3 ? -1 : 0}
+											>
+												<span className="vpl-thumb">
+													{it.posterUrl ? (
+														<NextImage
+															src={it.posterUrl}
+															alt=""
+															fill
+															sizes="96px"
+														/>
+													) : (
+														<VideoStill src={it.videoUrl} />
+													)}
+													{on ? (
+														<span
+															className={cn("vpl-eq", playing && "is-playing")}
+															aria-hidden="true"
+														>
+															<span />
+															<span />
+															<span />
+														</span>
+													) : null}
+												</span>
+												<span className="vpl-track-text">
+													<span className="vpl-track-title">{it.title}</span>
+												</span>
+											</button>
+										</li>
+									))}
+								</ul>
+
+								<div className="vpl-nav">
+									<button
+										type="button"
+										className="vpl-round"
+										onClick={() => go(active - 1, playing)}
+										aria-label={previousLabel}
+									>
+										<ChevronUpIcon className="size-5" />
+									</button>
+									<button
+										type="button"
+										className="vpl-round"
+										onClick={() => go(active + 1, playing)}
+										aria-label={nextLabel}
+									>
+										<ChevronDownIcon className="size-5" />
+									</button>
+								</div>
 							</div>
 						</div>
-					</div>
-				) : null}
+					) : null}
+				</div>
 			</section>
 		</div>
 	);
