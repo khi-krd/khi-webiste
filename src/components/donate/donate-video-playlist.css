@@ -17,7 +17,9 @@
 	overflow: hidden;
 	display: flex;
 	align-items: flex-start;
-	gap: 64px;
+	gap: 56px;
+	max-width: 1160px;
+	margin-inline: auto;
 	padding: 64px;
 	border-radius: 28px;
 	background: var(--vpl-bg);
@@ -97,9 +99,11 @@
 	inset: 0;
 }
 .vpl-logo {
+	/* Brand mark: pinned to the physical bottom-left corner always, in both
+	   locales — a fixed anchor point, not a reading-direction one. */
 	position: absolute;
 	bottom: 18px;
-	inset-inline-start: 18px;
+	left: 18px;
 	z-index: 3;
 	width: 46px;
 	height: 46px;
@@ -175,23 +179,25 @@
 	gap: 18px;
 }
 .vpl-side-head {
-	display: flex;
+	align-self: flex-start;
+	display: inline-flex;
 	align-items: center;
 	gap: 8px;
-	padding-inline: 4px;
-	color: var(--vpl-muted);
+	padding: 9px 16px;
+	border-radius: 999px;
+	border: 1px solid rgba(255, 255, 255, 0.1);
+	background: rgba(255, 255, 255, 0.06);
+	color: color-mix(in srgb, var(--vpl-text) 85%, transparent);
+}
+.vpl-side-head svg {
+	width: 15px;
+	height: 15px;
+	color: var(--vpl-accent);
 }
 .vpl-side-head-label {
 	font-family: var(--font-heading);
 	font-size: 13px;
 	font-weight: 700;
-	color: color-mix(in srgb, var(--vpl-text) 80%, transparent);
-}
-.vpl-side-head-count {
-	margin-inline-start: auto;
-	font-family: var(--font-heading);
-	font-size: 12px;
-	font-variant-numeric: tabular-nums;
 }
 .vpl-side-body {
 	flex: 1;
@@ -329,18 +335,6 @@
 	flex-direction: column;
 	gap: 2px;
 }
-.vpl-meta {
-	display: flex;
-	align-items: center;
-	gap: 8px;
-	font-family: var(--font-heading);
-	font-size: 12px;
-	font-weight: 700;
-	color: var(--vpl-muted);
-}
-.is-active .vpl-num {
-	color: color-mix(in srgb, var(--vpl-accent) 60%, #fff);
-}
 .vpl-track-title {
 	font-family: var(--font-heading);
 	font-size: 16px;
@@ -360,13 +354,13 @@
 	-webkit-box-orient: vertical;
 }
 
-/* up / down + counter */
+/* up / down */
 .vpl-nav {
 	flex: none;
 	display: flex;
 	flex-direction: column;
 	align-items: center;
-	gap: 14px;
+	gap: 16px;
 }
 .vpl-round {
 	width: 52px;
@@ -390,23 +384,6 @@
 .vpl-round:disabled {
 	opacity: 0.3;
 	cursor: default;
-}
-.vpl-count-cur {
-	font-family: var(--font-heading);
-	font-size: 14px;
-	font-weight: 800;
-	color: color-mix(in srgb, var(--vpl-accent) 60%, #fff);
-}
-.vpl-count-line {
-	width: 1px;
-	height: 28px;
-	background: rgba(255, 255, 255, 0.2);
-}
-.vpl-count-total {
-	font-family: var(--font-heading);
-	font-size: 13px;
-	font-weight: 600;
-	color: var(--vpl-muted);
 }
 
 .vpl button:focus-visible {

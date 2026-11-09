@@ -19,6 +19,8 @@
 	display: flex;
 	flex-direction: column;
 	gap: 44px;
+	max-width: 1080px;
+	margin-inline: auto;
 	padding: 56px 64px 48px;
 	border: 1px solid var(--color-border);
 	border-radius: 28px;
@@ -83,32 +85,6 @@
 	height: 100%;
 	object-fit: cover;
 	animation: ipl-in 0.6s var(--ipl-ease) both;
-}
-
-.ipl-counter {
-	position: absolute;
-	top: 20px;
-	inset-inline-start: 20px;
-	margin: 0;
-	height: 38px;
-	padding: 0 16px;
-	border-radius: 999px;
-	background: color-mix(in srgb, var(--ipl-paper) 74%, transparent);
-	-webkit-backdrop-filter: blur(12px);
-	backdrop-filter: blur(12px);
-	display: flex;
-	align-items: center;
-	gap: 8px;
-	font-family: var(--font-heading);
-	font-size: 13px;
-	font-weight: 700;
-	color: var(--ipl-ink);
-}
-.ipl-counter-sep {
-	color: var(--ipl-muted);
-}
-.ipl-counter-total {
-	color: var(--ipl-muted);
 }
 
 .ipl-arrow {
@@ -293,13 +269,6 @@
 	}
 	.ipl-glow {
 		filter: blur(30px) saturate(1.2);
-	}
-	.ipl-counter {
-		top: 12px;
-		inset-inline-start: 12px;
-		height: 32px;
-		padding: 0 12px;
-		font-size: 12px;
 	}
 	.ipl-arrow {
 		width: 44px;

@@ -183,27 +183,6 @@ function VideoDial({
 		[n],
 	);
 
-	// Turn the dial with the mouse wheel / trackpad (non-passive so the page does not scroll).
-	const activeRef = useRef(active);
-	activeRef.current = active;
-	const playingRef = useRef(playing);
-	playingRef.current = playing;
-	const lastWheel = useRef(0);
-	useEffect(() => {
-		const el = sideRef.current;
-		if (!el || n < 2) return undefined;
-		const onWheel = (e: WheelEvent) => {
-			if (Math.abs(e.deltaY) < 4) return;
-			e.preventDefault();
-			const now = Date.now();
-			if (now - lastWheel.current < 420) return;
-			lastWheel.current = now;
-			go(activeRef.current + (e.deltaY > 0 ? 1 : -1), playingRef.current);
-		};
-		el.addEventListener("wheel", onWheel, { passive: false });
-		return () => el.removeEventListener("wheel", onWheel);
-	}, [go, n]);
-
 	if (!n) return null;
 	const activeItem = items[active];
 
@@ -319,7 +298,6 @@ function VideoDial({
 						<div className="vpl-side-head">
 							<QueueListIcon className="size-4" />
 							<span className="vpl-side-head-label">{playlistLabel}</span>
-							<span className="vpl-side-head-count">{pad(n)}</span>
 						</div>
 						<div className="vpl-side-body">
 							<ul className="vpl-dial">
@@ -356,9 +334,6 @@ function VideoDial({
 												) : null}
 											</span>
 											<span className="vpl-track-text">
-												<span className="vpl-meta">
-													<span className="vpl-num">{pad(i + 1)}</span>
-												</span>
 												<span className="vpl-track-title">{it.title}</span>
 											</span>
 										</button>
@@ -375,9 +350,6 @@ function VideoDial({
 								>
 									<ChevronUpIcon className="size-5" />
 								</button>
-								<span className="vpl-count-cur">{pad(active + 1)}</span>
-								<span className="vpl-count-line" aria-hidden="true" />
-								<span className="vpl-count-total">{pad(n)}</span>
 								<button
 									type="button"
 									className="vpl-round"
@@ -527,12 +499,6 @@ function ImageFan({
 									draggable={false}
 								/>
 							) : null}
-
-							<p className="ipl-counter" aria-live="polite">
-								<span>{pad(active + 1)}</span>
-								<span className="ipl-counter-sep">/</span>
-								<span className="ipl-counter-total">{pad(n)}</span>
-							</p>
 
 							{n > 1 ? (
 								<>
