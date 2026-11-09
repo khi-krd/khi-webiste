@@ -6,6 +6,7 @@ import {
 	ChevronRightIcon,
 	ChevronUpIcon,
 	QueueListIcon,
+	XMarkIcon,
 } from "@heroicons/react/24/outline";
 import { PlayIcon } from "@heroicons/react/24/solid";
 import dynamic from "next/dynamic";
@@ -19,6 +20,7 @@ import {
 	useRef,
 	useState,
 } from "react";
+import { pageXClass } from "@/components/donate/donate-shell";
 import { DirectionalIcon } from "@/components/ui/directional-icon";
 import { cn } from "@/lib/utils";
 import "./donate-video-playlist.css";
@@ -48,6 +50,7 @@ type DonateArchiveVideosProps = {
 	playlistLabel: string;
 	previousLabel: string;
 	nextLabel: string;
+	closeLabel: string;
 	items: DonateArchiveVideoItem[];
 };
 
@@ -74,6 +77,7 @@ export function DonateArchiveVideos({
 	playlistLabel,
 	previousLabel,
 	nextLabel,
+	closeLabel,
 	items,
 }: DonateArchiveVideosProps) {
 	const videos = items.filter((item) => item.mediaKind !== "image");
@@ -104,6 +108,7 @@ export function DonateArchiveVideos({
 						items={images}
 						previousLabel={previousLabel}
 						nextLabel={nextLabel}
+						closeLabel={closeLabel}
 					/>
 				</section>
 			) : null}
@@ -113,7 +118,7 @@ export function DonateArchiveVideos({
 
 function SectionHeading({ title, count }: { title: string; count: number }) {
 	return (
-		<div className="mb-5 flex items-end gap-4">
+		<div className={cn(pageXClass, "mb-5 flex items-end gap-4")}>
 			<h3 className="font-heading text-h3 font-semibold text-foreground">
 				{title}
 			</h3>
@@ -285,13 +290,13 @@ function VideoDial({
 								</button>
 							)}
 						</div>
+					</div>
 
-						<div key={`info-${activeItem.id}`} className="vpl-info">
-							<h3 className="vpl-title">{activeItem.title}</h3>
-							{activeItem.description ? (
-								<p className="vpl-desc">{activeItem.description}</p>
-							) : null}
-						</div>
+					<div key={`info-${activeItem.id}`} className="vpl-info">
+						<h3 className="vpl-title">{activeItem.title}</h3>
+						{activeItem.description ? (
+							<p className="vpl-desc">{activeItem.description}</p>
+						) : null}
 					</div>
 
 					{n > 1 ? (
@@ -377,7 +382,8 @@ function ImageFan({
 	items,
 	previousLabel,
 	nextLabel,
-}: NavLabels & { items: DonateArchiveVideoItem[] }) {
+	closeLabel,
+}: NavLabels & { items: DonateArchiveVideoItem[]; closeLabel: string }) {
 	const locale = useLocale();
 	const dir: "rtl" | "ltr" = locale === "ckb" ? "rtl" : "ltr";
 	const n = items.length;
@@ -390,6 +396,7 @@ function ImageFan({
 	const mid = width > 0 && width < 900;
 	const compact = width > 0 && width < 560;
 	const swipe = useRef<{ x: number; y: number } | null>(null);
+	const lightboxRef = useRef<HTMLDialogElement>(null);
 
 	const go = useCallback(
 		(i: number) => {
@@ -426,9 +433,15 @@ function ImageFan({
 		if (!s) return;
 		const dx = e.clientX - s.x;
 		const dy = e.clientY - s.y;
-		if (Math.abs(dx) < 50 || Math.abs(dx) < Math.abs(dy)) return;
-		const forward = dir === "rtl" ? dx > 0 : dx < 0;
-		go(forward ? active + 1 : active - 1);
+		if (Math.abs(dx) >= 50 && Math.abs(dx) >= Math.abs(dy)) {
+			const forward = dir === "rtl" ? dx > 0 : dx < 0;
+			go(forward ? active + 1 : active - 1);
+			return;
+		}
+		// Not a swipe — a plain tap/click opens the full image.
+		if (Math.abs(dx) < 10 && Math.abs(dy) < 10) {
+			lightboxRef.current?.showModal();
+		}
 	};
 
 	/* ---------- fan geometry ---------- */
@@ -468,104 +481,146 @@ function ImageFan({
 	return (
 		<div ref={wrapRef} className="ipl-wrap">
 			<section dir={dir} className="ipl">
-				<div className="ipl-top">
-					<div className="ipl-stagewrap">
-						{item.posterUrl ? (
-							<div className="ipl-glow" aria-hidden>
-								<NextImage
-									key={`glow-${item.id}`}
-									src={item.posterUrl}
-									alt=""
-									fill
-									sizes="100vw"
-									className="size-full"
-								/>
-							</div>
-						) : null}
-						<div
-							className="ipl-stage"
-							onPointerDown={onPointerDown}
-							onPointerUp={onPointerUp}
-							onPointerCancel={() => {
-								swipe.current = null;
-							}}
-						>
+				<div className="ipl-row">
+					<div className="ipl-top">
+						<div className="ipl-stagewrap">
 							{item.posterUrl ? (
-								<NextImage
-									key={`stage-${item.id}`}
-									src={item.posterUrl}
-									alt={item.title}
-									fill
-									sizes="(min-width: 1024px) 60vw, 100vw"
-									className="ipl-img"
-									draggable={false}
-								/>
+								<div className="ipl-glow" aria-hidden>
+									<NextImage
+										key={`glow-${item.id}`}
+										src={item.posterUrl}
+										alt=""
+										fill
+										sizes="100vw"
+										className="size-full"
+									/>
+								</div>
 							) : null}
+							<div
+								className="ipl-stage"
+								onPointerDown={onPointerDown}
+								onPointerUp={onPointerUp}
+								onPointerCancel={() => {
+									swipe.current = null;
+								}}
+							>
+								{item.posterUrl ? (
+									<NextImage
+										key={`stage-${item.id}`}
+										src={item.posterUrl}
+										alt={item.title}
+										fill
+										sizes="(min-width: 1024px) 60vw, 100vw"
+										className="ipl-img"
+										draggable={false}
+									/>
+								) : null}
 
-							{n > 1 ? (
-								<>
-									<button
-										type="button"
-										className="ipl-arrow ipl-arrow--prev"
-										onClick={() => go(active - 1)}
-										aria-label={previousLabel}
-									>
-										<DirectionalIcon
-											icon={ChevronRightIcon}
-											className="size-5"
-										/>
-									</button>
-									<button
-										type="button"
-										className="ipl-arrow ipl-arrow--next"
-										onClick={() => go(active + 1)}
-										aria-label={nextLabel}
-									>
-										<DirectionalIcon
-											icon={ChevronLeftIcon}
-											className="size-5"
-										/>
-									</button>
-								</>
+								<NextImage
+									src="/logo.png"
+									alt=""
+									width={46}
+									height={46}
+									className="ipl-logo"
+									aria-hidden
+								/>
+
+								{n > 1 ? (
+									<>
+										<button
+											type="button"
+											className="ipl-arrow ipl-arrow--prev"
+											onClick={() => go(active - 1)}
+											onPointerDown={(e) => e.stopPropagation()}
+											aria-label={previousLabel}
+										>
+											<DirectionalIcon
+												icon={ChevronRightIcon}
+												className="size-5"
+											/>
+										</button>
+										<button
+											type="button"
+											className="ipl-arrow ipl-arrow--next"
+											onClick={() => go(active + 1)}
+											onPointerDown={(e) => e.stopPropagation()}
+											aria-label={nextLabel}
+										>
+											<DirectionalIcon
+												icon={ChevronLeftIcon}
+												className="size-5"
+											/>
+										</button>
+									</>
+								) : null}
+							</div>
+						</div>
+
+						<div key={`caption-${item.id}`} className="ipl-caption">
+							<h3 className="ipl-title">{item.title}</h3>
+							{item.description ? (
+								<p className="ipl-desc">{item.description}</p>
 							) : null}
 						</div>
 					</div>
 
-					<div key={`caption-${item.id}`} className="ipl-caption">
-						<h3 className="ipl-title">{item.title}</h3>
-						{item.description ? (
-							<p className="ipl-desc">{item.description}</p>
-						) : null}
-					</div>
+					{n > 1 ? (
+						<ul className="ipl-fan">
+							{fan.map(({ it, i, on, visible, style }) => (
+								<li key={it.id} className="ipl-fan-item" style={style}>
+									<button
+										type="button"
+										className={cn("ipl-card", on && "is-active")}
+										onClick={() => go(i)}
+										aria-current={on ? "true" : undefined}
+										aria-label={it.title}
+										tabIndex={visible ? 0 : -1}
+									>
+										{it.posterUrl ? (
+											<NextImage
+												src={it.posterUrl}
+												alt=""
+												fill
+												sizes="124px"
+												draggable={false}
+											/>
+										) : null}
+									</button>
+								</li>
+							))}
+						</ul>
+					) : null}
 				</div>
-
-				{n > 1 ? (
-					<ul className="ipl-fan">
-						{fan.map(({ it, i, on, visible, style }) => (
-							<li key={it.id} className="ipl-fan-item" style={style}>
-								<button
-									type="button"
-									className={cn("ipl-card", on && "is-active")}
-									onClick={() => go(i)}
-									aria-current={on ? "true" : undefined}
-									aria-label={it.title}
-									tabIndex={visible ? 0 : -1}
-								>
-									{it.posterUrl ? (
-										<NextImage
-											src={it.posterUrl}
-											alt=""
-											fill
-											sizes="124px"
-											draggable={false}
-										/>
-									) : null}
-								</button>
-							</li>
-						))}
-					</ul>
-				) : null}
 			</section>
+
+			{/* biome-ignore lint/a11y/useKeyWithClickEvents: native <dialog> backdrop click-to-close, Escape already closes it natively */}
+			<dialog
+				ref={lightboxRef}
+				className="ipl-lightbox"
+				aria-label={item.title}
+				onClick={(e) => {
+					if (e.target === lightboxRef.current) lightboxRef.current?.close();
+				}}
+			>
+				<button
+					type="button"
+					className="ipl-lightbox-close"
+					onClick={() => lightboxRef.current?.close()}
+					aria-label={closeLabel}
+				>
+					<XMarkIcon className="size-5" />
+				</button>
+				{item.posterUrl ? (
+					<NextImage
+						key={`lightbox-${item.id}`}
+						src={item.posterUrl}
+						alt={item.title}
+						fill
+						sizes="100vw"
+						className="object-contain"
+					/>
+				) : null}
+			</dialog>
 		</div>
 	);
 }

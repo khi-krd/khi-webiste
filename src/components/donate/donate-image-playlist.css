@@ -16,18 +16,24 @@
 
 	position: relative;
 	overflow: hidden;
-	display: flex;
-	flex-direction: column;
-	gap: 44px;
-	max-width: 1080px;
-	margin-inline: auto;
+	width: 100%;
 	padding: 56px 64px 48px;
-	border: 1px solid var(--color-border);
-	border-radius: 28px;
+	border-radius: 0;
 	background: var(--ipl-bg);
 	color: var(--ipl-ink);
 	font-family: var(--font-sans);
 	outline: none;
+}
+/* The paper band bleeds full-width; its content stays a sane, centered
+   measure inside it instead of stretching across the whole band. */
+.ipl-row {
+	position: relative;
+	z-index: 1;
+	display: flex;
+	flex-direction: column;
+	gap: 44px;
+	max-width: var(--canvas);
+	margin-inline: auto;
 }
 .ipl *,
 .ipl *::before,
@@ -75,6 +81,7 @@
 	overflow: hidden;
 	background: var(--ipl-empty);
 	box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+	cursor: pointer;
 	touch-action: pan-y;
 	user-select: none;
 	-webkit-user-select: none;
@@ -119,6 +126,23 @@
 	inset-inline-end: 20px;
 }
 
+.ipl-logo {
+	/* Brand mark: pinned to the physical bottom-left corner always, in both
+	   locales — a fixed anchor point, not a reading-direction one. */
+	position: absolute;
+	bottom: 18px;
+	left: 18px;
+	z-index: 3;
+	width: 42px;
+	height: 42px;
+	padding: 4px;
+	border-radius: 50%;
+	background: rgba(255, 255, 255, 0.92);
+	object-fit: contain;
+	box-shadow: 0 8px 20px -8px rgba(0, 0, 0, 0.35);
+	pointer-events: none;
+}
+
 /* ---------- caption ---------- */
 .ipl-caption {
 	flex: 1;
@@ -141,6 +165,7 @@
 	font-size: 16px;
 	line-height: 2;
 	color: var(--ipl-body);
+	text-align: justify;
 	text-wrap: pretty;
 }
 .ipl-lead {
@@ -233,8 +258,10 @@
 /* ---------- narrow container: caption under the image ---------- */
 @container (max-width: 900px) {
 	.ipl {
-		gap: 32px;
 		padding: 40px 24px 36px;
+	}
+	.ipl-row {
+		gap: 32px;
 	}
 	.ipl-top {
 		flex-direction: column;
@@ -258,8 +285,10 @@
 /* ---------- phone ---------- */
 @container (max-width: 560px) {
 	.ipl {
-		gap: 24px;
 		padding: 24px 16px 28px;
+	}
+	.ipl-row {
+		gap: 24px;
 	}
 	.ipl-top {
 		gap: 20px;
@@ -269,6 +298,10 @@
 	}
 	.ipl-glow {
 		filter: blur(30px) saturate(1.2);
+	}
+	.ipl-logo {
+		width: 34px;
+		height: 34px;
 	}
 	.ipl-arrow {
 		width: 44px;
@@ -315,4 +348,44 @@
 	.ipl-caption {
 		animation: none !important;
 	}
+}
+
+/* ---------- full-image lightbox ---------- */
+.ipl-lightbox {
+	position: fixed;
+	inset: 0;
+	width: 100vw;
+	height: 100vh;
+	max-width: none;
+	max-height: none;
+	margin: 0;
+	padding: 48px;
+	border: 0;
+	background: rgba(10, 9, 7, 0.92);
+}
+.ipl-lightbox::backdrop {
+	background: transparent;
+}
+.ipl-lightbox img {
+	object-fit: contain;
+}
+.ipl-lightbox-close {
+	position: absolute;
+	top: 20px;
+	inset-inline-end: 20px;
+	z-index: 1;
+	width: 48px;
+	height: 48px;
+	padding: 0;
+	border-radius: 50%;
+	border: 1px solid rgba(255, 255, 255, 0.25);
+	background: rgba(255, 255, 255, 0.08);
+	color: #fff;
+	display: grid;
+	place-items: center;
+	cursor: pointer;
+	transition: background-color 0.2s ease;
+}
+.ipl-lightbox-close:hover {
+	background: rgba(255, 255, 255, 0.18);
 }

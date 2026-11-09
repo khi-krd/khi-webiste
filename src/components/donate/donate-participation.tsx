@@ -3,6 +3,7 @@ import {
 	HomeSection,
 	homeSectionContentClass,
 	homeSectionHeaderClass,
+	pageXClass,
 } from "@/components/donate/donate-shell";
 import {
 	ScrollReveal,
@@ -55,7 +56,7 @@ export function DonateParticipation({
 				</header>
 			</ScrollRevealBlock>
 
-			<div className={homeSectionContentClass}>
+			<div className={pageXClass}>
 				{showArchive || showFinancial ? (
 					<ScrollReveal className="grid grid-cols-1 gap-3 sm:grid-cols-2 sm:gap-4">
 						{showArchive ? (
@@ -80,9 +81,13 @@ export function DonateParticipation({
 						) : null}
 					</ScrollReveal>
 				) : null}
+			</div>
 
-				{archiveVideos}
+			{/* Full-bleed: the archive media bands span the whole section width,
+			    not just the centered content column above/below them. */}
+			{archiveVideos}
 
+			<div className={homeSectionContentClass}>
 				<ScrollRevealBlock className="mt-8 border border-border bg-background p-6 sm:mt-10 sm:p-8">
 					<p className="max-w-3xl text-justify text-body leading-relaxed text-foreground">
 						{body}

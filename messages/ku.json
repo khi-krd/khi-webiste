@@ -1151,7 +1151,8 @@
 			"play": "Lêdina vîdyoyê",
 			"playlist": "Lîsteya vîdyoyan",
 			"previous": "Berê",
-			"next": "Paşê"
+			"next": "Paşê",
+			"close": "Bigire"
 		},
 		"forms": {
 			"sectionHeading": "Agahiyên xwe bişîne",

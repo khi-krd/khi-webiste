@@ -29,8 +29,8 @@
 	z-index: 1;
 	display: flex;
 	align-items: flex-start;
-	gap: 56px;
-	max-width: 1160px;
+	gap: 48px;
+	max-width: var(--canvas);
 	margin-inline: auto;
 }
 .vpl *,
@@ -73,10 +73,7 @@
 	position: relative;
 	z-index: 1;
 	flex: none;
-	width: 500px;
-	display: flex;
-	flex-direction: column;
-	gap: 28px;
+	width: 460px;
 }
 .vpl-stage {
 	position: relative;
@@ -149,19 +146,23 @@
 	background: color-mix(in srgb, var(--vpl-accent) 80%, transparent);
 }
 
-/* title + description under the video */
+/* title + description beside the video */
 .vpl-info {
+	position: relative;
+	z-index: 1;
+	flex: 1;
+	min-width: 220px;
+	align-self: center;
 	display: flex;
 	flex-direction: column;
-	gap: 12px;
-	padding: 0 4px;
+	gap: 16px;
 	animation: vpl-fade 0.5s ease both;
 }
 .vpl-title {
 	margin: 0;
 	font-family: var(--font-heading);
 	font-weight: 700;
-	font-size: 26px;
+	font-size: 28px;
 	line-height: 1.55;
 	color: var(--vpl-text);
 }
@@ -170,6 +171,7 @@
 	font-size: 15px;
 	line-height: 1.95;
 	color: var(--vpl-body);
+	text-align: justify;
 	text-wrap: pretty;
 }
 
@@ -432,6 +434,11 @@
 		max-width: 560px;
 		margin-inline: auto;
 	}
+	.vpl-info {
+		width: 100%;
+		max-width: 560px;
+		margin-inline: auto;
+	}
 	.vpl-side {
 		flex: none;
 		width: 100%;
@@ -451,9 +458,6 @@
 	}
 	.vpl-row {
 		gap: 28px;
-	}
-	.vpl-main {
-		gap: 22px;
 	}
 	.vpl-stage {
 		border-radius: 22px;
