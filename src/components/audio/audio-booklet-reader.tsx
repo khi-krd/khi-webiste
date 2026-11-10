@@ -12,7 +12,6 @@ import NextImage from "next/image";
 import { useLocale, useTranslations } from "next-intl";
 import { useCallback, useEffect, useState } from "react";
 import { DirectionalIcon } from "@/components/ui/directional-icon";
-import { ImageWatermark } from "@/components/ui/image-watermark";
 import { useGestureZoom } from "@/lib/use-gesture-zoom";
 import { useScrollLock } from "@/lib/use-scroll-lock";
 import { cn } from "@/lib/utils";
@@ -256,16 +255,6 @@ export function AudioBookletReader({
 													/>
 												</div>
 											</div>
-											{/* Sibling of the scroll box so the mark clamps to
-											    the VISIBLE corner of the page — panning a zoomed
-											    page can never carry it off-screen. */}
-											<ImageWatermark
-												contain={item.fileUrl}
-												zoom={index === selectedIndex ? zoomLevel : 1}
-												viewportRef={
-													index === selectedIndex ? zoomViewportRef : undefined
-												}
-											/>
 										</div>
 										<span className="pointer-events-none absolute inset-x-0 bottom-3 text-center text-label text-muted/60">
 											{index + 1}
