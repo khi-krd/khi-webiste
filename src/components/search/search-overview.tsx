@@ -485,7 +485,7 @@ export async function SearchOverview({
 									{t("sourceSectionEmpty", { source: siteLabel })}
 								</SectionNote>
 							) : (
-								<div className="mt-6 grid gap-10 md:grid-cols-2 md:gap-x-14">
+								<div className="mt-6 grid grid-cols-1 gap-10 md:grid-cols-2 md:gap-x-14">
 									{siteSections.map(({ def, section }) => (
 										<SiteSection
 											key={def.key}

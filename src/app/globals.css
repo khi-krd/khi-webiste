@@ -498,7 +498,7 @@ html[data-corners="rounded"]
    Button-shaped links and explicitly marked actions join native/ARIA buttons;
    editorial links and linked content cards keep their own treatments. */
 @media (hover: hover) and (pointer: fine) {
-	html body :is(button, [role="button"], .site-action, a.inline-flex.border, a.bg-primary, a.draw-border-host):not(:disabled, [aria-disabled="true"], [data-disabled], .absolute.inset-0, .vpl-image-open):hover {
+	html body :is(button, [role="button"], .site-action, a.inline-flex.border, a.bg-primary, a.draw-border-host):not(:disabled, [aria-disabled="true"], [data-disabled], .absolute.inset-0, .vpl-image-open, .cover-lightbox-trigger):hover {
 		background-color: var(--color-brand);
 		border-color: var(--color-brand);
 		color: #fff;

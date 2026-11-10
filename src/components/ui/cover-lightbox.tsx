@@ -94,7 +94,7 @@ export function CoverLightbox({
 				aria-label={triggerLabel ?? alt}
 				aria-haspopup="dialog"
 				className={cn(
-					"group/zoom block w-full cursor-zoom-in text-start",
+					"cover-lightbox-trigger group/zoom block w-full cursor-zoom-in text-start",
 					"transition-opacity fine-hover:opacity-95",
 					className,
 				)}

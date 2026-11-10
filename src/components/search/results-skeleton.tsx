@@ -167,7 +167,7 @@ export function OverviewSkeleton({ label }: { label: string }) {
 							</div>
 							<Skeleton className="h-10 w-44 shrink-0 basis-full sm:basis-auto" />
 						</div>
-						<div className="mt-6 grid gap-10 md:grid-cols-2 md:gap-x-14">
+						<div className="mt-6 grid grid-cols-1 gap-10 md:grid-cols-2 md:gap-x-14">
 							{Array.from({ length: 2 }, (_, column) => (
 								// biome-ignore lint/suspicious/noArrayIndexKey: static decorative slots
 								<div key={column}>

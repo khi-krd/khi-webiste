@@ -366,7 +366,7 @@ export async function SiteResults({
 					})}
 				</h2>
 				<AnnounceResults text={t("announceResults", { summary })} />
-				<div className="grid gap-10 md:grid-cols-2 md:gap-x-14">
+				<div className="grid grid-cols-1 gap-10 md:grid-cols-2 md:gap-x-14">
 					{sections.map(({ def, section }) => (
 						<SiteSection
 							key={def.key}

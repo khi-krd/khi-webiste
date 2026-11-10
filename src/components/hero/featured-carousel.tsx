@@ -241,7 +241,7 @@ export function FeaturedCarousel({
 				>
 					<div
 						role="tablist"
-						className="flex items-center gap-2.5"
+						className="flex max-w-full flex-wrap items-center justify-center gap-x-1.5 sm:gap-x-2.5"
 						onPointerDown={(event) => event.stopPropagation()}
 						onPointerUp={(event) => event.stopPropagation()}
 					>
@@ -260,7 +260,7 @@ export function FeaturedCarousel({
 								>
 									<motion.span
 										aria-hidden
-										className="block h-[3px] w-9 rounded-full"
+										className="block h-[3px] w-6 rounded-full sm:w-9"
 										animate={{
 											backgroundColor: isActive
 												? "rgb(255 255 255 / 1)"
