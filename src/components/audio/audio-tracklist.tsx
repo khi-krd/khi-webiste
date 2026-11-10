@@ -100,7 +100,7 @@ export function AudioTracklist({
 												alt=""
 												fill
 												sizes="(min-width: 1024px) 9rem, (min-width: 640px) 8rem, 6rem"
-												className="object-cover"
+												className="object-contain"
 											/>
 										) : null}
 										{row.playable && queueIndex != null ? (
