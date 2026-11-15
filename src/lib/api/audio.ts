@@ -1,6 +1,7 @@
 import "server-only";
 import {
 	apiFetch,
+	apiFetchItemArray,
 	apiFetchPage,
 	apiFetchRaw,
 	BULK_FETCH_SIZE,
@@ -37,6 +38,7 @@ import {
 import { lenientArray, reportDropped } from "@/types/lenient";
 
 const SOUND_TRACKS_ENDPOINT = "/api/v1/sound-tracks";
+const HOME_POPULAR_ENDPOINT = "/api/v1/home/popular";
 const SOUND_REKLAM_VIDEO_ENDPOINT = `${SOUND_TRACKS_ENDPOINT}/sound-reklam-video`;
 const SOUND_TRACKS_TAG = "sound-tracks";
 
@@ -210,7 +212,20 @@ export async function getAudioCarousel(
 	let apiItems: ResolvedAudioCard[] = [];
 
 	if (getApiBaseUrl()) {
-		const apiTracks = await fetchAllTracksFromApi();
+		// Popular-first homepage feed; empty result falls back to the listing.
+		const popular = await apiFetchItemArray(
+			`${HOME_POPULAR_ENDPOINT}/sounds`,
+			{
+				itemSchema: SoundTrackSchema,
+				tags: [SOUND_TRACKS_TAG],
+				revalidate: DEFAULT_REVALIDATE,
+				searchParams: { limit: size },
+				normalizeItem: normalizeSoundTrackRecord,
+			},
+		);
+		const apiTracks = popular?.length
+			? popular
+			: await fetchAllTracksFromApi();
 		if (apiTracks) {
 			apiItems = sortAudioTracks(
 				apiTracks

@@ -1,6 +1,7 @@
 import "server-only";
 import {
 	apiFetch,
+	apiFetchItemArray,
 	apiFetchPage,
 	apiFetchRaw,
 	BULK_FETCH_SIZE,
@@ -77,16 +78,23 @@ export type VideoListingOptions = {
 	excludeCardIdentity?: string | null;
 	/** Extra cards page one takes because the hero eats its first card. */
 	firstPageExtra?: number;
+	/** Homepage rails only: source records from the popular-first feed. */
+	popular?: boolean;
 };
 
 type VideoListingFilters = Pick<
 	VideoListingOptions,
-	"videoType" | "topicId" | "excludeTopicId" | "memories" | "query"
+	| "videoType"
+	| "topicId"
+	| "excludeTopicId"
+	| "memories"
+	| "query"
+	| "popular"
 >;
 
 type VideoPageFetchOptions = Pick<
 	VideoListingOptions,
-	"videoType" | "topicId" | "memories"
+	"videoType" | "topicId" | "memories" | "popular"
 >;
 
 function buildVideoSearchParams(
@@ -171,6 +179,25 @@ async function fetchFeaturedVideosPage(
 async function fetchAllVideosFromApi(
 	options: VideoPageFetchOptions = {},
 ): Promise<Video[] | null> {
+	// Homepage rails ask for the popular-first feed: the backend already
+	// applied the videoType filter and returns at most `limit` records.
+	if (options.popular) {
+		const popular = await apiFetchItemArray(
+			"/api/v1/home/popular/videos",
+			{
+				itemSchema: VideoSchema,
+				tags: [VIDEOS_TAG],
+				revalidate: DEFAULT_REVALIDATE,
+				normalizeItem: normalizeVideoRecord,
+				searchParams: {
+					videoType: options.videoType ?? undefined,
+					limit: 60,
+				},
+			},
+		);
+		return popular?.length ? popular : null;
+	}
+
 	// Upstream resolves these as a priority chain — `topicId` wins, then
 	// clips-by-album, then `videoType` — so it answers one dimension and drops
 	// the rest. `applyClientOnlyFilters` re-applies all of them in memory, which
@@ -324,6 +351,7 @@ export async function getVideoListing(
 		variant = "listing",
 		excludeCardIdentity,
 		firstPageExtra = 0,
+		popular = false,
 	}: VideoListingOptions = {},
 ): Promise<VideoListResult> {
 	const filters: VideoListingFilters = {
@@ -332,6 +360,7 @@ export async function getVideoListing(
 		excludeTopicId,
 		memories,
 		query,
+		popular,
 	};
 
 	// Resolve the full matching card set, then paginate at CARD level. Backend

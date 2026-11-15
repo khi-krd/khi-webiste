@@ -443,6 +443,35 @@ export async function apiFetchRaw(
 	}
 }
 
+export type ApiFetchItemArrayOptions<S extends ZodType> = {
+	itemSchema: S;
+	tags?: string[];
+	revalidate?: number;
+	searchParams?: Record<string, string | number | undefined>;
+	normalizeItem?: (item: unknown) => unknown;
+};
+
+/**
+ * Fetch a bare JSON-array endpoint (e.g. `/api/v1/home/popular/*`) and parse
+ * each record leniently — one malformed item costs only itself.
+ */
+export async function apiFetchItemArray<S extends ZodType>(
+	path: string,
+	{
+		itemSchema,
+		tags = [],
+		revalidate = DEFAULT_REVALIDATE,
+		searchParams,
+		normalizeItem,
+	}: ApiFetchItemArrayOptions<S>,
+): Promise<z.infer<S>[] | null> {
+	const raw = await apiFetchRaw(path, { tags, revalidate, searchParams });
+	if (raw == null) {
+		return null;
+	}
+	return parsePageItems(raw, itemSchema, { normalizeItem });
+}
+
 /**
  * Cap a list at a fixed length.
  *

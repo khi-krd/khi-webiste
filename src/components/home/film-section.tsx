@@ -51,6 +51,7 @@ export async function FilmSection() {
 			...SHORT_FILM_LISTING_FILTERS,
 			size: FILM_COUNT,
 			variant: "home",
+			popular: true,
 		}),
 		getFilmReklamVideo(),
 	]);

@@ -31,6 +31,7 @@ export async function VideoSection() {
 		// the queue a line.
 		size: HOME_VIDEO_COUNT + 3,
 		variant: "home",
+		popular: true,
 	});
 
 	if (listing.items.length === 0) {

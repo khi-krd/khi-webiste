@@ -1,5 +1,6 @@
 import "server-only";
 import {
+	apiFetchItemArray,
 	apiFetchPage,
 	BULK_FETCH_SIZE,
 	DEFAULT_REVALIDATE,
@@ -15,6 +16,7 @@ import { ImageCollectionSchema } from "@/types/gallery";
 
 const GALLERY_ENDPOINT = "/api/v1/image-collections";
 const GALLERY_TAG = "image-collections";
+const HOME_POPULAR_ENDPOINT = "/api/v1/home/popular";
 
 /** All three collection types (SINGLE, GALLERY, PHOTO_STORY) belong in the
  *  home bento — no type filter. */
@@ -37,12 +39,23 @@ export async function getImageCollection(
 		return sliceToCount([], HOME_IMAGE_BENTO_COUNT);
 	}
 
-	// Every type shows: singles, galleries, and photo stories all appear in the
-	// bento. The unfiltered page already returns newest-first.
-	const page = await fetchCollections(BENTO_COLLECTION_TYPE);
+	// Popular-first homepage feed; empty result falls back to the listing.
+	const popular = await apiFetchItemArray(
+		`${HOME_POPULAR_ENDPOINT}/collections`,
+		{
+			itemSchema: ImageCollectionSchema,
+			tags: [GALLERY_TAG],
+			revalidate: DEFAULT_REVALIDATE,
+			searchParams: { limit: HOME_IMAGE_BENTO_COUNT },
+			normalizeItem: normalizeImageCollectionRecord,
+		},
+	);
+	const records = popular?.length
+		? popular
+		: (await fetchCollections(BENTO_COLLECTION_TYPE))?.content;
 
-	const apiItems = page?.content.length
-		? resolveImageCollectionItems(locale, page.content)
+	const apiItems = records?.length
+		? resolveImageCollectionItems(locale, records)
 		: [];
 
 	return sliceToCount(apiItems, HOME_IMAGE_BENTO_COUNT);

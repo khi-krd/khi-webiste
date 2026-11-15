@@ -1,5 +1,6 @@
 import "server-only";
 import {
+	apiFetchItemArray,
 	apiFetchPage,
 	apiFetchRaw,
 	BULK_FETCH_SIZE,
@@ -29,6 +30,7 @@ import { ProjectSchema } from "@/types/project";
 
 const PROJECTS_ENDPOINT = "/api/v1/projects/getAll";
 const PROJECTS_TAG = "projects";
+const HOME_POPULAR_ENDPOINT = "/api/v1/home/popular";
 
 export {
 	filterProjects,
@@ -105,8 +107,31 @@ async function searchProjectRecords(
 	return filterProjects(await getAllProjectRecords(locale), filter);
 }
 
+/** Popular-first homepage feed; null when unavailable or empty. */
+async function fetchPopularProjectListItems(
+	locale: string,
+): Promise<ProjectListItem[] | null> {
+	if (!getApiBaseUrl()) {
+		return null;
+	}
+	const records = await apiFetchItemArray(
+		`${HOME_POPULAR_ENDPOINT}/projects`,
+		{
+			itemSchema: ProjectSchema,
+			tags: [PROJECTS_TAG],
+			revalidate: DEFAULT_REVALIDATE,
+			searchParams: { limit: BULK_FETCH_SIZE },
+		},
+	);
+	return records?.length
+		? resolveProjectListItems(locale, records)
+		: null;
+}
+
 export async function getProjects(locale: string): Promise<ProjectItem[]> {
-	const apiItems = await fetchProjectListItemsFromApi(locale);
+	const apiItems =
+		(await fetchPopularProjectListItems(locale)) ??
+		(await fetchProjectListItemsFromApi(locale));
 	const records = apiItems;
 
 	return records.map((record) => ({

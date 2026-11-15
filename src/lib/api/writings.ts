@@ -2,6 +2,7 @@ import "server-only";
 import { cache } from "react";
 import {
 	apiFetch,
+	apiFetchItemArray,
 	apiFetchPage,
 	apiFetchRaw,
 	BULK_FETCH_SIZE,
@@ -40,6 +41,7 @@ import {
 } from "@/types/writing";
 
 const WRITINGS_ENDPOINT = "/api/v1/writings";
+const HOME_POPULAR_ENDPOINT = "/api/v1/home/popular";
 const BOOK_GENRES_ENDPOINT = "/api/v1/book-genres";
 const WRITINGS_TAG = "writings";
 
@@ -78,16 +80,31 @@ export async function getWritingsCarousel(
 	let apiItems: ResolvedWritingCard[] = [];
 
 	if (getApiBaseUrl()) {
-		const data = await apiFetchPage(WRITINGS_ENDPOINT, {
-			itemSchema: WritingSchema,
-			tags: [WRITINGS_TAG],
-			revalidate: DEFAULT_REVALIDATE,
-			searchParams: { page: 0, size },
-			normalizeItem: normalizeWritingRecord,
-		});
+		// Popular-first homepage feed; empty result falls back to the listing.
+		const popular = await apiFetchItemArray(
+			`${HOME_POPULAR_ENDPOINT}/writings`,
+			{
+				itemSchema: WritingSchema,
+				tags: [WRITINGS_TAG],
+				revalidate: DEFAULT_REVALIDATE,
+				searchParams: { limit: size },
+				normalizeItem: normalizeWritingRecord,
+			},
+		);
+		const records = popular?.length
+			? popular
+			: (
+					await apiFetchPage(WRITINGS_ENDPOINT, {
+						itemSchema: WritingSchema,
+						tags: [WRITINGS_TAG],
+						revalidate: DEFAULT_REVALIDATE,
+						searchParams: { page: 0, size },
+						normalizeItem: normalizeWritingRecord,
+					})
+				)?.content;
 
-		if (data) {
-			apiItems = data.content
+		if (records) {
+			apiItems = records
 				.map((writing) => resolveWritingCard(locale, writing))
 				.filter((item): item is ResolvedWritingCard => item != null);
 		}

@@ -1,6 +1,7 @@
 import "server-only";
 import {
 	apiFetch,
+	apiFetchItemArray,
 	BULK_FETCH_SIZE,
 	DEFAULT_REVALIDATE,
 	sliceToCount,
@@ -33,6 +34,7 @@ import type { News, NewsPage } from "@/types/news";
 import { NewsPageSchema, NewsSchema } from "@/types/news";
 
 const NEWS_ENDPOINT = "/api/v1/news";
+const HOME_POPULAR_ENDPOINT = "/api/v1/home/popular";
 const NEWS_TAG = "news";
 const NEWS_FETCH_SIZE = 20;
 /** `language` is not enum-validated upstream — anything outside ckb/kmr ORs both. */
@@ -413,6 +415,23 @@ export async function getLatestUpdates(
 ): Promise<LatestUpdateItem[]> {
 	if (!getApiBaseUrl()) {
 		return sliceToCount([], LATEST_UPDATES_COUNT);
+	}
+
+	// Popular-first homepage feed; falls back to the regular listing when the
+	// endpoint is unavailable or returns nothing.
+	const popular = await apiFetchItemArray(`${HOME_POPULAR_ENDPOINT}/news`, {
+		itemSchema: NewsSchema,
+		tags: [NEWS_TAG],
+		revalidate: DEFAULT_REVALIDATE,
+		searchParams: { limit: LATEST_UPDATES_COUNT },
+	});
+	if (popular?.length) {
+		const items = dedupeNewsItems(resolveNewsItems(locale, popular));
+		const apiItems = items.map(toLatestUpdateItem);
+		const sliced = sliceToCount(apiItems, LATEST_UPDATES_COUNT);
+		if (sliced.length) {
+			return sliced;
+		}
 	}
 
 	const items = await fetchUniqueLatestNewsItems(locale, LATEST_UPDATES_COUNT);
