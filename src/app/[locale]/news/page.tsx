@@ -117,6 +117,7 @@ export default async function NewsPage({
 				tags={tags}
 				currentPage={currentPage}
 				totalPages={totalPages}
+				resultCount={filtered.length}
 				activeCategory={activeCategory}
 				activeSubCategory={activeSubCategory}
 				activeTag={activeTag}

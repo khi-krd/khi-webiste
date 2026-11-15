@@ -1,3 +1,4 @@
+import Image from "next/image";
 import { AboutSection, AboutShell } from "@/components/about/about-shell";
 import {
 	ScrollReveal,
@@ -25,12 +26,17 @@ const missionTextClass = cn(
 type AboutMissionProps = {
 	paragraphs?: string[];
 	body?: string;
+	/** Institute logo (CMS branding, bundled fallback resolved by caller). */
+	logoUrl?: string | null;
+	logoAlt?: string;
 	className?: string;
 };
 
 export function AboutMission({
 	paragraphs,
 	body,
+	logoUrl,
+	logoAlt,
 	className,
 }: AboutMissionProps) {
 	return (
@@ -40,23 +46,38 @@ export function AboutMission({
 			<AboutShell>
 				<ScrollReveal>
 					<ScrollRevealItem>
-						{body ? (
-							<RichText content={body} className={missionTextClass} />
-						) : (
-							<div className={missionTextClass}>
-								{(paragraphs ?? []).map((text, index) => (
-									<p
-										key={text.slice(0, 40)}
-										className={cn(
-											index > 0 && "mt-6 sm:mt-7",
-											index === 0 ? "text-lead" : "text-body",
-										)}
-									>
-										{text}
-									</p>
-								))}
+						{/* dir-row-unmirrored pins the mark to the physical LEFT of
+						    the text in both locales; the text keeps its own direction. */}
+						<div className="dir-row-unmirrored flex items-start gap-5 sm:gap-8">
+							{logoUrl ? (
+								<Image
+									src={logoUrl}
+									alt={logoAlt ?? ""}
+									width={120}
+									height={120}
+									className="size-20 shrink-0 object-contain sm:size-28"
+								/>
+							) : null}
+							<div className="min-w-0 flex-1">
+								{body ? (
+									<RichText content={body} className={missionTextClass} />
+								) : (
+									<div className={missionTextClass}>
+										{(paragraphs ?? []).map((text, index) => (
+											<p
+												key={text.slice(0, 40)}
+												className={cn(
+													index > 0 && "mt-6 sm:mt-7",
+													index === 0 ? "text-lead" : "text-body",
+												)}
+											>
+												{text}
+											</p>
+										))}
+									</div>
+								)}
 							</div>
-						)}
+						</div>
 					</ScrollRevealItem>
 				</ScrollReveal>
 			</AboutShell>

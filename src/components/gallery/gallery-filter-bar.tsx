@@ -1,7 +1,7 @@
 "use client";
 
 import { useSearchParams } from "next/navigation";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import { useCallback, useEffect, useRef, useState, useTransition } from "react";
 import { Badge } from "@/components/ui/badge";
 import {
@@ -20,6 +20,7 @@ import {
 	parseGalleryTopicId,
 } from "@/lib/gallery-url";
 import type { GalleryCollectionType } from "@/lib/mock/gallery";
+import { formatTopicOptionLabel } from "@/lib/platform/format";
 import { useScrollToSection } from "@/lib/use-scroll-to-section";
 
 const GALLERY_TYPE_OPTIONS: GalleryCollectionType[] = [
@@ -31,6 +32,7 @@ const GALLERY_TYPE_OPTIONS: GalleryCollectionType[] = [
 type TopicOption = {
 	id: number;
 	name: string;
+	count?: number;
 };
 
 type GalleryFilterBarProps = {
@@ -54,6 +56,7 @@ export function GalleryFilterBar({
 	className,
 }: GalleryFilterBarProps) {
 	const t = useTranslations("Gallery");
+	const locale = useLocale();
 	const router = useRouter();
 	const searchParams = useSearchParams();
 	const [isPending, startTransition] = useTransition();
@@ -171,9 +174,14 @@ export function GalleryFilterBar({
 							onChange={(v) => handleTopic(parseGalleryTopicId(v))}
 							options={[
 								{ value: "", label: t("filter.topicAll") },
-								...topics.map((topic) => ({
+								...topics.map((topic, index) => ({
 									value: String(topic.id),
-									label: topic.name,
+									label: formatTopicOptionLabel(
+										locale,
+										index,
+										topic.name,
+										topic.count,
+									),
 								})),
 							]}
 						/>

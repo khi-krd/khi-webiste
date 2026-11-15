@@ -6,6 +6,7 @@ import { ProjectCard } from "@/components/projects/project-card";
 import { ProjectsClearFilters } from "@/components/projects/projects-clear-filters";
 import { ProjectsFilterBar } from "@/components/projects/projects-filter-bar";
 import { ProjectsPagination } from "@/components/projects/projects-pagination";
+import { ResultCount } from "@/components/ui/result-count";
 import type { ProjectListItem } from "@/lib/mock/projects";
 
 type ProjectsShellProps = {
@@ -20,6 +21,7 @@ type ProjectsShellProps = {
 	paginationLabel: string;
 	previousLabel: string;
 	nextLabel: string;
+	resultCount?: number | null;
 };
 
 export function ProjectsShell({
@@ -34,6 +36,7 @@ export function ProjectsShell({
 	paginationLabel,
 	previousLabel,
 	nextLabel,
+	resultCount,
 }: ProjectsShellProps) {
 	const hasFilters = Boolean(activeYear || activeType || activeQuery?.trim());
 	const isEmpty = items.length === 0;
@@ -48,6 +51,7 @@ export function ProjectsShell({
 					activeQuery={activeQuery}
 					className="mb-8 sm:mb-10"
 				/>
+				<ResultCount count={resultCount} />
 
 				{isEmpty ? (
 					<div className="border border-border bg-surface px-6 py-12 text-center sm:px-10">

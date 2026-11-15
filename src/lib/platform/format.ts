@@ -30,6 +30,21 @@ function formatPlainInteger(locale: string, value: number): string {
 	}
 }
 
+/**
+ * Filter-dropdown topic label: "١. بابەتی مێژوو (١٢)" — numbered, counted,
+ * locale digits.
+ */
+export function formatTopicOptionLabel(
+	locale: string,
+	index: number,
+	name: string,
+	count?: number | null,
+): string {
+	const num = formatCount(locale, index + 1);
+	const total = count != null ? ` (${formatCount(locale, count)})` : "";
+	return `${num}. ${name}${total}`;
+}
+
 /** Year of an ISO instant/date, in locale digits. Null when unparseable. */
 export function formatYear(
 	locale: string,

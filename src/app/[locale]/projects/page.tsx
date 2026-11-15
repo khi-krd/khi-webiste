@@ -56,6 +56,7 @@ export default async function ProjectsPage({
 				items={pageData.items}
 				currentPage={pageData.currentPage}
 				totalPages={pageData.totalPages}
+				resultCount={pageData.totalElements}
 				types={pageData.types}
 				activeYear={pageData.activeYear}
 				activeType={pageData.activeType}

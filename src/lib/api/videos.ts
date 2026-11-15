@@ -12,6 +12,7 @@ import {
 } from "@/lib/api/client";
 import { getApiBaseUrl } from "@/lib/api/config";
 import { normalizeVideoRecord } from "@/lib/api/normalize";
+import { getTopicCounts } from "@/lib/api/topics";
 import {
 	cardIdentity,
 	filterVideos,
@@ -84,12 +85,7 @@ export type VideoListingOptions = {
 
 type VideoListingFilters = Pick<
 	VideoListingOptions,
-	| "videoType"
-	| "topicId"
-	| "excludeTopicId"
-	| "memories"
-	| "query"
-	| "popular"
+	"videoType" | "topicId" | "excludeTopicId" | "memories" | "query" | "popular"
 >;
 
 type VideoPageFetchOptions = Pick<
@@ -182,19 +178,16 @@ async function fetchAllVideosFromApi(
 	// Homepage rails ask for the popular-first feed: the backend already
 	// applied the videoType filter and returns at most `limit` records.
 	if (options.popular) {
-		const popular = await apiFetchItemArray(
-			"/api/v1/home/popular/videos",
-			{
-				itemSchema: VideoSchema,
-				tags: [VIDEOS_TAG],
-				revalidate: DEFAULT_REVALIDATE,
-				normalizeItem: normalizeVideoRecord,
-				searchParams: {
-					videoType: options.videoType ?? undefined,
-					limit: 60,
-				},
+		const popular = await apiFetchItemArray("/api/v1/home/popular/videos", {
+			itemSchema: VideoSchema,
+			tags: [VIDEOS_TAG],
+			revalidate: DEFAULT_REVALIDATE,
+			normalizeItem: normalizeVideoRecord,
+			searchParams: {
+				videoType: options.videoType ?? undefined,
+				limit: 60,
 			},
-		);
+		});
 		return popular?.length ? popular : null;
 	}
 
@@ -440,6 +433,7 @@ export async function getVideoById(
 export type VideoTopicOption = {
 	id: number;
 	name: string;
+	count?: number;
 };
 
 /** Topic options for the filter UI (`GET /api/v1/videos/topics`). */
@@ -449,22 +443,29 @@ export async function getVideoTopics(
 	let apiItems: VideoTopicOption[] = [];
 
 	if (getApiBaseUrl()) {
-		const topics = await apiFetch(`${VIDEOS_ENDPOINT}/topics`, {
-			schema: lenientArray(VideoTopicSchema, "video topic"),
-			tags: [VIDEOS_TAG],
-			revalidate: DEFAULT_REVALIDATE,
-		});
+		const [topics, counts] = await Promise.all([
+			apiFetch(`${VIDEOS_ENDPOINT}/topics`, {
+				schema: lenientArray(VideoTopicSchema, "video topic"),
+				tags: [VIDEOS_TAG],
+				revalidate: DEFAULT_REVALIDATE,
+			}),
+			getTopicCounts("VIDEO"),
+		]);
 
 		if (topics && topics.length > 0) {
 			apiItems = topics
-				.map((topic) => ({
-					id: topic.id,
-					name:
+				.map((topic): VideoTopicOption | null => {
+					const name =
 						locale === "ckb"
 							? (topic.nameCkb ?? topic.nameKmr)
-							: (topic.nameKmr ?? topic.nameCkb),
-				}))
-				.filter((topic): topic is VideoTopicOption => topic.name != null);
+							: (topic.nameKmr ?? topic.nameCkb);
+					if (!name) return null;
+					return { id: topic.id, name, count: counts[topic.id] ?? 0 };
+				})
+				.filter((topic): topic is VideoTopicOption => topic != null)
+				.sort((a, b) =>
+					a.name.localeCompare(b.name, locale === "ckb" ? "ckb" : "ku"),
+				);
 		}
 	}
 

@@ -47,6 +47,7 @@ export type GalleryListingOptions = {
 export type GalleryTopicOption = {
 	id: number;
 	name: string;
+	count?: number;
 };
 
 function buildCollectionParams({
@@ -144,8 +145,13 @@ function collectTopicOptions(
 
 		for (let i = 0; i < ids.length; i++) {
 			const name = names[i];
-			if (name && !map.has(ids[i])) {
-				map.set(ids[i], { id: ids[i], name });
+			if (name) {
+				const existing = map.get(ids[i]);
+				if (existing) {
+					existing.count = (existing.count ?? 0) + 1;
+				} else {
+					map.set(ids[i], { id: ids[i], name, count: 1 });
+				}
 			}
 		}
 	}

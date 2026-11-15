@@ -85,6 +85,7 @@ export default async function GalleryPage({
 				posts={posts}
 				currentPage={currentPage}
 				totalPages={totalPages}
+				resultCount={allPosts.length}
 				activeQuery={q}
 				activeType={activeType}
 				activeTopicId={activeTopicId}

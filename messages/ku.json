@@ -680,7 +680,7 @@
 		},
 		"filter": {
 			"label": "Parzûn & lêgerîn",
-			"reset": "Jê bibe",
+			"reset": "Ji nû ve dest pê bike",
 			"all": "Hemû",
 			"typeLabel": "Format",
 			"searchLabel": "Li vîdyoyan bigere",
@@ -1035,7 +1035,7 @@
 		},
 		"filter": {
 			"active": "Parzûnên çalak",
-			"clear": "Parzûnan paqij bike",
+			"clear": "Filtreyan paqij bike",
 			"label": "Cureyê xizmetê",
 			"typeAll": "Hemû cure"
 		},
@@ -1044,7 +1044,7 @@
 			"emptyTitle": "Tu xizmet nehat dîtin"
 		},
 		"search": {
-			"clear": "Nivîsa lêgerînê paqij bike",
+			"clear": "Lêgerînê paqij bike",
 			"label": "Di nav xizmetan de bigere",
 			"submit": "Bigere"
 		}
@@ -1465,5 +1465,13 @@
 		"fileKindImage": "Wêne",
 		"fileKindText": "Nivîsa sade",
 		"fileKindUnknown": "Pel"
+	},
+	"Brand": {
+		"pageTitle": "Logo",
+		"metaDescription": "Logoya Enstîtuya Mîrateya Kurdî",
+		"tagline": "Enstîtuya Mîrateya Kurdî"
+	},
+	"Results": {
+		"count": "{count} encam"
 	}
 }

@@ -6,6 +6,7 @@ import {
 	ScrollReveal,
 	ScrollRevealItem,
 } from "@/components/motion/scroll-reveal";
+import { ResultCount } from "@/components/ui/result-count";
 import { homeInsetClass } from "@/lib/layout";
 import { cn } from "@/lib/utils";
 import type { ResolvedAudioCard, TrackState } from "@/types/audio";
@@ -31,6 +32,7 @@ type AudioShellProps = {
 	activeQuery?: string | null;
 	noResultsMessage: string;
 	className?: string;
+	resultCount?: number | null;
 };
 
 export async function AudioShell({
@@ -48,6 +50,7 @@ export async function AudioShell({
 	activeQuery,
 	noResultsMessage,
 	className,
+	resultCount,
 }: AudioShellProps) {
 	const t = await getTranslations("Audio");
 	const isEmpty = cards.length === 0;
@@ -81,6 +84,7 @@ export async function AudioShell({
 					activeQuery={activeQuery}
 					scrollTargetId={id}
 				/>
+				<ResultCount count={resultCount} />
 
 				{isEmpty ? (
 					<div className="mt-8 border border-border bg-surface px-6 py-12 text-center sm:mt-10 sm:px-10">

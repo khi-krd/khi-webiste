@@ -1,7 +1,7 @@
 "use client";
 
 import { useSearchParams } from "next/navigation";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import { useCallback, useEffect, useRef, useState, useTransition } from "react";
 import { Badge } from "@/components/ui/badge";
 import {
@@ -14,6 +14,7 @@ import {
 } from "@/components/ui/filter-bar";
 import { ListSelect } from "@/components/ui/list-select";
 import { useRouter } from "@/i18n/navigation";
+import { formatTopicOptionLabel } from "@/lib/platform/format";
 import { useScrollToSection } from "@/lib/use-scroll-to-section";
 import { cn } from "@/lib/utils";
 import { buildVideoHref } from "@/lib/video-url";
@@ -22,6 +23,7 @@ import type { VideoType } from "@/types/video";
 type TopicOption = {
 	id: number;
 	name: string;
+	count?: number;
 };
 
 type VideoFilterBarProps = {
@@ -55,6 +57,7 @@ export function VideoFilterBar({
 	className,
 }: VideoFilterBarProps) {
 	const t = useTranslations("Video");
+	const locale = useLocale();
 	const router = useRouter();
 	const searchParams = useSearchParams();
 	const [isPending, startTransition] = useTransition();
@@ -194,9 +197,14 @@ export function VideoFilterBar({
 								}
 								options={[
 									{ value: "", label: t("filter.topicAll") },
-									...topics.map((topic) => ({
+									...topics.map((topic, index) => ({
 										value: String(topic.id),
-										label: topic.name,
+										label: formatTopicOptionLabel(
+											locale,
+											index,
+											topic.name,
+											topic.count,
+										),
 									})),
 								]}
 							/>

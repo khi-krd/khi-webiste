@@ -11,6 +11,7 @@ import {
 } from "@/lib/api/client";
 import { getApiBaseUrl } from "@/lib/api/config";
 import { normalizeSoundTrackRecord } from "@/lib/api/normalize";
+import { getTopicCounts } from "@/lib/api/topics";
 import {
 	filterAudioTracks,
 	paginateAudioTracks,
@@ -213,19 +214,14 @@ export async function getAudioCarousel(
 
 	if (getApiBaseUrl()) {
 		// Popular-first homepage feed; empty result falls back to the listing.
-		const popular = await apiFetchItemArray(
-			`${HOME_POPULAR_ENDPOINT}/sounds`,
-			{
-				itemSchema: SoundTrackSchema,
-				tags: [SOUND_TRACKS_TAG],
-				revalidate: DEFAULT_REVALIDATE,
-				searchParams: { limit: size },
-				normalizeItem: normalizeSoundTrackRecord,
-			},
-		);
-		const apiTracks = popular?.length
-			? popular
-			: await fetchAllTracksFromApi();
+		const popular = await apiFetchItemArray(`${HOME_POPULAR_ENDPOINT}/sounds`, {
+			itemSchema: SoundTrackSchema,
+			tags: [SOUND_TRACKS_TAG],
+			revalidate: DEFAULT_REVALIDATE,
+			searchParams: { limit: size },
+			normalizeItem: normalizeSoundTrackRecord,
+		});
+		const apiTracks = popular?.length ? popular : await fetchAllTracksFromApi();
 		if (apiTracks) {
 			apiItems = sortAudioTracks(
 				apiTracks
@@ -474,6 +470,7 @@ export async function getRelatedAudio(
 export type AudioTopicOption = {
 	id: number;
 	name: string;
+	count?: number;
 };
 
 /** Topic options for the filter UI (`GET /api/v1/sound-tracks/topics`). */
@@ -483,22 +480,29 @@ export async function getAudioTopics(
 	let apiItems: AudioTopicOption[] = [];
 
 	if (getApiBaseUrl()) {
-		const topics = await apiFetch(`${SOUND_TRACKS_ENDPOINT}/topics`, {
-			schema: lenientArray(SoundTopicSchema, "sound topic"),
-			tags: [SOUND_TRACKS_TAG],
-			revalidate: DEFAULT_REVALIDATE,
-		});
+		const [topics, counts] = await Promise.all([
+			apiFetch(`${SOUND_TRACKS_ENDPOINT}/topics`, {
+				schema: lenientArray(SoundTopicSchema, "sound topic"),
+				tags: [SOUND_TRACKS_TAG],
+				revalidate: DEFAULT_REVALIDATE,
+			}),
+			getTopicCounts("SOUND"),
+		]);
 
 		if (topics && topics.length > 0) {
 			apiItems = topics
-				.map((topic) => ({
-					id: topic.id,
-					name:
+				.map((topic): AudioTopicOption | null => {
+					const name =
 						locale === "ckb"
 							? (topic.nameCkb ?? topic.nameKmr)
-							: (topic.nameKmr ?? topic.nameCkb),
-				}))
-				.filter((topic): topic is AudioTopicOption => topic.name != null);
+							: (topic.nameKmr ?? topic.nameCkb);
+					if (!name) return null;
+					return { id: topic.id, name, count: counts[topic.id] ?? 0 };
+				})
+				.filter((topic): topic is AudioTopicOption => topic != null)
+				.sort((a, b) =>
+					a.name.localeCompare(b.name, locale === "ckb" ? "ckb" : "ku"),
+				);
 		}
 	}
 
@@ -544,6 +548,12 @@ export async function getAudioSoundTypes(locale: string): Promise<string[]> {
 	const values = new Set<string>([...vocab.keys()]);
 	for (const item of allItems) {
 		if (item.soundType?.trim()) values.add(item.soundType.trim());
+	}
+	// The managed vocabulary ships a catch-all "OTHER" entry — it is a
+	// backend bookkeeping value, not a browsable category, so it never
+	// surfaces as a public filter pill.
+	for (const value of [...values]) {
+		if (value.trim().toUpperCase() === "OTHER") values.delete(value);
 	}
 	return [...values];
 }

@@ -3,6 +3,7 @@ import {
 	ScrollRevealBlock,
 	ScrollRevealItem,
 } from "@/components/motion/scroll-reveal";
+import { ResultCount } from "@/components/ui/result-count";
 import {
 	WritingGridCard,
 	type WritingGridCardProps,
@@ -35,6 +36,7 @@ type WritingsShellProps = {
 	previousLabel: string;
 	nextLabel: string;
 	className?: string;
+	resultCount?: number | null;
 };
 
 export function WritingsShell({
@@ -57,6 +59,7 @@ export function WritingsShell({
 	previousLabel,
 	nextLabel,
 	className,
+	resultCount,
 }: WritingsShellProps) {
 	const isEmpty = cards.length === 0;
 
@@ -92,6 +95,7 @@ export function WritingsShell({
 					scrollTargetId={id}
 					className="mt-8 sm:mt-10"
 				/>
+				<ResultCount count={resultCount} />
 
 				{isEmpty ? (
 					<div className="mt-8 border border-border bg-surface px-6 py-12 text-center sm:px-10 sm:mt-10">

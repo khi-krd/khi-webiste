@@ -87,6 +87,7 @@ export default async function AudioPage({
 					cards={pageData.listing.items}
 					currentPage={pageData.listing.currentPage}
 					totalPages={pageData.listing.totalPages}
+					resultCount={pageData.listing.totalElements}
 					soundTypes={pageData.soundTypes}
 					soundTypeLabels={pageData.soundTypeLabels}
 					topics={pageData.topics}

@@ -58,6 +58,7 @@ export default async function WritingsPage({
 				cards={pageData.gridCards}
 				currentPage={pageData.listing.currentPage}
 				totalPages={pageData.listing.totalPages}
+				resultCount={pageData.listing.totalElements}
 				activeGenre={pageData.activeGenre}
 				activeQuery={pageData.activeQuery}
 				activeWriter={pageData.activeWriter}

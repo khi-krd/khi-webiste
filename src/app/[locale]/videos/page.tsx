@@ -90,6 +90,7 @@ export default async function VideosPage({
 					featuredLead={pageData.featuredLead}
 					currentPage={pageData.listing.currentPage}
 					totalPages={pageData.listing.totalPages}
+					resultCount={pageData.listing.totalElements}
 					topics={pageData.topics}
 					activeType={pageData.activeType}
 					activeTopicId={pageData.activeTopicId}

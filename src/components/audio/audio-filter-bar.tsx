@@ -1,7 +1,7 @@
 "use client";
 
 import { useSearchParams } from "next/navigation";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import { useCallback, useEffect, useRef, useState, useTransition } from "react";
 import { Badge } from "@/components/ui/badge";
 import {
@@ -16,12 +16,14 @@ import { ListSelect } from "@/components/ui/list-select";
 import { useRouter } from "@/i18n/navigation";
 import { soundTypeLabel } from "@/lib/audio/sound-types";
 import { buildAudioHref } from "@/lib/audio-url";
+import { formatTopicOptionLabel } from "@/lib/platform/format";
 import { useScrollToSection } from "@/lib/use-scroll-to-section";
 import type { TrackState } from "@/types/audio";
 
 type TopicOption = {
 	id: number;
 	name: string;
+	count?: number;
 };
 
 type AudioFilterBarProps = {
@@ -56,6 +58,7 @@ export function AudioFilterBar({
 	className,
 }: AudioFilterBarProps) {
 	const t = useTranslations("Audio");
+	const locale = useLocale();
 	const router = useRouter();
 	const searchParams = useSearchParams();
 	const [isPending, startTransition] = useTransition();
@@ -211,9 +214,14 @@ export function AudioFilterBar({
 							}
 							options={[
 								{ value: "", label: t("filter.topicAll") },
-								...topics.map((topic) => ({
+								...topics.map((topic, index) => ({
 									value: String(topic.id),
-									label: topic.name,
+									label: formatTopicOptionLabel(
+										locale,
+										index,
+										topic.name,
+										topic.count,
+									),
 								})),
 							]}
 						/>

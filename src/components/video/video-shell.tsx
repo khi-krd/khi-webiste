@@ -4,6 +4,7 @@ import {
 	ScrollRevealBlock,
 	ScrollRevealItem,
 } from "@/components/motion/scroll-reveal";
+import { ResultCount } from "@/components/ui/result-count";
 import { VideoCard, type VideoCardProps } from "@/components/video/video-card";
 import { VideoFilterBar } from "@/components/video/video-filter-bar";
 import { VideoPagination } from "@/components/video/video-pagination";
@@ -43,6 +44,7 @@ type VideoShellProps = {
 	/** Route for the filter bar + pager (default catalogue). */
 	basePath?: string;
 	className?: string;
+	resultCount?: number | null;
 };
 
 export async function VideoShell({
@@ -62,6 +64,7 @@ export async function VideoShell({
 	showFilters = true,
 	basePath = "/videos",
 	className,
+	resultCount,
 }: VideoShellProps) {
 	const t = await getTranslations("Video");
 
@@ -125,6 +128,7 @@ export async function VideoShell({
 						scrollTargetId={id}
 					/>
 				) : null}
+				<ResultCount count={resultCount} />
 
 				{isEmpty ? (
 					// The dead timecode — the projector with no reel.

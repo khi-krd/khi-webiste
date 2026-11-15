@@ -4,6 +4,7 @@ import {
 	GalleryPrintBoard,
 	type GalleryPrintPost,
 } from "@/components/gallery/gallery-print-board";
+import { ResultCount } from "@/components/ui/result-count";
 import { homeInsetClass } from "@/lib/layout";
 import { cn } from "@/lib/utils";
 
@@ -20,6 +21,7 @@ type GalleryPostsProps = {
 	posts: GalleryPrintPost[];
 	currentPage: number;
 	totalPages: number;
+	resultCount?: number | null;
 	topics: TopicOption[];
 	activeQuery?: string | null;
 	activeType?: string | null;
@@ -42,6 +44,7 @@ export function GalleryPosts({
 	posts,
 	currentPage,
 	totalPages,
+	resultCount,
 	topics,
 	activeQuery,
 	activeType,
@@ -70,6 +73,8 @@ export function GalleryPosts({
 						activeTopicId={activeTopicId}
 					/>
 				</div>
+
+				<ResultCount count={resultCount} />
 
 				{posts.length === 0 ? (
 					<p className="mt-10 max-w-xl text-body text-muted">

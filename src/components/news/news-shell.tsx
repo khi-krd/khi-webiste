@@ -8,6 +8,7 @@ import { NewsClearFilters } from "@/components/news/news-clear-filters";
 import { NewsFilterBar } from "@/components/news/news-filter-bar";
 import { NewsPagination } from "@/components/news/news-pagination";
 import { NewsSidebarPanel } from "@/components/news/news-sidebar-panel";
+import { ResultCount } from "@/components/ui/result-count";
 import { homeInsetClass } from "@/lib/layout";
 import {
 	type NewsCategoryOption,
@@ -37,6 +38,7 @@ type NewsShellProps = {
 	nextLabel: string;
 	latestLabel: string;
 	className?: string;
+	resultCount?: number | null;
 };
 
 export function NewsShell({
@@ -60,6 +62,7 @@ export function NewsShell({
 	nextLabel,
 	latestLabel,
 	className,
+	resultCount,
 }: NewsShellProps) {
 	const hasFilters = Boolean(
 		activeCategory ||
@@ -126,6 +129,7 @@ export function NewsShell({
 						activeQuery={activeQuery}
 						className="mb-8 sm:mb-10"
 					/>
+					<ResultCount count={resultCount} />
 
 					{isEmpty ? (
 						<div className="border border-border bg-surface px-6 py-12 text-center sm:px-10">

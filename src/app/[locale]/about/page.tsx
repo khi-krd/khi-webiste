@@ -16,6 +16,7 @@ import {
 	getPrimaryAboutPage,
 	resolveAboutContent,
 } from "@/lib/api/about";
+import { getSiteLogoUrl } from "@/lib/api/site-settings";
 import { plainTextFromRichContent } from "@/lib/rich-text";
 import { localeAlternates } from "@/lib/seo/metadata";
 
@@ -54,13 +55,15 @@ export default async function AboutPage({
 	const aboutContent = aboutPage
 		? resolveAboutContent(locale, aboutPage)
 		: null;
-	const [heroMedia, founder, offices, partners, managers] = await Promise.all([
-		getAboutHeroMedia(locale),
-		getAboutFounder(locale),
-		getAboutOffices(locale),
-		getAboutPartners(locale),
-		getAboutManagers(locale),
-	]);
+	const [heroMedia, founder, offices, partners, managers, siteLogo] =
+		await Promise.all([
+			getAboutHeroMedia(locale),
+			getAboutFounder(locale),
+			getAboutOffices(locale),
+			getAboutPartners(locale),
+			getAboutManagers(locale),
+			getSiteLogoUrl(),
+		]);
 	const apiFounder = aboutPage
 		? resolveFounderFromAbout(locale, aboutPage)
 		: null;
@@ -116,6 +119,8 @@ export default async function AboutPage({
 
 			<AboutMission
 				body={aboutContent?.body?.trim() || undefined}
+				logoUrl={siteLogo ?? "/logo.png"}
+				logoAlt={t("heroTitle")}
 				paragraphs={
 					aboutContent?.body?.trim()
 						? undefined
