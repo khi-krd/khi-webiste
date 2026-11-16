@@ -320,7 +320,9 @@
 			"heading": "Fîltre",
 			"topicAll": "Hemû mijar",
 			"topicLabel": "Mijar",
-			"typeLabel": "Cureyê berhevokê"
+			"typeLabel": "Cureyê berhevokê",
+			"topicSearch": "Di mijaran de bigere…",
+			"topicNoMatch": "Tu mijar nehat dîtin"
 		},
 		"posts": {
 			"title": "Berhevok",
@@ -392,7 +394,16 @@
 			"searchLabel": "Di tomaran de bigere",
 			"searchClear": "Lêgerînê paqij bike",
 			"tagRemove": "Etîketê rake",
-			"searchSubmit": "Bigere"
+			"searchSubmit": "Bigere",
+			"stateAll": "Hemû format",
+			"stateSearch": "Di formatan de bigere…",
+			"stateNoMatch": "Tu format nehat dîtin",
+			"stateOther": "Formatên din",
+			"stateNoneSelected": "Tu format nehatiye hilbijartin",
+			"stateSelected": "{count} format hatin hilbijartin",
+			"stateCount": "{count} format",
+			"topicSearch": "Di mijaran de bigere…",
+			"topicNoMatch": "Tu mijar nehat dîtin"
 		},
 		"state": {
 			"all": "Hemû format",
@@ -696,7 +707,9 @@
 			"collectionLabel": "Koleksiyon",
 			"memoriesLabel": "Albuma bîranînan",
 			"active": "Çalak:",
-			"searchSubmit": "Bigere"
+			"searchSubmit": "Bigere",
+			"topicSearch": "Di mijaran de bigere…",
+			"topicNoMatch": "Tu mijar nehat dîtin"
 		},
 		"types": {
 			"FILM": "Fîlm",

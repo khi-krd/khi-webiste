@@ -320,7 +320,9 @@
 			"heading": "فلتەرەکان",
 			"topicAll": "هەموو بابەتەکان",
 			"topicLabel": "بابەت",
-			"typeLabel": "جۆری کۆکراوە"
+			"typeLabel": "جۆری کۆکراوە",
+			"topicSearch": "گەڕان لە بابەتەکان…",
+			"topicNoMatch": "هیچ بابەتێک نەدۆزرایەوە"
 		},
 		"posts": {
 			"title": "کۆکراوەکان",
@@ -392,7 +394,16 @@
 			"searchLabel": "گەڕان لە تۆمارەکان",
 			"searchClear": "گەڕان پاک بکەوە",
 			"tagRemove": "تاگەکە لابەرە",
-			"searchSubmit": "بگەڕێ"
+			"searchSubmit": "بگەڕێ",
+			"stateAll": "هەموو شێوازەکان",
+			"stateSearch": "گەڕان لە شێوازەکان…",
+			"stateNoMatch": "هیچ شێوازێک نەدۆزرایەوە",
+			"stateOther": "شێوازی تر",
+			"stateNoneSelected": "هیچ شێوازێک هەڵنەبژێردراوە",
+			"stateSelected": "{count} شێواز هەڵبژێردراوە",
+			"stateCount": "{count} شێواز",
+			"topicSearch": "گەڕان لە بابەتەکان…",
+			"topicNoMatch": "هیچ بابەتێک نەدۆزرایەوە"
 		},
 		"state": {
 			"all": "هەموو شێوازەکان",
@@ -696,7 +707,9 @@
 			"collectionLabel": "کۆکراوە",
 			"memoriesLabel": "ئەلبومی یادەوەری",
 			"active": "چالاک:",
-			"searchSubmit": "بگەڕێ"
+			"searchSubmit": "بگەڕێ",
+			"topicSearch": "گەڕان لە بابەتەکان…",
+			"topicNoMatch": "هیچ بابەتێک نەدۆزرایەوە"
 		},
 		"types": {
 			"FILM": "فیلمەکان",

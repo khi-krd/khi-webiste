@@ -3,13 +3,12 @@
 import { useSearchParams } from "next/navigation";
 import { useLocale, useTranslations } from "next-intl";
 import { useCallback, useTransition } from "react";
-import { tabRailLabels } from "@/components/filters/filter-labels";
+import { unifiedLabels } from "@/components/filters/filter-labels";
 import type { FilterOption } from "@/components/filters/filters-shared";
-import { TabRailFilter } from "@/components/filters/TabRailFilter";
+import { UnifiedSearchBar } from "@/components/filters/UnifiedSearchBar";
 import { useFilterSearch } from "@/components/filters/use-filter-search";
 import { useRouter } from "@/i18n/navigation";
 import { buildAudioHref } from "@/lib/audio-url";
-import { formatCount } from "@/lib/platform/format";
 import type { TrackState } from "@/types/audio";
 
 type TopicOption = {
@@ -33,9 +32,9 @@ type AudioFiltersProps = {
 };
 
 /**
- * Style A — the type filter is hidden (the catalogue holds only گۆرانی), so
- * the tab rail carries the شێواز axis instead: تۆماری تاک / ئەلبووم. The
- * بابەت dropdown keeps its live counts.
+ * Style D — the writings-page bar. The type filter stays hidden (the
+ * catalogue holds only گۆرانی); the شێواز axis (تۆماری تاک / ئەلبووم) rides
+ * the types panel and بابەت gets the searchable counted list.
  */
 export function AudioFilters({
 	topics,
@@ -96,17 +95,38 @@ export function AudioFilters({
 		],
 	);
 
-	const tabs: FilterOption[] = [
+	const types: FilterOption[] = [
 		{ id: "SINGLE", label: t("state.single") },
 		{ id: "MULTI", label: t("state.multi") },
 	];
 
+	const topicOptions: FilterOption[] = topics.map((topic) => ({
+		id: String(topic.id),
+		label: topic.name,
+		count: topic.count,
+	}));
+
 	return (
-		<TabRailFilter
+		<UnifiedSearchBar
 			title={title}
 			titleAs="h2"
 			className={className}
-			labels={tabRailLabels(locale)}
+			labels={{
+				...unifiedLabels(locale),
+				searchPlaceholder: t("filter.searchLabel"),
+				type: t("filter.stateLabel"),
+				allTypes: t("filter.stateAll"),
+				searchTypes: t("filter.stateSearch"),
+				noTypeMatch: t("filter.stateNoMatch"),
+				otherTypes: t("filter.stateOther"),
+				noTypesSelected: t("filter.stateNoneSelected"),
+				typesSelected: (n) => t("filter.stateSelected", { count: n }),
+				typesCount: (n) => t("filter.stateCount", { count: n }),
+				author: t("filter.topicLabel"),
+				allAuthors: t("filter.topicAll"),
+				searchAuthors: t("filter.topicSearch"),
+				noAuthorMatch: t("filter.topicNoMatch"),
+			}}
 			query={query}
 			onQueryChange={(v) => {
 				setQuery(v);
@@ -116,30 +136,23 @@ export function AudioFilters({
 				cancel();
 				navigate({ q: v });
 			}}
-			searchPlaceholder={t("filter.searchLabel")}
-			tabsLabel={t("filter.stateLabel")}
-			tabs={tabs}
-			activeTab={activeState ?? null}
-			onTabChange={(id) => navigate({ state: id as TrackState | null })}
-			selects={[
-				{
-					id: "topic",
-					label: t("filter.topicLabel"),
-					value: activeTopicId != null ? String(activeTopicId) : "",
-					options: [
-						{ value: "", label: t("filter.topicAll") },
-						...topics.map((topic) => ({
-							value: String(topic.id),
-							label:
-								topic.count != null
-									? `${topic.name} (${formatCount(locale, topic.count)})`
-									: topic.name,
-						})),
-					],
-					onChange: (v) =>
-						navigate({ topic: v ? Number.parseInt(v, 10) : null }),
-				},
-			]}
+			types={types}
+			// One شێواز at a time — a new pick replaces the old.
+			selectedTypes={activeState ? [activeState] : []}
+			onTypesChange={(ids) =>
+				navigate({
+					state: ids.length
+						? ((ids[ids.length - 1] as TrackState) ?? null)
+						: null,
+				})
+			}
+			authors={topicOptions}
+			selectedAuthor={
+				activeTopicId != null ? String(activeTopicId) : null
+			}
+			onAuthorChange={(id) =>
+				navigate({ topic: id ? Number.parseInt(id, 10) : null })
+			}
 			resultCount={resultCount}
 		/>
 	);

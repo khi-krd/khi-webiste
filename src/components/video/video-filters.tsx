@@ -3,12 +3,11 @@
 import { useSearchParams } from "next/navigation";
 import { useLocale, useTranslations } from "next-intl";
 import { useCallback, useTransition } from "react";
-import { tabRailLabels } from "@/components/filters/filter-labels";
+import { unifiedLabels } from "@/components/filters/filter-labels";
 import type { FilterOption } from "@/components/filters/filters-shared";
-import { TabRailFilter } from "@/components/filters/TabRailFilter";
+import { UnifiedSearchBar } from "@/components/filters/UnifiedSearchBar";
 import { useFilterSearch } from "@/components/filters/use-filter-search";
 import { useRouter } from "@/i18n/navigation";
-import { formatCount } from "@/lib/platform/format";
 import { buildVideoHref } from "@/lib/video-url";
 import type { VideoType } from "@/types/video";
 
@@ -32,8 +31,9 @@ type VideoFiltersProps = {
 };
 
 /**
- * Style A — فیلم/کلیپەکان tabs, then quiet dropdowns for کۆکراوە (the old
- * "ئەلبومی یادەوەرییەکان" toggle, now a select) and بابەت.
+ * Style D — the writings-page bar: search + جۆر panel (فیلم/کلیپ, single —
+ * the listing endpoint takes one type), کۆکراوە list and a searchable بابەت
+ * list with live counts. State lives in the URL.
  */
 export function VideoFilters({
 	topics,
@@ -95,17 +95,30 @@ export function VideoFilters({
 		],
 	);
 
-	const tabs: FilterOption[] = [
+	const types: FilterOption[] = [
 		{ id: "FILM", label: t("types.FILM") },
 		{ id: "VIDEO_CLIP", label: t("types.VIDEO_CLIP") },
 	];
 
+	const topicOptions: FilterOption[] = topics.map((topic) => ({
+		id: String(topic.id),
+		label: topic.name,
+		count: topic.count,
+	}));
+
 	return (
-		<TabRailFilter
+		<UnifiedSearchBar
 			title={title}
 			titleAs="h2"
 			className={className}
-			labels={tabRailLabels(locale)}
+			labels={{
+				...unifiedLabels(locale),
+				searchPlaceholder: t("filter.searchLabel"),
+				author: t("filter.topicLabel"),
+				allAuthors: t("filter.topicAll"),
+				searchAuthors: t("filter.topicSearch"),
+				noAuthorMatch: t("filter.topicNoMatch"),
+			}}
 			query={query}
 			onQueryChange={(v) => {
 				setQuery(v);
@@ -115,40 +128,35 @@ export function VideoFilters({
 				cancel();
 				navigate({ q: v });
 			}}
-			searchPlaceholder={t("filter.searchLabel")}
-			tabsLabel={t("filter.typeLabel")}
-			tabs={tabs}
-			activeTab={activeType ?? null}
-			onTabChange={(id) => navigate({ type: id as VideoType | null })}
-			selects={[
-				{
-					id: "memories",
-					label: t("filter.collectionLabel"),
-					value: activeMemories ? "memories" : "",
-					options: [
-						{ value: "", label: t("filter.all") },
-						{ value: "memories", label: t("filter.memoriesLabel") },
-					],
-					onChange: (v) => navigate({ memories: v === "memories" }),
-				},
-				{
-					id: "topic",
-					label: t("filter.topicLabel"),
-					value: activeTopicId != null ? String(activeTopicId) : "",
-					options: [
-						{ value: "", label: t("filter.topicAll") },
-						...topics.map((topic) => ({
-							value: String(topic.id),
-							label:
-								topic.count != null
-									? `${topic.name} (${formatCount(locale, topic.count)})`
-									: topic.name,
-						})),
-					],
-					onChange: (v) =>
-						navigate({ topic: v ? Number.parseInt(v, 10) : null }),
-				},
-			]}
+			types={types}
+			// The listing endpoint takes ONE type — a new pick replaces the old.
+			selectedTypes={activeType ? [activeType] : []}
+			onTypesChange={(ids) =>
+				navigate({
+					type: ids.length
+						? ((ids[ids.length - 1] as VideoType) ?? null)
+						: null,
+				})
+			}
+			extra={{
+				label: t("filter.collectionLabel"),
+				allLabel: t("filter.all"),
+				searchLabel: "",
+				noMatch: "",
+				searchable: false,
+				options: [
+					{ id: "memories", label: t("filter.memoriesLabel") },
+				],
+				selected: activeMemories ? "memories" : null,
+				onChange: (id) => navigate({ memories: id === "memories" }),
+			}}
+			authors={topicOptions}
+			selectedAuthor={
+				activeTopicId != null ? String(activeTopicId) : null
+			}
+			onAuthorChange={(id) =>
+				navigate({ topic: id ? Number.parseInt(id, 10) : null })
+			}
 			resultCount={resultCount}
 		/>
 	);

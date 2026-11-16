@@ -17,6 +17,28 @@
   font-weight: 800;
 }
 
+/* Title + quiet inline link (e.g. "کۆکراوەکان" on the gallery page). */
+.usb__title-row {
+  display: flex;
+  align-items: baseline;
+  gap: 18px;
+  flex-wrap: wrap;
+  margin: 0 0 28px;
+}
+.usb__title-row .usb__title {
+  margin: 0;
+}
+.usb__title-link {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--f-accent);
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+.usb__title-link:hover {
+  opacity: 0.75;
+}
+
 /* ---------- The bar ---------- */
 
 .usb__bar {

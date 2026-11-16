@@ -1,24 +1,9 @@
-import type { TabRailLabels } from "@/components/filters/TabRailFilter";
 import type { UnifiedSearchBarLabels } from "@/components/filters/UnifiedSearchBar";
 
 /**
  * Locale overrides for the filter components. The components ship Sorani
  * defaults (the site's primary language); Kurmanji gets a full translation.
  */
-export function tabRailLabels(
-	locale: string,
-): Partial<TabRailLabels> | undefined {
-	if (locale !== "ku") return undefined;
-	return {
-		all: "Hemû",
-		results: "encam",
-		sort: "Rêzkirin",
-		searchLabel: "Lêgerîn",
-		scrollBack: "Cureyên berê",
-		scrollMore: "Zêdetir cure",
-	};
-}
-
 export function unifiedLabels(
 	locale: string,
 ): Partial<UnifiedSearchBarLabels> | undefined {

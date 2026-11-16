@@ -2,14 +2,13 @@
 
 import { useLocale, useTranslations } from "next-intl";
 import { useCallback, useTransition } from "react";
-import { tabRailLabels } from "@/components/filters/filter-labels";
+import { unifiedLabels } from "@/components/filters/filter-labels";
 import type { FilterOption } from "@/components/filters/filters-shared";
-import { TabRailFilter } from "@/components/filters/TabRailFilter";
+import { UnifiedSearchBar } from "@/components/filters/UnifiedSearchBar";
 import { useFilterSearch } from "@/components/filters/use-filter-search";
 import { Link, useRouter } from "@/i18n/navigation";
 import { buildGalleryHref, parseGalleryTopicId } from "@/lib/gallery-url";
 import type { GalleryCollectionType } from "@/lib/mock/gallery";
-import { formatCount } from "@/lib/platform/format";
 
 type TopicOption = {
 	id: number;
@@ -34,7 +33,11 @@ const TYPE_ORDER: GalleryCollectionType[] = [
 	"SINGLE",
 ];
 
-/** Style A — title + underline search, type tabs, quiet بابەت dropdown. */
+/**
+ * Style D — the writings-page bar: search + جۆر panel (گەلەری / چیرۆکی
+ * وێنەیی / تاک وێنە, single) and a searchable بابەت list with live counts.
+ * The کۆکراوەکان link stays beside the title.
+ */
 export function GalleryFilters({
 	topics,
 	activeType,
@@ -75,22 +78,35 @@ export function GalleryFilters({
 		[router, activeType, activeTopicId, query],
 	);
 
-	const tabs: FilterOption[] = TYPE_ORDER.map((type) => ({
+	const types: FilterOption[] = TYPE_ORDER.map((type) => ({
 		id: type,
 		label: t(`posts.types.${type}`),
 	}));
 
+	const topicOptions: FilterOption[] = topics.map((topic) => ({
+		id: String(topic.id),
+		label: topic.name,
+		count: topic.count,
+	}));
+
 	return (
-		<TabRailFilter
+		<UnifiedSearchBar
 			title={title}
 			titleAs="h1"
 			className={className}
-			labels={tabRailLabels(locale)}
 			titleExtra={
-				<Link href="#gallery-content" className="tr__title-link">
+				<Link href="#gallery-content" className="usb__title-link">
 					{collectionsLabel}
 				</Link>
 			}
+			labels={{
+				...unifiedLabels(locale),
+				searchPlaceholder: t("search.label"),
+				author: t("filter.topicLabel"),
+				allAuthors: t("filter.topicAll"),
+				searchAuthors: t("filter.topicSearch"),
+				noAuthorMatch: t("filter.topicNoMatch"),
+			}}
 			query={query}
 			onQueryChange={(v) => {
 				setQuery(v);
@@ -100,29 +116,17 @@ export function GalleryFilters({
 				cancel();
 				navigate({ q: v });
 			}}
-			searchPlaceholder={t("search.label")}
-			tabsLabel={t("filter.typeLabel")}
-			tabs={tabs}
-			activeTab={activeType ?? null}
-			onTabChange={(id) => navigate({ type: id })}
-			selects={[
-				{
-					id: "topic",
-					label: t("filter.topicLabel"),
-					value: activeTopicId != null ? String(activeTopicId) : "",
-					options: [
-						{ value: "", label: t("filter.topicAll") },
-						...topics.map((topic) => ({
-							value: String(topic.id),
-							label:
-								topic.count != null
-									? `${topic.name} (${formatCount(locale, topic.count)})`
-									: topic.name,
-						})),
-					],
-					onChange: (v) => navigate({ topic: parseGalleryTopicId(v) }),
-				},
-			]}
+			types={types}
+			// One collection type at a time — a new pick replaces the old.
+			selectedTypes={activeType ? [activeType] : []}
+			onTypesChange={(ids) =>
+				navigate({ type: ids.length ? (ids[ids.length - 1] ?? null) : null })
+			}
+			authors={topicOptions}
+			selectedAuthor={
+				activeTopicId != null ? String(activeTopicId) : null
+			}
+			onAuthorChange={(id) => navigate({ topic: parseGalleryTopicId(id) })}
 			resultCount={resultCount}
 		/>
 	);
