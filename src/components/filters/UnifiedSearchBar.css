@@ -1,0 +1,535 @@
+/* Style D — Unified search bar. Needs filters-tokens.css. Works in RTL and LTR. */
+
+.usb {
+  color: var(--f-ink);
+  font-family: inherit;
+}
+.usb *,
+.usb *::before,
+.usb *::after {
+  box-sizing: border-box;
+}
+
+.usb__title {
+  margin: 0 0 28px;
+  font-size: clamp(36px, 5vw, 56px);
+  line-height: 1.2;
+  font-weight: 800;
+}
+
+/* ---------- The bar ---------- */
+
+.usb__bar {
+  position: relative; /* wide panels line up with the bar */
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px;
+  min-height: 76px;
+  padding: 8px;
+  background: var(--f-surface);
+  border: 1px solid var(--f-border-strong);
+  border-radius: var(--f-radius-bar);
+}
+
+.usb__search {
+  position: relative;
+  flex: 1 1 260px;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+}
+
+.usb__search-icon {
+  position: absolute;
+  inset-inline-start: 16px;
+  color: var(--f-ink);
+  pointer-events: none;
+}
+
+.usb__search-input {
+  width: 100%;
+  height: 60px;
+  padding-block: 0;
+  padding-inline: 50px 12px;
+  border: 0;
+  border-radius: var(--f-radius-seg);
+  background: transparent;
+  font: inherit;
+  font-size: 18px;
+  color: var(--f-ink);
+}
+.usb__search-input::placeholder {
+  color: var(--f-muted);
+  opacity: 1;
+}
+.usb__search-input:focus {
+  outline: 2px solid var(--f-accent);
+  outline-offset: -2px;
+}
+
+.usb__divider {
+  flex: none;
+  width: 1px;
+  height: 36px;
+  background: var(--f-line);
+}
+
+/* ---------- Segments (جۆر / نووسەر / ڕیزکردن) ---------- */
+
+.usb__segment {
+  position: relative; /* small panels line up with their segment */
+  flex: 0 1 220px;
+  min-width: 150px;
+}
+.usb__segment--static {
+  position: static;
+}
+.usb__segment--narrow {
+  flex-basis: 190px;
+}
+
+.usb__seg-btn {
+  width: 100%;
+  height: 60px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding-block: 0;
+  padding-inline: 18px;
+  border: 0;
+  border-radius: var(--f-radius-seg);
+  background: transparent;
+  font: inherit;
+  color: var(--f-ink);
+  text-align: start;
+  cursor: pointer;
+}
+.usb__seg-btn:hover {
+  background: var(--f-hover-soft);
+}
+.usb__seg-btn[aria-expanded='true'] {
+  background: var(--f-hover);
+}
+.usb__seg-btn:focus-visible {
+  outline: 2px solid var(--f-accent);
+  outline-offset: -2px;
+}
+
+.usb__seg-text {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+.usb__seg-label {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--f-muted);
+}
+.usb__seg-value {
+  font-size: 15px;
+  font-weight: 700;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.usb__seg-chevron {
+  flex: none;
+  transition: transform 0.2s ease;
+}
+.usb__seg-btn[aria-expanded='true'] .usb__seg-chevron {
+  transform: rotate(180deg);
+}
+
+.usb__submit {
+  flex: none;
+  width: 60px;
+  height: 60px;
+  display: grid;
+  place-items: center;
+  padding: 0;
+  border: 0;
+  border-radius: var(--f-radius-seg);
+  background: var(--f-accent);
+  color: var(--f-accent-ink);
+  cursor: pointer;
+}
+.usb__submit:hover {
+  background: var(--f-accent-hover);
+}
+.usb__submit:focus-visible {
+  outline: 2px solid var(--f-accent);
+  outline-offset: 2px;
+}
+
+/* ---------- Panels ---------- */
+
+.usb__panel {
+  position: absolute;
+  top: calc(100% + 18px);
+  inset-inline-start: 0;
+  z-index: 50;
+  width: 340px;
+  max-width: calc(100vw - 32px);
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding: 18px;
+  background: var(--f-surface);
+  border: 1px solid var(--f-line);
+  border-radius: var(--f-radius-panel);
+  box-shadow: var(--f-shadow);
+}
+
+/* The wide type panel lines up with the far end of the bar. */
+.usb__panel--types {
+  top: calc(100% + 10px);
+  inset-inline-start: auto;
+  inset-inline-end: 0;
+  width: min(720px, calc(100vw - 32px));
+  gap: 16px;
+  padding: 22px 24px;
+}
+
+.usb__panel--sort {
+  width: 240px;
+  padding: 10px 16px;
+}
+
+/* Title + close button: only shown when panels are bottom sheets. */
+.usb__sheet-head {
+  display: none;
+}
+.usb__sheet-title {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 800;
+}
+.usb__icon-btn {
+  width: 44px;
+  height: 44px;
+  display: grid;
+  place-items: center;
+  padding: 0;
+  margin-inline-end: -10px;
+  border: 0;
+  border-radius: 999px;
+  background: transparent;
+  color: var(--f-ink);
+  cursor: pointer;
+}
+.usb__icon-btn:hover {
+  background: var(--f-hover);
+}
+.usb__icon-btn:focus-visible {
+  outline: 2px solid var(--f-accent);
+  outline-offset: 2px;
+}
+
+.usb__field {
+  position: relative;
+}
+.usb__field-icon {
+  position: absolute;
+  inset-inline-start: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--f-muted);
+  pointer-events: none;
+}
+.usb__field-input {
+  width: 100%;
+  height: 44px;
+  padding-block: 0;
+  padding-inline: 42px 14px;
+  border: 1px solid var(--f-border);
+  border-radius: var(--f-radius-sm);
+  background: #fff;
+  font: inherit;
+  font-size: 15px;
+  color: var(--f-ink);
+}
+.usb__field-input::placeholder {
+  color: var(--f-muted);
+  opacity: 1;
+}
+.usb__field-input:focus {
+  outline: 2px solid var(--f-accent);
+  outline-offset: 1px;
+  border-color: var(--f-accent);
+}
+
+.usb__groups {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  gap: 12px 24px;
+}
+
+.usb__group {
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+/* No groups given: one list spread over columns. */
+.usb__group--flat {
+  grid-column: 1 / -1;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  column-gap: 24px;
+}
+
+.usb__group-title {
+  padding: 0 0 4px;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--f-muted);
+}
+
+.usb__check,
+.usb__radio {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 40px;
+  padding-inline: 6px;
+  margin-inline: -6px;
+  border-radius: 6px;
+  font-size: 15px;
+  cursor: pointer;
+}
+.usb__check:hover,
+.usb__radio:hover {
+  background: var(--f-hover-soft);
+}
+.usb__check input,
+.usb__radio input {
+  flex: none;
+  width: 18px;
+  height: 18px;
+  margin: 0;
+  accent-color: var(--f-accent);
+  cursor: pointer;
+}
+.usb__check-label {
+  flex: 1;
+  min-width: 0;
+}
+.usb__count {
+  font-size: 13px;
+  color: var(--f-muted);
+}
+
+.usb__list {
+  display: flex;
+  flex-direction: column;
+  max-height: 320px;
+  overflow-y: auto;
+  padding-inline: 6px;
+  margin-inline: -6px;
+}
+
+.usb__empty {
+  margin: 4px 0;
+  font-size: 15px;
+  color: var(--f-muted);
+}
+
+.usb__panel-foot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding-top: 14px;
+  border-top: 1px solid var(--f-line);
+}
+
+.usb__link {
+  height: 44px;
+  padding: 0 4px;
+  border: 0;
+  background: transparent;
+  font: inherit;
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--f-accent);
+  text-decoration: underline;
+  text-underline-offset: 4px;
+  cursor: pointer;
+}
+.usb__link--small {
+  height: 36px;
+  font-size: 14px;
+}
+.usb__link:hover {
+  color: var(--f-accent-hover);
+}
+
+.usb__primary {
+  height: 44px;
+  padding-inline: 22px;
+  border: 0;
+  border-radius: var(--f-radius-sm);
+  background: var(--f-accent);
+  color: var(--f-accent-ink);
+  font: inherit;
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+}
+.usb__primary:hover {
+  background: var(--f-accent-hover);
+}
+
+.usb__link:focus-visible,
+.usb__primary:focus-visible,
+.usb__tag:focus-visible {
+  outline: 2px solid var(--f-accent);
+  outline-offset: 2px;
+}
+
+.usb__backdrop {
+  display: none;
+}
+
+/* ---------- Count + active filter tags ---------- */
+
+.usb__summary {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 10px;
+  min-height: 44px;
+  margin-top: 18px;
+}
+
+.usb__result {
+  margin: 0;
+  margin-inline-end: 8px;
+  font-size: 15px;
+  color: var(--f-muted);
+}
+.usb__result strong {
+  color: var(--f-ink);
+  font-weight: 700;
+}
+
+.usb__tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 36px;
+  padding-inline: 12px 8px;
+  border: 0;
+  border-radius: var(--f-radius-sm);
+  background: var(--f-accent-soft);
+  color: var(--f-accent-soft-ink);
+  font: inherit;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+}
+.usb__tag:hover {
+  background: var(--f-accent-soft-hover);
+}
+
+@media (pointer: coarse) {
+  .usb__tag,
+  .usb__link--small {
+    height: 44px;
+  }
+}
+
+/* ---------- Medium screens: search on its own line ---------- */
+
+@media (max-width: 960px) {
+  .usb__search {
+    flex-basis: 100%;
+  }
+  .usb__divider--first {
+    display: none;
+  }
+  .usb__segment,
+  .usb__segment--narrow {
+    flex: 1 1 0;
+  }
+}
+
+/* ---------- Phones: panels become bottom sheets ---------- */
+
+@media (max-width: 720px) {
+  .usb__bar {
+    padding: 6px;
+    gap: 0;
+  }
+  .usb__submit {
+    display: none; /* the keyboard's search key submits */
+  }
+  .usb__segment,
+  .usb__segment--narrow {
+    min-width: 0;
+  }
+  .usb__seg-btn {
+    height: 56px;
+    padding-inline: 12px;
+    gap: 6px;
+  }
+
+  .usb__backdrop {
+    display: block;
+    position: fixed;
+    inset: 0;
+    z-index: 999;
+    background: var(--f-backdrop);
+  }
+
+  .usb__panel,
+  .usb__panel--types,
+  .usb__panel--sort {
+    position: fixed;
+    top: auto;
+    bottom: 0;
+    inset-inline: 0;
+    z-index: 1000;
+    width: auto;
+    max-width: none;
+    max-height: 82vh;
+    overflow-y: auto;
+    padding: 12px 20px calc(20px + env(safe-area-inset-bottom));
+    border-radius: 20px 20px 0 0;
+  }
+
+  .usb__sheet-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    min-height: 48px;
+    border-bottom: 1px solid var(--f-line);
+    margin-inline: -20px;
+    padding-inline: 20px;
+  }
+
+  .usb__list {
+    max-height: none;
+  }
+
+  .usb__panel-foot {
+    position: sticky;
+    bottom: calc(-20px - env(safe-area-inset-bottom));
+    margin-inline: -20px;
+    padding: 12px 20px 20px;
+    background: var(--f-surface);
+  }
+  .usb__primary {
+    flex: 1;
+    height: 50px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .usb__seg-chevron {
+    transition: none;
+  }
+}

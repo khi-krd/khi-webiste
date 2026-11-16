@@ -1,12 +1,11 @@
 import { getTranslations } from "next-intl/server";
 import { AudioCard, type AudioCardProps } from "@/components/audio/audio-card";
-import { AudioFilterBar } from "@/components/audio/audio-filter-bar";
+import { AudioFilters } from "@/components/audio/audio-filters";
 import { AudioPagination } from "@/components/audio/audio-pagination";
 import {
 	ScrollReveal,
 	ScrollRevealItem,
 } from "@/components/motion/scroll-reveal";
-import { ResultCount } from "@/components/ui/result-count";
 import { homeInsetClass } from "@/lib/layout";
 import { cn } from "@/lib/utils";
 import type { ResolvedAudioCard, TrackState } from "@/types/audio";
@@ -21,9 +20,6 @@ type AudioShellProps = {
 	cards: ResolvedAudioCard[];
 	currentPage: number;
 	totalPages: number;
-	soundTypes: string[];
-	/** Managed-vocabulary labels keyed by the canonical CKB name. */
-	soundTypeLabels?: Record<string, string>;
 	topics: TopicOption[];
 	activeType?: string | null;
 	activeState?: TrackState | null;
@@ -40,8 +36,6 @@ export async function AudioShell({
 	cards,
 	currentPage,
 	totalPages,
-	soundTypes,
-	soundTypeLabels,
 	topics,
 	activeType,
 	activeState,
@@ -73,18 +67,17 @@ export async function AudioShell({
 			aria-label={t("grid.allTitle")}
 		>
 			<div className={homeInsetClass}>
-				<AudioFilterBar
-					soundTypes={soundTypes}
-					soundTypeLabels={soundTypeLabels}
+				<AudioFilters
 					topics={topics}
 					activeType={activeType}
 					activeState={activeState}
 					activeTopicId={activeTopicId}
 					activeTag={activeTag}
 					activeQuery={activeQuery}
+					resultCount={resultCount ?? 0}
+					title={t("grid.allTitle")}
 					scrollTargetId={id}
 				/>
-				<ResultCount count={resultCount} />
 
 				{isEmpty ? (
 					<div className="mt-8 border border-border bg-surface px-6 py-12 text-center sm:mt-10 sm:px-10">

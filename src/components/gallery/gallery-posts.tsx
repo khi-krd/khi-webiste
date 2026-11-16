@@ -1,10 +1,9 @@
-import { GalleryFilterBar } from "@/components/gallery/gallery-filter-bar";
+import { GalleryFilters } from "@/components/gallery/gallery-filters";
 import { GalleryPagination } from "@/components/gallery/gallery-pagination";
 import {
 	GalleryPrintBoard,
 	type GalleryPrintPost,
 } from "@/components/gallery/gallery-print-board";
-import { ResultCount } from "@/components/ui/result-count";
 import { homeInsetClass } from "@/lib/layout";
 import { cn } from "@/lib/utils";
 
@@ -60,21 +59,17 @@ export function GalleryPosts({
 			className="gallery-board scroll-mt-26 sm:scroll-mt-30"
 		>
 			<div className={cn("pb-16 lg:pb-24", homeInsetClass)}>
-				<header className="flex flex-wrap items-baseline gap-x-4 gap-y-1 pt-10 lg:pt-14">
-					<h1 className="font-heading text-h1 font-semibold">{heading}</h1>
-					<span className="text-small text-muted">{title}</span>
-				</header>
-
-				<div className="mt-8">
-					<GalleryFilterBar
+				<div className="pt-10 lg:pt-14">
+					<GalleryFilters
 						topics={topics}
 						activeQuery={activeQuery}
 						activeType={activeType}
 						activeTopicId={activeTopicId}
+						resultCount={resultCount ?? 0}
+						title={heading}
+						collectionsLabel={title}
 					/>
 				</div>
-
-				<ResultCount count={resultCount} />
 
 				{posts.length === 0 ? (
 					<p className="mt-10 max-w-xl text-body text-muted">

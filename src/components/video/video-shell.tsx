@@ -4,9 +4,8 @@ import {
 	ScrollRevealBlock,
 	ScrollRevealItem,
 } from "@/components/motion/scroll-reveal";
-import { ResultCount } from "@/components/ui/result-count";
 import { VideoCard, type VideoCardProps } from "@/components/video/video-card";
-import { VideoFilterBar } from "@/components/video/video-filter-bar";
+import { VideoFilters } from "@/components/video/video-filters";
 import { VideoPagination } from "@/components/video/video-pagination";
 import { homeInsetClass } from "@/lib/layout";
 import { cn } from "@/lib/utils";
@@ -119,16 +118,18 @@ export async function VideoShell({
 		>
 			<div className={homeInsetClass}>
 				{showFilters ? (
-					<VideoFilterBar
+					<VideoFilters
 						topics={topics}
 						activeType={activeType}
 						activeTopicId={activeTopicId}
 						activeMemories={activeMemories}
 						activeQuery={activeQuery}
+						resultCount={resultCount ?? 0}
+						title={title}
+						basePath={basePath}
 						scrollTargetId={id}
 					/>
 				) : null}
-				<ResultCount count={resultCount} />
 
 				{isEmpty ? (
 					// The dead timecode — the projector with no reel.

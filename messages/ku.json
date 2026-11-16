@@ -658,6 +658,12 @@
 			"language": "Ziman",
 			"heritage": "Mîrat",
 			"society": "Civak"
+		},
+		"typeGroups": {
+			"lit": "Wêje",
+			"sci": "Zanist û dîrok",
+			"cul": "Çand û civak",
+			"art": "Huner û muzîk"
 		}
 	},
 	"Video": {

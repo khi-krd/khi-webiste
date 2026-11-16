@@ -3,12 +3,11 @@ import {
 	ScrollRevealBlock,
 	ScrollRevealItem,
 } from "@/components/motion/scroll-reveal";
-import { ResultCount } from "@/components/ui/result-count";
 import {
 	WritingGridCard,
 	type WritingGridCardProps,
 } from "@/components/writing/writing-grid-card";
-import { WritingsFilterBar } from "@/components/writing/writings-filter-bar";
+import { WritingsFilters } from "@/components/writing/writings-filters";
 import { WritingsPagination } from "@/components/writing/writings-pagination";
 import { homeInsetClass } from "@/lib/layout";
 import { cn } from "@/lib/utils";
@@ -73,16 +72,7 @@ export function WritingsShell({
 			aria-labelledby="writings-grid-heading"
 		>
 			<div className={homeInsetClass}>
-				<ScrollRevealBlock>
-					<h2
-						id="writings-grid-heading"
-						className="font-heading text-display font-bold leading-[1.05] text-balance"
-					>
-						{title}
-					</h2>
-				</ScrollRevealBlock>
-
-				<WritingsFilterBar
+				<WritingsFilters
 					categorySlug={categorySlug}
 					activeGenre={activeGenre}
 					activeQuery={activeQuery}
@@ -92,10 +82,11 @@ export function WritingsShell({
 					activeSort={activeSort}
 					genreLabels={genreLabels}
 					writers={writers}
+					resultCount={resultCount ?? 0}
+					title={title}
 					scrollTargetId={id}
 					className="mt-8 sm:mt-10"
 				/>
-				<ResultCount count={resultCount} />
 
 				{isEmpty ? (
 					<div className="mt-8 border border-border bg-surface px-6 py-12 text-center sm:px-10 sm:mt-10">

@@ -1,0 +1,48 @@
+import type { TabRailLabels } from "@/components/filters/TabRailFilter";
+import type { UnifiedSearchBarLabels } from "@/components/filters/UnifiedSearchBar";
+
+/**
+ * Locale overrides for the filter components. The components ship Sorani
+ * defaults (the site's primary language); Kurmanji gets a full translation.
+ */
+export function tabRailLabels(
+	locale: string,
+): Partial<TabRailLabels> | undefined {
+	if (locale !== "ku") return undefined;
+	return {
+		all: "Hemû",
+		results: "encam",
+		sort: "Rêzkirin",
+		searchLabel: "Lêgerîn",
+		scrollBack: "Cureyên berê",
+		scrollMore: "Zêdetir cure",
+	};
+}
+
+export function unifiedLabels(
+	locale: string,
+): Partial<UnifiedSearchBarLabels> | undefined {
+	if (locale !== "ku") return undefined;
+	return {
+		searchLabel: "Lêgerîn di nivîsan de",
+		searchPlaceholder: "Lêgerîn bi nav, nivîskar an peyvê…",
+		search: "Lêgerîn",
+		type: "Cure",
+		allTypes: "Hemû cure",
+		typesCount: (n) => `${n} cure`,
+		searchTypes: "Di cureyan de bigere…",
+		noTypeMatch: "Tu cure nehat dîtin",
+		otherTypes: "Cureyên din",
+		author: "Nivîskar",
+		allAuthors: "Hemû nivîskar",
+		searchAuthors: "Ji nivîskaran re bigere…",
+		noAuthorMatch: "Tu nivîskar nehat dîtin",
+		sort: "Rêzkirin",
+		showResults: (n) => `${n} encam nîşan bide`,
+		results: "encam",
+		remove: (label) => `Jêbirin ${label}`,
+		clear: "Paqij bike",
+		clearAll: "Hemûyan paqij bike",
+		close: "Girtin",
+	};
+}
