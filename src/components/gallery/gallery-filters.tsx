@@ -104,7 +104,7 @@ export function GalleryFilters({
 				searchPlaceholder: t("search.label"),
 				allTypes: t("filter.all"),
 				author: t("filter.topicLabel"),
-				allAuthors: t("filter.topicAll"),
+				allAuthors: t("filter.all"),
 				noAuthorMatch: t("filter.topicNoMatch"),
 			}}
 			query={query}

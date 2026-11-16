@@ -115,14 +115,14 @@ export function AudioFilters({
 				...unifiedLabels(locale),
 				searchPlaceholder: t("filter.searchLabel"),
 				type: t("filter.stateLabel"),
-				allTypes: t("state.all"),
+				allTypes: t("filter.allShort"),
 				noTypeMatch: t("filter.stateNoMatch"),
 				otherTypes: t("filter.stateOther"),
 				noTypesSelected: t("filter.stateNoneSelected"),
 				typesSelected: (n) => t("filter.stateSelected", { count: n }),
 				typesCount: (n) => t("filter.stateCount", { count: n }),
 				author: t("filter.topicLabel"),
-				allAuthors: t("filter.topicAll"),
+				allAuthors: t("filter.allShort"),
 				noAuthorMatch: t("filter.topicNoMatch"),
 			}}
 			query={query}

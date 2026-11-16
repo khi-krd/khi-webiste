@@ -403,7 +403,8 @@
 			"stateSelected": "{count} format hatin hilbijartin",
 			"stateCount": "{count} format",
 			"topicSearch": "Di mijaran de bigere…",
-			"topicNoMatch": "Tu mijar nehat dîtin"
+			"topicNoMatch": "Tu mijar nehat dîtin",
+			"allShort": "Hemû"
 		},
 		"state": {
 			"all": "Hemû format",

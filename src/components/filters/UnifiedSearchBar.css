@@ -137,12 +137,23 @@
   color: var(--f-muted);
   cursor: pointer;
   white-space: nowrap;
+  transition:
+    color 0.18s ease,
+    background-color 0.18s ease,
+    border-color 0.18s ease,
+    transform 0.15s ease;
 }
 .usb__pill:hover {
   border-color: var(--f-accent);
   color: var(--f-accent);
+  background: color-mix(in srgb, var(--f-accent) 8%, transparent);
+  transform: translateY(-1px);
 }
-.usb__pill--active {
+.usb__pill:active {
+  transform: translateY(0);
+}
+.usb__pill--active,
+.usb__pill--active:hover {
   border-color: var(--f-accent);
   background: var(--f-accent);
   color: #fff;

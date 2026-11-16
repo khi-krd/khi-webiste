@@ -403,7 +403,8 @@
 			"stateSelected": "{count} شێواز هەڵبژێردراوە",
 			"stateCount": "{count} شێواز",
 			"topicSearch": "گەڕان لە بابەتەکان…",
-			"topicNoMatch": "هیچ بابەتێک نەدۆزرایەوە"
+			"topicNoMatch": "هیچ بابەتێک نەدۆزرایەوە",
+			"allShort": "هەموو"
 		},
 		"state": {
 			"all": "هەموو شێوازەکان",
