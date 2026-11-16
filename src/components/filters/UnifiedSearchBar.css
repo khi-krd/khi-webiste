@@ -122,6 +122,7 @@
   flex-wrap: wrap;
 }
 .usb__pill {
+  position: relative;
   height: 38px;
   display: inline-flex;
   align-items: center;
@@ -139,15 +140,32 @@
   white-space: nowrap;
   transition:
     color 0.18s ease,
-    background-color 0.18s ease,
     border-color 0.18s ease,
     transform 0.15s ease;
+}
+/* Active/hover state is a drawn bottom line, not a green fill. */
+.usb__pill::after {
+  content: "";
+  position: absolute;
+  inset-inline: 10px;
+  bottom: 4px;
+  height: 2px;
+  background: var(--f-accent);
+  transform: scaleX(0);
+  transform-origin: center;
+  opacity: 0;
+  transition:
+    transform 0.22s ease,
+    opacity 0.18s ease;
 }
 .usb__pill:hover {
   border-color: var(--f-accent);
   color: var(--f-accent);
-  background: color-mix(in srgb, var(--f-accent) 8%, transparent);
   transform: translateY(-1px);
+}
+.usb__pill:hover::after {
+  transform: scaleX(1);
+  opacity: 0.4;
 }
 .usb__pill:active {
   transform: translateY(0);
@@ -155,8 +173,12 @@
 .usb__pill--active,
 .usb__pill--active:hover {
   border-color: var(--f-accent);
-  background: var(--f-accent);
-  color: #fff;
+  background: transparent;
+  color: var(--f-accent);
+}
+.usb__pill--active::after {
+  transform: scaleX(1);
+  opacity: 1;
 }
 .usb__pill:focus-visible {
   outline: 2px solid var(--f-accent);
@@ -169,6 +191,7 @@
 }
 
 .usb__seg-btn {
+  position: relative;
   width: 100%;
   height: 60px;
   display: flex;
@@ -184,11 +207,29 @@
   text-align: start;
   cursor: pointer;
 }
-.usb__seg-btn:hover {
-  background: var(--f-hover-soft);
+/* The accent "bottom line" — draws in on hover, full strength while the
+   panel is open. No background fills. */
+.usb__seg-btn::after {
+  content: "";
+  position: absolute;
+  inset-inline: 12px;
+  bottom: 7px;
+  height: 2px;
+  background: var(--f-accent);
+  transform: scaleX(0);
+  transform-origin: center;
+  opacity: 0;
+  transition:
+    transform 0.22s ease,
+    opacity 0.18s ease;
 }
-.usb__seg-btn[aria-expanded='true'] {
-  background: var(--f-hover);
+.usb__seg-btn:hover::after {
+  transform: scaleX(1);
+  opacity: 0.35;
+}
+.usb__seg-btn[aria-expanded='true']::after {
+  transform: scaleX(1);
+  opacity: 1;
 }
 .usb__seg-btn:focus-visible {
   outline: 2px solid var(--f-accent);
