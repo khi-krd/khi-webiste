@@ -14,7 +14,7 @@ type WritingsPaginationProps = {
 	currentPage: number;
 	totalPages: number;
 	categorySlug?: WritingCategorySlug | null;
-	activeGenre?: BookGenre | null;
+	activeGenres?: BookGenre[];
 	activeQuery?: string | null;
 	activeWriter?: string | null;
 	activeTag?: string | null;
@@ -31,7 +31,7 @@ export function WritingsPagination({
 	currentPage,
 	totalPages,
 	categorySlug,
-	activeGenre,
+	activeGenres,
 	activeQuery,
 	activeWriter,
 	activeTag,
@@ -52,7 +52,7 @@ export function WritingsPagination({
 			router.replace(
 				buildWritingsHref({
 					category: categorySlug,
-					genre: activeGenre,
+					genre: activeGenres,
 					q: activeQuery,
 					writer: activeWriter,
 					tag: activeTag,
@@ -74,7 +74,7 @@ export function WritingsPagination({
 			createHref={(page) =>
 				buildWritingsHref({
 					category: categorySlug,
-					genre: activeGenre,
+					genre: activeGenres,
 					q: activeQuery,
 					writer: activeWriter,
 					tag: activeTag,

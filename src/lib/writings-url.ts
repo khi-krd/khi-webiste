@@ -8,7 +8,7 @@ import type { BookGenre } from "@/types/writing";
 
 export type WritingsUrlParams = {
 	category?: WritingCategorySlug | string | null;
-	genre?: BookGenre | string | null;
+	genre?: BookGenre | BookGenre[] | string | string[] | null;
 	q?: string | null;
 	writer?: string | null;
 	tag?: string | null;
@@ -37,9 +37,12 @@ export function buildWritingsHref({
 	const params = new URLSearchParams();
 	const path = basePath(category);
 
-	const genreSlug = normalizeGenreSlug(genre);
-	if (genreSlug) {
-		params.set("genre", genreSlug);
+	const genreList = Array.isArray(genre) ? genre : genre ? [genre] : [];
+	const genreSlugs = genreList
+		.map((g) => normalizeGenreSlug(g))
+		.filter((s): s is BookGenre => s !== null);
+	if (genreSlugs.length > 0) {
+		params.set("genre", genreSlugs.join(","));
 	}
 	if (q?.trim()) {
 		params.set("q", q.trim());

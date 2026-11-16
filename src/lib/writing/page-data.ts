@@ -1,7 +1,8 @@
 import {
+	getAllWritings,
 	getWritingsListing,
 	getWritingWriters,
-	parseWritingsGenre,
+	parseWritingsGenres,
 } from "@/lib/api/writings";
 import {
 	buildWritingGridCards,
@@ -13,6 +14,7 @@ import {
 	type WritingCategorySlug,
 } from "@/lib/writing/categories";
 import { getWritingGenreLabelSets } from "@/lib/writing/genre-labels";
+import { filterWritings } from "@/lib/writing/filter";
 import { parseWritingsSort } from "@/lib/writings-url";
 
 type TranslateFn = (
@@ -42,7 +44,7 @@ export async function loadWritingsPageData(
 		searchParams?: WritingsPageSearchParams;
 	},
 ) {
-	const activeGenre = parseWritingsGenre(searchParams.genre);
+	const activeGenres = parseWritingsGenres(searchParams.genre);
 	const activeQuery = searchParams.q?.trim() || null;
 	// Blank terms would be a 400 upstream, so they never become active filters.
 	const activeWriter = searchParams.writer?.trim() || null;
@@ -62,7 +64,7 @@ export async function loadWritingsPageData(
 		getWritingGenreLabelSets(locale, t),
 		getWritingsListing(locale, {
 			categorySlug,
-			genre: activeGenre,
+			genre: activeGenres,
 			query: activeQuery,
 			writer: activeWriter,
 			tag: activeTag,
@@ -79,8 +81,20 @@ export async function loadWritingsPageData(
 		? categoryLabels[categorySlug]
 		: t("grid.allTitle");
 
+	// Per-genre counts for the جۆر panel — real numbers from the same cached
+	// catalogue the listing uses, scoped to the current category only (search
+	// terms don't shrink the counts, matching how topic counts behave).
+	const genreCounts: Record<string, number> = {};
+	for (const item of filterWritings(await getAllWritings(locale), {
+		categorySlug,
+	})) {
+		for (const slug of item.genres) {
+			genreCounts[slug] = (genreCounts[slug] ?? 0) + 1;
+		}
+	}
+
 	const hasFilters = Boolean(
-		activeGenre ||
+		activeGenres.length > 0 ||
 			activeQuery ||
 			activeWriter ||
 			activeTag ||
@@ -89,7 +103,8 @@ export async function loadWritingsPageData(
 	);
 
 	return {
-		activeGenre,
+		activeGenres,
+		genreCounts,
 		activeQuery,
 		activeWriter,
 		activeTag,

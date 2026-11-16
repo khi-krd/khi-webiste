@@ -35,6 +35,9 @@ export interface UnifiedSearchBarLabels {
 	allTypes: string;
 	/** Segment text when 3+ types are chosen, e.g. "٣ جۆر". */
 	typesCount: (n: string) => string;
+	/** Footer status when nothing / n types are chosen. */
+	noTypesSelected: string;
+	typesSelected: (n: string) => string;
 	searchTypes: string;
 	noTypeMatch: string;
 	otherTypes: string;
@@ -58,6 +61,8 @@ export const UNIFIED_SEARCH_DEFAULT_LABELS: UnifiedSearchBarLabels = {
 	type: "جۆر",
 	allTypes: "هەموو جۆرەکان",
 	typesCount: (n) => `${n} جۆر`,
+	noTypesSelected: "هیچ جۆرێک هەڵنەبژێردراوە",
+	typesSelected: (n) => `${n} جۆر هەڵبژێردراوە`,
 	searchTypes: "گەڕان لە جۆرەکان…",
 	noTypeMatch: "هیچ جۆرێک نەدۆزرایەوە",
 	otherTypes: "جۆری تر",
@@ -315,12 +320,21 @@ export function UnifiedSearchBar({
 					anchor="bar"
 					panelClassName="usb__panel--types"
 				>
-					<SearchField
-						id={`${uid}-tq`}
-						label={L.searchTypes}
-						value={typeQuery}
-						onChange={setTypeQuery}
-					/>
+					<div className="usb__panel-head">
+						<SearchField
+							id={`${uid}-tq`}
+							label={L.searchTypes}
+							value={typeQuery}
+							onChange={setTypeQuery}
+						/>
+						<button
+							type="button"
+							className="usb__link"
+							onClick={() => onTypesChange([])}
+						>
+							{L.allTypes}
+						</button>
+					</div>
 					{typeSections.length === 0 ? (
 						<p className="usb__empty">{L.noTypeMatch}</p>
 					) : (
@@ -353,13 +367,11 @@ export function UnifiedSearchBar({
 						</div>
 					)}
 					<div className="usb__panel-foot">
-						<button
-							type="button"
-							className="usb__link"
-							onClick={() => onTypesChange([])}
-						>
-							{L.clear}
-						</button>
+						<span className="usb__status">
+							{selected.size
+								? L.typesSelected(num(selected.size))
+								: L.noTypesSelected}
+						</span>
 						<button
 							type="button"
 							className="usb__primary"

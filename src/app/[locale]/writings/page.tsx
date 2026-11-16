@@ -59,13 +59,14 @@ export default async function WritingsPage({
 				currentPage={pageData.listing.currentPage}
 				totalPages={pageData.listing.totalPages}
 				resultCount={pageData.listing.totalElements}
-				activeGenre={pageData.activeGenre}
+				activeGenres={pageData.activeGenres}
 				activeQuery={pageData.activeQuery}
 				activeWriter={pageData.activeWriter}
 				activeTag={pageData.activeTag}
 				activeKeyword={pageData.activeKeyword}
 				activeSort={pageData.activeSort}
 				genreLabels={pageData.genreLabels}
+				genreCounts={pageData.genreCounts}
 				writers={pageData.writers}
 				noResultsMessage={pageData.noResultsMessage}
 				paginationLabel={t("pagination.label")}

@@ -48,13 +48,14 @@ const GENRE_GROUP: Record<string, (typeof TYPE_GROUP_ORDER)[number]> = {
 
 type WritingsFiltersProps = {
 	categorySlug?: WritingCategorySlug | null;
-	activeGenre?: BookGenre | null;
+	activeGenres?: BookGenre[];
 	activeQuery?: string | null;
 	activeWriter?: string | null;
 	activeTag?: string | null;
 	activeKeyword?: string | null;
 	activeSort?: WritingsSort;
 	genreLabels: Record<BookGenre, string>;
+	genreCounts?: Record<string, number>;
 	writers?: string[];
 	resultCount: number;
 	title: string;
@@ -65,17 +66,18 @@ type WritingsFiltersProps = {
 /**
  * Style D — one bar: search + جۆر / نووسەر / ڕیزکردن panels, active filters
  * as removable tags below. Replaces the old genre-chip rail + writer select.
- * The backend accepts ONE genre, so a new pick replaces the previous one.
+ * Genres are multi-select: ?genre=A,B unions server-side in filterWritings.
  */
 export function WritingsFilters({
 	categorySlug,
-	activeGenre,
+	activeGenres,
 	activeQuery,
 	activeWriter,
 	activeTag,
 	activeKeyword,
 	activeSort = "newest",
 	genreLabels,
+	genreCounts,
 	writers = [],
 	resultCount,
 	title,
@@ -92,7 +94,7 @@ export function WritingsFilters({
 	const navigate = useCallback(
 		(
 			opts: {
-				genre?: BookGenre | null;
+				genre?: BookGenre[] | null;
 				writer?: string | null;
 				sort?: WritingsSort;
 				q?: string;
@@ -101,7 +103,7 @@ export function WritingsFilters({
 		) => {
 			const href = buildWritingsHref({
 				category: categorySlug,
-				genre: "genre" in opts ? opts.genre : activeGenre,
+				genre: "genre" in opts ? opts.genre : activeGenres,
 				writer: "writer" in opts ? opts.writer : activeWriter,
 				sort: opts.sort ?? activeSort,
 				tag: activeTag,
@@ -124,7 +126,7 @@ export function WritingsFilters({
 			router,
 			searchParams,
 			categorySlug,
-			activeGenre,
+			activeGenres,
 			activeWriter,
 			activeSort,
 			activeTag,
@@ -139,6 +141,7 @@ export function WritingsFilters({
 			id: slug,
 			label,
 			group: GENRE_GROUP[slug],
+			count: genreCounts?.[slug],
 		}))
 		.sort((a, b) =>
 			a.label.localeCompare(b.label, locale === "ckb" ? "ckb" : "ku"),
@@ -171,14 +174,9 @@ export function WritingsFilters({
 			}}
 			types={types}
 			typeGroups={typeGroups}
-			// The listing endpoint takes a single genre — keep the last pick.
-			selectedTypes={activeGenre ? [activeGenre] : []}
+			selectedTypes={activeGenres ?? []}
 			onTypesChange={(ids) =>
-				navigate({
-					genre: ids.length
-						? ((ids[ids.length - 1] as BookGenre) ?? null)
-						: null,
-				})
+				navigate({ genre: (ids as BookGenre[]).length ? (ids as BookGenre[]) : null })
 			}
 			authors={authors.length ? authors : undefined}
 			selectedAuthor={activeWriter ?? null}

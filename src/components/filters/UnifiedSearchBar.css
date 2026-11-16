@@ -228,6 +228,28 @@
   outline-offset: 2px;
 }
 
+/* Header row inside the types panel: wide search, "هەموو جۆرەکان" reset at
+   the far (logical) end. */
+.usb__panel-head {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+.usb__panel-head .usb__field {
+  flex: 1;
+}
+.usb__panel-head .usb__link {
+  flex-shrink: 0;
+  white-space: nowrap;
+}
+
+/* Selection status in the types panel footer ("٢ جۆر هەڵبژێردراوە"). */
+.usb__status {
+  font-size: 13px;
+  color: var(--f-muted);
+  align-self: center;
+}
+
 .usb__field {
   position: relative;
 }

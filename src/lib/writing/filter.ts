@@ -8,7 +8,7 @@ export type WritingsSort = "newest" | "title";
 
 export type WritingsFilterOptions = {
 	categorySlug?: WritingCategorySlug | null;
-	genre?: BookGenre | null;
+	genre?: BookGenre | BookGenre[] | null;
 	query?: string | null;
 	writer?: string | null;
 	tag?: string | null;
@@ -34,9 +34,13 @@ export function filterWritings(
 	}
 
 	// Any slug narrows — genres are editor-managed rows, so validity can't be a
-	// static check. A slug no book carries honestly filters to zero results.
-	if (genre) {
-		result = result.filter((item) => item.genres.includes(genre));
+	// static check. Multiple slugs union (OR): a book carrying any of them
+	// matches. A slug no book carries honestly filters to zero results.
+	const genres = Array.isArray(genre) ? genre : genre ? [genre] : [];
+	if (genres.length > 0) {
+		result = result.filter((item) =>
+			genres.some((g) => item.genres.includes(g)),
+		);
 	}
 
 	const trimmedWriter = writer?.trim().toLowerCase();

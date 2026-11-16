@@ -22,13 +22,14 @@ type WritingsShellProps = {
 	cards: WritingGridCardProps[];
 	currentPage: number;
 	totalPages: number;
-	activeGenre?: BookGenre | null;
+	activeGenres?: BookGenre[];
 	activeQuery?: string | null;
 	activeWriter?: string | null;
 	activeTag?: string | null;
 	activeKeyword?: string | null;
 	activeSort?: WritingsSort;
 	genreLabels: Record<BookGenre, string>;
+	genreCounts?: Record<string, number>;
 	writers?: string[];
 	noResultsMessage: string;
 	paginationLabel: string;
@@ -45,13 +46,14 @@ export function WritingsShell({
 	cards,
 	currentPage,
 	totalPages,
-	activeGenre,
+	activeGenres,
 	activeQuery,
 	activeWriter,
 	activeTag,
 	activeKeyword,
 	activeSort,
 	genreLabels,
+	genreCounts,
 	writers = [],
 	noResultsMessage,
 	paginationLabel,
@@ -74,13 +76,14 @@ export function WritingsShell({
 			<div className={homeInsetClass}>
 				<WritingsFilters
 					categorySlug={categorySlug}
-					activeGenre={activeGenre}
+					activeGenres={activeGenres}
 					activeQuery={activeQuery}
 					activeWriter={activeWriter}
 					activeTag={activeTag}
 					activeKeyword={activeKeyword}
 					activeSort={activeSort}
 					genreLabels={genreLabels}
+					genreCounts={genreCounts}
 					writers={writers}
 					resultCount={resultCount ?? 0}
 					title={title}
@@ -108,7 +111,7 @@ export function WritingsShell({
 							currentPage={currentPage}
 							totalPages={totalPages}
 							categorySlug={categorySlug}
-							activeGenre={activeGenre}
+							activeGenres={activeGenres}
 							activeQuery={activeQuery}
 							activeWriter={activeWriter}
 							activeTag={activeTag}

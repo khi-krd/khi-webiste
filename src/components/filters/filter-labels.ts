@@ -30,6 +30,8 @@ export function unifiedLabels(
 		type: "Cure",
 		allTypes: "Hemû cure",
 		typesCount: (n) => `${n} cure`,
+		noTypesSelected: "Tu cure nehatiye hilbijartin",
+		typesSelected: (n) => `${n} cure hatin hilbijartin`,
 		searchTypes: "Di cureyan de bigere…",
 		noTypeMatch: "Tu cure nehat dîtin",
 		otherTypes: "Cureyên din",

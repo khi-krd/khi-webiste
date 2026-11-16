@@ -62,7 +62,7 @@ export type WritingsListResult = {
 
 export type WritingsListingOptions = {
 	categorySlug?: WritingCategorySlug | null;
-	genre?: BookGenre | null;
+	genre?: BookGenre | BookGenre[] | null;
 	query?: string | null;
 	writer?: string | null;
 	tag?: string | null;
@@ -362,6 +362,21 @@ export async function getWritingsPage(
 
 export function parseWritingsGenre(value?: string | null): BookGenre | null {
 	return normalizeGenreSlug(value);
+}
+
+/**
+ * Multi-genre URL param: `?genre=SHORT_STORY,HISTORY` — comma-separated,
+ * normalized and deduped. Unknown slugs drop out rather than breaking the
+ * whole param.
+ */
+export function parseWritingsGenres(value?: string | null): BookGenre[] {
+	if (!value?.trim()) return [];
+	const slugs: BookGenre[] = [];
+	for (const part of value.split(",")) {
+		const slug = normalizeGenreSlug(part);
+		if (slug && !slugs.includes(slug)) slugs.push(slug);
+	}
+	return slugs;
 }
 
 /**
