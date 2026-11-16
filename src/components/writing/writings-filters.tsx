@@ -21,12 +21,27 @@ import type { BookGenre } from "@/types/writing";
  * exposes no parent-group field yet, so the grouping below is static.
  */
 const TYPE_GROUP_ORDER = ["lit", "sci", "cul", "art"] as const;
+/**
+ * Editor-managed CMS slugs (from /api/v1/book-genres) mapped into the four
+ * design groups. The enum-style keys below them stay as a fallback for any
+ * built-in slugs the catalogue still carries.
+ */
 const GENRE_GROUP: Record<string, (typeof TYPE_GROUP_ORDER)[number]> = {
+	// ئەدەب — چیرۆک، دیوان، پەند و ئیدیۆم، منداڵان
+	ROK: "lit",
+	D_WAN: "lit",
+	PEND_DIYOM: "lit",
+	ZAROK: "lit",
 	POETRY: "lit",
 	NOVEL: "lit",
 	SHORT_STORY: "lit",
 	DRAMA: "lit",
 	CHILDREN: "lit",
+	// زانست و مێژوو — توێژینەوە، لێکۆڵینەوە، مێژوو، فەرهەنگ
+	RESEARCH: "sci",
+	L_KOL_N: "sci",
+	M_J: "sci",
+	FERHENG: "sci",
 	HISTORY: "sci",
 	BIOGRAPHY: "sci",
 	PHILOSOPHY: "sci",
@@ -34,7 +49,12 @@ const GENRE_GROUP: Record<string, (typeof TYPE_GROUP_ORDER)[number]> = {
 	SCIENCE: "sci",
 	MEDICINE: "sci",
 	EDUCATIONAL: "sci",
-	FOLKLORE: "cul",
+	// کەلتوور و کۆمەڵگا — فۆلکلۆر، کەلتوور، بیروباوەڕ، ئایین، خواردن
+	FOLKLOR: "cul",
+	KELT_R: "cul",
+	B_R_BAWER: "cul",
+	AYN: "cul",
+	XWARIN: "cul",
 	CULTURAL: "cul",
 	RELIGION: "cul",
 	SOCIOLOGY: "cul",
@@ -43,6 +63,10 @@ const GENRE_GROUP: Record<string, (typeof TYPE_GROUP_ORDER)[number]> = {
 	LAW: "cul",
 	TRAVEL: "cul",
 	OTHER: "cul",
+	// هونەر و موزیک — موزیک، گۆرانی، هونەری
+	M_Z_K: "art",
+	STRAN: "art",
+	HUNER: "art",
 	ARTS: "art",
 };
 
