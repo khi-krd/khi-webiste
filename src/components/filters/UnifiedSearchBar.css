@@ -111,6 +111,52 @@
   flex-basis: 190px;
 }
 
+/* ---------- Inline pills (short axes: شێواز, فیلم/کلیپ, کۆکراوە) ---------- */
+
+.usb__pills {
+  flex: 0 0 auto;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+.usb__pill {
+  height: 38px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding-block: 0;
+  padding-inline: 14px;
+  border: 1px solid var(--f-line);
+  border-radius: 0;
+  background: transparent;
+  font: inherit;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--f-muted);
+  cursor: pointer;
+  white-space: nowrap;
+}
+.usb__pill:hover {
+  border-color: var(--f-accent);
+  color: var(--f-accent);
+}
+.usb__pill--active {
+  border-color: var(--f-accent);
+  background: var(--f-accent);
+  color: #fff;
+}
+.usb__pill:focus-visible {
+  outline: 2px solid var(--f-accent);
+  outline-offset: 2px;
+}
+.usb__pill-count {
+  font-size: 12px;
+  font-weight: 500;
+  opacity: 0.75;
+}
+
 .usb__seg-btn {
   width: 100%;
   height: 60px;

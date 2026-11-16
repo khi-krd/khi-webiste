@@ -114,6 +114,7 @@ export function VideoFilters({
 			labels={{
 				...unifiedLabels(locale),
 				searchPlaceholder: t("filter.searchLabel"),
+				allTypes: t("filter.all"),
 				author: t("filter.topicLabel"),
 				allAuthors: t("filter.topicAll"),
 				noAuthorMatch: t("filter.topicNoMatch"),
@@ -128,6 +129,7 @@ export function VideoFilters({
 				navigate({ q: v });
 			}}
 			types={types}
+			typeStyle="pills"
 			// The listing endpoint takes ONE type — a new pick replaces the old.
 			selectedTypes={activeType ? [activeType] : []}
 			onTypesChange={(ids) =>
@@ -141,6 +143,7 @@ export function VideoFilters({
 				label: t("filter.collectionLabel"),
 				allLabel: t("filter.all"),
 				noMatch: "",
+				asPills: true,
 				options: [
 					{ id: "memories", label: t("filter.memoriesLabel") },
 				],

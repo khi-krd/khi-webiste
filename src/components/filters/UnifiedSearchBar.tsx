@@ -39,6 +39,8 @@ export interface UnifiedExtraList {
 	/** Empty state when the list itself is empty. */
 	noMatch: string;
 	options: FilterOption[];
+	/** Render inline pills inside the bar instead of a dropdown panel. */
+	asPills?: boolean;
 	/** null = "all". */
 	selected: string | null;
 	onChange: (id: string | null) => void;
@@ -106,6 +108,12 @@ export interface UnifiedSearchBarProps {
 
 	/** All types. Give each a `group` id to show them grouped. Omit to hide. */
 	types?: FilterOption[];
+	/**
+	 * "panel" (default): the grouped checkbox dropdown for long lists.
+	 * "pills": inline toggle buttons inside the bar — the right look for
+	 * 2–4 option axes like شێواز or فیلم/کلیپ.
+	 */
+	typeStyle?: "panel" | "pills";
 	typeGroups?: FilterGroup[];
 	selectedTypes?: string[];
 	onTypesChange?: (ids: string[]) => void;
@@ -148,6 +156,7 @@ export function UnifiedSearchBar({
 	onQueryChange,
 	onSearchSubmit,
 	types,
+	typeStyle = "panel",
 	typeGroups,
 	selectedTypes = [],
 	onTypesChange,
@@ -337,8 +346,52 @@ export function UnifiedSearchBar({
 
 				<span className="usb__divider usb__divider--first" aria-hidden="true" />
 
+				{/* ---------- جۆر as inline pills (short axes) ---------- */}
+				{types && typeStyle === "pills" && (
+					<div
+						className="usb__segment usb__pills"
+						role="group"
+						aria-label={L.type}
+					>
+						<button
+							type="button"
+							className={cx(
+								"usb__pill",
+								selected.size === 0 && "usb__pill--active",
+							)}
+							onClick={() => onTypesChange?.([])}
+						>
+							{L.allTypes}
+						</button>
+						{typeList
+							.filter(
+								(t) =>
+									!hideEmpty || t.count !== 0 || selected.has(t.id),
+							)
+							.map((t) => (
+								<button
+									key={t.id}
+									type="button"
+									className={cx(
+										"usb__pill",
+										selected.has(t.id) && "usb__pill--active",
+									)}
+									aria-pressed={selected.has(t.id)}
+									onClick={() => toggleType(t.id)}
+								>
+									{t.label}
+									{t.count !== undefined && (
+										<span className="usb__pill-count">
+											{num(t.count)}
+										</span>
+									)}
+								</button>
+							))}
+					</div>
+				)}
+
 				{/* ---------- جۆر ---------- */}
-				{types && (
+				{types && typeStyle === "panel" && (
 					<Segment
 						panelId={`${uid}-type`}
 						label={L.type}
@@ -409,8 +462,50 @@ export function UnifiedSearchBar({
 					</Segment>
 				)}
 
+				{/* ---------- extra as inline pills ---------- */}
+				{extra?.asPills && (
+					<>
+						<span className="usb__divider" aria-hidden="true" />
+						<div
+							className="usb__segment usb__pills"
+							role="group"
+							aria-label={extra.label}
+						>
+							<button
+								type="button"
+								className={cx(
+									"usb__pill",
+									extra.selected === null && "usb__pill--active",
+								)}
+								onClick={() => pickExtra(null)}
+							>
+								{extra.allLabel}
+							</button>
+							{extraList.map((o) => (
+								<button
+									key={o.id}
+									type="button"
+									className={cx(
+										"usb__pill",
+										extra.selected === o.id && "usb__pill--active",
+									)}
+									aria-pressed={extra.selected === o.id}
+									onClick={() => pickExtra(o.id)}
+								>
+									{o.label}
+									{o.count !== undefined && (
+										<span className="usb__pill-count">
+											{num(o.count)}
+										</span>
+									)}
+								</button>
+							))}
+						</div>
+					</>
+				)}
+
 				{/* ---------- extra list (کۆکراوە, …) ---------- */}
-				{extra && (
+				{extra && !extra.asPills && (
 					<>
 						<span className="usb__divider" aria-hidden="true" />
 						<Segment

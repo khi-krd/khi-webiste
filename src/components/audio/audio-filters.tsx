@@ -115,7 +115,7 @@ export function AudioFilters({
 				...unifiedLabels(locale),
 				searchPlaceholder: t("filter.searchLabel"),
 				type: t("filter.stateLabel"),
-				allTypes: t("filter.stateAll"),
+				allTypes: t("state.all"),
 				noTypeMatch: t("filter.stateNoMatch"),
 				otherTypes: t("filter.stateOther"),
 				noTypesSelected: t("filter.stateNoneSelected"),
@@ -135,6 +135,7 @@ export function AudioFilters({
 				navigate({ q: v });
 			}}
 			types={types}
+			typeStyle="pills"
 			// One شێواز at a time — a new pick replaces the old.
 			selectedTypes={activeState ? [activeState] : []}
 			onTypesChange={(ids) =>

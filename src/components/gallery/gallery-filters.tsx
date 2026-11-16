@@ -102,6 +102,7 @@ export function GalleryFilters({
 			labels={{
 				...unifiedLabels(locale),
 				searchPlaceholder: t("search.label"),
+				allTypes: t("filter.all"),
 				author: t("filter.topicLabel"),
 				allAuthors: t("filter.topicAll"),
 				noAuthorMatch: t("filter.topicNoMatch"),
@@ -116,6 +117,7 @@ export function GalleryFilters({
 				navigate({ q: v });
 			}}
 			types={types}
+			typeStyle="pills"
 			// One collection type at a time — a new pick replaces the old.
 			selectedTypes={activeType ? [activeType] : []}
 			onTypesChange={(ids) =>
