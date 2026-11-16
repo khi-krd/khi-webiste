@@ -36,13 +36,9 @@ export interface UnifiedExtraList {
 	label: string;
 	/** "All" option label. */
 	allLabel: string;
-	/** Panel search placeholder. */
-	searchLabel: string;
-	/** Empty state when the panel search matches nothing. */
+	/** Empty state when the list itself is empty. */
 	noMatch: string;
 	options: FilterOption[];
-	/** Show the panel search field. Default true — hide for short lists. */
-	searchable?: boolean;
 	/** null = "all". */
 	selected: string | null;
 	onChange: (id: string | null) => void;
@@ -59,12 +55,10 @@ export interface UnifiedSearchBarLabels {
 	/** Footer status when nothing / n types are chosen. */
 	noTypesSelected: string;
 	typesSelected: (n: string) => string;
-	searchTypes: string;
 	noTypeMatch: string;
 	otherTypes: string;
 	author: string;
 	allAuthors: string;
-	searchAuthors: string;
 	noAuthorMatch: string;
 	sort: string;
 	showResults: (n: string) => string;
@@ -84,12 +78,10 @@ export const UNIFIED_SEARCH_DEFAULT_LABELS: UnifiedSearchBarLabels = {
 	typesCount: (n) => `${n} جۆر`,
 	noTypesSelected: "هیچ جۆرێک هەڵنەبژێردراوە",
 	typesSelected: (n) => `${n} جۆر هەڵبژێردراوە`,
-	searchTypes: "گەڕان لە جۆرەکان…",
 	noTypeMatch: "هیچ جۆرێک نەدۆزرایەوە",
 	otherTypes: "جۆری تر",
 	author: "نووسەر",
 	allAuthors: "هەموو نووسەرەکان",
-	searchAuthors: "گەڕان بۆ نووسەر…",
 	noAuthorMatch: "هیچ نووسەرێک نەدۆزرایەوە",
 	sort: "ڕیزکردن",
 	showResults: (n) => `پیشاندانی ${n} ئەنجام`,
@@ -192,9 +184,6 @@ export function UnifiedSearchBar({
 					: sortBtnRef;
 
 	const [open, setOpen] = useState<PanelKey | null>(null);
-	const [typeQuery, setTypeQuery] = useState("");
-	const [authorQuery, setAuthorQuery] = useState("");
-	const [extraQuery, setExtraQuery] = useState("");
 
 	const typeList = types ?? [];
 	const sorts = sortOptions ?? [];
@@ -236,11 +225,8 @@ export function UnifiedSearchBar({
 		return () => document.removeEventListener("pointerdown", onPointerDown);
 	}, [open]);
 
-	// Move focus into the panel that just opened; reset panel searches.
+	// Move focus into the panel that just opened.
 	useEffect(() => {
-		if (open !== "type") setTypeQuery("");
-		if (open !== "author") setAuthorQuery("");
-		if (open !== "extra") setExtraQuery("");
 		if (!open) return;
 		const panel = panelRef.current;
 		const target =
@@ -273,11 +259,8 @@ export function UnifiedSearchBar({
 		);
 
 	const typeSections: TypeSection[] = useMemo(() => {
-		const q = typeQuery.trim();
 		const matching = typeList.filter(
-			(t) =>
-				(!hideEmpty || t.count !== 0 || selected.has(t.id)) &&
-				(!q || t.label.includes(q)),
+			(t) => !hideEmpty || t.count !== 0 || selected.has(t.id),
 		);
 		if (!typeGroups || typeGroups.length === 0) {
 			return matching.length ? [{ id: "__all", items: matching }] : [];
@@ -295,18 +278,14 @@ export function UnifiedSearchBar({
 				items: matching.filter((t) => !t.group || !known.has(t.group)),
 			},
 		].filter((s) => s.items.length > 0);
-	}, [typeList, typeGroups, typeQuery, hideEmpty, selected, L.otherTypes]);
+	}, [typeList, typeGroups, hideEmpty, selected, L.otherTypes]);
 
 	const flatTypes = !typeGroups || typeGroups.length === 0;
 
 	/* ----- authors & sort ----- */
 
-	const filteredAuthors = (authors ?? []).filter(
-		(a) => !authorQuery.trim() || a.label.includes(authorQuery.trim()),
-	);
-	const filteredExtra = (extra?.options ?? []).filter(
-		(o) => !extraQuery.trim() || o.label.includes(extraQuery.trim()),
-	);
+	const authorList = authors ?? [];
+	const extraList = extra?.options ?? [];
 
 	// Close on a pointer pick; keyboard arrows only change the value.
 	const pickAuthor = (id: string | null) => onAuthorChange?.(id);
@@ -374,12 +353,6 @@ export function UnifiedSearchBar({
 						panelClassName="usb__panel--types"
 					>
 						<div className="usb__panel-head">
-							<SearchField
-								id={`${uid}-tq`}
-								label={L.searchTypes}
-								value={typeQuery}
-								onChange={setTypeQuery}
-							/>
 							<button
 								type="button"
 								className="usb__link"
@@ -451,14 +424,6 @@ export function UnifiedSearchBar({
 							buttonRef={extraBtnRef}
 							panelRef={panelRef}
 						>
-							{extra.searchable !== false && (
-								<SearchField
-									id={`${uid}-eq`}
-									label={extra.searchLabel}
-									value={extraQuery}
-									onChange={setExtraQuery}
-								/>
-							)}
 							<div
 								className="usb__list"
 								role="radiogroup"
@@ -476,7 +441,7 @@ export function UnifiedSearchBar({
 										{extra.allLabel}
 									</span>
 								</label>
-								{filteredExtra.map((o) => (
+								{extraList.map((o) => (
 									<label key={o.id} className="usb__radio">
 										<input
 											type="radio"
@@ -495,10 +460,9 @@ export function UnifiedSearchBar({
 										)}
 									</label>
 								))}
-								{filteredExtra.length === 0 &&
-									extraQuery.trim() !== "" && (
-										<p className="usb__empty">{extra.noMatch}</p>
-									)}
+								{extraList.length === 0 && (
+									<p className="usb__empty">{extra.noMatch}</p>
+								)}
 							</div>
 						</Segment>
 					</>
@@ -519,12 +483,6 @@ export function UnifiedSearchBar({
 							buttonRef={authorBtnRef}
 							panelRef={panelRef}
 						>
-							<SearchField
-								id={`${uid}-aq`}
-								label={L.searchAuthors}
-								value={authorQuery}
-								onChange={setAuthorQuery}
-							/>
 							<div
 								className="usb__list"
 								role="radiogroup"
@@ -540,7 +498,7 @@ export function UnifiedSearchBar({
 									/>
 									<span className="usb__check-label">{L.allAuthors}</span>
 								</label>
-								{filteredAuthors.map((a) => (
+								{authorList.map((a) => (
 									<label key={a.id} className="usb__radio">
 										<input
 											type="radio"
@@ -555,7 +513,7 @@ export function UnifiedSearchBar({
 										)}
 									</label>
 								))}
-								{filteredAuthors.length === 0 && authorQuery.trim() !== "" && (
+								{authorList.length === 0 && (
 									<p className="usb__empty">{L.noAuthorMatch}</p>
 								)}
 							</div>
@@ -753,37 +711,6 @@ function Segment({
 					{children}
 				</div>
 			)}
-		</div>
-	);
-}
-
-interface SearchFieldProps {
-	id: string;
-	label: string;
-	value: string;
-	onChange: (value: string) => void;
-}
-
-function SearchField({ id, label, value, onChange }: SearchFieldProps) {
-	return (
-		<div className="usb__field">
-			<label htmlFor={id} className="f-visually-hidden">
-				{label}
-			</label>
-			<SearchIcon size={18} className="usb__field-icon" />
-			<input
-				id={id}
-				type="search"
-				data-autofocus="true"
-				className="usb__field-input"
-				value={value}
-				placeholder={label}
-				onChange={(e) => onChange(e.target.value)}
-				onKeyDown={(e) => {
-					// Enter here filters the list; it must not submit the main search.
-					if (e.key === "Enter") e.preventDefault();
-				}}
-			/>
 		</div>
 	);
 }

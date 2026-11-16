@@ -116,7 +116,6 @@ export function AudioFilters({
 				searchPlaceholder: t("filter.searchLabel"),
 				type: t("filter.stateLabel"),
 				allTypes: t("filter.stateAll"),
-				searchTypes: t("filter.stateSearch"),
 				noTypeMatch: t("filter.stateNoMatch"),
 				otherTypes: t("filter.stateOther"),
 				noTypesSelected: t("filter.stateNoneSelected"),
@@ -124,7 +123,6 @@ export function AudioFilters({
 				typesCount: (n) => t("filter.stateCount", { count: n }),
 				author: t("filter.topicLabel"),
 				allAuthors: t("filter.topicAll"),
-				searchAuthors: t("filter.topicSearch"),
 				noAuthorMatch: t("filter.topicNoMatch"),
 			}}
 			query={query}

@@ -116,7 +116,6 @@ export function VideoFilters({
 				searchPlaceholder: t("filter.searchLabel"),
 				author: t("filter.topicLabel"),
 				allAuthors: t("filter.topicAll"),
-				searchAuthors: t("filter.topicSearch"),
 				noAuthorMatch: t("filter.topicNoMatch"),
 			}}
 			query={query}
@@ -141,9 +140,7 @@ export function VideoFilters({
 			extra={{
 				label: t("filter.collectionLabel"),
 				allLabel: t("filter.all"),
-				searchLabel: "",
 				noMatch: "",
-				searchable: false,
 				options: [
 					{ id: "memories", label: t("filter.memoriesLabel") },
 				],

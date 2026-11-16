@@ -255,10 +255,8 @@
 .usb__panel-head {
   display: flex;
   align-items: center;
+  justify-content: flex-end;
   gap: 14px;
-}
-.usb__panel-head .usb__field {
-  flex: 1;
 }
 .usb__panel-head .usb__link {
   flex-shrink: 0;
@@ -272,38 +270,6 @@
   align-self: center;
 }
 
-.usb__field {
-  position: relative;
-}
-.usb__field-icon {
-  position: absolute;
-  inset-inline-start: 14px;
-  top: 50%;
-  transform: translateY(-50%);
-  color: var(--f-muted);
-  pointer-events: none;
-}
-.usb__field-input {
-  width: 100%;
-  height: 44px;
-  padding-block: 0;
-  padding-inline: 42px 14px;
-  border: 1px solid var(--f-border);
-  border-radius: var(--f-radius-sm);
-  background: #fff;
-  font: inherit;
-  font-size: 15px;
-  color: var(--f-ink);
-}
-.usb__field-input::placeholder {
-  color: var(--f-muted);
-  opacity: 1;
-}
-.usb__field-input:focus {
-  outline: 2px solid var(--f-accent);
-  outline-offset: 1px;
-  border-color: var(--f-accent);
-}
 
 .usb__groups {
   display: grid;
