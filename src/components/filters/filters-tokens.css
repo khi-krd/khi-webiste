@@ -27,10 +27,33 @@
 	/* misc */
 	--f-backdrop: color-mix(in srgb, var(--color-foreground) 40%, transparent);
 	--f-shadow: 0 18px 40px -18px color-mix(in srgb, var(--color-foreground) 35%, transparent);
-	--f-radius-bar: 18px;
-	--f-radius-panel: 16px;
-	--f-radius-seg: 12px;
-	--f-radius-sm: 10px;
+
+	/* The archive's surfaces are sharp-cornered — every radius resolves to 0. */
+	--f-radius-bar: 0;
+	--f-radius-panel: 0;
+	--f-radius-seg: 0;
+	--f-radius-sm: 0;
+}
+
+/* Hardcoded round corners in the component CSS, flattened to match the
+   archive's sharp-corner design language. */
+.tr__arrow,
+.usb__icon-btn,
+.tr__tab:focus-visible,
+.usb__check,
+.usb__radio,
+.tr__select-input,
+.usb__panel,
+.usb__panel--types,
+.usb__panel--sort {
+	border-radius: 0;
+}
+@media (max-width: 720px) {
+	.usb__panel,
+	.usb__panel--types,
+	.usb__panel--sort {
+		border-radius: 0;
+	}
 }
 
 /* Screen-reader-only helper shared by both filter styles. */
