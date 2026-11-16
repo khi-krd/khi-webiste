@@ -657,8 +657,8 @@ export function UnifiedSearchBar({
 					</>
 				)}
 
-				<button type="submit" className="usb__submit" aria-label={L.search}>
-					<SearchIcon size={24} strokeWidth={2} />
+				<button type="submit" className="usb__submit">
+					{L.search}
 				</button>
 			</form>
 
