@@ -1,6 +1,8 @@
-/* ============ Donor ImagePlaylist — "Fan" ============
-   Ported from the playlist reference; colours come from the site tokens
-   (paper surface, institute ink, institute green accent, site fonts). */
+/* ============ Donor ImageGallery — standalone (images-only) ============
+   Same preview-first structure as the dark-band panels, on the paper
+   surface: 16:9 stage, scroll-snap thumbnail strip, caption, lightbox.
+   The .ms-* strip styles live in donate-video-playlist.css; only its
+   palette tokens are overridden here. */
 .ipl-wrap {
 	container-type: inline-size;
 }
@@ -13,6 +15,16 @@
 	--ipl-paper: var(--color-surface);
 	--ipl-empty: var(--color-sunken);
 	--ipl-ease: cubic-bezier(0.2, 0.8, 0.2, 1);
+
+	/* Strip palette on paper. */
+	--ms-ink: var(--ipl-ink);
+	--ms-muted: var(--ipl-muted);
+	--ms-accent: var(--ipl-accent);
+	--ms-card-bg: color-mix(in srgb, var(--ipl-ink) 4%, transparent);
+	--ms-card-hover: color-mix(in srgb, var(--ipl-ink) 8%, transparent);
+	--ms-card-active: color-mix(in srgb, var(--ipl-accent) 10%, transparent);
+	--ms-card-border: color-mix(in srgb, var(--ipl-ink) 14%, transparent);
+	--ms-thumb-bg: var(--ipl-empty);
 
 	position: relative;
 	overflow: hidden;
@@ -31,7 +43,7 @@
 	z-index: 1;
 	display: flex;
 	flex-direction: column;
-	gap: 44px;
+	gap: 28px;
 	max-width: var(--canvas);
 	margin-inline: auto;
 }
@@ -44,18 +56,13 @@
 	box-shadow: inset 0 0 0 3px var(--ipl-accent);
 }
 
-.ipl-top {
-	display: flex;
-	align-items: center;
-	gap: 56px;
-}
-
 /* ---------- main image ---------- */
 .ipl-stagewrap {
 	position: relative;
-	flex: none;
-	width: min(680px, 62%);
-	aspect-ratio: 3 / 2;
+	width: 100%;
+	max-width: 980px;
+	margin-inline: auto;
+	aspect-ratio: 16 / 9;
 }
 /* soft colored shadow made from the image itself */
 .ipl-glow {
@@ -94,38 +101,6 @@
 	animation: ipl-in 0.6s var(--ipl-ease) both;
 }
 
-.ipl-arrow {
-	position: absolute;
-	top: 50%;
-	width: 56px;
-	height: 56px;
-	margin-top: -28px;
-	padding: 0;
-	border-radius: 50%;
-	border: 1px solid rgba(255, 255, 255, 0.6);
-	background: color-mix(in srgb, var(--ipl-paper) 74%, transparent);
-	-webkit-backdrop-filter: blur(12px);
-	backdrop-filter: blur(12px);
-	color: var(--ipl-ink);
-	display: grid;
-	place-items: center;
-	cursor: pointer;
-	box-shadow: 0 10px 24px -10px rgba(0, 0, 0, 0.35);
-	transition:
-		transform 0.25s var(--ipl-ease),
-		background-color 0.2s ease;
-}
-.ipl-arrow:hover {
-	transform: scale(1.06);
-	background: color-mix(in srgb, var(--ipl-paper) 92%, transparent);
-}
-.ipl-arrow--prev {
-	inset-inline-start: 20px;
-}
-.ipl-arrow--next {
-	inset-inline-end: 20px;
-}
-
 .ipl-logo {
 	/* Brand mark: pinned to the physical bottom-left corner of the actual
 	   photo — not the lightbox viewport — so it lands on the image itself
@@ -143,8 +118,8 @@
 
 /* ---------- caption ---------- */
 .ipl-caption {
-	flex: 1;
-	min-width: 0;
+	max-width: 68ch;
+	margin-inline: auto;
 	display: flex;
 	flex-direction: column;
 	gap: 16px;
@@ -161,69 +136,18 @@
 .ipl-desc {
 	margin: 0;
 	font-size: 16px;
-	line-height: 2;
+	line-height: 1.9;
 	color: var(--ipl-body);
 	text-align: justify;
-	text-wrap: pretty;
-}
-.ipl-lead {
-	font-weight: 600;
-	color: var(--ipl-ink);
+	text-justify: inter-word;
+	hyphens: auto;
+	-webkit-hyphens: auto;
 }
 
-/* ---------- fan of thumbnails ---------- */
-.ipl-fan {
-	position: relative;
-	height: 230px;
-	margin: 0;
-	padding: 0;
-	list-style: none;
-}
-.ipl-fan-item {
-	position: absolute;
-	inset-inline-start: 50%;
-	top: 48px;
-	width: 124px;
-	height: 124px;
-	margin-inline-start: -62px;
-	transform-origin: 50% 100%;
-	transition:
-		transform 0.65s var(--ipl-ease),
-		opacity 0.5s ease;
-}
-.ipl-card {
-	position: relative;
-	display: block;
-	width: 100%;
-	height: 100%;
-	padding: 0;
-	border: 5px solid var(--ipl-paper);
-	border-radius: 0;
-	overflow: hidden;
-	background: var(--ipl-empty);
-	cursor: pointer;
-	box-shadow: 0 12px 24px -14px rgba(0, 0, 0, 0.35);
-	outline: 3px solid transparent;
-	outline-offset: 3px;
-	transition:
-		box-shadow 0.5s ease,
-		outline-color 0.3s ease,
-		transform 0.3s var(--ipl-ease);
-}
-.ipl-card:hover:not(.is-active) {
-	transform: translateY(-6px);
-}
-.ipl-card.is-active {
-	box-shadow: 0 26px 44px -16px rgba(0, 0, 0, 0.4);
-	outline-color: var(--ipl-accent);
-}
-.ipl-card img {
-	display: block;
-	width: 100%;
-	height: 100%;
-	object-fit: cover;
-	border-radius: 0;
-	pointer-events: none;
+/* Strip sits centered under the stage on paper. */
+.ipl .ms-strip {
+	max-width: 980px;
+	margin-inline: auto;
 }
 
 /* focus rings */
@@ -253,30 +177,13 @@
 	}
 }
 
-/* ---------- narrow container: caption under the image ---------- */
+/* ---------- narrow container ---------- */
 @container (max-width: 900px) {
 	.ipl {
 		padding: 40px 24px 36px;
 	}
 	.ipl-row {
-		gap: 32px;
-	}
-	.ipl-top {
-		flex-direction: column;
-		align-items: stretch;
-		gap: 28px;
-	}
-	.ipl-stagewrap {
-		width: 100%;
-	}
-	.ipl-fan {
-		height: 200px;
-	}
-	.ipl-fan-item {
-		width: 104px;
-		height: 104px;
-		margin-inline-start: -52px;
-		top: 40px;
+		gap: 24px;
 	}
 }
 
@@ -285,15 +192,6 @@
 	.ipl {
 		padding: 24px 16px 28px;
 	}
-	.ipl-row {
-		gap: 24px;
-	}
-	.ipl-top {
-		gap: 20px;
-	}
-	.ipl-stage {
-		border-radius: 0;
-	}
 	.ipl-glow {
 		filter: blur(30px) saturate(1.2);
 	}
@@ -301,47 +199,15 @@
 		width: 52px;
 		height: 52px;
 	}
-	.ipl-arrow {
-		width: 44px;
-		height: 44px;
-		margin-top: -22px;
-	}
-	.ipl-arrow--prev {
-		inset-inline-start: 12px;
-	}
-	.ipl-arrow--next {
-		inset-inline-end: 12px;
-	}
 	.ipl-title {
 		font-size: 21px;
 	}
 	.ipl-desc {
 		font-size: 14px;
 	}
-	.ipl-fan {
-		height: 140px;
-	}
-	.ipl-fan-item {
-		width: 72px;
-		height: 72px;
-		margin-inline-start: -36px;
-		top: 32px;
-	}
-	.ipl-card {
-		border-width: 3px;
-		border-radius: 0;
-	}
-	.ipl-card img {
-		border-radius: 0;
-	}
 }
 
 @media (prefers-reduced-motion: reduce) {
-	.ipl-fan-item,
-	.ipl-card,
-	.ipl-arrow {
-		transition: none !important;
-	}
 	.ipl-img,
 	.ipl-caption {
 		animation: none !important;

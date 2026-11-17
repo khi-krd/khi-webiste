@@ -1,18 +1,12 @@
 "use client";
 
-import {
-	ChevronLeftIcon,
-	ChevronRightIcon,
-	PhotoIcon,
-	QueueListIcon,
-	XMarkIcon,
-} from "@heroicons/react/24/outline";
+import { XMarkIcon } from "@heroicons/react/24/outline";
 import { PlayIcon } from "@heroicons/react/24/solid";
 import dynamic from "next/dynamic";
 import NextImage from "next/image";
 import { useLocale } from "next-intl";
 import {
-	type CSSProperties,
+	type KeyboardEvent,
 	type PointerEvent,
 	useCallback,
 	useEffect,
@@ -20,11 +14,9 @@ import {
 	useState,
 } from "react";
 import { pageXClass } from "@/components/donate/donate-shell";
-import { DirectionalIcon } from "@/components/ui/directional-icon";
 import { cn } from "@/lib/utils";
 import "./donate-video-playlist.css";
 import "./donate-image-playlist.css";
-import { useContainerWidth } from "./use-container-width";
 
 const VideoPlayer = dynamic(
 	() => import("@/components/ui/video-player").then((mod) => mod.VideoPlayer),
@@ -47,37 +39,24 @@ type DonateArchiveVideosProps = {
 	imagesHeading: string;
 	playLabel: string;
 	playlistLabel: string;
-	previousLabel: string;
-	nextLabel: string;
 	closeLabel: string;
 	items: DonateArchiveVideoItem[];
 };
 
-type NavLabels = { previousLabel: string; nextLabel: string };
-
 const pad = (n: number) => String(n).padStart(2, "0");
-const KU_DIGITS = "٠١٢٣٤٥٦٧٨٩";
-const toKu = (v: string) => v.replace(/[0-9]/g, (d) => KU_DIGITS[Number(d)]);
-
-/** Signed distance on a loop of n items: result is in [-floor(n/2), ceil(n/2) - 1]. */
-const loopRel = (k: number, n: number) => {
-	const h = Math.floor(n / 2);
-	return ((((k + h) % n) + n) % n) - h;
-};
 
 /**
- * The archive-donors showcase on the donate page. Videos play on a big stage
- * below its queue in the right panel, with an independent image gallery and
- * its own top queue in the left panel. An images-only archive uses the "Fan"
- * gallery. Each block renders only when it has records.
+ * The archive-donors showcase on the donate page. Each block is a fixed 16:9
+ * preview on top of a horizontal, swipe/arrow-key scrollable strip of
+ * thumbnail cards — videos on the right, images on the left. An images-only
+ * archive renders the standalone gallery instead. Each block renders only
+ * when it has records.
  */
 export function DonateArchiveVideos({
 	heading,
 	imagesHeading,
 	playLabel,
 	playlistLabel,
-	previousLabel,
-	nextLabel,
 	closeLabel,
 	items,
 }: DonateArchiveVideosProps) {
@@ -99,19 +78,17 @@ export function DonateArchiveVideos({
 						imagesHeading={imagesHeading}
 						playLabel={playLabel}
 						playlistLabel={playlistLabel}
-						previousLabel={previousLabel}
-						nextLabel={nextLabel}
 						closeLabel={closeLabel}
+						heading={heading}
 					/>
 				</section>
 			) : (
 				<section>
 					<SectionHeading title={imagesHeading} count={images.length} />
-					<ImageFan
+					<ImageGallery
 						items={images}
-						previousLabel={previousLabel}
-						nextLabel={nextLabel}
 						closeLabel={closeLabel}
+						stripLabel={imagesHeading}
 					/>
 				</section>
 			)}
@@ -152,116 +129,131 @@ function VideoStill({ src, className }: { src: string; className?: string }) {
 	);
 }
 
-/* ─────────────────────────── Video: queue playlist ─────────────────────────── */
+/* ─────────────── Shared: horizontal thumbnail strip ─────────────── */
 
-function PlaylistHeader({
-	heading,
-	kind,
-	active,
-	total,
-	num,
-	previousLabel,
-	nextLabel,
-	onPrevious,
-	onNext,
-}: NavLabels & {
-	heading: string;
-	kind: "video" | "image";
-	active: number;
-	total: number;
-	num: (value: string | number) => string;
-	onPrevious: () => void;
-	onNext: () => void;
-}) {
-	const Icon = kind === "video" ? QueueListIcon : PhotoIcon;
-	return (
-		<header className="vpl-panel-heading vpl-queue-head">
-			<Icon className="vpl-queue-icon" aria-hidden />
-			<h3 className="vpl-queue-label">{heading}</h3>
-			<div className="vpl-list-controls">
-				<span className="vpl-queue-count">
-					{num(pad(active + 1))}
-					<span className="vpl-queue-sep">/</span>
-					<span className="vpl-queue-total">{num(pad(total))}</span>
-				</span>
-				<button
-					type="button"
-					className="vpl-round"
-					onClick={onPrevious}
-					disabled={total < 2}
-					aria-label={previousLabel}
-				>
-					<DirectionalIcon icon={ChevronLeftIcon} className="size-4" />
-				</button>
-				<button
-					type="button"
-					className="vpl-round"
-					onClick={onNext}
-					disabled={total < 2}
-					aria-label={nextLabel}
-				>
-					<DirectionalIcon icon={ChevronRightIcon} className="size-4" />
-				</button>
-			</div>
-		</header>
-	);
-}
-
-function PlaylistItems({
+/**
+ * The one scrollable row under every preview. Native overflow scrolling
+ * carries touch swipe + trackpad; a mouse-drag handler gives desktop the same
+ * flick; scroll-snap settles each card on an edge. Keyboard: the strip itself
+ * is focusable and every card is a button — Left/Right move the selection
+ * (mirrored in RTL), Enter/Space select natively.
+ */
+function MediaStrip({
 	items,
 	active,
-	num,
+	dir,
+	label,
+	playingId,
 	onSelect,
-	playing = false,
 }: {
 	items: DonateArchiveVideoItem[];
 	active: number;
-	num: (value: string | number) => string;
+	dir: "rtl" | "ltr";
+	label: string;
+	/** When the active video is playing, its card carries the eq bars. */
+	playingId?: number | null;
 	onSelect: (index: number) => void;
-	playing?: boolean;
 }) {
 	const listRef = useRef<HTMLOListElement>(null);
+	const dragRef = useRef<{ x: number; y: number; moved: boolean } | null>(null);
+	const suppressClick = useRef(false);
+	const n = items.length;
 
-	// Keep the selected tile visible when the header arrows change the item,
-	// without scrolling the surrounding page.
+	// Keep the selected card visible when it changes, without scrolling the page.
 	useEffect(() => {
-		const list = listRef.current;
-		const selected = list?.children[active];
-		if (!list || !selected) return;
-		const bounds = list.getBoundingClientRect();
-		const tile = selected.getBoundingClientRect();
-		const left =
-			tile.left < bounds.left
-				? tile.left - bounds.left
-				: tile.right > bounds.right
-					? tile.right - bounds.right
-					: 0;
-		list.scrollBy({
-			left,
+		const selected = listRef.current?.children[active];
+		selected?.scrollIntoView({
+			block: "nearest",
+			inline: "nearest",
 			behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches
 				? "instant"
 				: "smooth",
 		});
 	}, [active]);
 
+	const onKeyDown = (e: KeyboardEvent) => {
+		if (e.key !== "ArrowLeft" && e.key !== "ArrowRight") return;
+		// In RTL the strip runs right-to-left, so Left is "next" there.
+		const forward = e.key === (dir === "rtl" ? "ArrowLeft" : "ArrowRight");
+		e.preventDefault();
+		const next = (((active + (forward ? 1 : -1)) % n) + n) % n;
+		onSelect(next);
+		(
+			listRef.current?.children[next]?.querySelector("button") as
+				| HTMLButtonElement
+				| null
+				| undefined
+		)?.focus();
+	};
+
+	// Mouse drag-to-scroll; touch uses the native pan. `scrollBy` follows the
+	// physical axis in every browser, so RTL needs the opposite sign.
+	const onPointerDown = (e: PointerEvent) => {
+		if (e.pointerType !== "mouse" || e.button !== 0) return;
+		dragRef.current = { x: e.clientX, y: e.clientY, moved: false };
+	};
+	const onPointerMove = (e: PointerEvent) => {
+		const drag = dragRef.current;
+		const list = listRef.current;
+		if (!drag || !list) return;
+		const dx = e.clientX - drag.x;
+		if (!drag.moved && Math.abs(dx) < 6 && Math.abs(e.clientY - drag.y) < 6) {
+			return;
+		}
+		drag.moved = true;
+		list.scrollBy({ left: dir === "rtl" ? dx : -dx });
+		drag.x = e.clientX;
+	};
+	const endDrag = () => {
+		if (dragRef.current?.moved) suppressClick.current = true;
+		dragRef.current = null;
+	};
+
 	return (
-		<ol ref={listRef} className="vpl-queue vpl-top-list">
+		<ol
+			ref={listRef}
+			className="ms-strip"
+			aria-label={label}
+			// biome-ignore lint/a11y/noNoninteractiveTabindex: spec requires the strip itself focusable so arrow keys can move the selection without tabbing into a card first.
+			tabIndex={0}
+			onKeyDown={onKeyDown}
+			onPointerDown={onPointerDown}
+			onPointerMove={onPointerMove}
+			onPointerUp={endDrag}
+			onPointerCancel={endDrag}
+			onPointerLeave={endDrag}
+			onClickCapture={(e) => {
+				if (suppressClick.current) {
+					suppressClick.current = false;
+					e.preventDefault();
+					e.stopPropagation();
+				}
+			}}
+		>
 			{items.map((item, index) => (
 				<li key={item.id}>
 					<button
 						type="button"
-						className={cn("vpl-track", index === active && "is-active")}
-						onClick={() => onSelect(index)}
 						aria-current={index === active ? "true" : undefined}
+						title={item.title}
+						className={cn("ms-card", index === active && "is-active")}
+						onClick={() => onSelect(index)}
 					>
-						<span className="vpl-num">{num(pad(index + 1))}</span>
-						<span className="vpl-thumb">
+						<span className="ms-thumb">
 							{item.posterUrl ? (
-								<NextImage src={item.posterUrl} alt="" fill sizes="76px" />
-							) : (
+								<NextImage
+									src={item.posterUrl}
+									alt=""
+									width={160}
+									height={90}
+									sizes="160px"
+									loading="lazy"
+									draggable={false}
+								/>
+							) : item.videoUrl ? (
 								<VideoStill src={item.videoUrl} />
-							)}
-							{index === active && playing ? (
+							) : null}
+							{playingId === item.id ? (
 								<span className="vpl-eq is-playing" aria-hidden>
 									<span />
 									<span />
@@ -269,9 +261,7 @@ function PlaylistItems({
 								</span>
 							) : null}
 						</span>
-						<span className="vpl-track-text">
-							<span className="vpl-track-title">{item.title}</span>
-						</span>
+						<span className="ms-title">{item.title}</span>
 					</button>
 				</li>
 			))}
@@ -279,22 +269,24 @@ function PlaylistItems({
 	);
 }
 
+/* ─────────────────────────── Video block ─────────────────────────── */
+
 function VideoQueue({
 	items,
 	images,
 	imagesHeading,
 	playLabel,
 	playlistLabel,
-	previousLabel,
-	nextLabel,
 	closeLabel,
-}: NavLabels & {
+	heading,
+}: {
 	items: DonateArchiveVideoItem[];
 	images: DonateArchiveVideoItem[];
 	imagesHeading: string;
 	playLabel: string;
 	playlistLabel: string;
 	closeLabel: string;
+	heading: string;
 }) {
 	const locale = useLocale();
 	const dir: "rtl" | "ltr" = locale === "ckb" ? "rtl" : "ltr";
@@ -302,11 +294,6 @@ function VideoQueue({
 
 	const [active, setActive] = useState(0);
 	const [playing, setPlaying] = useState(false);
-
-	const num = useCallback(
-		(v: string | number) => (dir === "rtl" ? toKu(String(v)) : String(v)),
-		[dir],
-	);
 
 	const go = useCallback(
 		(i: number, play: boolean) => {
@@ -322,7 +309,7 @@ function VideoQueue({
 
 	return (
 		<div className="vpl-wrap">
-			<section dir={dir} className="vpl" aria-label={playlistLabel}>
+			<section dir={dir} className="vpl" aria-label={heading}>
 				{activeItem.posterUrl ? (
 					<div key={`glow-${activeItem.id}`} className="vpl-glow" aria-hidden>
 						<NextImage
@@ -338,24 +325,6 @@ function VideoQueue({
 
 				<div className={cn("vpl-row", images.length > 0 && "vpl-row--split")}>
 					<div className="vpl-main" dir={dir}>
-						<PlaylistHeader
-							heading={playlistLabel}
-							kind="video"
-							active={active}
-							total={n}
-							num={num}
-							previousLabel={previousLabel}
-							nextLabel={nextLabel}
-							onPrevious={() => go(active - 1, playing)}
-							onNext={() => go(active + 1, playing)}
-						/>
-						<PlaylistItems
-							items={items}
-							active={active}
-							num={num}
-							playing={playing}
-							onSelect={(index) => go(index, true)}
-						/>
 						<div className="vpl-stage">
 							{playing ? (
 								<div key={`player-${activeItem.id}`} className="vpl-embed">
@@ -408,6 +377,17 @@ function VideoQueue({
 							) : null}
 						</div>
 
+						{n > 1 ? (
+							<MediaStrip
+								items={items}
+								active={active}
+								dir={dir}
+								label={playlistLabel}
+								playingId={playing ? activeItem.id : null}
+								onSelect={(index) => go(index, true)}
+							/>
+						) : null}
+
 						<div key={`info-${activeItem.id}`} className="vpl-info">
 							<h3 className="vpl-title">{activeItem.title}</h3>
 							{activeItem.description ? (
@@ -418,11 +398,8 @@ function VideoQueue({
 					{images.length > 0 ? (
 						<ImagePanel
 							items={images}
-							heading={imagesHeading}
-							previousLabel={previousLabel}
-							nextLabel={nextLabel}
+							stripLabel={imagesHeading}
 							closeLabel={closeLabel}
-							num={num}
 						/>
 					) : null}
 				</div>
@@ -432,20 +409,17 @@ function VideoQueue({
 }
 
 /**
- * Independent image panel with swipe, thumbnails, full captions and a lightbox.
+ * The image column inside the dark band: 16:9 stage (tap for the lightbox,
+ * swipe to switch), thumbnail strip, caption.
  */
 function ImagePanel({
 	items,
-	heading,
-	previousLabel,
-	nextLabel,
+	stripLabel,
 	closeLabel,
-	num,
-}: NavLabels & {
+}: {
 	items: DonateArchiveVideoItem[];
-	heading: string;
+	stripLabel: string;
 	closeLabel: string;
-	num: (v: string | number) => string;
 }) {
 	const locale = useLocale();
 	const dir: "rtl" | "ltr" = locale === "ckb" ? "rtl" : "ltr";
@@ -499,19 +473,6 @@ function ImagePanel({
 
 	return (
 		<div className="vpl-gallery" dir={dir}>
-			<PlaylistHeader
-				heading={heading}
-				kind="image"
-				active={active}
-				total={n}
-				num={num}
-				previousLabel={previousLabel}
-				nextLabel={nextLabel}
-				onPrevious={() => go(active - 1)}
-				onNext={() => go(active + 1)}
-			/>
-			<PlaylistItems items={items} active={active} num={num} onSelect={go} />
-
 			<div
 				className="vpl-igstage"
 				onPointerDown={onPointerDown}
@@ -548,6 +509,16 @@ function ImagePanel({
 					aria-hidden
 				/>
 			</div>
+
+			{n > 1 ? (
+				<MediaStrip
+					items={items}
+					active={active}
+					dir={dir}
+					label={stripLabel}
+					onSelect={go}
+				/>
+			) : null}
 
 			<div key={`iginfo-${item.id}`} className="vpl-iginfo">
 				<h4 className="vpl-igtitle">{item.title}</h4>
@@ -597,37 +568,33 @@ function ImagePanel({
 	);
 }
 
-/* ─────────────────────────── Image: "Fan" gallery ─────────────────────────── */
+/* ─────────────── Standalone gallery (images-only archive) ─────────────── */
 
-const FAN_OPACITY = [1, 0.92, 0.78, 0.55];
-
-function ImageFan({
+/**
+ * Same preview-first structure as the dark-band image column, on the paper
+ * surface: 16:9 stage, thumbnail strip, caption, lightbox.
+ */
+function ImageGallery({
 	items,
-	previousLabel,
-	nextLabel,
 	closeLabel,
-}: NavLabels & { items: DonateArchiveVideoItem[]; closeLabel: string }) {
+	stripLabel,
+}: {
+	items: DonateArchiveVideoItem[];
+	closeLabel: string;
+	stripLabel: string;
+}) {
 	const locale = useLocale();
 	const dir: "rtl" | "ltr" = locale === "ckb" ? "rtl" : "ltr";
 	const n = items.length;
 
-	const [nav, setNav] = useState({ active: 0, prev: 0 });
-	const { active, prev } = nav;
-
-	const wrapRef = useRef<HTMLDivElement>(null);
-	const width = useContainerWidth(wrapRef);
-	const mid = width > 0 && width < 900;
-	const compact = width > 0 && width < 560;
+	const [active, setActive] = useState(0);
 	const swipe = useRef<{ x: number; y: number } | null>(null);
 	const lightboxRef = useRef<HTMLDialogElement>(null);
 
 	const go = useCallback(
 		(i: number) => {
 			if (!n) return;
-			setNav((s) => {
-				const next = ((i % n) + n) % n;
-				return next === s.active ? s : { prev: s.active, active: next };
-			});
+			setActive(((i % n) + n) % n);
 		},
 		[n],
 	);
@@ -667,143 +634,61 @@ function ImageFan({
 		}
 	};
 
-	/* ---------- fan geometry ---------- */
-	const spread = compact ? 68 : mid ? 120 : 150; // horizontal distance between cards
-	const drop = compact ? 4 : mid ? 6 : 7; // how much the cards dip toward the edges
-	const lift = compact ? -10 : -16; // how far the selected card rises
-	const maxVisible = compact ? 2 : 3;
-	const shift = loopRel(prev - active, n);
-	const sign = dir === "rtl" ? -1 : 1;
-
-	const fan = items.map((it, i) => {
-		const rel = loopRel(i - active, n);
-		const prel = loopRel(i - prev, n);
-		const m = Math.abs(rel);
-		const on = rel === 0;
-		const jumped = rel - prel !== shift; // wrapped around the loop: move without animating
-		const x = sign * -rel * spread;
-		const y = on ? lift : rel * rel * drop;
-		const r = sign * -rel * 5;
-		const s = on ? 1.2 : 1 - 0.04 * m;
-		const visible = m <= maxVisible;
-		return {
-			it,
-			i,
-			on,
-			visible,
-			style: {
-				transform: `translateX(${x}px) translateY(${y}px) rotate(${r}deg) scale(${s.toFixed(3)})`,
-				opacity: visible ? FAN_OPACITY[m] : 0,
-				zIndex: 10 - m,
-				pointerEvents: visible ? undefined : "none",
-				transition: jumped ? "none" : undefined,
-			} as CSSProperties,
-		};
-	});
-
 	return (
-		<div ref={wrapRef} className="ipl-wrap">
+		<div className="ipl-wrap">
 			<section dir={dir} className="ipl">
 				<div className="ipl-row">
-					<div className="ipl-top">
-						<div className="ipl-stagewrap">
-							{item.posterUrl ? (
-								<div className="ipl-glow" aria-hidden>
-									<NextImage
-										key={`glow-${item.id}`}
-										src={item.posterUrl}
-										alt=""
-										fill
-										sizes="100vw"
-										className="size-full"
-									/>
-								</div>
-							) : null}
-							<div
-								className="ipl-stage"
-								onPointerDown={onPointerDown}
-								onPointerUp={onPointerUp}
-								onPointerCancel={() => {
-									swipe.current = null;
-								}}
-							>
-								{item.posterUrl ? (
-									<NextImage
-										key={`stage-${item.id}`}
-										src={item.posterUrl}
-										alt={item.title}
-										fill
-										sizes="(min-width: 1024px) 60vw, 100vw"
-										className="ipl-img"
-										draggable={false}
-									/>
-								) : null}
-
-								{n > 1 ? (
-									<>
-										<button
-											type="button"
-											className="ipl-arrow ipl-arrow--prev"
-											onClick={() => go(active - 1)}
-											onPointerDown={(e) => e.stopPropagation()}
-											aria-label={previousLabel}
-										>
-											<DirectionalIcon
-												icon={ChevronRightIcon}
-												className="size-5"
-											/>
-										</button>
-										<button
-											type="button"
-											className="ipl-arrow ipl-arrow--next"
-											onClick={() => go(active + 1)}
-											onPointerDown={(e) => e.stopPropagation()}
-											aria-label={nextLabel}
-										>
-											<DirectionalIcon
-												icon={ChevronLeftIcon}
-												className="size-5"
-											/>
-										</button>
-									</>
-								) : null}
+					<div className="ipl-stagewrap">
+						{item.posterUrl ? (
+							<div className="ipl-glow" aria-hidden>
+								<NextImage
+									key={`glow-${item.id}`}
+									src={item.posterUrl}
+									alt=""
+									fill
+									sizes="100vw"
+									className="size-full"
+								/>
 							</div>
-						</div>
-
-						<div key={`caption-${item.id}`} className="ipl-caption">
-							<h3 className="ipl-title">{item.title}</h3>
-							{item.description ? (
-								<p className="ipl-desc">{item.description}</p>
+						) : null}
+						<div
+							className="ipl-stage"
+							onPointerDown={onPointerDown}
+							onPointerUp={onPointerUp}
+							onPointerCancel={() => {
+								swipe.current = null;
+							}}
+						>
+							{item.posterUrl ? (
+								<NextImage
+									key={`stage-${item.id}`}
+									src={item.posterUrl}
+									alt={item.title}
+									fill
+									sizes="(min-width: 1024px) 60vw, 100vw"
+									className="ipl-img"
+									draggable={false}
+								/>
 							) : null}
 						</div>
 					</div>
 
 					{n > 1 ? (
-						<ul className="ipl-fan">
-							{fan.map(({ it, i, on, visible, style }) => (
-								<li key={it.id} className="ipl-fan-item" style={style}>
-									<button
-										type="button"
-										className={cn("ipl-card", on && "is-active")}
-										onClick={() => go(i)}
-										aria-current={on ? "true" : undefined}
-										aria-label={it.title}
-										tabIndex={visible ? 0 : -1}
-									>
-										{it.posterUrl ? (
-											<NextImage
-												src={it.posterUrl}
-												alt=""
-												fill
-												sizes="124px"
-												draggable={false}
-											/>
-										) : null}
-									</button>
-								</li>
-							))}
-						</ul>
+						<MediaStrip
+							items={items}
+							active={active}
+							dir={dir}
+							label={stripLabel}
+							onSelect={go}
+						/>
 					) : null}
+
+					<div key={`caption-${item.id}`} className="ipl-caption">
+						<h3 className="ipl-title">{item.title}</h3>
+						{item.description ? (
+							<p className="ipl-desc">{item.description}</p>
+						) : null}
+					</div>
 				</div>
 			</section>
 
