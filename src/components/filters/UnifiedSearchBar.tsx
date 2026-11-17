@@ -314,7 +314,14 @@ export function UnifiedSearchBar({
 		chosenTypes.length > 0 || chosenAuthor !== null || chosenExtra !== null;
 
 	return (
-		<div ref={rootRef} className={cx("usb", className)}>
+		<div
+			ref={rootRef}
+			className={cx(
+				"usb",
+				typeStyle === "pills" && "usb--inline-types",
+				className,
+			)}
+		>
 			{(title || titleExtra) && (
 				<div className="usb__title-row">
 					{title && <TitleTag className="usb__title">{title}</TitleTag>}
@@ -359,6 +366,7 @@ export function UnifiedSearchBar({
 								"usb__pill",
 								selected.size === 0 && "usb__pill--active",
 							)}
+							aria-pressed={selected.size === 0}
 							onClick={() => onTypesChange?.([])}
 						>
 							{L.allTypes}
@@ -477,6 +485,7 @@ export function UnifiedSearchBar({
 									"usb__pill",
 									extra.selected === null && "usb__pill--active",
 								)}
+								aria-pressed={extra.selected === null}
 								onClick={() => pickExtra(null)}
 							>
 								{extra.allLabel}

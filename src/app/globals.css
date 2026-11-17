@@ -496,9 +496,10 @@ html[data-corners="rounded"]
 /* All action controls share the institute-green hover surface. This is outside
    Tailwind's layers so legacy utility colours cannot override the site policy.
    Button-shaped links and explicitly marked actions join native/ARIA buttons;
-   editorial links and linked content cards keep their own treatments. */
+   editorial links and linked content cards keep their own treatments.
+   Unified filters own their hover styles, including text-only underlines. */
 @media (hover: hover) and (pointer: fine) {
-	html body :is(button, [role="button"], .site-action, a.inline-flex.border, a.bg-primary, a.draw-border-host):not(:disabled, [aria-disabled="true"], [data-disabled], .absolute.inset-0, .vpl-image-open, .cover-lightbox-trigger):hover {
+	html body :is(button, [role="button"], .site-action, a.inline-flex.border, a.bg-primary, a.draw-border-host):not(:disabled, [aria-disabled="true"], [data-disabled], .absolute.inset-0, .vpl-image-open, .cover-lightbox-trigger, .usb *):hover {
 		background-color: var(--color-brand);
 		border-color: var(--color-brand);
 		color: #fff;
@@ -510,7 +511,7 @@ html[data-corners="rounded"]
 		background-color: var(--color-brand);
 	}
 
-	html body :is(button, [role="button"], .site-action, a.inline-flex.border, a.bg-primary, a.draw-border-host):not(:disabled, [aria-disabled="true"], [data-disabled]):hover > :is(span, svg) {
+	html body :is(button, [role="button"], .site-action, a.inline-flex.border, a.bg-primary, a.draw-border-host):not(:disabled, [aria-disabled="true"], [data-disabled], .usb *):hover > :is(span, svg) {
 		color: inherit;
 	}
 
