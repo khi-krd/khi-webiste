@@ -393,13 +393,6 @@
   column-gap: 24px;
 }
 
-.usb__group-title {
-  padding: 0 0 4px;
-  font-size: 13px;
-  font-weight: 700;
-  color: var(--f-muted);
-}
-
 .usb__check,
 .usb__radio {
   display: flex;

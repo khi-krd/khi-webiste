@@ -312,6 +312,7 @@ export function UnifiedSearchBar({
 
 	const hasActive =
 		chosenTypes.length > 0 || chosenAuthor !== null || chosenExtra !== null;
+	const showSummary = hasActive || query.trim().length > 0;
 
 	return (
 		<div
@@ -437,11 +438,6 @@ export function UnifiedSearchBar({
 									key={section.id}
 									className={cx("usb__group", flatTypes && "usb__group--flat")}
 								>
-									{section.label && (
-										<legend className="usb__group-title">
-											{section.label}
-										</legend>
-									)}
 									{section.items.map((t) => (
 										<label key={t.id} className="usb__check">
 											<input
@@ -682,54 +678,56 @@ export function UnifiedSearchBar({
 				/>
 			)}
 
-			<div className="usb__summary">
-				<p className="usb__result" aria-live="polite">
-					<strong>{num(resultCount)}</strong> {L.results}
-				</p>
-				{chosenTypes.map((t) => (
-					<button
-						key={t.id}
-						type="button"
-						className="usb__tag"
-						aria-label={L.remove(t.label)}
-						onClick={() => toggleType(t.id)}
-					>
-						<span>{t.label}</span>
-						<CloseIcon size={16} strokeWidth={2} />
-					</button>
-				))}
-				{chosenAuthor && (
-					<button
-						type="button"
-						className="usb__tag"
-						aria-label={L.remove(chosenAuthor.label)}
-						onClick={() => onAuthorChange?.(null)}
-					>
-						<span>{chosenAuthor.label}</span>
-						<CloseIcon size={16} strokeWidth={2} />
-					</button>
-				)}
-				{chosenExtra && (
-					<button
-						type="button"
-						className="usb__tag"
-						aria-label={L.remove(chosenExtra.label)}
-						onClick={() => extra?.onChange(null)}
-					>
-						<span>{chosenExtra.label}</span>
-						<CloseIcon size={16} strokeWidth={2} />
-					</button>
-				)}
-				{hasActive && (
-					<button
-						type="button"
-						className="usb__link usb__link--small"
-						onClick={clearAll}
-					>
-						{L.clearAll}
-					</button>
-				)}
-			</div>
+			{showSummary && (
+				<div className="usb__summary">
+					<p className="usb__result" aria-live="polite">
+						<strong>{num(resultCount)}</strong> {L.results}
+					</p>
+					{chosenTypes.map((t) => (
+						<button
+							key={t.id}
+							type="button"
+							className="usb__tag"
+							aria-label={L.remove(t.label)}
+							onClick={() => toggleType(t.id)}
+						>
+							<span>{t.label}</span>
+							<CloseIcon size={16} strokeWidth={2} />
+						</button>
+					))}
+					{chosenAuthor && (
+						<button
+							type="button"
+							className="usb__tag"
+							aria-label={L.remove(chosenAuthor.label)}
+							onClick={() => onAuthorChange?.(null)}
+						>
+							<span>{chosenAuthor.label}</span>
+							<CloseIcon size={16} strokeWidth={2} />
+						</button>
+					)}
+					{chosenExtra && (
+						<button
+							type="button"
+							className="usb__tag"
+							aria-label={L.remove(chosenExtra.label)}
+							onClick={() => extra?.onChange(null)}
+						>
+							<span>{chosenExtra.label}</span>
+							<CloseIcon size={16} strokeWidth={2} />
+						</button>
+					)}
+					{hasActive && (
+						<button
+							type="button"
+							className="usb__link usb__link--small"
+							onClick={clearAll}
+						>
+							{L.clearAll}
+						</button>
+					)}
+				</div>
+			)}
 		</div>
 	);
 }
