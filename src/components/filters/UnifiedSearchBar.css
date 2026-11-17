@@ -62,18 +62,35 @@
   align-items: center;
 }
 
-.usb__search-icon {
+.usb__search-submit {
   position: absolute;
-  inset-inline-start: 16px;
+  left: 8px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 44px;
+  height: 44px;
+  display: grid;
+  place-items: center;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
   color: var(--f-ink);
-  pointer-events: none;
+  cursor: pointer;
+  transition: color 0.18s ease;
+}
+.usb__search-submit:hover {
+  color: var(--f-accent);
+}
+.usb__search-submit:focus-visible {
+  outline: 2px solid var(--f-accent);
+  outline-offset: -2px;
 }
 
 .usb__search-input {
   width: 100%;
   height: 60px;
-  padding-block: 0;
-  padding-inline: 50px 12px;
+  padding: 0 12px 0 56px;
   border: 0;
   border-radius: var(--f-radius-seg);
   background: transparent;
@@ -245,56 +262,6 @@
 }
 .usb__seg-btn[aria-expanded='true'] .usb__seg-chevron {
   transform: rotate(180deg);
-}
-
-/* Plain-text submit — the word "گەڕان" with the same drawn underline as the
-   segments, no green container. */
-.usb__submit {
-  position: relative;
-  flex: none;
-  height: 60px;
-  display: inline-flex;
-  align-items: center;
-  padding-block: 0;
-  padding-inline: 18px;
-  border: 0;
-  border-radius: var(--f-radius-seg);
-  background: transparent;
-  font: inherit;
-  font-size: 15px;
-  font-weight: 700;
-  color: var(--f-ink);
-  cursor: pointer;
-  white-space: nowrap;
-}
-.usb__submit::after {
-  content: "";
-  position: absolute;
-  inset-inline: 14px;
-  bottom: 7px;
-  height: 2px;
-  background: var(--f-accent);
-  transform: scaleX(0);
-  transform-origin: center;
-  opacity: 0;
-  transition:
-    transform 0.22s ease,
-    opacity 0.18s ease;
-}
-.usb__submit:hover {
-  color: var(--f-accent);
-}
-.usb__submit:hover::after {
-  transform: scaleX(1);
-  opacity: 1;
-}
-.usb__submit:focus-visible {
-  outline: 2px solid var(--f-accent);
-  outline-offset: -2px;
-}
-.usb__submit:focus-visible {
-  outline: 2px solid var(--f-accent);
-  outline-offset: 2px;
 }
 
 /* Hover feedback only on devices with a real pointer, so taps do not leave
@@ -611,9 +578,6 @@
   .usb__bar {
     padding: 6px;
     gap: 0;
-  }
-  .usb__submit {
-    display: none; /* the keyboard's search key submits */
   }
   .usb__segment,
   .usb__segment--narrow {

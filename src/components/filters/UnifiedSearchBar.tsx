@@ -103,7 +103,7 @@ export interface UnifiedSearchBarProps {
 
 	query: string;
 	onQueryChange: (value: string) => void;
-	/** Called on Enter or the green search button. */
+	/** Called on Enter or the search icon inside the input. */
 	onSearchSubmit?: (value: string) => void;
 
 	/** All types. Give each a `group` id to show them grouped. Omit to hide. */
@@ -339,7 +339,6 @@ export function UnifiedSearchBar({
 					<label htmlFor={`${uid}-q`} className="f-visually-hidden">
 						{L.searchLabel}
 					</label>
-					<SearchIcon size={22} className="usb__search-icon" />
 					<input
 						id={`${uid}-q`}
 						type="search"
@@ -349,6 +348,13 @@ export function UnifiedSearchBar({
 						enterKeyHint="search"
 						onChange={(e) => onQueryChange(e.target.value)}
 					/>
+					<button
+						type="submit"
+						className="usb__search-submit"
+						aria-label={L.search}
+					>
+						<SearchIcon size={22} />
+					</button>
 				</div>
 
 				<span className="usb__divider usb__divider--first" aria-hidden="true" />
@@ -665,10 +671,6 @@ export function UnifiedSearchBar({
 						</Segment>
 					</>
 				)}
-
-				<button type="submit" className="usb__submit">
-					{L.search}
-				</button>
 			</form>
 
 			{/* Dims the page behind bottom sheets on phones (hidden on desktop). */}
