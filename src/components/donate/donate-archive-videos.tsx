@@ -1,6 +1,10 @@
 "use client";
 
-import { XMarkIcon } from "@heroicons/react/24/outline";
+import {
+	ChevronLeftIcon,
+	ChevronRightIcon,
+	XMarkIcon,
+} from "@heroicons/react/24/outline";
 import { PlayIcon } from "@heroicons/react/24/solid";
 import dynamic from "next/dynamic";
 import NextImage from "next/image";
@@ -14,6 +18,7 @@ import {
 	useState,
 } from "react";
 import { pageXClass } from "@/components/donate/donate-shell";
+import { DirectionalIcon } from "@/components/ui/directional-icon";
 import { cn } from "@/lib/utils";
 import "./donate-video-playlist.css";
 import "./donate-image-playlist.css";
@@ -39,6 +44,8 @@ type DonateArchiveVideosProps = {
 	imagesHeading: string;
 	playLabel: string;
 	playlistLabel: string;
+	previousLabel: string;
+	nextLabel: string;
 	closeLabel: string;
 	items: DonateArchiveVideoItem[];
 };
@@ -57,6 +64,8 @@ export function DonateArchiveVideos({
 	imagesHeading,
 	playLabel,
 	playlistLabel,
+	previousLabel,
+	nextLabel,
 	closeLabel,
 	items,
 }: DonateArchiveVideosProps) {
@@ -78,6 +87,8 @@ export function DonateArchiveVideos({
 						imagesHeading={imagesHeading}
 						playLabel={playLabel}
 						playlistLabel={playlistLabel}
+						previousLabel={previousLabel}
+						nextLabel={nextLabel}
 						closeLabel={closeLabel}
 						heading={heading}
 					/>
@@ -89,6 +100,8 @@ export function DonateArchiveVideos({
 						items={images}
 						closeLabel={closeLabel}
 						stripLabel={imagesHeading}
+						previousLabel={previousLabel}
+						nextLabel={nextLabel}
 					/>
 				</section>
 			)}
@@ -143,6 +156,8 @@ function MediaStrip({
 	active,
 	dir,
 	label,
+	previousLabel,
+	nextLabel,
 	playingId,
 	onSelect,
 }: {
@@ -150,6 +165,8 @@ function MediaStrip({
 	active: number;
 	dir: "rtl" | "ltr";
 	label: string;
+	previousLabel: string;
+	nextLabel: string;
 	/** When the active video is playing, its card carries the eq bars. */
 	playingId?: number | null;
 	onSelect: (index: number) => void;
@@ -209,63 +226,90 @@ function MediaStrip({
 		dragRef.current = null;
 	};
 
+	const step = (delta: number) => {
+		if (!n) return;
+		onSelect((((active + delta) % n) + n) % n);
+	};
+
 	return (
-		<ol
-			ref={listRef}
-			className="ms-strip"
-			aria-label={label}
-			// biome-ignore lint/a11y/noNoninteractiveTabindex: spec requires the strip itself focusable so arrow keys can move the selection without tabbing into a card first.
-			tabIndex={0}
-			onKeyDown={onKeyDown}
-			onPointerDown={onPointerDown}
-			onPointerMove={onPointerMove}
-			onPointerUp={endDrag}
-			onPointerCancel={endDrag}
-			onPointerLeave={endDrag}
-			onClickCapture={(e) => {
-				if (suppressClick.current) {
-					suppressClick.current = false;
-					e.preventDefault();
-					e.stopPropagation();
-				}
-			}}
-		>
-			{items.map((item, index) => (
-				<li key={item.id}>
-					<button
-						type="button"
-						aria-current={index === active ? "true" : undefined}
-						title={item.title}
-						className={cn("ms-card", index === active && "is-active")}
-						onClick={() => onSelect(index)}
-					>
-						<span className="ms-thumb">
-							{item.posterUrl ? (
-								<NextImage
-									src={item.posterUrl}
-									alt=""
-									width={160}
-									height={90}
-									sizes="160px"
-									loading="lazy"
-									draggable={false}
-								/>
-							) : item.videoUrl ? (
-								<VideoStill src={item.videoUrl} />
-							) : null}
-							{playingId === item.id ? (
-								<span className="vpl-eq is-playing" aria-hidden>
-									<span />
-									<span />
-									<span />
-								</span>
-							) : null}
-						</span>
-						<span className="ms-title">{item.title}</span>
-					</button>
-				</li>
-			))}
-		</ol>
+		<div className="ms-stripwrap">
+			{n > 1 ? (
+				<button
+					type="button"
+					className="ms-arrow"
+					onClick={() => step(-1)}
+					aria-label={previousLabel}
+				>
+					<DirectionalIcon icon={ChevronLeftIcon} className="size-4" />
+				</button>
+			) : null}
+			<ol
+				ref={listRef}
+				className="ms-strip"
+				aria-label={label}
+				// biome-ignore lint/a11y/noNoninteractiveTabindex: spec requires the strip itself focusable so arrow keys can move the selection without tabbing into a card first.
+				tabIndex={0}
+				onKeyDown={onKeyDown}
+				onPointerDown={onPointerDown}
+				onPointerMove={onPointerMove}
+				onPointerUp={endDrag}
+				onPointerCancel={endDrag}
+				onPointerLeave={endDrag}
+				onClickCapture={(e) => {
+					if (suppressClick.current) {
+						suppressClick.current = false;
+						e.preventDefault();
+						e.stopPropagation();
+					}
+				}}
+			>
+				{items.map((item, index) => (
+					<li key={item.id}>
+						<button
+							type="button"
+							aria-current={index === active ? "true" : undefined}
+							title={item.title}
+							className={cn("ms-card", index === active && "is-active")}
+							onClick={() => onSelect(index)}
+						>
+							<span className="ms-thumb">
+								{item.posterUrl ? (
+									<NextImage
+										src={item.posterUrl}
+										alt=""
+										width={160}
+										height={90}
+										sizes="160px"
+										loading="lazy"
+										draggable={false}
+									/>
+								) : item.videoUrl ? (
+									<VideoStill src={item.videoUrl} />
+								) : null}
+								{playingId === item.id ? (
+									<span className="vpl-eq is-playing" aria-hidden>
+										<span />
+										<span />
+										<span />
+									</span>
+								) : null}
+							</span>
+							<span className="ms-title">{item.title}</span>
+						</button>
+					</li>
+				))}
+			</ol>
+			{n > 1 ? (
+				<button
+					type="button"
+					className="ms-arrow"
+					onClick={() => step(1)}
+					aria-label={nextLabel}
+				>
+					<DirectionalIcon icon={ChevronRightIcon} className="size-4" />
+				</button>
+			) : null}
+		</div>
 	);
 }
 
@@ -277,6 +321,8 @@ function VideoQueue({
 	imagesHeading,
 	playLabel,
 	playlistLabel,
+	previousLabel,
+	nextLabel,
 	closeLabel,
 	heading,
 }: {
@@ -285,6 +331,8 @@ function VideoQueue({
 	imagesHeading: string;
 	playLabel: string;
 	playlistLabel: string;
+	previousLabel: string;
+	nextLabel: string;
 	closeLabel: string;
 	heading: string;
 }) {
@@ -383,6 +431,8 @@ function VideoQueue({
 								active={active}
 								dir={dir}
 								label={playlistLabel}
+								previousLabel={previousLabel}
+								nextLabel={nextLabel}
 								playingId={playing ? activeItem.id : null}
 								onSelect={(index) => go(index, true)}
 							/>
@@ -399,6 +449,8 @@ function VideoQueue({
 						<ImagePanel
 							items={images}
 							stripLabel={imagesHeading}
+							previousLabel={previousLabel}
+							nextLabel={nextLabel}
 							closeLabel={closeLabel}
 						/>
 					) : null}
@@ -415,10 +467,14 @@ function VideoQueue({
 function ImagePanel({
 	items,
 	stripLabel,
+	previousLabel,
+	nextLabel,
 	closeLabel,
 }: {
 	items: DonateArchiveVideoItem[];
 	stripLabel: string;
+	previousLabel: string;
+	nextLabel: string;
 	closeLabel: string;
 }) {
 	const locale = useLocale();
@@ -516,6 +572,8 @@ function ImagePanel({
 					active={active}
 					dir={dir}
 					label={stripLabel}
+					previousLabel={previousLabel}
+					nextLabel={nextLabel}
 					onSelect={go}
 				/>
 			) : null}
@@ -578,10 +636,14 @@ function ImageGallery({
 	items,
 	closeLabel,
 	stripLabel,
+	previousLabel,
+	nextLabel,
 }: {
 	items: DonateArchiveVideoItem[];
 	closeLabel: string;
 	stripLabel: string;
+	previousLabel: string;
+	nextLabel: string;
 }) {
 	const locale = useLocale();
 	const dir: "rtl" | "ltr" = locale === "ckb" ? "rtl" : "ltr";
@@ -679,6 +741,8 @@ function ImageGallery({
 							active={active}
 							dir={dir}
 							label={stripLabel}
+							previousLabel={previousLabel}
+							nextLabel={nextLabel}
 							onSelect={go}
 						/>
 					) : null}

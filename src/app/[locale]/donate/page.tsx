@@ -82,6 +82,8 @@ export default async function DonatePage({
 							imagesHeading={t("archiveImages.heading")}
 							playLabel={t("archiveVideos.play")}
 							playlistLabel={t("archiveVideos.playlist")}
+							previousLabel={t("archiveVideos.previous")}
+							nextLabel={t("archiveVideos.next")}
 							closeLabel={t("archiveVideos.close")}
 							items={archiveVideos}
 						/>
