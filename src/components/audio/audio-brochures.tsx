@@ -155,7 +155,7 @@ export function AudioBrochures({
 								type="button"
 								onClick={() => open(lightboxIndexOf(item))}
 								aria-label={`${openLabel} — ${item.caption ?? title}`}
-								className="group block w-full text-start focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
+								className="no-fill-hover group block w-full text-start focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
 							>
 								<span className="relative block aspect-square w-full overflow-hidden border border-border bg-sunken">
 									<NextImage

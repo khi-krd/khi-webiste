@@ -32,7 +32,7 @@ type NewsMediaModalProps = {
 };
 
 const navButtonClass =
-	"inline-flex size-9 items-center justify-center border border-primary-foreground/25 bg-primary text-primary-foreground transition-opacity fine-hover:opacity-90";
+	"inline-flex size-9 items-center justify-center border border-primary-foreground/25 bg-transparent text-primary-foreground transition-colors";
 
 function isRemoteSrc(src: string): boolean {
 	return src.startsWith("http://") || src.startsWith("https://");

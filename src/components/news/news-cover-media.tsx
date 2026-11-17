@@ -61,7 +61,7 @@ export function NewsCoverMedia({
 				type="button"
 				onClick={openCover}
 				aria-label={alt}
-				className="absolute end-3 top-3 inline-flex size-9 items-center justify-center border border-primary-foreground/25 bg-primary text-primary-foreground transition-opacity fine-hover:opacity-90"
+				className="absolute end-3 top-3 inline-flex size-9 items-center justify-center border border-primary-foreground/25 bg-transparent text-primary-foreground transition-colors"
 			>
 				<ArrowsPointingOutIcon className="size-4" aria-hidden />
 			</button>

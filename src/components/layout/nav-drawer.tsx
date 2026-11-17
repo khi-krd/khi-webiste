@@ -35,7 +35,7 @@ const NAV_DRAWER_ID = "site-nav-drawer";
 export { NAV_DRAWER_ID };
 
 const overlayFooterIconButtonClass =
-	"draw-border-host relative isolate inline-flex min-h-11 min-w-11 items-center justify-center overflow-hidden border border-primary-foreground/25 bg-primary text-primary-foreground transition-opacity fine-hover:opacity-90";
+	"draw-border-host relative isolate inline-flex min-h-11 min-w-11 items-center justify-center overflow-hidden border border-primary-foreground/25 bg-transparent text-primary-foreground transition-colors";
 
 const FOCUSABLE =
 	'a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])';
@@ -73,7 +73,7 @@ const primaryItemArrowClass =
 	"size-5 shrink-0 opacity-0 transition-opacity group-focus-visible:opacity-100 lg:group-hover:opacity-100";
 
 const navDismissSpacerClass =
-	"block min-h-0 w-full flex-1 cursor-default border-0 bg-transparent p-0";
+	"no-fill-hover block min-h-0 w-full flex-1 cursor-default border-0 bg-transparent p-0";
 
 type NavDismissSpacerProps = {
 	label: string;
@@ -370,7 +370,7 @@ export function NavDrawer({
 												type="button"
 												onClick={close}
 												aria-label={t("menuClose")}
-												className="inline-flex min-h-11 min-w-11 shrink-0 items-center justify-center border border-primary-foreground/25 bg-primary p-2 text-primary-foreground transition-opacity hover:opacity-90 focus-visible:opacity-90"
+												className="inline-flex min-h-11 min-w-11 shrink-0 items-center justify-center border border-primary-foreground/25 bg-transparent p-2 text-primary-foreground transition-colors"
 											>
 												<XMarkIcon
 													className="size-6 shrink-0"

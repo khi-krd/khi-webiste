@@ -41,7 +41,7 @@ type GalleryLightboxProps = {
 };
 
 const navButtonClass =
-	"inline-flex size-9 items-center justify-center border border-primary-foreground/25 bg-primary text-primary-foreground transition-[opacity,transform] fine-hover:opacity-90 active:scale-95";
+	"inline-flex size-9 items-center justify-center border border-primary-foreground/25 bg-transparent text-primary-foreground transition-colors active:scale-95";
 
 function hasDimensions(item: GalleryLightboxItem): boolean {
 	return item.widthPx != null && item.heightPx != null;

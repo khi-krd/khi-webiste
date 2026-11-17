@@ -612,7 +612,7 @@ export function MenuSearch({ onBack, onNavigate }: MenuSearchProps) {
 
 						<Button
 							type="submit"
-							variant="primary"
+							variant="secondary"
 							size="lg"
 							className="self-start"
 						>
