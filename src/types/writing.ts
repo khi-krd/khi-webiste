@@ -91,6 +91,21 @@ export const BilingualSetSchema = z.object({
 	kmr: z.array(z.string()).default([]),
 });
 
+/** A managed-vocabulary row embedded on a writing — type / edition / language. */
+export const ManagedOptionInfoSchema = z.object({
+	id: z.number().nullish(),
+	slug: z.string().nullish(),
+	nameCkb: z.string().nullish(),
+	nameKmr: z.string().nullish(),
+});
+
+/** An original-book / later-edition link (id + bilingual title). */
+export const BookLinkSchema = z.object({
+	id: z.number().nullish(),
+	titleCkb: z.string().nullish(),
+	titleKmr: z.string().nullish(),
+});
+
 export const WritingSchema = z.object({
 	id: z.number(),
 	contentLanguages: z.array(z.enum(["CKB", "KMR"])),
@@ -107,6 +122,13 @@ export const WritingSchema = z.object({
 	bookGenres: z.array(z.string()),
 	bookLanguageCkb: z.string().nullish(),
 	bookLanguageKmr: z.string().nullish(),
+	bookLanguage: ManagedOptionInfoSchema.nullish(),
+	writingType: ManagedOptionInfoSchema.nullish(),
+	edition: ManagedOptionInfoSchema.nullish(),
+	originalBook: BookLinkSchema.nullish(),
+	editionBooks: lenientArray(BookLinkSchema, "edition book").optional(),
+	audioUrl: z.string().nullish(),
+	cdCoverUrl: z.string().nullish(),
 	publishedByInstitute: z.boolean(),
 	tags: BilingualSetSchema,
 	keywords: BilingualSetSchema,
@@ -119,6 +141,8 @@ export const WritingSchema = z.object({
 });
 
 export type Writing = z.infer<typeof WritingSchema>;
+export type ManagedOptionInfo = z.infer<typeof ManagedOptionInfoSchema>;
+export type BookLink = z.infer<typeof BookLinkSchema>;
 export type WritingContent = z.infer<typeof WritingContentSchema>;
 export type WritingPerson = z.infer<typeof WritingPersonSchema>;
 export type TopicInfo = z.infer<typeof TopicInfoSchema>;
@@ -203,6 +227,12 @@ export type ResolvedWritingDetail = {
 	writer: string;
 	location: string | null;
 	bookLanguage: string | null;
+	writingType: string | null;
+	edition: string | null;
+	originalBook: { id: number; title: string } | null;
+	editionBooks: { id: number; title: string }[];
+	audioUrl: string | null;
+	cdCoverUrl: string | null;
 	description: string;
 	coverUrl: string | null;
 	hoverCoverUrl: string | null;

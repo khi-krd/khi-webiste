@@ -108,7 +108,7 @@ export default async function WritingsSegmentPage({
 					activeKeyword={pageData.activeKeyword}
 					activeSort={pageData.activeSort}
 					genreLabels={pageData.genreLabels}
-				genreCounts={pageData.genreCounts}
+					genreCounts={pageData.genreCounts}
 					writers={pageData.writers}
 					noResultsMessage={pageData.noResultsMessage}
 					paginationLabel={t("pagination.label")}
@@ -156,6 +156,11 @@ export default async function WritingsSegmentPage({
 				locale={locale}
 				writerLabel={t("post.writer")}
 				bookLanguageLabel={t("post.bookLanguage")}
+				writingTypeLabel={t("post.writingType")}
+				editionLabel={t("post.edition")}
+				audioTitle={t("post.audioTitle")}
+				originalBookLabel={t("post.originalBook")}
+				laterEditionsLabel={t("post.laterEditions")}
 				seriesLabel={t("post.series")}
 				seriesVolumeLabel={(order, total) =>
 					t("post.seriesVolume", { order, total: total ?? order })

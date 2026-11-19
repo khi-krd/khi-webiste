@@ -42,6 +42,11 @@ type WritingPostViewProps = {
 	related: ResolvedWritingCard[];
 	writerLabel: string;
 	bookLanguageLabel: string;
+	writingTypeLabel: string;
+	editionLabel: string;
+	audioTitle: string;
+	originalBookLabel: string;
+	laterEditionsLabel: string;
 
 	seriesLabel: string;
 	seriesVolumeLabel: (order: number, total: number | null) => string;
@@ -64,6 +69,11 @@ export function WritingPostView({
 	related,
 	writerLabel,
 	bookLanguageLabel,
+	writingTypeLabel,
+	editionLabel,
+	audioTitle,
+	originalBookLabel,
+	laterEditionsLabel,
 
 	seriesLabel,
 	seriesVolumeLabel,
@@ -142,6 +152,34 @@ export function WritingPostView({
 			: []),
 		...(detail.bookLanguage
 			? [{ label: bookLanguageLabel, value: detail.bookLanguage }]
+			: []),
+		...(detail.writingType
+			? [{ label: writingTypeLabel, value: detail.writingType }]
+			: []),
+		...(detail.edition ? [{ label: editionLabel, value: detail.edition }] : []),
+		...(detail.originalBook
+			? [
+					{
+						label: originalBookLabel,
+						links: [
+							{
+								text: detail.originalBook.title,
+								href: `/writings/${detail.originalBook.id}`,
+							},
+						],
+					},
+				]
+			: []),
+		...(detail.editionBooks.length > 0
+			? [
+					{
+						label: laterEditionsLabel,
+						links: detail.editionBooks.map((b) => ({
+							text: b.title,
+							href: `/writings/${b.id}`,
+						})),
+					},
+				]
 			: []),
 		...(detail.topicNames.length > 0
 			? [
@@ -293,6 +331,58 @@ export function WritingPostView({
 						))}
 					</dl>
 				</section>
+			) : null}
+
+			{detail.audioUrl || detail.cdCoverUrl ? (
+				<ScrollRevealBlock>
+					<section
+						className={cn(
+							"border-t border-border py-8 sm:py-10",
+							homeInsetClass,
+						)}
+						aria-labelledby="writing-audio-heading"
+					>
+						<h2
+							id="writing-audio-heading"
+							className="font-heading text-h2 font-bold"
+						>
+							{audioTitle}
+						</h2>
+						<div className="mt-6 flex flex-col gap-6 sm:flex-row sm:items-start">
+							{detail.cdCoverUrl ? (
+								<figure className="w-40 shrink-0">
+									<CoverLightbox
+										src={detail.cdCoverUrl}
+										alt={audioTitle}
+										caption={detail.title}
+										closeLabel={lightboxCloseLabel}
+										intrinsicWidth={800}
+										intrinsicHeight={800}
+									>
+										<span className="relative block aspect-square w-full overflow-hidden bg-sunken shadow-[0_12px_32px_rgba(23,21,18,0.14)]">
+											<NextImage
+												src={detail.cdCoverUrl}
+												alt=""
+												fill
+												sizes="10rem"
+												className="object-cover"
+											/>
+										</span>
+									</CoverLightbox>
+								</figure>
+							) : null}
+							{detail.audioUrl ? (
+								// biome-ignore lint/a11y/useMediaCaption: archival audio — no captions from API
+								<audio
+									controls
+									preload="metadata"
+									src={detail.audioUrl}
+									className="w-full max-w-xl"
+								/>
+							) : null}
+						</div>
+					</section>
+				</ScrollRevealBlock>
 			) : null}
 
 			<ScrollRevealBlock>

@@ -1,5 +1,7 @@
 import { plainTextFromRichContent } from "@/lib/rich-text";
 import type {
+	BookLink,
+	ManagedOptionInfo,
 	ResolvedSeriesBook,
 	ResolvedWritingCard,
 	ResolvedWritingDetail,
@@ -33,6 +35,31 @@ function firstNonBlank(
 		}
 	}
 	return null;
+}
+
+/** Locale-picked name of a managed-vocabulary row (type / edition / language). */
+function optionName(
+	locale: string,
+	opt: ManagedOptionInfo | null | undefined,
+): string | null {
+	if (!opt) return null;
+	return locale === "ckb"
+		? firstNonBlank(opt.nameCkb, opt.nameKmr)
+		: firstNonBlank(opt.nameKmr, opt.nameCkb);
+}
+
+/** A BookLink reduced to {id, title} — null when it has nothing to show. */
+function bookLink(
+	locale: string,
+	link: BookLink | null | undefined,
+): { id: number; title: string } | null {
+	if (!link) return null;
+	const title =
+		locale === "ckb"
+			? firstNonBlank(link.titleCkb, link.titleKmr)
+			: firstNonBlank(link.titleKmr, link.titleCkb);
+	if (link.id == null || !title) return null;
+	return { id: link.id, title };
 }
 
 /** Roles are free text — recognize the writer spellings editors type. */
@@ -390,9 +417,23 @@ export function resolveWritingDetail(
 		location: content.location?.trim() || null,
 		bookLanguage:
 			(locale === "ckb"
-				? writing.bookLanguageCkb || writing.bookLanguageKmr
-				: writing.bookLanguageKmr || writing.bookLanguageCkb
+				? writing.bookLanguage?.nameCkb ||
+					writing.bookLanguageCkb ||
+					writing.bookLanguage?.nameKmr ||
+					writing.bookLanguageKmr
+				: writing.bookLanguage?.nameKmr ||
+					writing.bookLanguageKmr ||
+					writing.bookLanguage?.nameCkb ||
+					writing.bookLanguageCkb
 			)?.trim() || null,
+		writingType: optionName(locale, writing.writingType),
+		edition: optionName(locale, writing.edition),
+		originalBook: bookLink(locale, writing.originalBook),
+		editionBooks: (writing.editionBooks ?? [])
+			.map((b) => bookLink(locale, b))
+			.filter((b): b is { id: number; title: string } => b != null),
+		audioUrl: writing.audioUrl?.trim() || null,
+		cdCoverUrl: writing.cdCoverUrl?.trim() || null,
 		description,
 		coverUrl: resolveCoverUrl(locale, writing),
 		hoverCoverUrl: writing.hoverCoverUrl ?? null,
