@@ -33,8 +33,10 @@ type VideoShellProps = {
 	currentPage: number;
 	totalPages: number;
 	topics: TopicOption[];
+	categories?: TopicOption[];
 	activeType?: VideoType | null;
 	activeTopicId?: number | null;
+	activeCategoryId?: number | null;
 	activeMemories?: boolean | null;
 	activeQuery?: string | null;
 	noResultsMessage: string;
@@ -55,8 +57,10 @@ export async function VideoShell({
 	currentPage,
 	totalPages,
 	topics,
+	categories,
 	activeType,
 	activeTopicId,
+	activeCategoryId,
 	activeMemories,
 	activeQuery,
 	noResultsMessage,
@@ -77,7 +81,7 @@ export async function VideoShell({
 		hoverCoverUrl: card.hoverCoverUrl,
 		videoType: card.videoType,
 		typeLabel: t(`typeBadge.${card.videoType}`),
-		topicLabel: card.topicName,
+		topicLabel: card.topicName ?? card.categoryName,
 		durationLabel: formatDuration(card.durationSeconds),
 		href: isShortFilm(card)
 			? shortFilmDetailHref(card.id)
@@ -103,6 +107,7 @@ export async function VideoShell({
 		currentPage,
 		activeType ?? "all",
 		activeTopicId ?? "topic",
+		activeCategoryId ?? "category",
 		activeMemories ? "memories" : "any",
 		activeQuery ?? "",
 	].join(":");
@@ -120,8 +125,10 @@ export async function VideoShell({
 				{showFilters ? (
 					<VideoFilters
 						topics={topics}
+						categories={categories}
 						activeType={activeType}
 						activeTopicId={activeTopicId}
+						activeCategoryId={activeCategoryId}
 						activeMemories={activeMemories}
 						activeQuery={activeQuery}
 						resultCount={resultCount ?? 0}
@@ -197,6 +204,7 @@ export async function VideoShell({
 								totalPages={totalPages}
 								activeType={activeType}
 								activeTopicId={activeTopicId}
+								activeCategoryId={activeCategoryId}
 								activeMemories={activeMemories}
 								activeQuery={activeQuery}
 								basePath={basePath}

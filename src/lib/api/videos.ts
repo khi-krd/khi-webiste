@@ -1,4 +1,5 @@
 import "server-only";
+import { z } from "zod";
 import {
 	apiFetch,
 	apiFetchItemArray,
@@ -65,6 +66,7 @@ export type VideoListingOptions = {
 	videoType?: VideoType | null;
 	topicId?: number | null;
 	excludeTopicId?: number | null;
+	categoryId?: number | null;
 	memories?: boolean | null;
 	query?: string | null;
 	page?: number;
@@ -85,18 +87,24 @@ export type VideoListingOptions = {
 
 type VideoListingFilters = Pick<
 	VideoListingOptions,
-	"videoType" | "topicId" | "excludeTopicId" | "memories" | "query" | "popular"
+	| "videoType"
+	| "topicId"
+	| "excludeTopicId"
+	| "categoryId"
+	| "memories"
+	| "query"
+	| "popular"
 >;
 
 type VideoPageFetchOptions = Pick<
 	VideoListingOptions,
-	"videoType" | "topicId" | "memories" | "popular"
+	"videoType" | "topicId" | "categoryId" | "memories" | "popular"
 >;
 
 function buildVideoSearchParams(
 	page: number,
 	size: number,
-	{ videoType, topicId, memories }: VideoPageFetchOptions = {},
+	{ videoType, topicId, categoryId, memories }: VideoPageFetchOptions = {},
 ): Record<string, string | number | undefined> {
 	const searchParams: Record<string, string | number | undefined> = {
 		page,
@@ -108,6 +116,9 @@ function buildVideoSearchParams(
 	}
 	if (topicId != null) {
 		searchParams.topicId = topicId;
+	}
+	if (categoryId != null) {
+		searchParams.categoryId = categoryId;
 	}
 	// `memories=false` sends the server down its clips-by-album branch and hides
 	// every memory clip; only `true` narrows the way we want. Either value is
@@ -337,6 +348,7 @@ export async function getVideoListing(
 		videoType,
 		topicId,
 		excludeTopicId,
+		categoryId,
 		memories,
 		query,
 		page = 1,
@@ -351,6 +363,7 @@ export async function getVideoListing(
 		videoType,
 		topicId,
 		excludeTopicId,
+		categoryId,
 		memories,
 		query,
 		popular,
@@ -479,6 +492,49 @@ export async function getVideoTopicName(
 ): Promise<string | null> {
 	const topics = await getVideoTopics(locale);
 	return topics.find((topic) => topic.id === topicId)?.name ?? null;
+}
+
+const VideoCategorySchema = z.object({
+	id: z.number(),
+	nameCkb: z.string().nullish(),
+	nameKmr: z.string().nullish(),
+	/** Backend counts the videos pointing at the row. */
+	bookCount: z.number().nullish(),
+});
+
+export type VideoCategoryOption = {
+	id: number;
+	name: string;
+	count?: number;
+};
+
+/** Category options for the filter UI (`GET /api/v1/video-categories`). */
+export async function getVideoCategories(
+	locale: string,
+): Promise<VideoCategoryOption[]> {
+	if (!getApiBaseUrl()) {
+		return [];
+	}
+
+	const rows = await apiFetch("/api/v1/video-categories", {
+		schema: lenientArray(VideoCategorySchema, "video category"),
+		tags: [VIDEOS_TAG, "video-categories"],
+		revalidate: DEFAULT_REVALIDATE,
+	});
+
+	return (rows ?? [])
+		.map((row): VideoCategoryOption | null => {
+			const name =
+				locale === "ckb"
+					? (row.nameCkb ?? row.nameKmr)
+					: (row.nameKmr ?? row.nameCkb);
+			if (!name) return null;
+			return { id: row.id, name, count: row.bookCount ?? 0 };
+		})
+		.filter((row): row is VideoCategoryOption => row != null)
+		.sort((a, b) =>
+			a.name.localeCompare(b.name, locale === "ckb" ? "ckb" : "ku"),
+		);
 }
 
 /**

@@ -3,6 +3,7 @@ import type { VideoType } from "@/types/video";
 export type VideoUrlParams = {
 	type?: VideoType | string | null;
 	topic?: number | string | null;
+	category?: number | string | null;
 	memories?: boolean | null;
 	q?: string | null;
 	page?: number;
@@ -32,9 +33,12 @@ export function parseVideoMemories(value?: string | null): boolean {
 	return value === "1" || value === "true";
 }
 
+export const parseVideoCategoryId = parseVideoTopicId;
+
 export function buildVideoHref({
 	type,
 	topic,
+	category,
 	memories,
 	q,
 	page,
@@ -49,6 +53,9 @@ export function buildVideoHref({
 	}
 	if (topic != null && topic !== "") {
 		params.set("topic", String(topic));
+	}
+	if (category != null && category !== "") {
+		params.set("category", String(category));
 	}
 	if (memories) {
 		params.set("memories", "1");

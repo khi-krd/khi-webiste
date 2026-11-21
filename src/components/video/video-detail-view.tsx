@@ -94,6 +94,22 @@ export async function VideoDetailView({
 					),
 				}
 			: null,
+		detail.categoryName
+			? {
+					label: t("detail.category"),
+					value:
+						detail.categoryId != null ? (
+							<Link
+								href={buildVideoHref({ category: detail.categoryId })}
+								className="underline decoration-border underline-offset-2 transition-colors fine-hover:text-brand fine-hover:decoration-brand"
+							>
+								{detail.categoryName}
+							</Link>
+						) : (
+							detail.categoryName
+						),
+				}
+			: null,
 		durationLabel
 			? { label: t("detail.duration"), value: durationLabel, ltr: true }
 			: null,

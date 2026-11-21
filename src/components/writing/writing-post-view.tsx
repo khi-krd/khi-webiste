@@ -1,5 +1,7 @@
 import NextImage from "next/image";
 import { Fragment } from "react";
+import { AudioPlayButton } from "@/components/audio/audio-play-button";
+import { AudioTrackWave } from "@/components/audio/audio-track-wave";
 import {
 	ScrollReveal,
 	ScrollRevealBlock,
@@ -12,7 +14,7 @@ import { WritingGridCard } from "@/components/writing/writing-grid-card";
 import { WritingPdfPreview } from "@/components/writing/writing-pdf-preview";
 import { Link as NavLink } from "@/i18n/navigation";
 import { homeInsetClass } from "@/lib/layout";
-import { formatCount } from "@/lib/platform/format";
+import { formatCount, formatYear } from "@/lib/platform/format";
 import { writingTagHref } from "@/lib/search/taxonomy-href";
 import { displayTitleSizeClass } from "@/lib/title-scale";
 import { cn } from "@/lib/utils";
@@ -25,6 +27,7 @@ import {
 	personStripEntries,
 } from "@/lib/writing/resolve";
 import { buildWritingsHref } from "@/lib/writings-url";
+import type { PlayerTrackPayload } from "@/types/audio";
 import type {
 	ResolvedWritingCard,
 	ResolvedWritingDetail,
@@ -47,6 +50,7 @@ type WritingPostViewProps = {
 	audioTitle: string;
 	originalBookLabel: string;
 	laterEditionsLabel: string;
+	downloadLabel: string;
 
 	seriesLabel: string;
 	seriesVolumeLabel: (order: number, total: number | null) => string;
@@ -74,6 +78,7 @@ export function WritingPostView({
 	audioTitle,
 	originalBookLabel,
 	laterEditionsLabel,
+	downloadLabel,
 
 	seriesLabel,
 	seriesVolumeLabel,
@@ -117,6 +122,21 @@ export function WritingPostView({
 	// The byline names are resolved server-side — writer-role people joined
 	// with the locale conjunction, else the first person attached.
 	const bylineName = detail.writer;
+
+	// Book audio rides the same global player as the albums — a synthetic
+	// negative fileId keeps the track distinct from real sound-file rows.
+	const bookAudioTrack: PlayerTrackPayload | null = detail.audioUrl
+		? {
+				fileId: -detail.id,
+				trackId: -detail.id,
+				title: detail.title,
+				artist: detail.writer || null,
+				coverUrl: detail.cdCoverUrl ?? detail.coverUrl,
+				audioUrl: detail.audioUrl,
+				href: `/writings/${detail.id}`,
+				durationSeconds: null,
+			}
+		: null;
 
 	// Linked values are plain GET links into the writings index — people hit
 	// the exact writer filter, topic/location ride the text search (both are
@@ -175,7 +195,7 @@ export function WritingPostView({
 					{
 						label: laterEditionsLabel,
 						links: detail.editionBooks.map((b) => ({
-							text: b.title,
+							text: b.editionName ?? b.title,
 							href: `/writings/${b.id}`,
 						})),
 					},
@@ -333,54 +353,76 @@ export function WritingPostView({
 				</section>
 			) : null}
 
-			{detail.audioUrl || detail.cdCoverUrl ? (
+			{detail.editionBooks.length > 0 ? (
 				<ScrollRevealBlock>
 					<section
 						className={cn(
 							"border-t border-border py-8 sm:py-10",
 							homeInsetClass,
 						)}
-						aria-labelledby="writing-audio-heading"
+						aria-labelledby="writing-editions-heading"
 					>
 						<h2
-							id="writing-audio-heading"
+							id="writing-editions-heading"
 							className="font-heading text-h2 font-bold"
 						>
-							{audioTitle}
+							{laterEditionsLabel}
 						</h2>
-						<div className="mt-6 flex flex-col gap-6 sm:flex-row sm:items-start">
-							{detail.cdCoverUrl ? (
-								<figure className="w-40 shrink-0">
-									<CoverLightbox
-										src={detail.cdCoverUrl}
-										alt={audioTitle}
-										caption={detail.title}
-										closeLabel={lightboxCloseLabel}
-										intrinsicWidth={800}
-										intrinsicHeight={800}
-									>
-										<span className="relative block aspect-square w-full overflow-hidden bg-sunken shadow-[0_12px_32px_rgba(23,21,18,0.14)]">
-											<NextImage
-												src={detail.cdCoverUrl}
-												alt=""
-												fill
-												sizes="10rem"
-												className="object-cover"
-											/>
-										</span>
-									</CoverLightbox>
-								</figure>
-							) : null}
-							{detail.audioUrl ? (
-								// biome-ignore lint/a11y/useMediaCaption: archival audio — no captions from API
-								<audio
-									controls
-									preload="metadata"
-									src={detail.audioUrl}
-									className="w-full max-w-xl"
-								/>
-							) : null}
-						</div>
+						<ul className="divide-border/60 mt-6 divide-y">
+							{detail.editionBooks.map((book) => (
+								<li key={book.id} className="py-4">
+									<div className="flex items-center gap-4">
+										<NavLink
+											href={`/writings/${book.id}`}
+											className="relative block size-16 shrink-0 overflow-hidden bg-sunken"
+										>
+											{book.coverUrl ? (
+												<NextImage
+													src={book.coverUrl}
+													alt=""
+													fill
+													sizes="4rem"
+													className="object-cover"
+												/>
+											) : (
+												<span className="text-muted-foreground/40 flex h-full w-full items-center justify-center text-xs">
+													—
+												</span>
+											)}
+										</NavLink>
+										<div className="min-w-0 flex-1">
+											<NavLink
+												href={`/writings/${book.id}`}
+												className="text-foreground no-underline transition-colors fine-hover:text-brand"
+											>
+												<p className="truncate font-medium">{book.title}</p>
+											</NavLink>
+											<p className="text-muted-foreground mt-0.5 flex flex-wrap items-center gap-x-2 text-sm">
+												{book.editionName ? (
+													<span>{book.editionName}</span>
+												) : null}
+												{book.editionName && book.createdAt ? (
+													<span aria-hidden>·</span>
+												) : null}
+												{book.createdAt ? (
+													<span>{formatYear(locale, book.createdAt)}</span>
+												) : null}
+											</p>
+										</div>
+										{book.fileUrl ? (
+											<a
+												href={book.fileUrl}
+												target="_blank"
+												rel="noopener noreferrer"
+												className="border-border-strong text-foreground hover:bg-sunken inline-flex shrink-0 items-center gap-1.5 border px-3 py-1.5 text-xs font-medium transition-colors"
+											>
+												{downloadLabel}
+											</a>
+										) : null}
+									</div>
+								</li>
+							))}
+						</ul>
 					</section>
 				</ScrollRevealBlock>
 			) : null}
@@ -409,6 +451,63 @@ export function WritingPostView({
 					</div>
 				</section>
 			</ScrollRevealBlock>
+
+			{detail.audioUrl || detail.cdCoverUrl ? (
+				<ScrollRevealBlock>
+					<section
+						className={cn(
+							"border-t border-border py-8 sm:py-10",
+							homeInsetClass,
+						)}
+						aria-labelledby="writing-audio-heading"
+					>
+						<h2
+							id="writing-audio-heading"
+							className="font-heading text-h2 font-bold"
+						>
+							{audioTitle}
+						</h2>
+						<div className="mt-6 flex flex-col gap-6 sm:flex-row sm:items-center">
+							{detail.cdCoverUrl ? (
+								<figure className="w-40 shrink-0">
+									<CoverLightbox
+										src={detail.cdCoverUrl}
+										alt={audioTitle}
+										caption={detail.title}
+										closeLabel={lightboxCloseLabel}
+										intrinsicWidth={800}
+										intrinsicHeight={800}
+									>
+										<span className="relative block aspect-square w-full overflow-hidden bg-sunken shadow-[0_12px_32px_rgba(23,21,18,0.14)]">
+											<NextImage
+												src={detail.cdCoverUrl}
+												alt=""
+												fill
+												sizes="10rem"
+												className="object-cover"
+											/>
+										</span>
+									</CoverLightbox>
+								</figure>
+							) : null}
+							{bookAudioTrack ? (
+								<div className="flex min-w-0 flex-1 items-center gap-4">
+									<AudioPlayButton queue={[bookAudioTrack]} size="hero" />
+									<div className="min-w-0 flex-1">
+										<p className="truncate font-medium">{detail.title}</p>
+										{detail.writer ? (
+											<p className="text-muted-foreground truncate text-sm">
+												{detail.writer}
+											</p>
+										) : null}
+										<AudioTrackWave fileId={-detail.id} className="mt-2" />
+									</div>
+								</div>
+							) : null}
+						</div>
+					</section>
+				</ScrollRevealBlock>
+			) : null}
 
 			{seriesCards.length > 0 ? (
 				<ScrollRevealBlock>

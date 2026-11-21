@@ -114,6 +114,12 @@
   background: var(--f-line);
 }
 
+/* Extra-axis wrappers hold a divider + segment without becoming flex items. */
+.usb__pills-wrap,
+.usb__extra-wrap {
+  display: contents;
+}
+
 /* ---------- Segments (جۆر / نووسەر / ڕیزکردن) ---------- */
 
 .usb__segment {

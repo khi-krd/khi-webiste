@@ -19,8 +19,10 @@ type TopicOption = {
 
 type VideoFiltersProps = {
 	topics: TopicOption[];
+	categories?: TopicOption[];
 	activeType?: VideoType | null;
 	activeTopicId?: number | null;
+	activeCategoryId?: number | null;
 	activeMemories?: boolean | null;
 	activeQuery?: string | null;
 	resultCount: number;
@@ -37,8 +39,10 @@ type VideoFiltersProps = {
  */
 export function VideoFilters({
 	topics,
+	categories = [],
 	activeType,
 	activeTopicId,
+	activeCategoryId,
 	activeMemories,
 	activeQuery,
 	resultCount,
@@ -59,6 +63,7 @@ export function VideoFilters({
 			opts: {
 				type?: VideoType | null;
 				topic?: number | null;
+				category?: number | null;
 				memories?: boolean | null;
 				q?: string;
 			},
@@ -68,6 +73,7 @@ export function VideoFilters({
 				basePath,
 				type: "type" in opts ? opts.type : activeType,
 				topic: "topic" in opts ? opts.topic : activeTopicId,
+				category: "category" in opts ? opts.category : activeCategoryId,
 				memories: "memories" in opts ? opts.memories : activeMemories,
 				q: opts.q ?? query,
 				page: 1,
@@ -89,6 +95,7 @@ export function VideoFilters({
 			basePath,
 			activeType,
 			activeTopicId,
+			activeCategoryId,
 			activeMemories,
 			query,
 			scrollTargetId,
@@ -104,6 +111,12 @@ export function VideoFilters({
 		id: String(topic.id),
 		label: topic.name,
 		count: topic.count,
+	}));
+
+	const categoryOptions: FilterOption[] = categories.map((category) => ({
+		id: String(category.id),
+		label: category.name,
+		count: category.count,
 	}));
 
 	return (
@@ -139,21 +152,28 @@ export function VideoFilters({
 						: null,
 				})
 			}
-			extra={{
-				label: t("filter.collectionLabel"),
-				allLabel: t("filter.all"),
-				noMatch: "",
-				asPills: true,
-				options: [
-					{ id: "memories", label: t("filter.memoriesLabel") },
-				],
-				selected: activeMemories ? "memories" : null,
-				onChange: (id) => navigate({ memories: id === "memories" }),
-			}}
+			extra={[
+				{
+					label: t("filter.collectionLabel"),
+					allLabel: t("filter.all"),
+					noMatch: "",
+					asPills: true,
+					options: [{ id: "memories", label: t("filter.memoriesLabel") }],
+					selected: activeMemories ? "memories" : null,
+					onChange: (id) => navigate({ memories: id === "memories" }),
+				},
+				{
+					label: t("filter.categoryLabel"),
+					allLabel: t("filter.all"),
+					noMatch: t("filter.topicNoMatch"),
+					options: categoryOptions,
+					selected: activeCategoryId != null ? String(activeCategoryId) : null,
+					onChange: (id) =>
+						navigate({ category: id ? Number.parseInt(id, 10) : null }),
+				},
+			]}
 			authors={topicOptions}
-			selectedAuthor={
-				activeTopicId != null ? String(activeTopicId) : null
-			}
+			selectedAuthor={activeTopicId != null ? String(activeTopicId) : null}
 			onAuthorChange={(id) =>
 				navigate({ topic: id ? Number.parseInt(id, 10) : null })
 			}

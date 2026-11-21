@@ -90,6 +90,15 @@ export const VideoSchema = z.object({
 	kmrCoverUrl: z.string().nullish(),
 	hoverCoverUrl: z.string().nullish(),
 	clearTopic: z.boolean().optional(),
+	// Managed پۆلی ڤیدیۆ row (video_categories) — absent on old records.
+	category: z
+		.object({
+			id: z.number().nullish(),
+			slug: z.string().nullish(),
+			nameCkb: z.string().nullish(),
+			nameKmr: z.string().nullish(),
+		})
+		.nullish(),
 	topicId: z.number().nullish(),
 	topicNameCkb: z.string().nullish(),
 	topicNameKmr: z.string().nullish(),
@@ -178,6 +187,8 @@ export type ResolvedVideoCard = {
 	hoverCoverUrl: string | null;
 	videoType: VideoType;
 	albumOfMemories: boolean;
+	categoryId: number | null;
+	categoryName: string | null;
 	topicId: number | null;
 	topicName: string | null;
 	topicIds: number[];
@@ -215,6 +226,8 @@ export type ResolvedVideoDetail = {
 	previewVideoUrl: string | null;
 	videoType: VideoType;
 	albumOfMemories: boolean;
+	categoryId: number | null;
+	categoryName: string | null;
 	topicId: number | null;
 	topicName: string | null;
 	topicIds: number[];

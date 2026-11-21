@@ -42,6 +42,9 @@ import {
 
 const WRITINGS_ENDPOINT = "/api/v1/writings";
 const HOME_POPULAR_ENDPOINT = "/api/v1/home/popular";
+const HOME_RANDOM_ENDPOINT = "/api/v1/home/random";
+/** Random picks rotate fast — cache just long enough to coalesce a burst. */
+const RANDOM_REVALIDATE = 60;
 const BOOK_GENRES_ENDPOINT = "/api/v1/book-genres";
 const WRITINGS_TAG = "writings";
 
@@ -93,6 +96,48 @@ export async function getWritingsCarousel(
 		);
 		const records = popular?.length
 			? popular
+			: (
+					await apiFetchPage(WRITINGS_ENDPOINT, {
+						itemSchema: WritingSchema,
+						tags: [WRITINGS_TAG],
+						revalidate: DEFAULT_REVALIDATE,
+						searchParams: { page: 0, size },
+						normalizeItem: normalizeWritingRecord,
+					})
+				)?.content;
+
+		if (records) {
+			apiItems = records
+				.map((writing) => resolveWritingCard(locale, writing))
+				.filter((item): item is ResolvedWritingCard => item != null);
+		}
+	}
+
+	return sliceToCount(apiItems, size);
+}
+
+/**
+ * Homepage "هەڵبژاردنی هەڕەمەکی" rail — /home/random/writings, shuffled per
+ * request server-side. A short revalidate keeps the rail fresh without
+ * hammering the backend; empty/error falls back to the regular listing so
+ * the band never collapses.
+ */
+export async function getRandomWritings(
+	locale: string,
+	size = WRITINGS_CAROUSEL_SIZE,
+): Promise<ResolvedWritingCard[]> {
+	let apiItems: ResolvedWritingCard[] = [];
+
+	if (getApiBaseUrl()) {
+		const random = await apiFetchItemArray(`${HOME_RANDOM_ENDPOINT}/writings`, {
+			itemSchema: WritingSchema,
+			tags: [WRITINGS_TAG],
+			revalidate: RANDOM_REVALIDATE,
+			searchParams: { limit: size },
+			normalizeItem: normalizeWritingRecord,
+		});
+		const records = random?.length
+			? random
 			: (
 					await apiFetchPage(WRITINGS_ENDPOINT, {
 						itemSchema: WritingSchema,
@@ -203,7 +248,9 @@ export async function getWritingWriters(locale: string): Promise<string[]> {
 			}
 		}
 	}
-	return [...names].sort((a, b) => a.localeCompare(b));
+	return [...names].sort((a, b) =>
+		a.localeCompare(b, locale === "ckb" ? "ckb" : "ku"),
+	);
 }
 
 /**

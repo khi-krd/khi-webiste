@@ -104,6 +104,11 @@ export const BookLinkSchema = z.object({
 	id: z.number().nullish(),
 	titleCkb: z.string().nullish(),
 	titleKmr: z.string().nullish(),
+	edition: ManagedOptionInfoSchema.nullish(),
+	coverUrl: z.string().nullish(),
+	ckbFileUrl: z.string().nullish(),
+	kmrFileUrl: z.string().nullish(),
+	createdAt: z.string().nullish(),
 });
 
 export const WritingSchema = z.object({
@@ -212,6 +217,16 @@ export type ResolvedSeriesBook = {
 	isCurrent: boolean;
 };
 
+/** A linked book (original / later edition) with its own display fields. */
+export type ResolvedEditionBook = {
+	id: number;
+	title: string;
+	editionName: string | null;
+	coverUrl: string | null;
+	fileUrl: string | null;
+	createdAt: string | null;
+};
+
 export type ResolvedWritingPerson = {
 	/** Free-text role typed in the dashboard (نووسەر, کۆکەرەوە, ...). */
 	role: string | null;
@@ -229,8 +244,8 @@ export type ResolvedWritingDetail = {
 	bookLanguage: string | null;
 	writingType: string | null;
 	edition: string | null;
-	originalBook: { id: number; title: string } | null;
-	editionBooks: { id: number; title: string }[];
+	originalBook: ResolvedEditionBook | null;
+	editionBooks: ResolvedEditionBook[];
 	audioUrl: string | null;
 	cdCoverUrl: string | null;
 	description: string;

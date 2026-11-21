@@ -25,7 +25,7 @@ import "./UnifiedSearchBar.css";
  * On phones the panels open as bottom sheets. Used on the Writings page.
  */
 
-type PanelKey = "type" | "author" | "sort" | "extra";
+type PanelKey = "type" | "author" | "sort" | number;
 
 /**
  * Optional extra single-select list panel — same searchable radio UI as the
@@ -124,8 +124,11 @@ export interface UnifiedSearchBarProps {
 	selectedAuthor?: string | null;
 	onAuthorChange?: (id: string | null) => void;
 
-	/** Optional extra searchable single-select panel (کۆکراوە, …). */
-	extra?: UnifiedExtraList;
+	/**
+	 * Optional extra searchable single-select panels (کۆکراوە, پۆلی ڤیدیۆ…).
+	 * A list so a page can carry more than one secondary axis.
+	 */
+	extra?: UnifiedExtraList | UnifiedExtraList[];
 
 	/** Leave undefined/empty to hide the sort segment. */
 	sortOptions?: SelectOption[];
@@ -182,15 +185,19 @@ export function UnifiedSearchBar({
 	const typeBtnRef = useRef<HTMLButtonElement>(null);
 	const authorBtnRef = useRef<HTMLButtonElement>(null);
 	const sortBtnRef = useRef<HTMLButtonElement>(null);
-	const extraBtnRef = useRef<HTMLButtonElement>(null);
-	const triggerFor = (key: PanelKey) =>
+	const extraBtnRefs = useRef<(HTMLButtonElement | null)[]>([]);
+	const extras = useMemo(
+		() => (extra == null ? [] : Array.isArray(extra) ? extra : [extra]),
+		[extra],
+	);
+	const triggerEl = (key: PanelKey): HTMLElement | null =>
 		key === "type"
-			? typeBtnRef
+			? typeBtnRef.current
 			: key === "author"
-				? authorBtnRef
-				: key === "extra"
-					? extraBtnRef
-					: sortBtnRef;
+				? authorBtnRef.current
+				: key === "sort"
+					? sortBtnRef.current
+					: (extraBtnRefs.current[key] ?? null);
 
 	const [open, setOpen] = useState<PanelKey | null>(null);
 
@@ -200,8 +207,9 @@ export function UnifiedSearchBar({
 	const selected = useMemo(() => new Set(selectedTypes), [selectedTypes]);
 	const chosenTypes = typeList.filter((t) => selected.has(t.id));
 	const chosenAuthor = authors?.find((a) => a.id === selectedAuthor) ?? null;
-	const chosenExtra =
-		extra?.options.find((o) => o.id === extra.selected) ?? null;
+	const chosenExtras = extras.map(
+		(e) => e.options.find((o) => o.id === e.selected) ?? null,
+	);
 	const sortLabel =
 		sorts.find((o) => o.value === sort)?.label ?? sorts[0]?.label ?? "";
 
@@ -220,7 +228,7 @@ export function UnifiedSearchBar({
 	const close = (returnFocus: boolean) => {
 		const key = open;
 		setOpen(null);
-		if (returnFocus && key) triggerFor(key).current?.focus();
+		if (returnFocus && key !== null) triggerEl(key)?.focus();
 	};
 
 	// Close when clicking outside the component.
@@ -294,11 +302,9 @@ export function UnifiedSearchBar({
 	/* ----- authors & sort ----- */
 
 	const authorList = authors ?? [];
-	const extraList = extra?.options ?? [];
 
 	// Close on a pointer pick; keyboard arrows only change the value.
 	const pickAuthor = (id: string | null) => onAuthorChange?.(id);
-	const pickExtra = (id: string | null) => extra?.onChange(id);
 	const pickSort = (value: string) => onSortChange?.(value);
 	const closeOnPointer = (e: MouseEvent) => {
 		if (e.detail > 0) close(true);
@@ -307,11 +313,13 @@ export function UnifiedSearchBar({
 	const clearAll = () => {
 		onTypesChange?.([]);
 		onAuthorChange?.(null);
-		extra?.onChange(null);
+		for (const e of extras) e.onChange(null);
 	};
 
 	const hasActive =
-		chosenTypes.length > 0 || chosenAuthor !== null || chosenExtra !== null;
+		chosenTypes.length > 0 ||
+		chosenAuthor !== null ||
+		chosenExtras.some((c) => c !== null);
 	const showSummary = hasActive || query.trim().length > 0;
 
 	return (
@@ -379,10 +387,7 @@ export function UnifiedSearchBar({
 							{L.allTypes}
 						</button>
 						{typeList
-							.filter(
-								(t) =>
-									!hideEmpty || t.count !== 0 || selected.has(t.id),
-							)
+							.filter((t) => !hideEmpty || t.count !== 0 || selected.has(t.id))
 							.map((t) => (
 								<button
 									key={t.id}
@@ -396,9 +401,7 @@ export function UnifiedSearchBar({
 								>
 									{t.label}
 									{t.count !== undefined && (
-										<span className="usb__pill-count">
-											{num(t.count)}
-										</span>
+										<span className="usb__pill-count">{num(t.count)}</span>
 									)}
 								</button>
 							))}
@@ -429,149 +432,152 @@ export function UnifiedSearchBar({
 								{L.allTypes}
 							</button>
 						</div>
-					{typeSections.length === 0 ? (
-						<p className="usb__empty">{L.noTypeMatch}</p>
-					) : (
-						<div className="usb__groups">
-							{typeSections.map((section) => (
-								<fieldset
-									key={section.id}
-									className={cx("usb__group", flatTypes && "usb__group--flat")}
-								>
-									{section.items.map((t) => (
-										<label key={t.id} className="usb__check">
-											<input
-												type="checkbox"
-												checked={selected.has(t.id)}
-												onChange={() => toggleType(t.id)}
-											/>
-											<span className="usb__check-label">{t.label}</span>
-											{t.count !== undefined && (
-												<span className="usb__count">{num(t.count)}</span>
-											)}
-										</label>
-									))}
-								</fieldset>
-							))}
+						{typeSections.length === 0 ? (
+							<p className="usb__empty">{L.noTypeMatch}</p>
+						) : (
+							<div className="usb__groups">
+								{typeSections.map((section) => (
+									<fieldset
+										key={section.id}
+										className={cx(
+											"usb__group",
+											flatTypes && "usb__group--flat",
+										)}
+									>
+										{section.items.map((t) => (
+											<label key={t.id} className="usb__check">
+												<input
+													type="checkbox"
+													checked={selected.has(t.id)}
+													onChange={() => toggleType(t.id)}
+												/>
+												<span className="usb__check-label">{t.label}</span>
+												{t.count !== undefined && (
+													<span className="usb__count">{num(t.count)}</span>
+												)}
+											</label>
+										))}
+									</fieldset>
+								))}
+							</div>
+						)}
+						<div className="usb__panel-foot">
+							<span className="usb__status">
+								{selected.size
+									? L.typesSelected(num(selected.size))
+									: L.noTypesSelected}
+							</span>
+							<button
+								type="button"
+								className="usb__primary"
+								onClick={() => close(true)}
+							>
+								{L.showResults(num(resultCount))}
+							</button>
 						</div>
-					)}
-					<div className="usb__panel-foot">
-						<span className="usb__status">
-							{selected.size
-								? L.typesSelected(num(selected.size))
-								: L.noTypesSelected}
-						</span>
-						<button
-							type="button"
-							className="usb__primary"
-							onClick={() => close(true)}
-						>
-							{L.showResults(num(resultCount))}
-						</button>
-					</div>
 					</Segment>
 				)}
 
-				{/* ---------- extra as inline pills ---------- */}
-				{extra?.asPills && (
-					<>
-						<span className="usb__divider" aria-hidden="true" />
-						<div
-							className="usb__segment usb__pills"
-							role="group"
-							aria-label={extra.label}
-						>
-							<button
-								type="button"
-								className={cx(
-									"usb__pill",
-									extra.selected === null && "usb__pill--active",
-								)}
-								aria-pressed={extra.selected === null}
-								onClick={() => pickExtra(null)}
-							>
-								{extra.allLabel}
-							</button>
-							{extraList.map((o) => (
-								<button
-									key={o.id}
-									type="button"
-									className={cx(
-										"usb__pill",
-										extra.selected === o.id && "usb__pill--active",
-									)}
-									aria-pressed={extra.selected === o.id}
-									onClick={() => pickExtra(o.id)}
+				{/* ---------- extras as inline pills ---------- */}
+				{extras.map(
+					(axis, i) =>
+						axis.asPills && (
+							<span key={`${uid}-xp-${i}`} className="usb__pills-wrap">
+								<span className="usb__divider" aria-hidden="true" />
+								<div
+									className="usb__segment usb__pills"
+									role="group"
+									aria-label={axis.label}
 								>
-									{o.label}
-									{o.count !== undefined && (
-										<span className="usb__pill-count">
-											{num(o.count)}
-										</span>
-									)}
-								</button>
-							))}
-						</div>
-					</>
+									<button
+										type="button"
+										className={cx(
+											"usb__pill",
+											axis.selected === null && "usb__pill--active",
+										)}
+										aria-pressed={axis.selected === null}
+										onClick={() => axis.onChange(null)}
+									>
+										{axis.allLabel}
+									</button>
+									{axis.options.map((o) => (
+										<button
+											key={o.id}
+											type="button"
+											className={cx(
+												"usb__pill",
+												axis.selected === o.id && "usb__pill--active",
+											)}
+											aria-pressed={axis.selected === o.id}
+											onClick={() => axis.onChange(o.id)}
+										>
+											{o.label}
+											{o.count !== undefined && (
+												<span className="usb__pill-count">{num(o.count)}</span>
+											)}
+										</button>
+									))}
+								</div>
+							</span>
+						),
 				)}
 
-				{/* ---------- extra list (کۆکراوە, …) ---------- */}
-				{extra && !extra.asPills && (
-					<>
-						<span className="usb__divider" aria-hidden="true" />
-						<Segment
-							panelId={`${uid}-extra`}
-							label={extra.label}
-							value={chosenExtra?.label ?? extra.allLabel}
-							isOpen={open === "extra"}
-							onToggle={() => toggle("extra")}
-							onClose={() => close(true)}
-							closeLabel={L.close}
-							buttonRef={extraBtnRef}
-							panelRef={panelRef}
-						>
-							<div
-								className="usb__list"
-								role="radiogroup"
-								aria-label={extra.label}
-							>
-								<label className="usb__radio">
-									<input
-										type="radio"
-										name={`${uid}-extra`}
-										checked={extra.selected === null}
-										onChange={() => pickExtra(null)}
-										onClick={closeOnPointer}
-									/>
-									<span className="usb__check-label">
-										{extra.allLabel}
-									</span>
-								</label>
-								{extraList.map((o) => (
-									<label key={o.id} className="usb__radio">
-										<input
-											type="radio"
-											name={`${uid}-extra`}
-											checked={extra.selected === o.id}
-											onChange={() => pickExtra(o.id)}
-											onClick={closeOnPointer}
-										/>
-										<span className="usb__check-label">
-											{o.label}
-										</span>
-										{o.count !== undefined && (
-											<span className="usb__count">
-												{num(o.count)}
-											</span>
+				{/* ---------- extra lists (کۆکراوە, پۆلی ڤیدیۆ, …) ---------- */}
+				{extras.map(
+					(axis, i) =>
+						!axis.asPills && (
+							<span key={`${uid}-xl-${i}`} className="usb__extra-wrap">
+								<span className="usb__divider" aria-hidden="true" />
+								<Segment
+									panelId={`${uid}-extra-${i}`}
+									label={axis.label}
+									value={chosenExtras[i]?.label ?? axis.allLabel}
+									isOpen={open === i}
+									onToggle={() => toggle(i)}
+									onClose={() => close(true)}
+									closeLabel={L.close}
+									buttonRef={(el) => {
+										extraBtnRefs.current[i] = el;
+									}}
+									panelRef={panelRef}
+								>
+									<div
+										className="usb__list"
+										role="radiogroup"
+										aria-label={axis.label}
+									>
+										<label className="usb__radio">
+											<input
+												type="radio"
+												name={`${uid}-extra-${i}`}
+												checked={axis.selected === null}
+												onChange={() => axis.onChange(null)}
+												onClick={closeOnPointer}
+											/>
+											<span className="usb__check-label">{axis.allLabel}</span>
+										</label>
+										{axis.options.map((o) => (
+											<label key={o.id} className="usb__radio">
+												<input
+													type="radio"
+													name={`${uid}-extra-${i}`}
+													checked={axis.selected === o.id}
+													onChange={() => axis.onChange(o.id)}
+													onClick={closeOnPointer}
+												/>
+												<span className="usb__check-label">{o.label}</span>
+												{o.count !== undefined && (
+													<span className="usb__count">{num(o.count)}</span>
+												)}
+											</label>
+										))}
+										{axis.options.length === 0 && (
+											<p className="usb__empty">{axis.noMatch}</p>
 										)}
-									</label>
-								))}
-								{extraList.length === 0 && (
-									<p className="usb__empty">{extra.noMatch}</p>
-								)}
-							</div>
-						</Segment>
-					</>
+									</div>
+								</Segment>
+							</span>
+						),
 				)}
 
 				{/* ---------- نووسەر ---------- */}
@@ -644,11 +650,7 @@ export function UnifiedSearchBar({
 							panelClassName="usb__panel--sort"
 							narrow
 						>
-							<div
-								className="usb__list"
-								role="radiogroup"
-								aria-label={L.sort}
-							>
+							<div className="usb__list" role="radiogroup" aria-label={L.sort}>
 								{sorts.map((o) => (
 									<label key={o.value} className="usb__radio">
 										<input
@@ -658,9 +660,7 @@ export function UnifiedSearchBar({
 											onChange={() => pickSort(o.value)}
 											onClick={closeOnPointer}
 										/>
-										<span className="usb__check-label">
-											{o.label}
-										</span>
+										<span className="usb__check-label">{o.label}</span>
 									</label>
 								))}
 							</div>
@@ -706,16 +706,20 @@ export function UnifiedSearchBar({
 							<CloseIcon size={16} strokeWidth={2} />
 						</button>
 					)}
-					{chosenExtra && (
-						<button
-							type="button"
-							className="usb__tag"
-							aria-label={L.remove(chosenExtra.label)}
-							onClick={() => extra?.onChange(null)}
-						>
-							<span>{chosenExtra.label}</span>
-							<CloseIcon size={16} strokeWidth={2} />
-						</button>
+					{chosenExtras.map(
+						(chosen, i) =>
+							chosen && (
+								<button
+									key={`${uid}-xt-${i}`}
+									type="button"
+									className="usb__tag"
+									aria-label={L.remove(chosen.label)}
+									onClick={() => extras[i]?.onChange(null)}
+								>
+									<span>{chosen.label}</span>
+									<CloseIcon size={16} strokeWidth={2} />
+								</button>
+							),
 					)}
 					{hasActive && (
 						<button

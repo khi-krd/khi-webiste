@@ -35,6 +35,7 @@ type VideoPageProps = {
 	searchParams: Promise<{
 		type?: string;
 		topic?: string;
+		category?: string;
 		memories?: string;
 		q?: string;
 		page?: string;
@@ -92,8 +93,10 @@ export default async function VideosPage({
 					totalPages={pageData.listing.totalPages}
 					resultCount={pageData.listing.totalElements}
 					topics={pageData.topics}
+					categories={pageData.categories}
 					activeType={pageData.activeType}
 					activeTopicId={pageData.activeTopicId}
+					activeCategoryId={pageData.activeCategoryId}
 					activeMemories={pageData.activeMemories}
 					activeQuery={pageData.activeQuery}
 					noResultsMessage={pageData.noResultsMessage}

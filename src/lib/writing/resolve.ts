@@ -2,6 +2,7 @@ import { plainTextFromRichContent } from "@/lib/rich-text";
 import type {
 	BookLink,
 	ManagedOptionInfo,
+	ResolvedEditionBook,
 	ResolvedSeriesBook,
 	ResolvedWritingCard,
 	ResolvedWritingDetail,
@@ -48,18 +49,29 @@ function optionName(
 		: firstNonBlank(opt.nameKmr, opt.nameCkb);
 }
 
-/** A BookLink reduced to {id, title} — null when it has nothing to show. */
+/** A BookLink reduced to its display shape — null when it has nothing to show. */
 function bookLink(
 	locale: string,
 	link: BookLink | null | undefined,
-): { id: number; title: string } | null {
+): ResolvedEditionBook | null {
 	if (!link) return null;
 	const title =
 		locale === "ckb"
 			? firstNonBlank(link.titleCkb, link.titleKmr)
 			: firstNonBlank(link.titleKmr, link.titleCkb);
 	if (link.id == null || !title) return null;
-	return { id: link.id, title };
+	const fileUrl =
+		locale === "ckb"
+			? firstNonBlank(link.ckbFileUrl, link.kmrFileUrl)
+			: firstNonBlank(link.kmrFileUrl, link.ckbFileUrl);
+	return {
+		id: link.id,
+		title,
+		editionName: optionName(locale, link.edition),
+		coverUrl: link.coverUrl ?? null,
+		fileUrl: fileUrl ?? null,
+		createdAt: link.createdAt ?? null,
+	};
 }
 
 /** Roles are free text — recognize the writer spellings editors type. */
@@ -431,7 +443,7 @@ export function resolveWritingDetail(
 		originalBook: bookLink(locale, writing.originalBook),
 		editionBooks: (writing.editionBooks ?? [])
 			.map((b) => bookLink(locale, b))
-			.filter((b): b is { id: number; title: string } => b != null),
+			.filter((b): b is ResolvedEditionBook => b != null),
 		audioUrl: writing.audioUrl?.trim() || null,
 		cdCoverUrl: writing.cdCoverUrl?.trim() || null,
 		description,

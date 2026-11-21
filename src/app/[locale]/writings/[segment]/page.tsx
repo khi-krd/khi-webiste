@@ -161,6 +161,7 @@ export default async function WritingsSegmentPage({
 				audioTitle={t("post.audioTitle")}
 				originalBookLabel={t("post.originalBook")}
 				laterEditionsLabel={t("post.laterEditions")}
+				downloadLabel={t("post.downloads")}
 				seriesLabel={t("post.series")}
 				seriesVolumeLabel={(order, total) =>
 					t("post.seriesVolume", { order, total: total ?? order })

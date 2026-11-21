@@ -1,11 +1,13 @@
 import {
 	getFeaturedVideoLead,
+	getVideoCategories,
 	getVideoListing,
 	getVideoTopics,
 	VIDEO_GRID_PAGE_SIZE,
 } from "@/lib/api/videos";
 import { cardIdentity } from "@/lib/video/filter";
 import {
+	parseVideoCategoryId,
 	parseVideoMemories,
 	parseVideoTopicId,
 	parseVideoType,
@@ -19,6 +21,7 @@ type TranslateFn = (
 export type VideoPageSearchParams = {
 	type?: string;
 	topic?: string;
+	category?: string;
 	memories?: string;
 	q?: string;
 	page?: string;
@@ -35,11 +38,16 @@ export async function loadVideoPageData(
 ) {
 	const activeType = parseVideoType(searchParams.type);
 	const activeTopicId = parseVideoTopicId(searchParams.topic);
+	const activeCategoryId = parseVideoCategoryId(searchParams.category);
 	const activeMemories = parseVideoMemories(searchParams.memories);
 	const activeQuery = searchParams.q?.trim() || null;
 	const page = Math.max(1, Number.parseInt(searchParams.page ?? "1", 10) || 1);
 	const hasFilters = Boolean(
-		activeType || activeTopicId != null || activeMemories || activeQuery,
+		activeType ||
+			activeTopicId != null ||
+			activeCategoryId != null ||
+			activeMemories ||
+			activeQuery,
 	);
 	const showFeatured = page === 1 && !hasFilters;
 
@@ -58,10 +66,11 @@ export async function loadVideoPageData(
 
 	// The hero lead is dropped from the paginated flow (not just deduped on
 	// page 1) so every non-final page keeps full grid rows.
-	const [listing, topics] = await Promise.all([
+	const [listing, topics, categories] = await Promise.all([
 		getVideoListing(locale, {
 			videoType: activeType,
 			topicId: activeTopicId,
+			categoryId: activeCategoryId,
 			memories: activeMemories,
 			query: activeQuery,
 			page,
@@ -70,15 +79,18 @@ export async function loadVideoPageData(
 			firstPageExtra: leadComesFromListing ? 1 : 0,
 		}),
 		topicsPromise,
+		getVideoCategories(locale),
 	]);
 
 	return {
 		activeType,
 		activeTopicId,
+		activeCategoryId,
 		activeMemories,
 		activeQuery,
 		listing,
 		topics,
+		categories,
 		featuredLead,
 		showFeatured,
 		noResultsMessage: hasFilters ? t("grid.noResults") : t("grid.empty"),

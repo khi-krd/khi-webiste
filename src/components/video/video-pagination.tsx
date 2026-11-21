@@ -13,6 +13,7 @@ type VideoPaginationProps = {
 	totalPages: number;
 	activeType?: VideoType | null;
 	activeTopicId?: number | null;
+	activeCategoryId?: number | null;
 	activeMemories?: boolean | null;
 	activeQuery?: string | null;
 	/** Route the pager hangs off (e.g. "/videos" or "/videos/shortfilms"). */
@@ -31,6 +32,7 @@ export function VideoPagination({
 	totalPages,
 	activeType,
 	activeTopicId,
+	activeCategoryId,
 	activeMemories,
 	activeQuery,
 	basePath = "/videos",
@@ -49,6 +51,7 @@ export function VideoPagination({
 		buildVideoHref({
 			type: activeType,
 			topic: omitTopic ? null : activeTopicId,
+			category: activeCategoryId,
 			memories: activeMemories,
 			q: activeQuery,
 			page,

@@ -131,7 +131,12 @@
 		"label": "Ziman"
 	},
 	"Home": {
-		"placeholder": "Pirtûkxaneya dîjîtal a çanda, mîrat û rastiya Kurdî."
+		"placeholder": "Pirtûkxaneya dîjîtal a çanda, mîrat û rastiya Kurdî.",
+		"randomPicks": {
+			"title": "Vebijarkên kerfeş",
+			"subtitle": "Beşek kerfeş ji arşîvê — di her serdanê de tiştekî cuda",
+			"viewAll": "Hemûyan bibîne"
+		}
 	},
 	"LatestUpdates": {
 		"eyebrow": "Nûçe",
@@ -711,6 +716,7 @@
 			"topicLabel": "Mijar",
 			"topicAll": "Hemû mijar",
 			"collectionLabel": "Koleksiyon",
+			"categoryLabel": "Kategorî",
 			"memoriesLabel": "Albuma bîranînan",
 			"active": "Çalak:",
 			"searchSubmit": "Bigere",
@@ -742,6 +748,7 @@
 			"producer": "Hilberîner",
 			"location": "Cih",
 			"topic": "Mijar",
+			"category": "Kategorî",
 			"duration": "Dem",
 			"resolution": "Rezolûsyon",
 			"fileFormat": "Format",

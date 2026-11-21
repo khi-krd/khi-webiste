@@ -4,18 +4,30 @@ export type VideoFilterOptions = {
 	videoType?: VideoType | null;
 	topicId?: number | null;
 	excludeTopicId?: number | null;
+	categoryId?: number | null;
 	memories?: boolean | null;
 	query?: string | null;
 };
 
 export function filterVideos(
 	items: ResolvedVideoCard[],
-	{ videoType, topicId, excludeTopicId, memories, query }: VideoFilterOptions,
+	{
+		videoType,
+		topicId,
+		excludeTopicId,
+		categoryId,
+		memories,
+		query,
+	}: VideoFilterOptions,
 ): ResolvedVideoCard[] {
 	let result = items;
 
 	if (videoType) {
 		result = result.filter((item) => item.videoType === videoType);
+	}
+
+	if (categoryId != null) {
+		result = result.filter((item) => item.categoryId === categoryId);
 	}
 
 	if (topicId != null) {
@@ -45,6 +57,7 @@ export function filterVideos(
 				item.subtitle,
 				item.excerpt,
 				item.topicName,
+				item.categoryName,
 				item.location,
 				...item.topicNames,
 				...item.tags,

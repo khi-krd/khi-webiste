@@ -144,6 +144,18 @@ export function resolveVideoTopicIds(video: Video): number[] {
 	return video.topicId != null ? [video.topicId] : [];
 }
 
+/** Managed category name, locale-picked — the پۆلی ڤیدیۆ label. */
+export function resolveVideoCategoryName(
+	locale: string,
+	video: Video,
+): string | null {
+	const cat = video.category;
+	if (!cat) return null;
+	return locale === "ckb"
+		? firstNonBlank(cat.nameCkb, cat.nameKmr)
+		: firstNonBlank(cat.nameKmr, cat.nameCkb);
+}
+
 function resolveBilingualStrings(
 	locale: string,
 	ckb: string[],
@@ -434,6 +446,8 @@ export function resolveVideoCard(
 		hoverCoverUrl: video.hoverCoverUrl ?? null,
 		videoType: video.videoType,
 		albumOfMemories: video.albumOfMemories,
+		categoryId: video.category?.id ?? null,
+		categoryName: resolveVideoCategoryName(locale, video),
 		topicId: video.topicId ?? null,
 		topicName: resolveVideoTopicName(locale, video),
 		topicIds: resolveVideoTopicIds(video),
@@ -540,6 +554,8 @@ export function resolveVideoDetail(
 		previewVideoUrl,
 		videoType: video.videoType,
 		albumOfMemories: video.albumOfMemories,
+		categoryId: video.category?.id ?? null,
+		categoryName: resolveVideoCategoryName(locale, video),
 		topicId: video.topicId ?? null,
 		topicName: resolveVideoTopicName(locale, video),
 		topicIds: resolveVideoTopicIds(video),

@@ -131,7 +131,12 @@
 		"label": "زمان"
 	},
 	"Home": {
-		"placeholder": "کتێبخانەی دیجیتاڵی کەلتوور، میرات و ڕەسەنایەتی کوردی."
+		"placeholder": "کتێبخانەی دیجیتاڵی کەلتوور، میرات و ڕەسەنایەتی کوردی.",
+		"randomPicks": {
+			"title": "هەڵبژاردنی هەڕەمەکی",
+			"subtitle": "پارچەیەکی هەڕەمەکی لە ئەرشیفەکە — لە هەر سەردانێکدا شتی جیاواز",
+			"viewAll": "بینینی هەموو"
+		}
 	},
 	"LatestUpdates": {
 		"eyebrow": "هەواڵ",
@@ -711,6 +716,7 @@
 			"topicLabel": "بابەت",
 			"topicAll": "هەموو بابەتەکان",
 			"collectionLabel": "کۆکراوە",
+			"categoryLabel": "پۆل",
 			"memoriesLabel": "ئەلبومی یادەوەری",
 			"active": "چالاک:",
 			"searchSubmit": "بگەڕێ",
@@ -742,6 +748,7 @@
 			"producer": "بەرهەمهێنەر",
 			"location": "شوێن",
 			"topic": "بابەت",
+			"category": "پۆل",
 			"duration": "ماوە",
 			"resolution": "ڕیزۆلوشن",
 			"fileFormat": "فۆرمات",
