@@ -94,12 +94,12 @@ export function NewsShell({
 		<section
 			id="news-grid"
 			className={cn(
-				"w-full border-t border-border bg-background py-12 sm:py-16 lg:py-20",
+				"w-full border-t border-border bg-background pt-6 pb-12 sm:pt-8 sm:pb-16 lg:pt-10 lg:pb-20",
 				className,
 			)}
 			aria-labelledby="news-grid-heading"
 		>
-			<ScrollRevealBlock className={cn(homeInsetClass, "mb-8 sm:mb-10")}>
+			<ScrollRevealBlock className={cn(homeInsetClass, "mb-4 sm:mb-5")}>
 				<header>
 					<div className="max-w-2xl text-start">
 						<h2
@@ -127,7 +127,7 @@ export function NewsShell({
 						activeSubCategory={activeSubCategory}
 						activeTag={activeTag}
 						activeQuery={activeQuery}
-						className="mb-8 sm:mb-10"
+						className="mb-4 sm:mb-5"
 					/>
 					<ResultCount count={resultCount} />
 

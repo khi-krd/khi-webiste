@@ -37,7 +37,7 @@ export async function NewsBento({
 	return (
 		<section
 			className={cn(
-				"w-full border-b border-border bg-background py-12 sm:py-16 lg:py-20",
+				"w-full bg-background pt-12 pb-6 sm:pt-16 sm:pb-8 lg:pt-20 lg:pb-10",
 				className,
 			)}
 			aria-label={spotlightLabel}
