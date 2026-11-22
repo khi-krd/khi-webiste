@@ -27,7 +27,7 @@ export function unifiedLabels(
 		results: "encam",
 		remove: (label) => `Jêbirin ${label}`,
 		clear: "Paqij bike",
-		clearAll: "Hemûyan paqij bike",
+		clearAll: "Rakirina fîlterê",
 		close: "Girtin",
 	};
 }

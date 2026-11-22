@@ -90,7 +90,7 @@ export const UNIFIED_SEARCH_DEFAULT_LABELS: UnifiedSearchBarLabels = {
 	results: "ئەنجام",
 	remove: (label) => `لابردنی ${label}`,
 	clear: "سڕینەوە",
-	clearAll: "سڕینەوەی هەموو",
+	clearAll: "لادانی فلتەر",
 	close: "داخستن",
 };
 

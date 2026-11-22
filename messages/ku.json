@@ -165,7 +165,7 @@
 		},
 		"filter": {
 			"all": "Hemû",
-			"clear": "Filtreyan paqij bike",
+			"clear": "Rakirina fîlterê",
 			"label": "Li gorî mijarê filtir bike",
 			"active": "Tê xuyang kirin",
 			"keywords": "Peyvên sereke",
@@ -237,7 +237,7 @@
 		},
 		"filter": {
 			"all": "Hemû",
-			"clear": "Filtreyan paqij bike",
+			"clear": "Rakirina fîlterê",
 			"label": "Li gorî etîketê filtir bike",
 			"active": "Tê xuyang kirin"
 		},
@@ -319,7 +319,7 @@
 		},
 		"filter": {
 			"all": "Hemû",
-			"clear": "Fîltreyan paqij bike",
+			"clear": "Rakirina fîlterê",
 			"label": "Li gorî cureyê filtir bike",
 			"active": "Tê xuyang kirin",
 			"heading": "Fîltre",
@@ -390,7 +390,7 @@
 		"filter": {
 			"label": "Fîltre & lêgerîn",
 			"all": "Hemû cure",
-			"reset": "Ji nû ve dest pê bike",
+			"reset": "Rakirina fîlterê",
 			"active": "Aktîf:",
 			"typeLabel": "Cureyê dengê",
 			"stateLabel": "Format",
@@ -553,8 +553,8 @@
 		"filter": {
 			"label": "Fîltre & rêz",
 			"all": "Hemû janr",
-			"reset": "Ji nû ve dest pê bike",
-			"clear": "Filtreyan paqij bike",
+			"reset": "Rakirina fîlterê",
+			"clear": "Rakirina fîlterê",
 			"active": "Aktîf:",
 			"genreLabel": "Janra",
 			"searchLabel": "Di nivîsan de bigere",
@@ -708,7 +708,7 @@
 		},
 		"filter": {
 			"label": "Parzûn & lêgerîn",
-			"reset": "Ji nû ve dest pê bike",
+			"reset": "Rakirina fîlterê",
 			"all": "Hemû",
 			"typeLabel": "Format",
 			"searchLabel": "Li vîdyoyan bigere",
@@ -1067,7 +1067,7 @@
 		},
 		"filter": {
 			"active": "Parzûnên çalak",
-			"clear": "Filtreyan paqij bike",
+			"clear": "Rakirina fîlterê",
 			"label": "Cureyê xizmetê",
 			"typeAll": "Hemû cure"
 		},
