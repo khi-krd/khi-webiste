@@ -50,7 +50,6 @@ type WritingPostViewProps = {
 	audioTitle: string;
 	originalBookLabel: string;
 	laterEditionsLabel: string;
-	downloadLabel: string;
 
 	seriesLabel: string;
 	seriesVolumeLabel: (order: number, total: number | null) => string;
@@ -78,7 +77,6 @@ export function WritingPostView({
 	audioTitle,
 	originalBookLabel,
 	laterEditionsLabel,
-	downloadLabel,
 
 	seriesLabel,
 	seriesVolumeLabel,
@@ -368,61 +366,26 @@ export function WritingPostView({
 						>
 							{laterEditionsLabel}
 						</h2>
-						<ul className="divide-border/60 mt-6 divide-y">
+						<ScrollReveal className="mt-6 grid grid-cols-1 gap-3 sm:grid-cols-2 sm:gap-4 lg:grid-cols-4">
 							{detail.editionBooks.map((book) => (
-								<li key={book.id} className="py-4">
-									<div className="flex items-center gap-4">
-										<NavLink
-											href={`/writings/${book.id}`}
-											className="relative block size-16 shrink-0 overflow-hidden bg-sunken"
-										>
-											{book.coverUrl ? (
-												<NextImage
-													src={book.coverUrl}
-													alt=""
-													fill
-													sizes="4rem"
-													className="object-cover"
-												/>
-											) : (
-												<span className="text-muted-foreground/40 flex h-full w-full items-center justify-center text-xs">
-													—
-												</span>
-											)}
-										</NavLink>
-										<div className="min-w-0 flex-1">
-											<NavLink
-												href={`/writings/${book.id}`}
-												className="text-foreground no-underline transition-colors fine-hover:text-brand"
-											>
-												<p className="truncate font-medium">{book.title}</p>
-											</NavLink>
-											<p className="text-muted-foreground mt-0.5 flex flex-wrap items-center gap-x-2 text-sm">
-												{book.editionName ? (
-													<span>{book.editionName}</span>
-												) : null}
-												{book.editionName && book.createdAt ? (
-													<span aria-hidden>·</span>
-												) : null}
-												{book.createdAt ? (
-													<span>{formatYear(locale, book.createdAt)}</span>
-												) : null}
-											</p>
-										</div>
-										{book.fileUrl ? (
-											<a
-												href={book.fileUrl}
-												target="_blank"
-												rel="noopener noreferrer"
-												className="border-border-strong text-foreground hover:bg-sunken inline-flex shrink-0 items-center gap-1.5 border px-3 py-1.5 text-xs font-medium transition-colors"
-											>
-												{downloadLabel}
-											</a>
-										) : null}
-									</div>
-								</li>
+								<ScrollRevealItem key={book.id}>
+									<WritingGridCard
+										id={book.id}
+										title={book.title}
+										writer=""
+										coverUrl={book.coverUrl}
+										hoverCoverUrl={null}
+										fileUrl={book.fileUrl}
+										badgeLabel={
+											book.editionName ??
+											(book.createdAt
+												? formatYear(locale, book.createdAt)
+												: null)
+										}
+									/>
+								</ScrollRevealItem>
 							))}
-						</ul>
+						</ScrollReveal>
 					</section>
 				</ScrollRevealBlock>
 			) : null}
