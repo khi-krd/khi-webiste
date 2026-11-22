@@ -21,6 +21,8 @@ type AudioShellProps = {
 	currentPage: number;
 	totalPages: number;
 	topics: TopicOption[];
+	soundTypes: string[];
+	soundTypeLabels: Record<string, string>;
 	activeType?: string | null;
 	activeState?: TrackState | null;
 	activeTopicId?: number | null;
@@ -37,6 +39,8 @@ export async function AudioShell({
 	currentPage,
 	totalPages,
 	topics,
+	soundTypes,
+	soundTypeLabels,
 	activeType,
 	activeState,
 	activeTopicId,
@@ -69,6 +73,8 @@ export async function AudioShell({
 			<div className={homeInsetClass}>
 				<AudioFilters
 					topics={topics}
+					soundTypes={soundTypes}
+					soundTypeLabels={soundTypeLabels}
 					activeType={activeType}
 					activeState={activeState}
 					activeTopicId={activeTopicId}

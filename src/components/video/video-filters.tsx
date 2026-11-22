@@ -102,21 +102,22 @@ export function VideoFilters({
 		],
 	);
 
-	const types: FilterOption[] = [
-		{ id: "FILM", label: t("types.FILM") },
-		{ id: "VIDEO_CLIP", label: t("types.VIDEO_CLIP") },
-	];
+	/**
+	 * The "جۆر" axis is the managed پۆل vocabulary — film/clip are seeded
+	 * rows and admins add folklore/documentary/etc. The structural `?type=`
+	 * (FILM/VIDEO_CLIP) param still filters when a legacy link carries it,
+	 * but no longer drives the visible axis.
+	 */
+	const types: FilterOption[] = categories.map((category) => ({
+		id: String(category.id),
+		label: category.name,
+		count: category.count,
+	}));
 
 	const topicOptions: FilterOption[] = topics.map((topic) => ({
 		id: String(topic.id),
 		label: topic.name,
 		count: topic.count,
-	}));
-
-	const categoryOptions: FilterOption[] = categories.map((category) => ({
-		id: String(category.id),
-		label: category.name,
-		count: category.count,
 	}));
 
 	return (
@@ -127,6 +128,7 @@ export function VideoFilters({
 			labels={{
 				...unifiedLabels(locale),
 				searchPlaceholder: t("filter.searchLabel"),
+				type: t("filter.categoryLabel"),
 				allTypes: t("filter.all"),
 				author: t("filter.topicLabel"),
 				allAuthors: t("filter.all"),
@@ -143,35 +145,26 @@ export function VideoFilters({
 			}}
 			types={types}
 			typeStyle="pills"
-			// The listing endpoint takes ONE type — a new pick replaces the old.
-			selectedTypes={activeType ? [activeType] : []}
+			// One پۆل at a time — a new pick replaces the old, and clears
+			// any legacy ?type= enum param the category axis supersedes.
+			selectedTypes={activeCategoryId != null ? [String(activeCategoryId)] : []}
 			onTypesChange={(ids) =>
 				navigate({
-					type: ids.length
-						? ((ids[ids.length - 1] as VideoType) ?? null)
+					type: null,
+					category: ids.length
+						? Number.parseInt(ids[ids.length - 1] ?? "", 10) || null
 						: null,
 				})
 			}
-			extra={[
-				{
-					label: t("filter.collectionLabel"),
-					allLabel: t("filter.all"),
-					noMatch: "",
-					asPills: true,
-					options: [{ id: "memories", label: t("filter.memoriesLabel") }],
-					selected: activeMemories ? "memories" : null,
-					onChange: (id) => navigate({ memories: id === "memories" }),
-				},
-				{
-					label: t("filter.categoryLabel"),
-					allLabel: t("filter.all"),
-					noMatch: t("filter.topicNoMatch"),
-					options: categoryOptions,
-					selected: activeCategoryId != null ? String(activeCategoryId) : null,
-					onChange: (id) =>
-						navigate({ category: id ? Number.parseInt(id, 10) : null }),
-				},
-			]}
+			extra={{
+				label: t("filter.collectionLabel"),
+				allLabel: t("filter.all"),
+				noMatch: "",
+				asPills: true,
+				options: [{ id: "memories", label: t("filter.memoriesLabel") }],
+				selected: activeMemories ? "memories" : null,
+				onChange: (id) => navigate({ memories: id === "memories" }),
+			}}
 			authors={topicOptions}
 			selectedAuthor={activeTopicId != null ? String(activeTopicId) : null}
 			onAuthorChange={(id) =>

@@ -555,7 +555,12 @@ export async function getAudioSoundTypes(locale: string): Promise<string[]> {
 	for (const value of [...values]) {
 		if (value.trim().toUpperCase() === "OTHER") values.delete(value);
 	}
-	return [...values];
+	const collator = new Intl.Collator(locale === "ku" ? "ku" : "ckb", {
+		sensitivity: "base",
+	});
+	return [...values].sort((a, b) =>
+		collator.compare(vocab.get(a) ?? a, vocab.get(b) ?? b),
+	);
 }
 
 /** Homepage sound-section background video (`GET .../sound-reklam-video`). */

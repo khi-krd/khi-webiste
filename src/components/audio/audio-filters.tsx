@@ -19,7 +19,8 @@ type TopicOption = {
 
 type AudioFiltersProps = {
 	topics: TopicOption[];
-	/** Kept for URL round-trips — the single "گۆرانی" type is hidden by design. */
+	soundTypes: string[];
+	soundTypeLabels: Record<string, string>;
 	activeType?: string | null;
 	activeState?: TrackState | null;
 	activeTopicId?: number | null;
@@ -32,12 +33,14 @@ type AudioFiltersProps = {
 };
 
 /**
- * Style D — the writings-page bar. The type filter stays hidden (the
- * catalogue holds only گۆرانی); the شێواز axis (تۆماری تاک / ئەلبووم) rides
- * the types panel and بابەت gets the searchable counted list.
+ * Style D — the writings-page bar. The جۆر axis is the managed
+ * sound-tracks/types vocabulary; شێواز (تۆماری تاک / ئەلبووم) rides the
+ * extra pill axis and بابەت gets the searchable counted list.
  */
 export function AudioFilters({
 	topics,
+	soundTypes,
+	soundTypeLabels,
 	activeType,
 	activeState,
 	activeTopicId,
@@ -58,6 +61,7 @@ export function AudioFilters({
 	const navigate = useCallback(
 		(
 			opts: {
+				type?: string | null;
 				state?: TrackState | null;
 				topic?: number | null;
 				q?: string;
@@ -65,7 +69,7 @@ export function AudioFilters({
 			replace = false,
 		) => {
 			const href = buildAudioHref({
-				type: activeType,
+				type: "type" in opts ? opts.type : activeType,
 				state: "state" in opts ? opts.state : activeState,
 				topic: "topic" in opts ? opts.topic : activeTopicId,
 				tag: activeTag,
@@ -95,7 +99,12 @@ export function AudioFilters({
 		],
 	);
 
-	const types: FilterOption[] = [
+	const types: FilterOption[] = soundTypes.map((value) => ({
+		id: value,
+		label: soundTypeLabels[value] ?? value,
+	}));
+
+	const states: FilterOption[] = [
 		{ id: "SINGLE", label: t("state.single") },
 		{ id: "MULTI", label: t("state.multi") },
 	];
@@ -114,13 +123,8 @@ export function AudioFilters({
 			labels={{
 				...unifiedLabels(locale),
 				searchPlaceholder: t("filter.searchLabel"),
-				type: t("filter.stateLabel"),
+				type: t("filter.typeLabel"),
 				allTypes: t("filter.allShort"),
-				noTypeMatch: t("filter.stateNoMatch"),
-				otherTypes: t("filter.stateOther"),
-				noTypesSelected: t("filter.stateNoneSelected"),
-				typesSelected: (n) => t("filter.stateSelected", { count: n }),
-				typesCount: (n) => t("filter.stateCount", { count: n }),
 				author: t("filter.topicLabel"),
 				allAuthors: t("filter.allShort"),
 				noAuthorMatch: t("filter.topicNoMatch"),
@@ -136,19 +140,26 @@ export function AudioFilters({
 			}}
 			types={types}
 			typeStyle="pills"
-			// One شێواز at a time — a new pick replaces the old.
-			selectedTypes={activeState ? [activeState] : []}
+			// The API's search endpoint takes ONE soundType per request —
+			// a new pick replaces the old instead of stacking.
+			selectedTypes={activeType ? [activeType] : []}
 			onTypesChange={(ids) =>
-				navigate({
-					state: ids.length
-						? ((ids[ids.length - 1] as TrackState) ?? null)
-						: null,
-				})
+				navigate({ type: ids.length ? (ids[ids.length - 1] ?? null) : null })
 			}
+			extra={{
+				label: t("filter.stateLabel"),
+				allLabel: t("filter.allShort"),
+				noMatch: t("filter.stateNoMatch"),
+				asPills: true,
+				options: states,
+				selected: activeState ?? null,
+				onChange: (id) =>
+					navigate({
+						state: id === "SINGLE" || id === "MULTI" ? id : null,
+					}),
+			}}
 			authors={topicOptions}
-			selectedAuthor={
-				activeTopicId != null ? String(activeTopicId) : null
-			}
+			selectedAuthor={activeTopicId != null ? String(activeTopicId) : null}
 			onAuthorChange={(id) =>
 				navigate({ topic: id ? Number.parseInt(id, 10) : null })
 			}
