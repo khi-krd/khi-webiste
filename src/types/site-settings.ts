@@ -12,6 +12,7 @@ export const SiteSettingsSchema = z.object({
 	id: z.number().nullish(),
 	/** Header and footer logo. Transparent PNG — it sits on cream and near-black. */
 	logoUrl: z.string().nullish(),
+	aboutLogoUrl: z.string().nullish(),
 	/** Photograph for the donate band above the footer. */
 	donateImageUrl: z.string().nullish(),
 	/**

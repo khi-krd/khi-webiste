@@ -16,7 +16,7 @@ import {
 	getPrimaryAboutPage,
 	resolveAboutContent,
 } from "@/lib/api/about";
-import { getSiteLogoUrl } from "@/lib/api/site-settings";
+import { getAboutLogoUrl } from "@/lib/api/site-settings";
 import { plainTextFromRichContent } from "@/lib/rich-text";
 import { localeAlternates } from "@/lib/seo/metadata";
 
@@ -62,7 +62,7 @@ export default async function AboutPage({
 			getAboutOffices(locale),
 			getAboutPartners(locale),
 			getAboutManagers(locale),
-			getSiteLogoUrl(),
+			getAboutLogoUrl(),
 		]);
 	const apiFounder = aboutPage
 		? resolveFounderFromAbout(locale, aboutPage)

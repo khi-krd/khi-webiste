@@ -35,6 +35,12 @@ export async function getSiteLogoUrl(): Promise<string | null> {
 	return settings?.logoUrl?.trim() || null;
 }
 
+/** The about-page logo beside the mission text; falls back to the site logo. */
+export async function getAboutLogoUrl(): Promise<string | null> {
+	const settings = await getSiteSettings();
+	return settings?.aboutLogoUrl?.trim() || settings?.logoUrl?.trim() || null;
+}
+
 /** The photograph in the donate band above the footer. */
 export async function getDonateBandImageUrl(): Promise<string | null> {
 	const settings = await getSiteSettings();
