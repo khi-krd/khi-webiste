@@ -116,7 +116,7 @@ export async function VideoShell({
 		<section
 			id={id}
 			className={cn(
-				"w-full border-t border-border bg-surface/40 py-8 sm:py-10 lg:py-12",
+				"w-full border-t border-border bg-surface/40 pt-5 pb-8 sm:pt-6 sm:pb-10 lg:pt-8 lg:pb-12",
 				className,
 			)}
 			aria-label={title}

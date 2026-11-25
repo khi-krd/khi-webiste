@@ -59,7 +59,7 @@ export function GalleryPosts({
 			className="gallery-board scroll-mt-26 sm:scroll-mt-30"
 		>
 			<div className={cn("pb-16 lg:pb-24", homeInsetClass)}>
-				<div className="pt-10 lg:pt-14">
+				<div className="pt-6 lg:pt-8">
 					<GalleryFilters
 						topics={topics}
 						activeQuery={activeQuery}

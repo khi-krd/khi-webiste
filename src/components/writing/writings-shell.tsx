@@ -68,7 +68,7 @@ export function WritingsShell({
 		<section
 			id={id}
 			className={cn(
-				"scroll-mt-26 w-full border-t border-border bg-background py-12 sm:scroll-mt-30 sm:py-16 lg:py-20",
+				"scroll-mt-26 w-full border-t border-border bg-background pt-6 pb-12 sm:scroll-mt-30 sm:pt-8 sm:pb-16 lg:pt-10 lg:pb-20",
 				className,
 			)}
 			aria-labelledby="writings-grid-heading"

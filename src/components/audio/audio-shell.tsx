@@ -65,7 +65,7 @@ export async function AudioShell({
 		<section
 			id={id}
 			className={cn(
-				"w-full border-t border-border bg-background py-12 sm:py-16 lg:py-20",
+				"w-full border-t border-border bg-background pt-6 pb-12 sm:pt-8 sm:pb-16 lg:pt-10 lg:pb-20",
 				className,
 			)}
 			aria-label={t("grid.allTitle")}

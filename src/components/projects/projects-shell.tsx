@@ -43,7 +43,7 @@ export function ProjectsShell({
 
 	return (
 		<section id="projects-content" className="scroll-mt-26 sm:scroll-mt-30">
-			<div className="mx-auto max-w-[88rem] px-6 py-12 sm:px-8 sm:py-16 lg:py-20">
+			<div className="mx-auto max-w-[88rem] px-6 pt-6 pb-12 sm:px-8 sm:pt-8 sm:pb-16 lg:pt-10 lg:pb-20">
 				<ProjectsFilterBar
 					types={types}
 					activeYear={activeYear}

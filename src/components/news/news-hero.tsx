@@ -20,7 +20,7 @@ export function NewsHero({ title, className }: NewsHeroProps) {
 			<ScrollRevealBlock
 				className={cn(
 					homeInsetClass,
-					"pt-12 pb-10 sm:pt-16 sm:pb-12 lg:pt-20 lg:pb-14",
+					"pt-6 pb-10 sm:pt-8 sm:pb-12 lg:pt-10 lg:pb-14",
 				)}
 			>
 				<header>

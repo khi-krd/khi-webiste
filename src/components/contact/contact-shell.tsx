@@ -12,7 +12,7 @@ export const pageXClass =
 /** Intro band without its closing rule — see `HomeSection`'s `divider` prop. */
 export const homeIntroPlainClass = cn(
 	pageXClass,
-	"bg-background pt-24 pb-14 sm:pt-28 sm:pb-16 lg:pt-32 lg:pb-20",
+	"bg-background pt-8 pb-14 sm:pt-10 sm:pb-16 lg:pt-12 lg:pb-20",
 );
 
 export const homeIntroClass = cn(homeIntroPlainClass, "border-b border-border");
