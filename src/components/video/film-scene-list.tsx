@@ -205,6 +205,13 @@ export function FilmSceneList({
 												{scene.title}
 											</span>
 										) : null}
+										{/* Each part's own description — two lines max, and only
+										    on tiles wide enough to keep it readable. */}
+										{scene.description ? (
+											<span className="mt-1 hidden line-clamp-2 text-label leading-snug text-primary-foreground/70 @[17.5rem]:block">
+												{scene.description}
+											</span>
+										) : null}
 										{isActive ? (
 											<span className="mt-1.5 hidden items-center gap-1.5 text-label text-primary-foreground/75 @[17.5rem]:inline-flex">
 												<span

@@ -172,6 +172,11 @@ export function VideoClipList({
 												{clip.title}
 											</span>
 										) : null}
+										{clip.description ? (
+											<span className="mt-1 line-clamp-2 text-label leading-snug text-primary-foreground/70">
+												{clip.description}
+											</span>
+										) : null}
 										{isActive ? (
 											<span className="mt-1 block text-label text-primary-foreground/75">
 												{labels.nowPlaying}
