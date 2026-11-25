@@ -279,9 +279,18 @@ function normalizeVideoClip(raw: unknown): unknown {
 }
 
 type NormalizedVideoSource = {
-	url: string;
+	url: string | null;
+	externalUrl: string | null;
+	embedUrl: string | null;
 	main: boolean;
 	coverUrl: string | null;
+	label: string | null;
+	labelCkb: string | null;
+	labelKmr: string | null;
+	titleCkb: string | null;
+	titleKmr: string | null;
+	descriptionCkb: string | null;
+	descriptionKmr: string | null;
 };
 
 function normalizeVideoSource(raw: unknown): NormalizedVideoSource | null {
@@ -291,12 +300,18 @@ function normalizeVideoSource(raw: unknown): NormalizedVideoSource | null {
 	}
 
 	const url = asOptionalString(source.url);
-	if (!url) {
+	const externalUrl = asOptionalString(
+		source.externalUrl ?? source.external_url,
+	);
+	const embedUrl = asOptionalString(source.embedUrl ?? source.embed_url);
+	if (!url && !externalUrl && !embedUrl) {
 		return null;
 	}
 
 	return {
-		url,
+		url: url ?? null,
+		externalUrl: externalUrl ?? null,
+		embedUrl: embedUrl ?? null,
 		main: source.main === true,
 		coverUrl: asOptionalString(
 			source.thumbnailUrl ??
@@ -305,6 +320,17 @@ function normalizeVideoSource(raw: unknown): NormalizedVideoSource | null {
 				source.cover_url ??
 				source.posterUrl ??
 				source.poster_url,
+		),
+		label: asOptionalString(source.label),
+		labelCkb: asOptionalString(source.labelCkb ?? source.label_ckb),
+		labelKmr: asOptionalString(source.labelKmr ?? source.label_kmr),
+		titleCkb: asOptionalString(source.titleCkb ?? source.title_ckb),
+		titleKmr: asOptionalString(source.titleKmr ?? source.title_kmr),
+		descriptionCkb: asOptionalString(
+			source.descriptionCkb ?? source.description_ckb,
+		),
+		descriptionKmr: asOptionalString(
+			source.descriptionKmr ?? source.description_kmr,
 		),
 	};
 }
@@ -330,7 +356,16 @@ function videoSourcesToClipItems(sources: NormalizedVideoSource[]): unknown[] {
 		normalizeVideoClip({
 			clipNumber: index + 1,
 			url: source.url,
+			externalUrl: source.externalUrl,
+			embedUrl: source.embedUrl,
 			coverUrl: source.coverUrl,
+			// A series part's own title wins; the short label is the fallback so
+			// older films still name their parts on the scene rail.
+			titleCkb: source.titleCkb ?? source.labelCkb ?? source.label,
+			titleKmr: source.titleKmr ?? source.labelKmr ?? source.label,
+			descriptionCkb: source.descriptionCkb,
+			descriptionKmr: source.descriptionKmr,
+			main: source.main,
 		}),
 	);
 }

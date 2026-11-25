@@ -88,6 +88,50 @@ describe("normalizeVideoRecord videoSources", () => {
 			"https://example.com/explicit.mp4",
 		);
 	});
+
+	it("carries each series part's own title and description onto the clips", () => {
+		const normalized = normalizeVideoRecord({
+			...filmWithVideoSources,
+			videoSources: [
+				{
+					url: MAIN_URL,
+					main: true,
+					titleCkb: "بەشی یەکەم",
+					titleKmr: "Beşa yekem",
+					descriptionCkb: "وەسفی بەشی یەکەم",
+				},
+				{
+					externalUrl: "https://www.youtube.com/watch?v=abc123def45",
+					main: false,
+					labelCkb: "بەشی دووەم",
+				},
+			],
+		});
+		const parsed = VideoSchema.parse(normalized);
+
+		// The external-only source stays a part — a series is not limited to
+		// hosted files.
+		expect(parsed.videoClipItems).toHaveLength(2);
+		expect(parsed.videoClipItems?.[0]).toMatchObject({
+			clipNumber: 1,
+			url: MAIN_URL,
+			titleCkb: "بەشی یەکەم",
+			titleKmr: "Beşa yekem",
+			descriptionCkb: "وەسفی بەشی یەکەم",
+			main: true,
+		});
+		expect(parsed.videoClipItems?.[1]).toMatchObject({
+			clipNumber: 2,
+			// normalizeVideoClip collapses the playable URL onto `url`.
+			url: "https://www.youtube.com/watch?v=abc123def45",
+			titleCkb: "بەشی دووەم",
+		});
+
+		const detail = resolveVideoDetail("ckb", parsed);
+		expect(detail?.clips[0]?.title).toBe("بەشی یەکەم");
+		expect(detail?.clips[0]?.description).toBe("وەسفی بەشی یەکەم");
+		expect(detail?.clips[1]?.title).toBe("بەشی دووەم");
+	});
 });
 
 describe("resolveVideoDetail with videoSources", () => {
