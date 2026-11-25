@@ -6,7 +6,6 @@ import { FilmSection } from "@/components/home/film-section";
 import { ImageCollectionSection } from "@/components/home/image-collection-section";
 import { LatestUpdates } from "@/components/home/latest-updates";
 import { ProjectsSection } from "@/components/home/projects-section";
-import { RandomPicksSection } from "@/components/home/random-picks-section";
 import { SoundSection } from "@/components/home/sound-section";
 import { VideoSection } from "@/components/home/video-section";
 import { WritingsSection } from "@/components/home/writings-section";
@@ -51,7 +50,6 @@ export default async function Home({
 			<FilmSection />
 			<VideoSection />
 			<ImageCollectionSection />
-			<RandomPicksSection />
 			<DonateBand />
 		</main>
 	);

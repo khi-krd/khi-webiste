@@ -131,12 +131,7 @@
 		"label": "Ziman"
 	},
 	"Home": {
-		"placeholder": "Pirtûkxaneya dîjîtal a çanda, mîrat û rastiya Kurdî.",
-		"randomPicks": {
-			"title": "Vebijarkên kerfeş",
-			"subtitle": "Beşek kerfeş ji arşîvê — di her serdanê de tiştekî cuda",
-			"viewAll": "Hemûyan bibîne"
-		}
+		"placeholder": "Pirtûkxaneya dîjîtal a çanda, mîrat û rastiya Kurdî."
 	},
 	"LatestUpdates": {
 		"eyebrow": "Nûçe",
