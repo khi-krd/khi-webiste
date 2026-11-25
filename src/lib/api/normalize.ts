@@ -127,6 +127,17 @@ function asOptionalString(value: unknown): string | null {
 	return null;
 }
 
+function asOptionalNumber(value: unknown): number | null {
+	if (typeof value === "number" && Number.isFinite(value)) {
+		return value;
+	}
+	if (typeof value === "string") {
+		const parsed = Number(value.trim());
+		return Number.isFinite(parsed) ? parsed : null;
+	}
+	return null;
+}
+
 function normalizeSoundFile(raw: unknown): unknown {
 	const file = asRecord(raw);
 	if (!file) return raw;
@@ -291,6 +302,10 @@ type NormalizedVideoSource = {
 	titleKmr: string | null;
 	descriptionCkb: string | null;
 	descriptionKmr: string | null;
+	durationSeconds: number | null;
+	resolution: string | null;
+	fileFormat: string | null;
+	fileSizeMb: number | null;
 };
 
 function normalizeVideoSource(raw: unknown): NormalizedVideoSource | null {
@@ -332,6 +347,12 @@ function normalizeVideoSource(raw: unknown): NormalizedVideoSource | null {
 		descriptionKmr: asOptionalString(
 			source.descriptionKmr ?? source.description_kmr,
 		),
+		durationSeconds: asOptionalNumber(
+			source.durationSeconds ?? source.duration_seconds,
+		),
+		resolution: asOptionalString(source.resolution),
+		fileFormat: asOptionalString(source.fileFormat ?? source.file_format),
+		fileSizeMb: asOptionalNumber(source.fileSizeMb ?? source.file_size_mb),
 	};
 }
 
@@ -365,6 +386,10 @@ function videoSourcesToClipItems(sources: NormalizedVideoSource[]): unknown[] {
 			titleKmr: source.titleKmr ?? source.labelKmr ?? source.label,
 			descriptionCkb: source.descriptionCkb,
 			descriptionKmr: source.descriptionKmr,
+			durationSeconds: source.durationSeconds,
+			resolution: source.resolution,
+			fileFormat: source.fileFormat,
+			fileSizeMb: source.fileSizeMb,
 			main: source.main,
 		}),
 	);
