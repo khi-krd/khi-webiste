@@ -1,22 +1,16 @@
-import type { TrackState } from "@/types/audio";
-
 export type AudioUrlParams = {
 	type?: string | null;
-	state?: TrackState | string | null;
+	/** Managed type slug — SINGLE/MULTI keep their short `single`/`multi` form. */
+	state?: string | null;
 	topic?: number | string | null;
 	tag?: string | null;
 	q?: string | null;
 	page?: number;
 };
 
-export function parseAudioState(value?: string | null): TrackState | null {
-	if (value === "single") {
-		return "SINGLE";
-	}
-	if (value === "multi") {
-		return "MULTI";
-	}
-	return null;
+export function parseAudioState(value?: string | null): string | null {
+	const slug = value?.trim().toUpperCase();
+	return slug && /^[A-Z0-9_]+$/.test(slug) ? slug : null;
 }
 
 export function parseAudioTag(value?: string | null): string | null {
@@ -45,7 +39,9 @@ export function buildAudioHref({
 		params.set("type", type.trim());
 	}
 	const stateParam =
-		state === "SINGLE" ? "single" : state === "MULTI" ? "multi" : null;
+		state === "SINGLE" || state === "MULTI"
+			? state.toLowerCase()
+			: state?.trim() || null;
 	if (stateParam) {
 		params.set("state", stateParam);
 	}

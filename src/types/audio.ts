@@ -107,6 +107,16 @@ export const SoundTrackSchema = z.object({
 	soundType: z.string(),
 	soundTypes: z.array(z.string()).optional().default([]),
 	trackState: TrackStateSchema,
+	/** جۆری تۆماری دەنگ — the managed type row (تاک, ئەلبووم, …). */
+	stateOption: z
+		.object({
+			id: z.number().nullish(),
+			slug: z.string().nullish(),
+			nameCkb: z.string().nullish(),
+			nameKmr: z.string().nullish(),
+		})
+		.nullish()
+		.catch(null),
 	albumOfMemories: z.boolean(),
 	topicId: z.number().nullish(),
 	topicNameCkb: z.string().nullish(),
@@ -218,6 +228,8 @@ export type ResolvedAudioCard = {
 	soundType: string;
 	soundTypes: string[];
 	trackState: TrackState;
+	/** Managed type slug — SINGLE / MULTI for the seeded rows. */
+	stateSlug: string;
 	albumOfMemories: boolean;
 	topicId: number | null;
 	topicName: string | null;
@@ -279,6 +291,8 @@ export type ResolvedAudioDetail = {
 	soundType: string;
 	soundTypes: string[];
 	trackState: TrackState;
+	/** Managed type slug — SINGLE / MULTI for the seeded rows. */
+	stateSlug: string;
 	albumOfMemories: boolean;
 	topicId: number | null;
 	topicName: string | null;

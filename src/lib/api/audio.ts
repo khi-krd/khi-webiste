@@ -1,4 +1,5 @@
 import "server-only";
+import { z } from "zod";
 import {
 	apiFetch,
 	apiFetchItemArray,
@@ -58,7 +59,8 @@ export type AudioListResult = {
 
 export type AudioListingOptions = {
 	soundType?: string | null;
-	state?: TrackState | null;
+	/** Managed type slug (SINGLE, MULTI, or an admin-added row). */
+	state?: string | null;
 	topicId?: number | null;
 	tag?: string | null;
 	query?: string | null;
@@ -67,13 +69,7 @@ export type AudioListingOptions = {
 };
 
 /** Which filter dimension the upstream call already resolved for us. */
-type ServedAudioDimension =
-	| "query"
-	| "tag"
-	| "soundType"
-	| "topicId"
-	| "state"
-	| null;
+type ServedAudioDimension = "query" | "tag" | "soundType" | "topicId" | null;
 
 async function fetchTracksPage(
 	searchParams: Record<string, string | number | undefined>,
@@ -274,8 +270,13 @@ export async function getAudioListing(
 			apiTracks = await fetchTracksByTopic(topicId);
 			served = "topicId";
 		} else if (state) {
-			apiTracks = await fetchTracksByState(state);
-			served = "state";
+			// The by-state endpoint takes the structural SINGLE/MULTI only, and
+			// MULTI also covers every admin-added type — so the managed slug is
+			// always refined in memory below instead of marking it served.
+			const structural = TrackStateSchema.safeParse(state);
+			apiTracks = structural.success
+				? await fetchTracksByState(structural.data)
+				: await fetchAllTracksFromApi();
 		} else {
 			apiTracks = await fetchAllTracksFromApi();
 		}
@@ -297,7 +298,7 @@ export async function getAudioListing(
 			// other one still has to narrow the fetched set.
 			const filtered = filterAudioTracks(allItems, {
 				soundType: served === "soundType" ? null : soundType,
-				state: served === "state" ? null : state,
+				state,
 				topicId: served === "topicId" ? null : topicId,
 				tag: served === "tag" ? null : tag,
 				query: served === "query" ? null : query,
@@ -309,6 +310,35 @@ export async function getAudioListing(
 
 	// API unavailable or empty — an empty page, not demo tracks.
 	return paginateAudioTracks([], page, size);
+}
+
+const SoundStateRowSchema = z.object({
+	id: z.number(),
+	slug: z.string().nullish(),
+	nameCkb: z.string().nullish(),
+	nameKmr: z.string().nullish(),
+});
+
+/** Managed تاک / ئەلبووم rows for the filter (`GET /api/v1/sound-states`). */
+export async function getSoundStates(
+	locale: string,
+): Promise<{ slug: string; name: string }[]> {
+	if (!getApiBaseUrl()) {
+		return [];
+	}
+	const rows = await apiFetch("/api/v1/sound-states", {
+		schema: lenientArray(SoundStateRowSchema, "sound state"),
+		tags: [SOUND_TRACKS_TAG, "sound-states"],
+		revalidate: DEFAULT_REVALIDATE,
+	});
+	return (rows ?? []).flatMap((row) => {
+		const slug = row.slug?.trim();
+		const name =
+			locale === "ckb"
+				? (row.nameCkb ?? row.nameKmr)
+				: (row.nameKmr ?? row.nameCkb);
+		return slug && name ? [{ slug, name }] : [];
+	});
 }
 
 /** Album-of-memories strip (`GET /api/v1/sound-tracks/album-of-memories`). */

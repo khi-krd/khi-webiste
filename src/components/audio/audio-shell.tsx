@@ -1,6 +1,9 @@
 import { getTranslations } from "next-intl/server";
 import { AudioCard, type AudioCardProps } from "@/components/audio/audio-card";
-import { AudioFilters } from "@/components/audio/audio-filters";
+import {
+	AudioFilters,
+	type AudioStateOption,
+} from "@/components/audio/audio-filters";
 import { AudioPagination } from "@/components/audio/audio-pagination";
 import {
 	ScrollReveal,
@@ -8,7 +11,7 @@ import {
 } from "@/components/motion/scroll-reveal";
 import { homeInsetClass } from "@/lib/layout";
 import { cn } from "@/lib/utils";
-import type { ResolvedAudioCard, TrackState } from "@/types/audio";
+import type { ResolvedAudioCard } from "@/types/audio";
 
 type TopicOption = {
 	id: number;
@@ -21,10 +24,11 @@ type AudioShellProps = {
 	currentPage: number;
 	totalPages: number;
 	topics: TopicOption[];
+	states?: AudioStateOption[];
 	soundTypes: string[];
 	soundTypeLabels: Record<string, string>;
 	activeType?: string | null;
-	activeState?: TrackState | null;
+	activeState?: string | null;
 	activeTopicId?: number | null;
 	activeTag?: string | null;
 	activeQuery?: string | null;
@@ -39,6 +43,7 @@ export async function AudioShell({
 	currentPage,
 	totalPages,
 	topics,
+	states,
 	soundTypes,
 	soundTypeLabels,
 	activeType,
@@ -73,6 +78,7 @@ export async function AudioShell({
 			<div className={homeInsetClass}>
 				<AudioFilters
 					topics={topics}
+					states={states}
 					soundTypes={soundTypes}
 					soundTypeLabels={soundTypeLabels}
 					activeType={activeType}

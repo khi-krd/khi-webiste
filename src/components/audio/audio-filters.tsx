@@ -9,7 +9,6 @@ import { UnifiedSearchBar } from "@/components/filters/UnifiedSearchBar";
 import { useFilterSearch } from "@/components/filters/use-filter-search";
 import { useRouter } from "@/i18n/navigation";
 import { buildAudioHref } from "@/lib/audio-url";
-import type { TrackState } from "@/types/audio";
 
 type TopicOption = {
 	id: number;
@@ -17,12 +16,16 @@ type TopicOption = {
 	count?: number;
 };
 
+export type AudioStateOption = { slug: string; name: string };
+
 type AudioFiltersProps = {
 	topics: TopicOption[];
+	/** Managed تاک / ئەلبووم rows; empty falls back to the two built-ins. */
+	states?: AudioStateOption[];
 	soundTypes: string[];
 	soundTypeLabels: Record<string, string>;
 	activeType?: string | null;
-	activeState?: TrackState | null;
+	activeState?: string | null;
 	activeTopicId?: number | null;
 	activeTag?: string | null;
 	activeQuery?: string | null;
@@ -39,6 +42,7 @@ type AudioFiltersProps = {
  */
 export function AudioFilters({
 	topics,
+	states: stateRows = [],
 	soundTypes,
 	soundTypeLabels,
 	activeType,
@@ -62,7 +66,7 @@ export function AudioFilters({
 		(
 			opts: {
 				type?: string | null;
-				state?: TrackState | null;
+				state?: string | null;
 				topic?: number | null;
 				q?: string;
 			},
@@ -104,10 +108,12 @@ export function AudioFilters({
 		label: soundTypeLabels[value] ?? value,
 	}));
 
-	const states: FilterOption[] = [
-		{ id: "SINGLE", label: t("state.single") },
-		{ id: "MULTI", label: t("state.multi") },
-	];
+	const states: FilterOption[] = stateRows.length
+		? stateRows.map((row) => ({ id: row.slug, label: row.name }))
+		: [
+				{ id: "SINGLE", label: t("state.single") },
+				{ id: "MULTI", label: t("state.multi") },
+			];
 
 	const topicOptions: FilterOption[] = topics.map((topic) => ({
 		id: String(topic.id),
@@ -153,10 +159,7 @@ export function AudioFilters({
 				asPills: true,
 				options: states,
 				selected: activeState ?? null,
-				onChange: (id) =>
-					navigate({
-						state: id === "SINGLE" || id === "MULTI" ? id : null,
-					}),
+				onChange: (id) => navigate({ state: id || null }),
 			}}
 			authors={topicOptions}
 			selectedAuthor={activeTopicId != null ? String(activeTopicId) : null}

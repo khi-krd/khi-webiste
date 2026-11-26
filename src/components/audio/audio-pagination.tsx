@@ -6,13 +6,12 @@ import { useRouter } from "@/i18n/navigation";
 import { buildAudioHref } from "@/lib/audio-url";
 import { useScrollToSection } from "@/lib/use-scroll-to-section";
 import { cn } from "@/lib/utils";
-import type { TrackState } from "@/types/audio";
 
 type AudioPaginationProps = {
 	currentPage: number;
 	totalPages: number;
 	activeType?: string | null;
-	activeState?: TrackState | null;
+	activeState?: string | null;
 	activeTopicId?: number | null;
 	activeTag?: string | null;
 	activeQuery?: string | null;

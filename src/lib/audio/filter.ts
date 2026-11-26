@@ -1,8 +1,9 @@
-import type { ResolvedAudioCard, TrackState } from "@/types/audio";
+import type { ResolvedAudioCard } from "@/types/audio";
 
 export type AudioFilterOptions = {
 	soundType?: string | null;
-	state?: TrackState | null;
+	/** Managed type slug (SINGLE, MULTI, or an admin-added row). */
+	state?: string | null;
 	topicId?: number | null;
 	tag?: string | null;
 	query?: string | null;
@@ -23,7 +24,7 @@ export function filterAudioTracks(
 	}
 
 	if (state) {
-		result = result.filter((item) => item.trackState === state);
+		result = result.filter((item) => item.stateSlug === state);
 	}
 
 	if (topicId != null) {
