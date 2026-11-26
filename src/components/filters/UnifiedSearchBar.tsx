@@ -5,6 +5,7 @@ import type {
 	ReactNode,
 	Ref,
 } from "react";
+import { useLocale } from "next-intl";
 import { useEffect, useId, useMemo, useRef, useState } from "react";
 import type { FilterGroup, FilterOption, SelectOption } from "./filters-shared";
 import {
@@ -139,7 +140,7 @@ export interface UnifiedSearchBarProps {
 	resultCount: number;
 	/** Hide types whose count is 0 (unless selected). Default true. */
 	hideEmpty?: boolean;
-	/** Show numbers as ٠١٢٣. Default true. */
+	/** Show numbers as ٠١٢٣. Defaults to the current locale (ckb only). */
 	kurdishDigits?: boolean;
 	labels?: Partial<UnifiedSearchBarLabels>;
 	className?: string;
@@ -172,12 +173,14 @@ export function UnifiedSearchBar({
 	onSortChange,
 	resultCount,
 	hideEmpty = true,
-	kurdishDigits = true,
+	kurdishDigits,
 	labels: labelOverrides,
 	className,
 }: UnifiedSearchBarProps) {
 	const L = { ...UNIFIED_SEARCH_DEFAULT_LABELS, ...labelOverrides };
-	const num = (n: number) => (kurdishDigits ? toKurdishDigits(n) : String(n));
+	const locale = useLocale();
+	const num = (n: number) =>
+		(kurdishDigits ?? locale === "ckb") ? toKurdishDigits(n) : String(n);
 	const uid = useId();
 
 	const rootRef = useRef<HTMLDivElement>(null);
