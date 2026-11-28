@@ -51,7 +51,7 @@ export async function generateMetadata({
 }): Promise<Metadata> {
 	const { locale } = await params;
 	const t = await getTranslations({ locale, namespace: "Nav" });
-	const siteName = t("brandAlt");
+	const siteName = t("siteTitle");
 	const siteUrl = process.env.NEXT_PUBLIC_SITE_URL;
 
 	return {
@@ -62,7 +62,7 @@ export async function generateMetadata({
 			default: siteName,
 			template: `%s · ${siteName}`,
 		},
-		description: t("aboutDescription"),
+		description: t("siteDescription"),
 		openGraph: {
 			siteName,
 			locale,
@@ -73,9 +73,63 @@ export async function generateMetadata({
 		twitter: {
 			card: "summary_large_image",
 			title: siteName,
-			description: t("aboutDescription"),
+			description: t("siteDescription"),
 		},
 	};
+}
+
+/**
+ * JSON-LD for the institute: one Organization entity per locale (the Kurdish
+ * name localizes, the English legal name stays as `alternateName`) plus the
+ * WebSite node so the brand name can surface in search.
+ */
+function OrganizationJsonLd({ locale }: { locale: string }) {
+	const siteUrl = (process.env.NEXT_PUBLIC_SITE_URL ?? "").replace(/\/$/, "");
+	const org = {
+		"@context": "https://schema.org",
+		"@type": "Organization",
+		"@id": `${siteUrl}/#organization`,
+		name:
+			locale === "ckb"
+				? "ئینستیتوتی کەلەپووری کورد"
+				: "Enstîtuya Kelepûra Kurdî",
+		alternateName: "Kurdish Heritage Institute",
+		url: `${siteUrl}/${locale}`,
+		logo: `${siteUrl}/logo.png`,
+		foundingDate: "2003",
+		founder: { "@type": "Person", name: "Mazhar Khaleghi" },
+		email: "info@khi.krd",
+		telephone: "+964533204232",
+		address: {
+			"@type": "PostalAddress",
+			addressLocality: "Sulaymaniyah",
+			addressRegion: "Sulaymaniyah Governorate, Kurdistan Region",
+			postalCode: "46001",
+			addressCountry: "IQ",
+		},
+		sameAs: [
+			"https://www.facebook.com/kurdishheritageinstitute2003",
+			"https://www.instagram.com/khi.krd/",
+			"https://www.youtube.com/@kurdishheritageinstitute",
+			"https://maps.app.goo.gl/WPtURZzGYDZNXtcM9",
+		],
+	};
+	const website = {
+		"@context": "https://schema.org",
+		"@type": "WebSite",
+		"@id": `${siteUrl}/#website`,
+		url: `${siteUrl}/${locale}`,
+		name: "Kurdish Heritage Institute",
+		publisher: { "@id": `${siteUrl}/#organization` },
+		inLanguage: locale,
+	};
+	return (
+		<script
+			type="application/ld+json"
+			// biome-ignore lint/security/noDangerouslySetInnerHtml: static schema, no user input.
+			dangerouslySetInnerHTML={{ __html: JSON.stringify([org, website]) }}
+		/>
+	);
 }
 
 function getDir(locale: string): "ltr" | "rtl" {
@@ -144,6 +198,7 @@ export default async function LocaleLayout({ children, params }: Props) {
 			    fallback behind Archivo. A next/font className here would pin the
 			    body to one family with no such chain. */}
 			<body className="font-sans antialiased">
+				<OrganizationJsonLd locale={locale} />
 				{/* Dashboard-picked typefaces, when configured: @font-face sourced
 				    from the same-origin /api/site-font proxy plus --font-app-*
 				    overrides. Rendered before the content so the rules apply
