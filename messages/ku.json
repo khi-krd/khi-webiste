@@ -813,6 +813,16 @@
 				"genre": "Cure",
 				"director": "Derhêner",
 				"fileInfo": "Agahiya pelê"
+			},
+			"series": {
+				"aboutFilm": "Derbarê filmê",
+				"episodes": "Beş",
+				"episodeCount": "{count} beş",
+				"partOf": "Beşa {n} ji {total}",
+				"previousPart": "Beşa berê",
+				"nextPart": "Beşa paşê",
+				"autoplay": "Lêdana xweber",
+				"producedBy": "Berhemê {producer}"
 			}
 		}
 	},

@@ -813,6 +813,16 @@
 				"genre": "جۆر",
 				"director": "دەرهێنەر",
 				"fileInfo": "زانیاری فایل"
+			},
+			"series": {
+				"aboutFilm": "دەربارەی فیلمەکە",
+				"episodes": "بەشەکان",
+				"episodeCount": "{count} بەش",
+				"partOf": "بەشی {n} لە {total}",
+				"previousPart": "بەشی پێشوو",
+				"nextPart": "بەشی داهاتوو",
+				"autoplay": "پەخشی خۆکار",
+				"producedBy": "بەرهەمی {producer}"
 			}
 		}
 	},

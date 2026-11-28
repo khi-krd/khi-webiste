@@ -40,6 +40,10 @@ export type VideoPlayerProps = {
 	/** Start playback immediately (e.g. after a gallery clip switch). */
 	autoPlay?: boolean;
 	className?: string;
+	/** Fires when playback reaches the end (series autoplay chaining). */
+	onEnded?: () => void;
+	/** Fires while playback advances (watch progress). */
+	onTimeUpdate?: (currentTime: number) => void;
 };
 
 export function VideoPlayer({
@@ -51,6 +55,8 @@ export function VideoPlayer({
 	variant = "minimal",
 	autoPlay = false,
 	className,
+	onEnded,
+	onTimeUpdate,
 }: VideoPlayerProps) {
 	const playerRef = useRef<MediaPlayerInstance>(null);
 	const trimmedSrc = src.trim();
@@ -87,6 +93,13 @@ export function VideoPlayer({
 				autoPlay={autoPlay}
 				streamType="on-demand"
 				load={autoPlay ? "eager" : "idle"}
+				onEnded={onEnded}
+				onTimeUpdate={
+					onTimeUpdate
+						? (detail: { currentTime?: number }) =>
+								onTimeUpdate(detail.currentTime ?? 0)
+						: undefined
+				}
 				// The `autoPlay` attribute alone is unreliable when the player
 				// mounts asynchronously after the user's gesture (the about-hero
 				// modal loads this chunk via dynamic()): some browsers drop the

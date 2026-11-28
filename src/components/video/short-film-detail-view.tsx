@@ -9,6 +9,7 @@ import { BackToIndexLink } from "@/components/ui/back-to-index";
 import { CoverLightbox } from "@/components/ui/cover-lightbox";
 import { Link } from "@/components/ui/link";
 import { RichText } from "@/components/ui/rich-text";
+import { FilmSeries } from "@/components/video/film-series";
 import { VideoPlayerFrame } from "@/components/video/video-player-frame";
 import type { VideoPosterCardProps } from "@/components/video/video-poster-card";
 import { VideoRelatedGrid } from "@/components/video/video-related-grid";
@@ -164,6 +165,7 @@ export async function ShortFilmDetailView({
 	relatedShortFilms = [],
 }: ShortFilmDetailViewProps) {
 	const t = await getTranslations("Video");
+	const isSeries = detail.clips.length > 1;
 
 	const durationLabel = formatDuration(detail.durationSeconds);
 	const fileSizeLabel = formatFileSizeMb(detail.fileSizeMb);
@@ -252,12 +254,124 @@ export async function ShortFilmDetailView({
 					{/* Centred over the bar from sm up, where the button leaves room
 					    on both sides; on phones it simply takes the space the button
 					    does not and truncates. */}
-					<h1 className="min-w-0 truncate text-end font-heading text-small font-semibold sm:pointer-events-none sm:absolute sm:inset-x-0 sm:px-44 sm:text-center sm:text-body">
-						{detail.title}
-					</h1>
+					{isSeries ? (
+						<span className="min-w-0 truncate text-end font-heading text-small font-semibold sm:pointer-events-none sm:absolute sm:inset-x-0 sm:px-44 sm:text-center sm:text-body">
+							{detail.title}
+						</span>
+					) : (
+						<h1 className="min-w-0 truncate text-end font-heading text-small font-semibold sm:pointer-events-none sm:absolute sm:inset-x-0 sm:px-44 sm:text-center sm:text-body">
+							{detail.title}
+						</h1>
+					)}
 				</div>
 			</header>
 
+			{isSeries ? (
+				<>
+					{/* Series header — intro column (title + chips) beside the
+					    film's own about text, mirroring the reference layout. */}
+					<div
+						className={cn(
+							homeInsetClass,
+							"mx-auto max-w-7xl pt-8 pb-6 sm:pt-10 sm:pb-7 lg:pt-12 2xl:max-w-none",
+						)}
+					>
+						<ScrollReveal className="grid items-start gap-8 lg:grid-cols-[minmax(0,1fr)_minmax(18rem,26rem)] lg:gap-10">
+							<ScrollRevealItem className="min-w-0">
+								{detail.topicNames.length > 0 ? (
+									<p className="text-label text-brand">
+										{detail.topicNames.join("، ")}
+									</p>
+								) : genreLabel !== "—" ? (
+									<p className="text-label text-brand">{genreLabel}</p>
+								) : null}
+								<h1 className="mt-2 font-heading text-h1 font-bold leading-[1.1] text-balance text-primary-foreground">
+									{detail.title}
+								</h1>
+								<ul className="mt-4 flex flex-wrap items-center gap-2 text-label text-primary-foreground/70">
+									<li className="inline-flex items-center gap-1.5 border border-primary-foreground/20 px-2.5 py-1">
+										{t("shortfilms.series.episodeCount", { count: detail.clips.length })}
+									</li>
+									{durationLabel ? (
+										<li
+											dir="ltr"
+											className="inline-flex items-center gap-1.5 border border-primary-foreground/20 px-2.5 py-1 tabular-nums"
+										>
+											{durationLabel}
+										</li>
+									) : null}
+									{detail.location ? (
+										<li className="inline-flex items-center gap-1.5 border border-primary-foreground/20 px-2.5 py-1">
+											<Link
+												href={buildVideoHref({ q: detail.location })}
+												className="underline decoration-primary-foreground/25 underline-offset-2 transition-colors fine-hover:text-brand fine-hover:decoration-brand"
+											>
+												{detail.location}
+											</Link>
+										</li>
+									) : null}
+								</ul>
+							</ScrollRevealItem>
+
+							<ScrollRevealItem className="min-w-0">
+								<h2 className="text-label font-semibold uppercase tracking-wider text-primary-foreground/55">
+									{t("shortfilms.series.aboutFilm")}
+								</h2>
+								{detail.description ? (
+									<RichText
+										content={detail.description}
+										className="mt-2 max-w-prose text-body leading-relaxed text-primary-foreground/85"
+									/>
+								) : null}
+								{producerLabel ? (
+									<p className="mt-3 text-label text-primary-foreground/50">
+										{t("shortfilms.series.producedBy", { producer: producerLabel })}
+									</p>
+								) : null}
+								{metaRows.length > 0 ? (
+									<dl className="mt-4 divide-y divide-primary-foreground/12 border-t border-primary-foreground/15">
+										{metaRows.map((row) => (
+											<MetaRow key={row.label} label={row.label} value={row.value} />
+										))}
+									</dl>
+								) : null}
+							</ScrollRevealItem>
+						</ScrollReveal>
+					</div>
+
+					{/* Player + playlist body */}
+					<div
+						className={cn(
+							homeInsetClass,
+							"mx-auto max-w-7xl pb-6 sm:pb-8 2xl:max-w-none",
+						)}
+					>
+						<ScrollReveal>
+							<ScrollRevealItem>
+								<FilmSeries
+									clips={detail.clips}
+									activeClipNumber={detail.activeClipNumber}
+									seriesTitle={detail.title}
+									playerKind={detail.playerKind}
+									playableSrc={detail.playableSrc}
+									poster={detail.coverUrl}
+									noSourceLabel={t("detail.noSource")}
+									labels={{
+										episodes: t("shortfilms.series.episodes"),
+										partOfTemplate: t.raw("shortfilms.series.partOf"),
+										nowPlaying: t("shortfilms.detail.nowScreening"),
+										previousPart: t("shortfilms.series.previousPart"),
+										nextPart: t("shortfilms.series.nextPart"),
+										autoplay: t("shortfilms.series.autoplay"),
+									}}
+								/>
+							</ScrollRevealItem>
+						</ScrollReveal>
+					</div>
+				</>
+			) : null}
+
+			{!isSeries ? (
 			<div
 				className={cn(
 					homeInsetClass,
@@ -382,6 +496,7 @@ export async function ShortFilmDetailView({
 					</ScrollRevealItem>
 				</ScrollReveal>
 			</div>
+			) : null}
 
 			{/* One shared seam between program sections: space-y + hairline + pt. */}
 			<div
@@ -391,7 +506,7 @@ export async function ShortFilmDetailView({
 					"mx-auto max-w-7xl space-y-5 pb-10 sm:space-y-6 sm:pb-14 2xl:max-w-none",
 				)}
 			>
-				{detail.description || fileRows.length > 0 ? (
+				{!isSeries && (detail.description || fileRows.length > 0) ? (
 					<ScrollReveal>
 						<ScrollRevealItem>
 							<section className="grid gap-6 border-t border-primary-foreground/20 pt-5 sm:pt-6 lg:grid-cols-[minmax(0,1fr)_minmax(15rem,20rem)] lg:gap-10">
