@@ -21,7 +21,7 @@ export async function generateMetadata({
 	const t = await getTranslations({ locale, namespace: "Nav" });
 	return {
 		// `absolute` so the homepage title is just the site name (no template suffix).
-		title: { absolute: t("brandAlt") },
+		title: { absolute: t("siteTitle") },
 		alternates: localeAlternates(locale),
 	};
 }
