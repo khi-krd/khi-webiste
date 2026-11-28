@@ -1,4 +1,8 @@
 import type { MetadataRoute } from "next";
+
+// Rendered per request: the API base (http://backend:8080) only resolves on
+// the compose network at runtime, never during docker build.
+export const dynamic = "force-dynamic";
 import { routing } from "@/i18n/routing";
 import { getSitemapPaths } from "@/lib/api/sitemap";
 
