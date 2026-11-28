@@ -1,6 +1,10 @@
 "use client";
 
-import { FilmIcon } from "@heroicons/react/24/outline";
+import {
+	ArrowLeftIcon,
+	ArrowRightIcon,
+	FilmIcon,
+} from "@heroicons/react/24/outline";
 import dynamic from "next/dynamic";
 import NextImage from "next/image";
 import { type ReactNode, useCallback, useEffect, useRef, useState } from "react";
@@ -35,7 +39,7 @@ function Equalizer({ playing, size = 14 }: { playing: boolean; size?: number }) 
 			viewBox="0 0 24 24"
 			fill="currentColor"
 			aria-hidden="true"
-			className={cn("text-brand", playing && "animate-pulse")}
+			className={cn("khi-eq text-brand", playing && "is-animated")}
 		>
 			<rect x="4" y="9" width="4" height="11" rx="1" />
 			<rect x="10" y="4" width="4" height="16" rx="1" />
@@ -171,6 +175,8 @@ export function FilmSeries({
 					autoPlay={autoPlaySelected}
 					onEnded={handleEnded}
 					onTimeUpdate={handleProgress}
+					onPlay={() => setIsPlaying(true)}
+					onPause={() => setIsPlaying(false)}
 					className="absolute inset-0 z-1 size-full"
 				/>
 			</div>
@@ -230,7 +236,7 @@ export function FilmSeries({
 					className="mt-5 border-t border-primary-foreground/15 pt-4 sm:mt-6"
 				>
 					<div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-label text-primary-foreground/55">
-						<span className="inline-flex items-center gap-1.5 text-brand">
+						<span className="inline-flex items-center gap-1.5 bg-brand/12 px-2.5 py-1 font-semibold text-brand">
 							<Equalizer playing={isPlaying} />
 							{labels.nowPlaying}
 						</span>
@@ -247,23 +253,26 @@ export function FilmSeries({
 						</span>
 					</div>
 
-					<p className="mt-3 text-label text-primary-foreground/50">
+					<a
+						href="#khi-series-title"
+						className="mt-3 inline-block text-label font-medium text-brand decoration-brand/40 underline-offset-4 fine-hover:underline"
+					>
 						{seriesTitle}
-					</p>
-					<h2 className="mt-1 font-heading text-h3 font-bold leading-snug text-balance text-primary-foreground">
+					</a>
+					<h2 className="mt-1 font-heading text-h2 font-bold leading-snug text-balance text-primary-foreground">
 						{activeClip?.title ?? seriesTitle}
 					</h2>
 
 					{activeClip?.descriptionHtml ? (
 						<div
-							className="mt-3 text-small leading-relaxed text-primary-foreground/80 [&_:is(h1,h2,h3,h4,h5,h6)]:font-semibold [&_:is(h1,h2,h3,h4,h5,h6)]:text-primary-foreground [&_a]:text-primary-foreground [&_a]:decoration-primary-foreground/40 [&_blockquote]:border-primary-foreground/25 [&_blockquote]:text-primary-foreground/70 [&_code]:bg-primary-foreground/10 [&_strong]:text-primary-foreground"
+							className="mt-3 max-w-prose text-body leading-loose text-primary-foreground/80 [&_:is(h1,h2,h3,h4,h5,h6)]:font-semibold [&_:is(h1,h2,h3,h4,h5,h6)]:text-primary-foreground [&_a]:text-primary-foreground [&_a]:decoration-primary-foreground/40 [&_blockquote]:border-primary-foreground/25 [&_blockquote]:text-primary-foreground/70 [&_code]:bg-primary-foreground/10 [&_strong]:text-primary-foreground"
 							// biome-ignore lint/security/noDangerouslySetInnerHtml: sanitized during resolve (sanitize-html allowlist), never raw CMS markup.
 							dangerouslySetInnerHTML={{
 								__html: activeClip.descriptionHtml,
 							}}
 						/>
 					) : activeClip?.description ? (
-						<p className="mt-3 text-small leading-relaxed text-primary-foreground/80">
+						<p className="mt-3 max-w-prose text-body leading-loose text-primary-foreground/80">
 							{activeClip.description}
 						</p>
 					) : null}
@@ -277,13 +286,19 @@ export function FilmSeries({
 								<button
 									type="button"
 									onClick={() => goTo(activeIndex - 1)}
-									className="group min-w-0 max-w-[48%] border border-primary-foreground/20 px-4 py-3 text-start transition-colors fine-hover:border-brand"
+									className="group flex min-w-0 max-w-[48%] items-center gap-3.5 border border-primary-foreground/20 bg-primary-foreground/3 px-4 py-3 text-start transition-colors fine-hover:border-brand fine-hover:bg-primary-foreground/6"
 								>
-									<span className="block text-label text-primary-foreground/50 transition-colors group-fine:text-brand">
-										{labels.previousPart}
-									</span>
-									<span className="mt-1 block truncate text-small font-medium text-primary-foreground">
-										{previous.title}
+									<ArrowLeftIcon
+										aria-hidden
+										className="size-5 shrink-0 text-primary-foreground/50 transition-colors group-fine:text-brand rtl:-scale-x-100"
+									/>
+									<span className="min-w-0">
+										<span className="block text-label text-primary-foreground/50 transition-colors group-fine:text-brand">
+											{labels.previousPart}
+										</span>
+										<span className="mt-1 block truncate text-small font-semibold text-primary-foreground">
+											{previous.title}
+										</span>
 									</span>
 								</button>
 							) : (
@@ -293,14 +308,20 @@ export function FilmSeries({
 								<button
 									type="button"
 									onClick={() => goTo(activeIndex + 1)}
-									className="group min-w-0 max-w-[48%] border border-primary-foreground/20 px-4 py-3 text-end transition-colors fine-hover:border-brand"
+									className="group flex min-w-0 max-w-[48%] items-center justify-end gap-3.5 border border-primary-foreground/20 bg-primary-foreground/3 px-4 py-3 text-end transition-colors fine-hover:border-brand fine-hover:bg-primary-foreground/6"
 								>
-									<span className="block text-label text-primary-foreground/50 transition-colors group-fine:text-brand">
-										{labels.nextPart}
+									<span className="min-w-0">
+										<span className="block text-label text-primary-foreground/50 transition-colors group-fine:text-brand">
+											{labels.nextPart}
+										</span>
+										<span className="mt-1 block truncate text-small font-semibold text-primary-foreground">
+											{next.title}
+										</span>
 									</span>
-									<span className="mt-1 block truncate text-small font-medium text-primary-foreground">
-										{next.title}
-									</span>
+									<ArrowRightIcon
+										aria-hidden
+										className="size-5 shrink-0 text-primary-foreground/50 transition-colors group-fine:text-brand rtl:-scale-x-100"
+									/>
 								</button>
 							) : null}
 						</nav>
@@ -329,7 +350,7 @@ export function FilmSeries({
 							role="switch"
 							checked={autoplay}
 							onChange={(e) => setAutoplay(e.target.checked)}
-							className="size-4 accent-[var(--color-brand)]"
+							className="relative h-5 w-9 shrink-0 cursor-pointer appearance-none rounded-full bg-primary-foreground/20 transition-colors after:absolute after:start-0.5 after:top-0.5 after:size-4 after:rounded-full after:bg-primary-foreground after:transition-transform checked:bg-brand checked:after:translate-x-4 checked:after:bg-background rtl:checked:after:-translate-x-4"
 						/>
 					</label>
 				</div>
@@ -337,7 +358,7 @@ export function FilmSeries({
 				{/* Duration-proportional segment bar — where this part sits. */}
 				<div
 					aria-hidden="true"
-					className="mt-3 flex h-1 gap-0.5 overflow-hidden"
+					className="mt-3 flex h-1 gap-1"
 				>
 					{clips.map((clip, i) => (
 						<span
@@ -367,26 +388,26 @@ export function FilmSeries({
 									aria-current={isActive ? "true" : undefined}
 									onClick={() => goTo(i)}
 									className={cn(
-										"flex w-full items-stretch gap-3 border p-2 text-start transition-colors",
+										"flex w-full items-center gap-3 border p-2.5 text-start transition-colors",
 										isActive
 											? "border-brand/60 bg-brand/10"
 											: "border-transparent fine-hover:border-primary-foreground/20 fine-hover:bg-primary-foreground/5",
 									)}
 								>
-									<span className="flex w-5 shrink-0 items-start justify-center pt-1 text-label tabular-nums text-primary-foreground/50">
+									<span className="flex w-6 shrink-0 items-center justify-center text-label font-semibold tabular-nums text-primary-foreground/50">
 										{isActive ? (
 											<Equalizer playing={isPlaying} size={16} />
 										) : (
 											i + 1
 										)}
 									</span>
-									<span className="relative aspect-video w-24 shrink-0 overflow-hidden bg-primary-foreground/10">
+									<span className="relative aspect-video w-32 shrink-0 overflow-hidden bg-primary-foreground/10">
 										{clip.coverUrl ? (
 											<NextImage
 												src={clip.coverUrl}
 												alt=""
 												fill
-												sizes="6rem"
+												sizes="8rem"
 												className="object-cover"
 											/>
 										) : clip.url && MEDIA_FILE_PATTERN.test(clip.url) ? (
@@ -400,14 +421,14 @@ export function FilmSeries({
 												src={poster}
 												alt=""
 												fill
-												sizes="6rem"
+												sizes="8rem"
 												className="object-cover opacity-70"
 											/>
 										) : null}
 										{clip.durationSeconds ? (
 											<span
 												dir="ltr"
-												className="absolute bottom-0.5 end-0.5 bg-black/70 px-1 py-px text-[10px] tabular-nums text-white"
+												className="absolute bottom-1 start-1 bg-black/75 px-1.5 py-px text-[11px] tabular-nums text-white"
 											>
 												{formatClock(clip.durationSeconds)}
 											</span>

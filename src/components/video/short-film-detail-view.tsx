@@ -1,4 +1,9 @@
-import { ArrowsPointingOutIcon } from "@heroicons/react/24/outline";
+import {
+	ArrowsPointingOutIcon,
+	ClockIcon,
+	MapPinIcon,
+	QueueListIcon,
+} from "@heroicons/react/24/outline";
 import NextImage from "next/image";
 import { getTranslations } from "next-intl/server";
 import {
@@ -273,7 +278,7 @@ export async function ShortFilmDetailView({
 					<div
 						className={cn(
 							homeInsetClass,
-							"mx-auto max-w-7xl pt-8 pb-6 sm:pt-10 sm:pb-7 lg:pt-12 2xl:max-w-none",
+							"mx-auto max-w-7xl border-b border-primary-foreground/15 pt-8 pb-6 sm:pt-10 sm:pb-8 lg:pt-12 2xl:max-w-none",
 						)}
 					>
 						<ScrollReveal className="grid items-start gap-8 lg:grid-cols-[minmax(0,1fr)_minmax(18rem,26rem)] lg:gap-10">
@@ -285,23 +290,29 @@ export async function ShortFilmDetailView({
 								) : genreLabel !== "—" ? (
 									<p className="text-label text-brand">{genreLabel}</p>
 								) : null}
-								<h1 className="mt-2 font-heading text-h1 font-bold leading-[1.1] text-balance text-primary-foreground">
+								<h1
+									id="khi-series-title"
+									className="mt-2 scroll-mt-24 font-heading text-h1 font-bold leading-[1.1] text-balance text-primary-foreground"
+								>
 									{detail.title}
 								</h1>
 								<ul className="mt-4 flex flex-wrap items-center gap-2 text-label text-primary-foreground/70">
-									<li className="inline-flex items-center gap-1.5 border border-primary-foreground/20 px-2.5 py-1">
+									<li className="inline-flex items-center gap-1.5 border border-primary-foreground/20 bg-primary-foreground/4 px-3 py-1.5">
+										<QueueListIcon className="size-4" aria-hidden />
 										{t("shortfilms.series.episodeCount", { count: detail.clips.length })}
 									</li>
 									{durationLabel ? (
 										<li
 											dir="ltr"
-											className="inline-flex items-center gap-1.5 border border-primary-foreground/20 px-2.5 py-1 tabular-nums"
+											className="inline-flex items-center gap-1.5 border border-primary-foreground/20 bg-primary-foreground/4 px-3 py-1.5 tabular-nums"
 										>
+											<ClockIcon className="size-4" aria-hidden />
 											{durationLabel}
 										</li>
 									) : null}
 									{detail.location ? (
-										<li className="inline-flex items-center gap-1.5 border border-primary-foreground/20 px-2.5 py-1">
+										<li className="inline-flex items-center gap-1.5 border border-primary-foreground/20 bg-primary-foreground/4 px-3 py-1.5">
+											<MapPinIcon className="size-4" aria-hidden />
 											<Link
 												href={buildVideoHref({ q: detail.location })}
 												className="underline decoration-primary-foreground/25 underline-offset-2 transition-colors fine-hover:text-brand fine-hover:decoration-brand"
@@ -328,9 +339,9 @@ export async function ShortFilmDetailView({
 										{t("shortfilms.series.producedBy", { producer: producerLabel })}
 									</p>
 								) : null}
-								{metaRows.length > 0 ? (
+								{fileRows.length > 0 ? (
 									<dl className="mt-4 divide-y divide-primary-foreground/12 border-t border-primary-foreground/15">
-										{metaRows.map((row) => (
+										{fileRows.map((row) => (
 											<MetaRow key={row.label} label={row.label} value={row.value} />
 										))}
 									</dl>

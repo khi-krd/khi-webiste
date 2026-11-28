@@ -1784,3 +1784,38 @@ dialog[open]::backdrop {
 		scroll-snap-align: start;
 	}
 }
+
+/* Now-playing equalizer bars (film-series playlist + episode meta) —
+   staggered scaleY pulse, matching the reference series design. */
+.khi-eq rect {
+	transform-box: fill-box;
+	transform-origin: 50% 100%;
+}
+
+.khi-eq.is-animated rect {
+	animation: khi-eq 0.9s ease-in-out infinite;
+}
+
+.khi-eq.is-animated rect:nth-child(2) {
+	animation-delay: -0.3s;
+}
+
+.khi-eq.is-animated rect:nth-child(3) {
+	animation-delay: -0.6s;
+}
+
+@keyframes khi-eq {
+	0%,
+	100% {
+		transform: scaleY(0.45);
+	}
+	50% {
+		transform: scaleY(1);
+	}
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.khi-eq.is-animated rect {
+		animation: none;
+	}
+}

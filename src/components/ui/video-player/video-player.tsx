@@ -44,6 +44,9 @@ export type VideoPlayerProps = {
 	onEnded?: () => void;
 	/** Fires while playback advances (watch progress). */
 	onTimeUpdate?: (currentTime: number) => void;
+	/** Playback started (drives the series "now playing" equalizer). */
+	onPlay?: () => void;
+	onPause?: () => void;
 };
 
 export function VideoPlayer({
@@ -57,6 +60,8 @@ export function VideoPlayer({
 	className,
 	onEnded,
 	onTimeUpdate,
+	onPlay,
+	onPause,
 }: VideoPlayerProps) {
 	const playerRef = useRef<MediaPlayerInstance>(null);
 	const trimmedSrc = src.trim();
@@ -94,6 +99,8 @@ export function VideoPlayer({
 				streamType="on-demand"
 				load={autoPlay ? "eager" : "idle"}
 				onEnded={onEnded}
+				onPlay={onPlay}
+				onPause={onPause}
 				onTimeUpdate={
 					onTimeUpdate
 						? (detail: { currentTime?: number }) =>
